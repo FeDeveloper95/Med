@@ -10,7 +10,7 @@ BANNER PLACEHOLDER
 
 ### Features
 
-Med helps you keep track of your medicines and medical history with ease. You can create fixed custom events via Quick Actions for immediate logging or save specific custom events as needed. The scheduling is highly flexible, allowing you to save medicines with recurrence set to daily, specific days of the week, or a fully custom schedule. The setup process is intuitive and fast. Additionally, Med includes an integrated in-app update system to ensure you are always running the latest version.
+Med helps you keep track of your medicines and medical history with ease. You can create fixed custom events via Quick Actions for immediate logging or save specific custom events when needed. The scheduling is highly flexible, allowing you to save medicines with recurrence set to daily, specific days of the week, or a fully custom schedule. The setup process is intuitive and fast. Additionally, Med includes an integrated in-app update system to ensure you are always running the latest version.
 
 ### Design
 
