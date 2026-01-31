@@ -1,0 +1,154 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Medicine</string>
+    <string name="event_label">Event</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Action menu</string>
+    <string name="expanded_state">Expanded</string>
+    <string name="collapsed_state">Collapsed</string>
+    <string name="close_menu_action">Close menu</string>
+    <string name="choose_date_desc">Choose date</string>
+    <string name="settings_desc">Settings</string>
+    <string name="no_events_label">No events for today</string>
+
+    <string name="item_deleted">Deleted: %1$s</string>
+    <string name="undo_action">Undo</string>
+
+    <string name="cancel_action">Cancel</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Save</string>
+    <string name="new_event_title">New Event</string>
+    <string name="new_medicine_title">New Medicine</string>
+    <string name="add_detail_label">Add an event to Med</string>
+    <string name="name_hint">Name</string>
+    <string name="to_take_label">To take</string>
+    <string name="taken_desc">Taken</string>
+    <string name="to_take_desc">To take</string>
+
+    <string name="notif_channel_name">Medicine Reminders</string>
+    <string name="notif_channel_desc">Notifications for scheduled medicines</string>
+    <string name="notif_title">Medicine Reminder</string>
+    <string name="notif_content">Did you take %1$s?</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_snooze">Snooze</string>
+    <string name="snoozed_message">Snoozed for 10 minutes</string>
+    <string name="taken_message">Marked as taken</string>
+    <string name="skipped_message">Skipped</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="discard">Back</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="restart_now">Restart Now</string>
+
+    <string name="settings_header_appearance">Appearance</string>
+    <string name="settings_theme_title">Theme</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+
+    <string name="settings_header_calendar">Calendar</string>
+    <string name="settings_week_start_title">Start of week</string>
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+
+    <string name="settings_header_customization">Customization</string>
+    <string name="settings_presets_title">Quick Actions</string>
+    <string name="settings_presets_desc">Manage custom events in the main menu</string>
+    <string name="add_action">Add</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">App Version</string>
+    <string name="unknown">Unknown</string>
+    <string name="settings_developer_title">Developer</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Report Bug / Feature</string>
+    <string name="settings_report_desc">Contact on Telegram</string>
+
+    <string name="settings_check_updates_title">Check for Updates</string>
+    <string name="settings_check_updates_desc">Find the latest version</string>
+    <string name="update_action">Update</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_no_update">You have the latest version</string>
+    <string name="update_available">Update available: v%1$s</string>
+    <string name="update_error">Error checking for updates</string>
+    <string name="update_latest_version_msg">No updates available at the moment.</string>
+    <string name="update_error_msg">Could not check for updates. Check your connection.</string>
+    <string name="later">Later</string>
+    <string name="close">Close</string>
+
+    <string name="quick_actions_title">Quick Actions</string>
+    <string name="quick_actions_info">Quick Actions helps you quickly add recurring phenomenons or events to Med.</string>
+    <string name="active_actions_header">Active Actions</string>
+
+    <string name="welcome_to">Welcome to</string>
+    <string name="welcome_preparing_subtitle">Let\'s get everything ready for you.</string>
+    <string name="next">Next</string>
+    <string name="back">Back</string>
+    <string name="get_started">Get Started</string>
+
+    <string name="perm_required">Required</string>
+    <string name="perm_permissions">Permissions</string>
+    <string name="perm_intro_text">These permissions are required for Med to function correctly. Please grant them to proceed.</string>
+
+    <string name="perm_notif_title">Notifications</string>
+    <string name="perm_notif_desc">Know immediately when to take your meds.</string>
+
+    <string name="perm_install_title">App Installation</string>
+    <string name="perm_install_desc">Required to download and install updates.</string>
+
+    <string name="perm_usage_desc">Required to track usage stats.</string>
+    <string name="perm_dashboard_title">Dashboard</string>
+    <string name="perm_dashboard_desc">Enable system overlay features.</string>
+
+    <string name="feat_discover">Discover</string>
+    <string name="feat_features">Features</string>
+    <string name="feat_intro">Here is what you can do with your new Med app.</string>
+
+    <string name="feat_custom_events_title">Custom Events</string>
+    <string name="feat_custom_events_desc">Create and manage your personal health events.</string>
+
+    <string name="feat_reminders_title">Smart Reminders</string>
+    <string name="feat_reminders_desc">Receive timely notifications for your medicines.</string>
+
+    <string name="feat_tracking_title">Tracking</string>
+    <string name="feat_tracking_desc">Keep a history of when you took your medicines.</string>
+
+    <string name="feat_presets_title">Quick Actions</string>
+    <string name="feat_presets_desc">Set up presets for recurring events instantly.</string>
+
+    <string name="feat_update_title">Stay Updated</string>
+    <string name="feat_update_desc">Check for updates directly in the app Settings.</string>
+
+    <string name="feat_order_title">Total Control</string>
+    <string name="feat_order_desc">Manage your schedule exactly how you like it.</string>
+    <string name="feat_layout_title">Smart Layout</string>
+    <string name="feat_layout_desc">A clean interface to focus on your health.</string>
+    <string name="feat_name_title">Personal Touch</string>
+    <string name="feat_name_desc">Customize your experience in settings.</string>
+    <string name="feat_manage_title">Easy Management</string>
+    <string name="feat_manage_desc">Quickly add medicines and events.</string>
+    <string name="feat_store_title">Store</string>
+    <string name="feat_store_desc">Store description.</string>
+    <string name="feat_history_title">History</string>
+    <string name="feat_history_desc">Track your adherence and past events.</string>
+
+    <string name="settings_advanced_title">Advanced</string>
+    <string name="settings_advanced_desc">Experimental features and updates</string>
+    <string name="settings_auto_updates_title">Automatic updates</string>
+    <string name="settings_auto_updates_desc">Check for updates on startup</string>
+    <string name="settings_setup_title">Initial Setup</string>
+    <string name="settings_setup_desc">Run the welcome wizard again</string>
+    <string name="settings_backup_header">Backup &amp; Restore</string>
+    <string name="settings_export_title">Export Settings</string>
+    <string name="settings_export_desc">Save configuration</string>
+    <string name="settings_import_title">Import Settings</string>
+    <string name="settings_import_desc">Restore from a backup file</string>
+    <string name="dialog_restart_title">Restart Required</string>
+    <string name="dialog_restart_desc">Settings have been imported. Restart the app to apply changes.</string>
+    <string name="export_success">Settings exported successfully</string>
+    <string name="export_error">Error exporting settings</string>
+    <string name="import_error">Error importing settings</string>
+    <string name="perm_toast_required">Please grant all permissions to proceed.</string>
+</resources>
