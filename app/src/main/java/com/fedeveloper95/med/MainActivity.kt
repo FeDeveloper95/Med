@@ -835,11 +835,17 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
     val contentColor by animateColorAsState(if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface, label = "contentColor")
     val cornerRadius by animateIntAsState(targetValue = if (isPressed) 12 else 32, animationSpec = spring(stiffness = Spring.StiffnessMediumLow), label = "corner")
 
+    val isToday = date == LocalDate.now()
+
     Column(
         modifier = Modifier
             .width(44.dp).height(68.dp)
             .clip(RoundedCornerShape(cornerRadius.dp))
             .background(backgroundColor)
+            .then(
+                if (isToday) Modifier.border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(cornerRadius.dp))
+                else Modifier
+            )
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
             .padding(vertical = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

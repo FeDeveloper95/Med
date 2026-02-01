@@ -60,4 +60,5 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation("androidx.palette:palette-ktx:1.0.0")
+    implementation("androidx.graphics:graphics-shapes")
 }

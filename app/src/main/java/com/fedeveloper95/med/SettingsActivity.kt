@@ -14,10 +14,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BugReport
@@ -136,199 +135,259 @@ fun SettingsScreen(
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
+    // --- OVERRIDE TIPOGRAFICO PER TITOLO GIGANTE ---
+    val appBarTypography = MaterialTheme.typography.copy(
+        // TITOLO ESPANSO (IN BASSO) -> BOLD
+        headlineMedium = MaterialTheme.typography.displaySmall.copy(
+            fontFamily = GoogleSansFlex,
+            fontWeight = FontWeight.Bold
+        ),
+        // TITOLO COLLASSATO (IN ALTO) -> NORMAL
+        titleLarge = MaterialTheme.typography.titleLarge.copy(
+            fontFamily = GoogleSansFlex,
+            fontWeight = FontWeight.Normal
+        )
+    )
+
     Scaffold(
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.settings_title),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
+            MaterialTheme(typography = appBarTypography) {
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.settings_title),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                            ExpressiveIconButton(
+                                onClick = onBack,
+                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.discard),
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.largeTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        scrolledContainerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
-                },
-                navigationIcon = {
-                    ExpressiveIconButton(
-                        onClick = onBack,
-                        icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.discard),
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
-            )
+            }
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
-        Column(
+        LazyColumn(
+            contentPadding = padding,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp)
         ) {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
             // --- MEGACARD: Customization (Theme, Calendar, Quick Actions, Advanced) ---
-            Text(
-                text = stringResource(R.string.settings_header_customization),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Normal
-                ),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-            )
+            item {
+                Text(
+                    text = stringResource(R.string.settings_header_customization),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
 
             // ITEM 1: THEME
-            SettingsItemCard(
-                icon = Icons.Default.Palette,
-                title = stringResource(R.string.settings_theme_title),
-                subtitle = when(currentTheme) {
-                    THEME_LIGHT -> stringResource(R.string.settings_theme_light)
-                    THEME_DARK -> stringResource(R.string.settings_theme_dark)
-                    else -> stringResource(R.string.settings_theme_system)
-                },
-                containerColor = Color(0xFFfcbd00),
-                iconColor = Color(0xFF6d3a01),
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
-                onClick = { showThemeDialog = true }
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.Palette,
+                    title = stringResource(R.string.settings_theme_title),
+                    subtitle = when (currentTheme) {
+                        THEME_LIGHT -> stringResource(R.string.settings_theme_light)
+                        THEME_DARK -> stringResource(R.string.settings_theme_dark)
+                        else -> stringResource(R.string.settings_theme_system)
+                    },
+                    containerColor = Color(0xFFfcbd00),
+                    iconColor = Color(0xFF6d3a01),
+                    shape = RoundedCornerShape(
+                        topStart = 28.dp,
+                        topEnd = 28.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onClick = { showThemeDialog = true }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
 
             // ITEM 2: CALENDAR
-            SettingsItemCard(
-                icon = Icons.Default.DateRange,
-                title = stringResource(R.string.settings_week_start_title),
-                subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(R.string.monday),
-                containerColor = Color(0xFFffb683),
-                iconColor = Color(0xFF753403),
-                shape = RoundedCornerShape(4.dp),
-                onClick = { showWeekStartDialog = true }
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.DateRange,
+                    title = stringResource(R.string.settings_week_start_title),
+                    subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(R.string.monday),
+                    containerColor = Color(0xFFffb683),
+                    iconColor = Color(0xFF753403),
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = { showWeekStartDialog = true }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
 
             // ITEM 3: PRESETS
-            SettingsItemCard(
-                icon = Icons.Default.Star,
-                title = stringResource(R.string.settings_presets_title),
-                subtitle = stringResource(R.string.settings_presets_desc),
-                containerColor = Color(0xFF80da88),
-                iconColor = Color(0xFF00522c),
-                shape = RoundedCornerShape(4.dp),
-                onClick = {
-                    val intent = Intent(context, QuickActionsSettingsActivity::class.java)
-                    context.startActivity(intent)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.Star,
+                    title = stringResource(R.string.settings_presets_title),
+                    subtitle = stringResource(R.string.settings_presets_desc),
+                    containerColor = Color(0xFF80da88),
+                    iconColor = Color(0xFF00522c),
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = {
+                        val intent = Intent(context, QuickActionsSettingsActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
 
             // ITEM 4: ADVANCED
-            SettingsItemCard(
-                icon = Icons.Default.Tune,
-                title = stringResource(R.string.settings_advanced_title),
-                subtitle = stringResource(R.string.settings_advanced_desc),
-                containerColor = Color(0xFFC5C0FF),
-                iconColor = Color(0xFF2D237A),
-                shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp),
-                onClick = {
-                    val intent = Intent(context, AdvancedSettingsActivity::class.java)
-                    context.startActivity(intent)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.Tune,
+                    title = stringResource(R.string.settings_advanced_title),
+                    subtitle = stringResource(R.string.settings_advanced_desc),
+                    containerColor = Color(0xFFC5C0FF),
+                    iconColor = Color(0xFF2D237A),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 28.dp,
+                        bottomEnd = 28.dp
+                    ),
+                    onClick = {
+                        val intent = Intent(context, AdvancedSettingsActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
 
             // --- MEGACARD: Info ---
-            Text(
-                text = stringResource(R.string.settings_header_info),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Normal
-                ),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-            )
+            item {
+                Text(
+                    text = stringResource(R.string.settings_header_info),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
 
             // ITEM 1: Version
-            SettingsItemCard(
-                icon = Icons.Default.Info,
-                title = stringResource(R.string.settings_version_title),
-                subtitle = appInfo,
-                containerColor = Color(0xFFa1c9ff),
-                iconColor = Color(0xFF0641a0),
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
-                onClick = {
-                    try {
-                        val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                            data = Uri.fromParts("package", context.packageName, null)
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.Info,
+                    title = stringResource(R.string.settings_version_title),
+                    subtitle = appInfo,
+                    containerColor = Color(0xFFa1c9ff),
+                    iconColor = Color(0xFF0641a0),
+                    shape = RoundedCornerShape(
+                        topStart = 28.dp,
+                        topEnd = 28.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onClick = {
+                        try {
+                            val intent = Intent(
+                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                            ).apply {
+                                data = Uri.fromParts("package", context.packageName, null)
+                            }
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-                        context.startActivity(intent)
-                    } catch (e: Exception) { e.printStackTrace() }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+                    }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
 
             // ITEM 2: Developer
-            SettingsItemCard(
-                icon = Icons.Default.Code,
-                title = stringResource(R.string.settings_developer_title),
-                subtitle = stringResource(R.string.settings_developer_name),
-                containerColor = Color(0xFFc7c7c7),
-                iconColor = Color(0xFF474747),
-                shape = RoundedCornerShape(4.dp),
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/FeDeveloper95"))
-                    context.startActivity(intent)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.Code,
+                    title = stringResource(R.string.settings_developer_title),
+                    subtitle = stringResource(R.string.settings_developer_name),
+                    containerColor = Color(0xFFc7c7c7),
+                    iconColor = Color(0xFF474747),
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = {
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://github.com/FeDeveloper95")
+                        )
+                        context.startActivity(intent)
+                    }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
 
             // ITEM 3: Report
-            SettingsItemCard(
-                icon = Icons.Default.BugReport,
-                title = stringResource(R.string.settings_report_title),
-                subtitle = stringResource(R.string.settings_report_desc),
-                containerColor = Color(0xFFffb3ae),
-                iconColor = Color(0xFF8a1a16),
-                shape = RoundedCornerShape(4.dp),
-                onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fedeveloper95"))
-                    context.startActivity(intent)
-                }
-            )
-
-            Spacer(modifier = Modifier.height(2.dp))
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.BugReport,
+                    title = stringResource(R.string.settings_report_title),
+                    subtitle = stringResource(R.string.settings_report_desc),
+                    containerColor = Color(0xFFffb3ae),
+                    iconColor = Color(0xFF8a1a16),
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = {
+                        val intent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fedeveloper95"))
+                        context.startActivity(intent)
+                    }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
 
             // ITEM 4: Check for Updates
-            SettingsItemCard(
-                icon = Icons.Default.SystemUpdate,
-                title = stringResource(R.string.settings_check_updates_title),
-                subtitle = stringResource(R.string.settings_check_updates_desc),
-                containerColor = Color(0xFF67d4ff),
-                iconColor = Color(0xFF004e5d),
-                shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp),
-                onClick = {
-                    showUpdateDialog = true
-                    updateStatus = UpdateStatus.Checking
-                    scope.launch {
-                        val update = Updater.checkForUpdates(currentVersionName)
-                        updateStatus = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+            item {
+                SettingsItemCard(
+                    icon = Icons.Default.SystemUpdate,
+                    title = stringResource(R.string.settings_check_updates_title),
+                    subtitle = stringResource(R.string.settings_check_updates_desc),
+                    containerColor = Color(0xFF67d4ff),
+                    iconColor = Color(0xFF004e5d),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 28.dp,
+                        bottomEnd = 28.dp
+                    ),
+                    onClick = {
+                        showUpdateDialog = true
+                        updateStatus = UpdateStatus.Checking
+                        scope.launch {
+                            val update = Updater.checkForUpdates(currentVersionName)
+                            updateStatus =
+                                if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+                        }
                     }
-                }
-            )
-
-            Spacer(modifier = Modifier.height(48.dp))
+                )
+                Spacer(modifier = Modifier.height(48.dp))
+            }
         }
     }
 
@@ -366,14 +425,19 @@ fun SettingsScreen(
                 activity?.intent?.removeExtra("EXTRA_OPEN_UPDATE_DIALOG")
             },
             onUpdate = { url ->
-                Updater.startDownload(context, url, (updateStatus as UpdateStatus.Available).info.version)
+                Updater.startDownload(
+                    context,
+                    url,
+                    (updateStatus as UpdateStatus.Available).info.version
+                )
                 showUpdateDialog = false
             },
             onCheckAgain = {
                 updateStatus = UpdateStatus.Checking
                 scope.launch {
                     val update = Updater.checkForUpdates(currentVersionName)
-                    updateStatus = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+                    updateStatus =
+                        if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
                 }
             }
         )

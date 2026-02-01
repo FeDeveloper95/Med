@@ -3,7 +3,12 @@
 package com.fedeveloper95.med.elements.MainActivity
 
 import android.graphics.Color.parseColor
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -72,6 +77,11 @@ fun MedicinePopup(
         } else {
             if (selectedTimes.isEmpty()) selectedTimes = listOf(LocalTime.now())
             if (selectedTimes.size > 1) selectedTimes = listOf(selectedTimes.first())
+
+            val limit = frequencyCountStr.toIntOrNull()
+            if (limit != null && selectedDays.size > limit) {
+                selectedDays = selectedDays.toList().take(limit).toSet()
+            }
         }
     }
 
@@ -95,6 +105,14 @@ fun MedicinePopup(
             dismissButton = { ExpressiveTextButton(onClick = { showTimePickerForIndex = null }, text = "Cancel") }
         ) { TimePicker(state = timeState) }
     }
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val cornerPercent by animateIntAsState(
+        targetValue = if (isPressed) 15 else 50,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "btnMorph"
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -174,10 +192,11 @@ fun MedicinePopup(
                                     .clip(CircleShape)
                                     .background(bg)
                                     .clickable {
+                                        val limit = frequencyCountStr.toIntOrNull() ?: 7
                                         selectedDays = if (isSelected) {
                                             if (selectedDays.size > 1) selectedDays - day else selectedDays
                                         } else {
-                                            selectedDays + day
+                                            if (selectedDays.size < limit) selectedDays + day else selectedDays
                                         }
                                     },
                                 contentAlignment = Alignment.Center
@@ -220,12 +239,26 @@ fun MedicinePopup(
             }
         },
         confirmButton = {
-            ExpressiveButton(onClick = {
-                if (text.isNotBlank()) {
-                    val days = if (frequencyUnit == "Settimana") selectedDays.toList() else null
-                    onConfirm(text, selectedIconName, selectedColor, selectedTimes, days)
-                }
-            }, text = stringResource(R.string.save_action))
+            Button(
+                onClick = {
+                    if (text.isNotBlank()) {
+                        val days = if (frequencyUnit == "Settimana") selectedDays.toList() else null
+                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, days)
+                    }
+                },
+                shape = RoundedCornerShape(cornerPercent),
+                interactionSource = interactionSource,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.save_action),
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         },
         dismissButton = { ExpressiveTextButton(onClick = onDismiss, text = stringResource(R.string.cancel_action)) },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp

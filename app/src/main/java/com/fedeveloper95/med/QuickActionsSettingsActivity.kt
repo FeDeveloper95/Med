@@ -21,10 +21,11 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -43,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
@@ -147,292 +149,329 @@ fun QuickActionsScreen(onBack: () -> Unit) {
         }
     }
 
+    // --- OVERRIDE TIPOGRAFICO ---
+    val appBarTypography = MaterialTheme.typography.copy(
+        headlineMedium = MaterialTheme.typography.displaySmall.copy(
+            fontFamily = GoogleSansFlex,
+            fontWeight = FontWeight.Bold // BOLD quando espanso
+        ),
+        titleLarge = MaterialTheme.typography.titleLarge.copy(
+            fontFamily = GoogleSansFlex,
+            fontWeight = FontWeight.Normal // NORMAL quando collassato
+        )
+    )
+
     Scaffold(
         topBar = {
-            LargeTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.quick_actions_title),
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
+            MaterialTheme(typography = appBarTypography) {
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.quick_actions_title),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    navigationIcon = {
+                        // Padding applicato all'icona
+                        Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                            ExpressiveIconButton(
+                                onClick = onBack,
+                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.discard),
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    },
+                    scrollBehavior = scrollBehavior,
+                    colors = TopAppBarDefaults.largeTopAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        scrolledContainerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
                     )
-                },
-                navigationIcon = {
-                    ExpressiveIconButton(
-                        onClick = onBack,
-                        icon = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.discard),
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-                },
-                scrollBehavior = scrollBehavior,
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    scrolledContainerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
                 )
-            )
+            }
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
-        Column(
+        // Convertito in LazyColumn
+        LazyColumn(
+            contentPadding = padding,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    val iconVector = AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
+            item { Spacer(modifier = Modifier.height(8.dp)) }
 
-                    val previewBackgroundColor = if (selectedColor == "dynamic") {
-                        MaterialTheme.colorScheme.surfaceContainerHighest
-                    } else {
-                        try {
-                            Color(android.graphics.Color.parseColor(selectedColor))
-                        } catch (e: Exception) {
-                            MaterialTheme.colorScheme.surfaceContainerHighest
-                        }
-                    }
-
-                    val previewIconColor = if (selectedColor == "dynamic") {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        Color.Black.copy(alpha = 0.7f)
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(CircleShape)
-                            .background(previewBackgroundColor),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        AnimatedContent(targetState = iconVector, label = "iconAnim") { targetIcon ->
-                            Icon(
-                                imageVector = targetIcon,
-                                contentDescription = null,
-                                modifier = Modifier.size(64.dp),
-                                tint = previewIconColor
-                            )
-                        }
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    OutlinedTextField(
-                        value = newName,
-                        onValueChange = { newName = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = { Text(stringResource(R.string.name_hint), fontFamily = GoogleSansFlex) },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = Color.Transparent,
-                            unfocusedBorderColor = Color.Transparent,
-                            focusedContainerColor = MaterialTheme.colorScheme.surface,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(2.dp))
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(start = 48.dp, end = 48.dp, top = 16.dp, bottom = 16.dp)
+            // Preview Card
+            item {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
                 ) {
-                    val icons = AVAILABLE_ICONS.toList()
-                    val rows = icons.chunked(4)
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        val iconVector = AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
 
-                    rows.forEachIndexed { index, rowItems ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        val previewBackgroundColor = if (selectedColor == "dynamic") {
+                            MaterialTheme.colorScheme.surfaceContainerHighest
+                        } else {
+                            try {
+                                Color(android.graphics.Color.parseColor(selectedColor))
+                            } catch (e: Exception) {
+                                MaterialTheme.colorScheme.surfaceContainerHighest
+                            }
+                        }
+
+                        val previewIconColor = if (selectedColor == "dynamic") {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.Black.copy(alpha = 0.7f)
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .size(120.dp)
+                                .clip(CircleShape)
+                                .background(previewBackgroundColor),
+                            contentAlignment = Alignment.Center
                         ) {
-                            for ((name, icon) in rowItems) {
-                                val isSelected = selectedIconName == name
+                            AnimatedContent(targetState = iconVector, label = "iconAnim") { targetIcon ->
+                                Icon(
+                                    imageVector = targetIcon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(64.dp),
+                                    tint = previewIconColor
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(2.dp)) }
+
+            // Name Input Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        OutlinedTextField(
+                            value = newName,
+                            onValueChange = { newName = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = { Text(stringResource(R.string.name_hint), fontFamily = GoogleSansFlex) },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedBorderColor = Color.Transparent,
+                                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                            )
+                        )
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(2.dp)) }
+
+            // Icon Selection Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(start = 48.dp, end = 48.dp, top = 16.dp, bottom = 16.dp)
+                    ) {
+                        val icons = AVAILABLE_ICONS.toList()
+                        val rows = icons.chunked(4)
+
+                        rows.forEachIndexed { index, rowItems ->
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                for ((name, icon) in rowItems) {
+                                    val isSelected = selectedIconName == name
+
+                                    val interactionSource = remember { MutableInteractionSource() }
+                                    val isPressed by interactionSource.collectIsPressedAsState()
+
+                                    val cornerPercent by animateIntAsState(
+                                        targetValue = if (isPressed) 15 else 50,
+                                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                        label = "corner"
+                                    )
+
+                                    val baseColor = MaterialTheme.colorScheme.surfaceVariant
+                                    val selectedColorBg = MaterialTheme.colorScheme.primaryContainer
+
+                                    val containerColor by animateColorAsState(if (isSelected) selectedColorBg else baseColor)
+                                    val iconTint by animateColorAsState(
+                                        if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+
+                                    Box(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .aspectRatio(1f)
+                                            .padding(10.dp)
+                                            .clip(RoundedCornerShape(percent = cornerPercent))
+                                            .background(containerColor)
+                                            .clickable(interactionSource = interactionSource, indication = null) { selectedIconName = name },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = icon,
+                                            contentDescription = name,
+                                            tint = iconTint,
+                                            modifier = Modifier.size(28.dp)
+                                        )
+                                    }
+                                }
+                            }
+
+                            if (index < rows.lastIndex) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
+                        }
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(2.dp)) }
+
+            // Color Selection Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(4.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(vertical = 24.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState())
+                                .padding(horizontal = 20.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AVAILABLE_COLORS.forEach { colorCode ->
+                                val isSelected = selectedColor == colorCode
+                                val isDynamic = colorCode == "dynamic"
 
                                 val interactionSource = remember { MutableInteractionSource() }
                                 val isPressed by interactionSource.collectIsPressedAsState()
 
+                                val targetCorner = when {
+                                    isPressed -> 15
+                                    isSelected -> 35
+                                    else -> 50
+                                }
+
                                 val cornerPercent by animateIntAsState(
-                                    targetValue = if (isPressed) 15 else 50,
+                                    targetValue = targetCorner,
                                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                    label = "corner"
+                                    label = "colorCorner"
                                 )
 
-                                val baseColor = MaterialTheme.colorScheme.surfaceVariant
-                                val selectedColorBg = MaterialTheme.colorScheme.primaryContainer
+                                val backgroundColor = if (isDynamic) {
+                                    MaterialTheme.colorScheme.surfaceVariant
+                                } else {
+                                    try {
+                                        Color(android.graphics.Color.parseColor(colorCode))
+                                    } catch (e: Exception) {
+                                        Color.Gray
+                                    }
+                                }
 
-                                val containerColor by animateColorAsState(if (isSelected) selectedColorBg else baseColor)
-                                val iconTint by animateColorAsState(
-                                    if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                val borderWidth = if (isSelected) 3.dp else 0.dp
+                                val borderColor = if (isDynamic) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    backgroundColor.darken(0.7f)
+                                }
 
                                 Box(
                                     modifier = Modifier
-                                        .weight(1f)
-                                        .aspectRatio(1f)
-                                        .padding(10.dp)
+                                        .size(48.dp)
                                         .clip(RoundedCornerShape(percent = cornerPercent))
-                                        .background(containerColor)
-                                        .clickable(interactionSource = interactionSource, indication = null) { selectedIconName = name },
+                                        .background(backgroundColor)
+                                        .then(if(isDynamic && isSelected) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
+                                        .border(borderWidth, borderColor, RoundedCornerShape(percent = cornerPercent))
+                                        .clickable(interactionSource = interactionSource, indication = null) { selectedColor = colorCode },
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = name,
-                                        tint = iconTint,
-                                        modifier = Modifier.size(28.dp)
-                                    )
+                                    if (isDynamic) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Palette,
+                                            contentDescription = "Dynamic Theme",
+                                            tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
                                 }
                             }
-                        }
-
-                        if (index < rows.lastIndex) {
-                            Spacer(modifier = Modifier.height(4.dp))
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(2.dp))
+            item { Spacer(modifier = Modifier.height(2.dp)) }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(vertical = 24.dp)
+            // Add Button Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                    elevation = CardDefaults.cardElevation(0.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .padding(horizontal = 20.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AVAILABLE_COLORS.forEach { colorCode ->
-                            val isSelected = selectedColor == colorCode
-                            val isDynamic = colorCode == "dynamic"
-
-                            val interactionSource = remember { MutableInteractionSource() }
-                            val isPressed by interactionSource.collectIsPressedAsState()
-
-                            val targetCorner = when {
-                                isPressed -> 15
-                                isSelected -> 35
-                                else -> 50
-                            }
-
-                            val cornerPercent by animateIntAsState(
-                                targetValue = targetCorner,
-                                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                label = "colorCorner"
-                            )
-
-                            val backgroundColor = if (isDynamic) {
-                                MaterialTheme.colorScheme.surfaceVariant
-                            } else {
-                                try {
-                                    Color(android.graphics.Color.parseColor(colorCode))
-                                } catch (e: Exception) {
-                                    Color.Gray
-                                }
-                            }
-
-                            val borderWidth = if (isSelected) 3.dp else 0.dp
-                            val borderColor = if (isDynamic) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                backgroundColor.darken(0.7f)
-                            }
-
-                            Box(
-                                modifier = Modifier
-                                    .size(48.dp)
-                                    .clip(RoundedCornerShape(percent = cornerPercent))
-                                    .background(backgroundColor)
-                                    .then(if(isDynamic && isSelected) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
-                                    .border(borderWidth, borderColor, RoundedCornerShape(percent = cornerPercent))
-                                    .clickable(interactionSource = interactionSource, indication = null) { selectedColor = colorCode },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (isDynamic) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Palette,
-                                        contentDescription = "Dynamic Theme",
-                                        tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }
-                            }
-                        }
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        ExpressiveButton(
+                            onClick = { addPreset() },
+                            text = stringResource(R.string.add_action),
+                            modifier = Modifier.fillMaxWidth(),
+                            containerColor = if (newName.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = if (newName.isNotBlank()) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(2.dp))
+            item { Spacer(modifier = Modifier.height(32.dp)) }
 
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                elevation = CardDefaults.cardElevation(0.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    ExpressiveButton(
-                        onClick = { addPreset() },
-                        text = stringResource(R.string.add_action),
-                        modifier = Modifier.fillMaxWidth(),
-                        containerColor = if (newName.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = if (newName.isNotBlank()) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+            // --- ACTIVE ACTIONS LIST ---
+            if (presetsList.isNotEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.active_actions_header),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            if (presetsList.isNotEmpty()) {
-                Text(
-                    text = stringResource(R.string.active_actions_header),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-
-                presetsList.forEachIndexed { index, itemString ->
+                itemsIndexed(presetsList) { index, itemString ->
                     val parts = itemString.split("|")
                     val name = parts.getOrNull(1) ?: "Unknown"
                     val iconName = parts.getOrNull(2) ?: "Event"
@@ -517,28 +556,30 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    Icons.Filled.Info,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = stringResource(R.string.quick_actions_info),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontFamily = GoogleSansFlex
-                )
+                Row(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Filled.Info,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.quick_actions_info),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontFamily = GoogleSansFlex
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(48.dp))
             }
-
-            Spacer(modifier = Modifier.height(48.dp))
         }
     }
 }

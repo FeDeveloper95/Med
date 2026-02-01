@@ -3,7 +3,12 @@
 package com.fedeveloper95.med.elements.MainActivity
 
 import android.graphics.Color.parseColor
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,6 +73,14 @@ fun EventPopup(
         ) { TimePicker(state = timeState) }
     }
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val cornerPercent by animateIntAsState(
+        targetValue = if (isPressed) 15 else 50,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "btnMorph"
+    )
+
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = stringResource(R.string.new_event_title), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
@@ -113,11 +126,25 @@ fun EventPopup(
             }
         },
         confirmButton = {
-            ExpressiveButton(onClick = {
-                if (text.isNotBlank()) {
-                    onConfirm(text, selectedIconName, selectedColor, selectedTimes, null)
-                }
-            }, text = stringResource(R.string.save_action))
+            Button(
+                onClick = {
+                    if (text.isNotBlank()) {
+                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, null)
+                    }
+                },
+                shape = RoundedCornerShape(cornerPercent),
+                interactionSource = interactionSource,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = stringResource(R.string.save_action),
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         },
         dismissButton = { ExpressiveTextButton(onClick = onDismiss, text = stringResource(R.string.cancel_action)) },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp
