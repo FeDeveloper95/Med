@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.R
-import com.fedeveloper95.med.UpdateStatus
+import com.fedeveloper95.med.services.UpdateStatus
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 
 @Composable

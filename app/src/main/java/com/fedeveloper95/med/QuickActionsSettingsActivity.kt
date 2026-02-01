@@ -27,11 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -55,9 +51,9 @@ val AVAILABLE_ICONS = mapOf(
     "Event" to Icons.Rounded.Event,
     "FitnessCenter" to Icons.Rounded.FitnessCenter,
     "Restaurant" to Icons.Rounded.Restaurant,
-    "Work" to Icons.Rounded.Work,
-    "School" to Icons.Rounded.School,
-    "ShoppingCart" to Icons.Rounded.ShoppingCart,
+    "Thermometer" to Icons.Rounded.DeviceThermostat,
+    "Mindfulness" to Icons.Rounded.SelfImprovement,
+    "MixtureMed" to Icons.Rounded.School,
     "LocalHospital" to Icons.Rounded.LocalHospital,
     "Favorite" to Icons.Rounded.Favorite,
     "Star" to Icons.Rounded.Star,
@@ -177,7 +173,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                         Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                             ExpressiveIconButton(
                                 onClick = onBack,
-                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                icon = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.discard),
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -535,16 +531,16 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                                 Row {
                                     if (index > 0) {
                                         IconButton(onClick = { moveItem(index, index - 1) }) {
-                                            Icon(Icons.Default.KeyboardArrowUp, null)
+                                            Icon(Icons.Rounded.KeyboardArrowUp, null)
                                         }
                                     }
                                     if (index < presetsList.lastIndex) {
                                         IconButton(onClick = { moveItem(index, index + 1) }) {
-                                            Icon(Icons.Default.KeyboardArrowDown, null)
+                                            Icon(Icons.Rounded.KeyboardArrowDown, null)
                                         }
                                     }
                                     IconButton(onClick = { removePreset(index) }) {
-                                        Icon(Icons.Default.Close, null, tint = MaterialTheme.colorScheme.error)
+                                        Icon(Icons.Rounded.Close, null, tint = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             },
@@ -564,7 +560,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Filled.Info,
+                        Icons.Rounded.Info,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)

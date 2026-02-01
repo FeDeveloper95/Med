@@ -32,7 +32,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -46,16 +45,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Circle
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.MedicalServices
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -65,7 +63,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -96,6 +93,8 @@ import com.fedeveloper95.med.elements.MainActivity.EventPopup
 import com.fedeveloper95.med.elements.MainActivity.MainFAB
 import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
 import com.fedeveloper95.med.elements.MainActivity.MedicinePopup
+import com.fedeveloper95.med.services.NotificationReceiver
+import com.fedeveloper95.med.services.Updater
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.delay
@@ -209,7 +208,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
     fun toggleMedicine(item: MedItem, date: LocalDate) {
         if (item.type != ItemType.Medicine) return
-        if (date != LocalDate.now()) return
+        if (date.isAfter(LocalDate.now())) return
 
         val newHistory = HashMap(item.takenHistory)
         if (newHistory.containsKey(date)) newHistory.remove(date) else newHistory[date] = LocalTime.now()
@@ -434,7 +433,7 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
 
     val menuItems = remember(presets) {
         val defaultItems = listOf(
-            Triple(ItemType.Medicine, Icons.Default.MedicalServices, Triple(context.getString(R.string.medicine_label), null as String?, null as String?)),
+            Triple(ItemType.Medicine, Icons.Rounded.MedicalServices, Triple(context.getString(R.string.medicine_label), null as String?, null as String?)),
             Triple(ItemType.Event, Icons.Rounded.Event, Triple(context.getString(R.string.event_label), null, null))
         )
         val presetItems = presets.mapNotNull { entry ->
@@ -444,7 +443,7 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
                 val name = parts[1]
                 val iconName = parts.getOrNull(2)
                 val colorCode = parts.getOrNull(3)
-                val icon = if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!! else if (type == ItemType.Medicine) Icons.Default.MedicalServices else Icons.Rounded.Event
+                val icon = if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!! else if (type == ItemType.Medicine) Icons.Rounded.MedicalServices else Icons.Rounded.Event
                 Triple(type, icon, Triple(name, iconName, colorCode))
             } else null
         }
@@ -478,9 +477,9 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.app_name), style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            ExpressiveIconButton(onClick = { showDatePicker = true }, icon = Icons.Default.CalendarMonth, contentDescription = stringResource(R.string.choose_date_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
+                            ExpressiveIconButton(onClick = { showDatePicker = true }, icon = Icons.Rounded.CalendarMonth, contentDescription = stringResource(R.string.choose_date_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
                             Spacer(modifier = Modifier.width(8.dp))
-                            ExpressiveIconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }, icon = Icons.Default.Settings, contentDescription = stringResource(R.string.settings_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
+                            ExpressiveIconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }, icon = Icons.Rounded.Settings, contentDescription = stringResource(R.string.settings_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -490,16 +489,34 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
                     val initialPage = 10000
                     val dayPagerState = rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
                     val today = remember { LocalDate.now() }
+
+                    var isProgrammaticScroll by remember { mutableStateOf(false) }
+
                     LaunchedEffect(viewModel.selectedDate) {
                         val daysDiff = ChronoUnit.DAYS.between(today, viewModel.selectedDate).toInt()
                         val targetPage = initialPage + daysDiff
-                        if (dayPagerState.currentPage != targetPage) dayPagerState.animateScrollToPage(targetPage)
+                        if (dayPagerState.currentPage != targetPage) {
+                            isProgrammaticScroll = true
+                            try {
+                                dayPagerState.animateScrollToPage(targetPage)
+                            } finally {
+                                isProgrammaticScroll = false
+                            }
+                        }
                     }
-                    LaunchedEffect(dayPagerState.currentPage) {
-                        val daysDiff = dayPagerState.currentPage - initialPage
-                        val newDate = today.plusDays(daysDiff.toLong())
-                        if (viewModel.selectedDate != newDate) viewModel.selectedDate = newDate
+
+                    LaunchedEffect(dayPagerState) {
+                        snapshotFlow { dayPagerState.currentPage }.collect { page ->
+                            if (!isProgrammaticScroll) {
+                                val daysDiff = page - initialPage
+                                val newDate = today.plusDays(daysDiff.toLong())
+                                if (viewModel.selectedDate != newDate) {
+                                    viewModel.selectedDate = newDate
+                                }
+                            }
+                        }
                     }
+
                     HorizontalPager(state = dayPagerState, modifier = Modifier.weight(1f).fillMaxWidth()) { page ->
                         val daysDiff = page - initialPage
                         val pageDate = today.plusDays(daysDiff.toLong())
@@ -635,7 +652,7 @@ fun TimeSelectorItem(label: String, time: LocalTime, onClick: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(time.format(DateTimeFormatter.ofPattern("HH:mm")), fontFamily = GoogleSansFlex, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.Filled.Edit, contentDescription = "Edit time", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Edit, contentDescription = "Edit time", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -646,7 +663,8 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
     val isTakenToday = if (isMedicine) item.takenHistory.containsKey(currentViewDate) else false
     val timestamp = if (isMedicine) item.takenHistory[currentViewDate] else item.creationTime
     val isToday = LocalDate.now() == currentViewDate
-    val toggleEnabled = isMedicine && isToday
+
+    val toggleEnabled = isMedicine && !currentViewDate.isAfter(LocalDate.now())
 
     val icon = if (item.iconName != null && AVAILABLE_ICONS.containsKey(item.iconName)) AVAILABLE_ICONS[item.iconName]!! else if (isMedicine) Icons.Rounded.MedicalServices else Icons.Rounded.Event
     val customColor = remember(item.colorCode) { if (item.colorCode != null && item.colorCode != "dynamic") try { Color(parseColor(item.colorCode)) } catch (e: Exception) { null } else null }
@@ -671,14 +689,16 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
                             val scheduledTime = item.creationTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                             if (isTakenToday && timestamp != null) {
                                 val takenTime = timestamp.format(DateTimeFormatter.ofPattern("HH:mm"))
-                                Icon(Icons.Filled.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
+                                val datePart = if (isToday) "" else "${currentViewDate.format(DateTimeFormatter.ofPattern("dd/MM"))} "
+
+                                Icon(Icons.Rounded.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Taken at $takenTime", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                                Text("Taken $datePart$takenTime", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
                             } else {
                                 Text("Scheduled for $scheduledTime", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
                             }
                         } else if (timestamp != null) {
-                            Icon(Icons.Filled.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
+                            Icon(Icons.Rounded.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(timestamp.format(DateTimeFormatter.ofPattern("HH:mm")), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
                         }
@@ -693,8 +713,8 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
             trailingContent = if (isMedicine) { {
                 IconButton(onClick = onToggle, enabled = toggleEnabled) {
                     AnimatedContent(targetState = isTakenToday, label = "checkAnim") { taken ->
-                        if (taken) Icon(Icons.Outlined.CheckCircle, stringResource(R.string.taken_desc), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                        else Icon(Icons.Outlined.Circle, stringResource(R.string.to_take_desc), tint = if (toggleEnabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
+                        if (taken) Icon(Icons.Rounded.CheckCircle, stringResource(R.string.taken_desc), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+                        else Icon(Icons.Rounded.Circle, stringResource(R.string.to_take_desc), tint = if (toggleEnabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
                     }
                 }
             } } else null,
@@ -758,7 +778,7 @@ fun SwipeableSquishItem(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    Icons.Outlined.Delete,
+                    Icons.Rounded.Delete,
                     contentDescription = null,
                     tint = deleteIconColor
                 )

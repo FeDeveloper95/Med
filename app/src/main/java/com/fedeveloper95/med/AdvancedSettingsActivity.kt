@@ -21,12 +21,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Flag
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.* // FIX: Import globale per includere ExpressiveIconButton e altri componenti
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.CloudDownload
+import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -133,7 +133,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                         Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                             ExpressiveIconButton(
                                 onClick = onBack,
-                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                icon = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.back),
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -161,7 +161,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
 
             item {
                 SettingsSwitchCard(
-                    icon = Icons.Default.Settings,
+                    icon = Icons.Rounded.Settings,
                     title = stringResource(R.string.settings_auto_updates_title),
                     subtitle = stringResource(R.string.settings_auto_updates_desc),
                     containerColor = Color(0xFFfcbd00),
@@ -184,7 +184,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
 
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.Flag,
+                    icon = Icons.Rounded.Flag,
                     title = stringResource(R.string.settings_setup_title),
                     subtitle = stringResource(R.string.settings_setup_desc),
                     containerColor = Color(0xFFffaee4),
@@ -220,7 +220,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
 
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.CloudUpload,
+                    icon = Icons.Rounded.CloudUpload,
                     title = stringResource(R.string.settings_export_title),
                     subtitle = stringResource(R.string.settings_export_desc),
                     containerColor = Color(0xFF80da88),
@@ -242,7 +242,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
 
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.CloudDownload,
+                    icon = Icons.Rounded.CloudDownload,
                     title = stringResource(R.string.settings_import_title),
                     subtitle = stringResource(R.string.settings_import_desc),
                     containerColor = Color(0xFF67d4ff),

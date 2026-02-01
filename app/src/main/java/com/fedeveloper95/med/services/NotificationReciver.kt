@@ -1,4 +1,4 @@
-package com.fedeveloper95.med
+package com.fedeveloper95.med.services
 
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -10,6 +10,10 @@ import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.fedeveloper95.med.ItemType
+import com.fedeveloper95.med.MainActivity
+import com.fedeveloper95.med.MedItem
+import com.fedeveloper95.med.R
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.time.LocalDate

@@ -1,5 +1,6 @@
-package com.fedeveloper95.med
+package com.fedeveloper95.med.services
 
+import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -13,6 +14,7 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
+import com.fedeveloper95.med.SettingsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -123,7 +125,7 @@ object Updater {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .setSmallIcon(R.drawable.stat_sys_download_done)
             .setContentTitle("Update Available: v${updateInfo.version}")
             .setContentText("Tap to view details and download.")
             .setPriority(NotificationCompat.PRIORITY_HIGH)

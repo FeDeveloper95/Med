@@ -18,17 +18,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.BugReport
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.SystemUpdate
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.SystemUpdate
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -40,6 +39,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -47,6 +47,8 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
 import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
 import com.fedeveloper95.med.elements.SettingsActivity.UpdateDialog
+import com.fedeveloper95.med.services.UpdateStatus
+import com.fedeveloper95.med.services.Updater
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
@@ -164,7 +166,7 @@ fun SettingsScreen(
                         Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                             ExpressiveIconButton(
                                 onClick = onBack,
-                                icon = Icons.AutoMirrored.Filled.ArrowBack,
+                                icon = Icons.AutoMirrored.Rounded.ArrowBack,
                                 contentDescription = stringResource(R.string.discard),
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                                 contentColor = MaterialTheme.colorScheme.onSurface
@@ -208,7 +210,7 @@ fun SettingsScreen(
             // ITEM 1: THEME
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.Palette,
+                    icon = Icons.Rounded.Palette,
                     title = stringResource(R.string.settings_theme_title),
                     subtitle = when (currentTheme) {
                         THEME_LIGHT -> stringResource(R.string.settings_theme_light)
@@ -231,7 +233,7 @@ fun SettingsScreen(
             // ITEM 2: CALENDAR
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.DateRange,
+                    icon = Icons.Rounded.Event,
                     title = stringResource(R.string.settings_week_start_title),
                     subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(R.string.monday),
                     containerColor = Color(0xFFffb683),
@@ -245,7 +247,7 @@ fun SettingsScreen(
             // ITEM 3: PRESETS
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.Star,
+                    icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
                     title = stringResource(R.string.settings_presets_title),
                     subtitle = stringResource(R.string.settings_presets_desc),
                     containerColor = Color(0xFF80da88),
@@ -262,7 +264,7 @@ fun SettingsScreen(
             // ITEM 4: ADVANCED
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.Tune,
+                    icon = Icons.Rounded.Tune,
                     title = stringResource(R.string.settings_advanced_title),
                     subtitle = stringResource(R.string.settings_advanced_desc),
                     containerColor = Color(0xFFC5C0FF),
@@ -297,7 +299,7 @@ fun SettingsScreen(
             // ITEM 1: Version
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.Info,
+                    icon = Icons.Rounded.Info,
                     title = stringResource(R.string.settings_version_title),
                     subtitle = appInfo,
                     containerColor = Color(0xFFa1c9ff),
@@ -327,7 +329,7 @@ fun SettingsScreen(
             // ITEM 2: Developer
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.Code,
+                    icon = Icons.Rounded.Code,
                     title = stringResource(R.string.settings_developer_title),
                     subtitle = stringResource(R.string.settings_developer_name),
                     containerColor = Color(0xFFc7c7c7),
@@ -347,7 +349,7 @@ fun SettingsScreen(
             // ITEM 3: Report
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.BugReport,
+                    icon = Icons.Rounded.BugReport,
                     title = stringResource(R.string.settings_report_title),
                     subtitle = stringResource(R.string.settings_report_desc),
                     containerColor = Color(0xFFffb3ae),
@@ -365,7 +367,7 @@ fun SettingsScreen(
             // ITEM 4: Check for Updates
             item {
                 SettingsItemCard(
-                    icon = Icons.Default.SystemUpdate,
+                    icon = Icons.Rounded.SystemUpdate,
                     title = stringResource(R.string.settings_check_updates_title),
                     subtitle = stringResource(R.string.settings_check_updates_desc),
                     containerColor = Color(0xFF67d4ff),
@@ -566,13 +568,13 @@ fun SettingsSwitchCard(
                     thumbContent = {
                         if (checked) {
                             Icon(
-                                imageVector = Icons.Filled.Check,
+                                imageVector = Icons.Rounded.Check,
                                 contentDescription = null,
                                 modifier = Modifier.size(SwitchDefaults.IconSize),
                             )
                         } else {
                             Icon(
-                                imageVector = Icons.Filled.Close,
+                                imageVector = Icons.Rounded.Close,
                                 contentDescription = null,
                                 modifier = Modifier.size(SwitchDefaults.IconSize),
                             )
