@@ -103,7 +103,6 @@ fun SettingsScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showWeekStartDialog by remember { mutableStateOf(false) }
 
-    // Update Logic
     val openUpdateDialog = remember { activity?.intent?.getBooleanExtra("EXTRA_OPEN_UPDATE_DIALOG", false) == true }
     var showUpdateDialog by remember { mutableStateOf(openUpdateDialog) }
     var updateStatus by remember { mutableStateOf<UpdateStatus>(UpdateStatus.Idle) }
@@ -137,14 +136,11 @@ fun SettingsScreen(
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    // --- OVERRIDE TIPOGRAFICO PER TITOLO GIGANTE ---
     val appBarTypography = MaterialTheme.typography.copy(
-        // TITOLO ESPANSO (IN BASSO) -> BOLD
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
             fontWeight = FontWeight.Bold
         ),
-        // TITOLO COLLASSATO (IN ALTO) -> NORMAL
         titleLarge = MaterialTheme.typography.titleLarge.copy(
             fontFamily = GoogleSansFlex,
             fontWeight = FontWeight.Normal
@@ -194,7 +190,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // --- MEGACARD: Customization (Theme, Calendar, Quick Actions, Advanced) ---
             item {
                 Text(
                     text = stringResource(R.string.settings_header_customization),
@@ -207,7 +202,6 @@ fun SettingsScreen(
                 )
             }
 
-            // ITEM 1: THEME
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.Palette,
@@ -230,7 +224,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(2.dp))
             }
 
-            // ITEM 2: CALENDAR
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.Event,
@@ -244,7 +237,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(2.dp))
             }
 
-            // ITEM 3: PRESETS
             item {
                 SettingsItemCard(
                     icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
@@ -261,7 +253,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(2.dp))
             }
 
-            // ITEM 4: ADVANCED
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.Tune,
@@ -283,7 +274,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
 
-            // --- MEGACARD: Info ---
             item {
                 Text(
                     text = stringResource(R.string.settings_header_info),
@@ -296,7 +286,6 @@ fun SettingsScreen(
                 )
             }
 
-            // ITEM 1: Version
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.Info,
@@ -326,7 +315,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(2.dp))
             }
 
-            // ITEM 2: Developer
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.Code,
@@ -346,7 +334,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(2.dp))
             }
 
-            // ITEM 3: Report
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.BugReport,
@@ -364,7 +351,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(2.dp))
             }
 
-            // ITEM 4: Check for Updates
             item {
                 SettingsItemCard(
                     icon = Icons.Rounded.SystemUpdate,
@@ -393,7 +379,6 @@ fun SettingsScreen(
         }
     }
 
-    // --- DIALOGS ---
 
     if (showThemeDialog) {
         ThemePopup(

@@ -2,6 +2,7 @@
 
 package com.fedeveloper95.med.elements.MainActivity
 
+import android.annotation.SuppressLint
 import android.graphics.Color.parseColor
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
@@ -41,6 +42,7 @@ import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.*
 
+@SuppressLint("NewApi")
 @Composable
 fun MedicinePopup(
     onDismiss: () -> Unit,

@@ -303,7 +303,6 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
             }
             root.put("med_settings", settingsJson)
 
-            // Export med_data.dat (The cards/items)
             try {
                 val fileInputStream = context.openFileInput("med_data.dat")
                 val bytes = fileInputStream.readBytes()
@@ -311,7 +310,6 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 val base64Data = Base64.encodeToString(bytes, Base64.DEFAULT)
                 root.put("med_data_file", base64Data)
             } catch (e: FileNotFoundException) {
-                // File might not exist yet if no items added, which is fine
             }
 
             context.contentResolver.openOutputStream(uri)?.use {
@@ -393,7 +391,6 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                 editor.apply()
             }
 
-            // Import med_data.dat (The cards/items)
             if (root.has("med_data_file")) {
                 try {
                     val base64Data = root.getString("med_data_file")

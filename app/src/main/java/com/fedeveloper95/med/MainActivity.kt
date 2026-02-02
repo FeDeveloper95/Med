@@ -3,6 +3,7 @@
 package com.fedeveloper95.med
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -45,15 +46,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Circle
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Event
-import androidx.compose.material.icons.rounded.MedicalServices
-import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
@@ -72,6 +65,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -111,6 +105,37 @@ import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 import java.util.HashMap
 import java.util.Locale
+
+val AVAILABLE_ICONS: Map<String, ImageVector> = mapOf(
+    "MedicalServices" to Icons.Rounded.MedicalServices,
+    "Event" to Icons.Rounded.Event,
+    "FitnessCenter" to Icons.Rounded.FitnessCenter,
+    "Restaurant" to Icons.Rounded.Restaurant,
+    "Thermometer" to Icons.Rounded.DeviceThermostat,
+    "Mindfulness" to Icons.Rounded.SelfImprovement,
+    "MixtureMed" to Icons.Rounded.School,
+    "LocalHospital" to Icons.Rounded.LocalHospital,
+    "Favorite" to Icons.Rounded.Favorite,
+    "Star" to Icons.Rounded.Star,
+    "Bolt" to Icons.Rounded.Bolt,
+    "WaterDrop" to Icons.Rounded.WaterDrop,
+    "Bed" to Icons.Rounded.Bed,
+    "DirectionsRun" to Icons.Rounded.DirectionsRun,
+    "Mood" to Icons.Rounded.Mood,
+    "Healing" to Icons.Rounded.Healing
+)
+
+val AVAILABLE_COLORS = listOf(
+    "dynamic",
+    "#ffb3b6",
+    "#ffb869",
+    "#e8c349",
+    "#a0d57b",
+    "#97cbff",
+    "#b6c6ed",
+    "#cabeff",
+    "#f7adfd"
+)
 
 const val PREF_THEME = "pref_theme"
 const val THEME_SYSTEM = 0
@@ -240,6 +265,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 }
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
@@ -431,19 +457,32 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    val menuItems = remember(presets) {
-        val defaultItems = listOf(
+    val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
+    val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
+    val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
+
+    val menuItems = remember(presets, icSick, icMind, icMixture) {
+        val defaultItems: List<Triple<ItemType, ImageVector, Triple<String, String?, String?>>> = listOf(
             Triple(ItemType.Medicine, Icons.Rounded.MedicalServices, Triple(context.getString(R.string.medicine_label), null as String?, null as String?)),
             Triple(ItemType.Event, Icons.Rounded.Event, Triple(context.getString(R.string.event_label), null, null))
         )
-        val presetItems = presets.mapNotNull { entry ->
+        val presetItems: List<Triple<ItemType, ImageVector, Triple<String, String?, String?>>> = presets.mapNotNull { entry ->
             val parts = entry.split("|")
             if (parts.size >= 2) {
                 val type = if (parts[0] == ItemType.Medicine.name) ItemType.Medicine else ItemType.Event
                 val name = parts[1]
                 val iconName = parts.getOrNull(2)
                 val colorCode = parts.getOrNull(3)
-                val icon = if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!! else if (type == ItemType.Medicine) Icons.Rounded.MedicalServices else Icons.Rounded.Event
+
+                val icon: ImageVector = when (iconName) {
+                    "MixtureMed" -> icSick
+                    "Bed" -> icMind
+                    "Mood" -> icMixture
+                    else -> if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!!
+                    else if (type == ItemType.Medicine) Icons.Rounded.MedicalServices
+                    else Icons.Rounded.Event
+                }
+
                 Triple(type, icon, Triple(name, iconName, colorCode))
             } else null
         }
@@ -875,34 +914,6 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = date.dayOfMonth.toString(), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = contentColor)
     }
-}
-
-@Composable
-fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected: (String) -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Choose Icon", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
-        text = {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                val icons = AVAILABLE_ICONS.toList(); val rows = icons.chunked(4)
-                rows.forEach { rowItems ->
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for ((name, icon) in rowItems) {
-                            val isSelected = currentIcon == name
-                            val containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
-                            val iconTint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                            Box(modifier = Modifier.weight(1f).aspectRatio(1f).clip(RoundedCornerShape(12.dp)).background(containerColor).clickable { onIconSelected(name) }, contentAlignment = Alignment.Center) {
-                                Icon(imageVector = icon, contentDescription = name, tint = iconTint, modifier = Modifier.size(24.dp))
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-            }
-        },
-        confirmButton = {}, dismissButton = { ExpressiveTextButton(onClick = onDismiss, text = stringResource(R.string.cancel_action)) },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(32.dp)
-    )
 }
 
 @Composable

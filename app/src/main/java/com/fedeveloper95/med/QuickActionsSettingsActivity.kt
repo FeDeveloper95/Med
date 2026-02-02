@@ -35,9 +35,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,37 +47,6 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import org.json.JSONArray
-
-val AVAILABLE_ICONS = mapOf(
-    "MedicalServices" to Icons.Rounded.MedicalServices,
-    "Event" to Icons.Rounded.Event,
-    "FitnessCenter" to Icons.Rounded.FitnessCenter,
-    "Restaurant" to Icons.Rounded.Restaurant,
-    "Thermometer" to Icons.Rounded.DeviceThermostat,
-    "Mindfulness" to Icons.Rounded.SelfImprovement,
-    "MixtureMed" to Icons.Rounded.School,
-    "LocalHospital" to Icons.Rounded.LocalHospital,
-    "Favorite" to Icons.Rounded.Favorite,
-    "Star" to Icons.Rounded.Star,
-    "Bolt" to Icons.Rounded.Bolt,
-    "WaterDrop" to Icons.Rounded.WaterDrop,
-    "Bed" to Icons.Rounded.Bed,
-    "DirectionsRun" to Icons.Rounded.DirectionsRun,
-    "Mood" to Icons.Rounded.Mood,
-    "Healing" to Icons.Rounded.Healing
-)
-
-val AVAILABLE_COLORS = listOf(
-    "dynamic",
-    "#ffb3b6",
-    "#ffb869",
-    "#e8c349",
-    "#a0d57b",
-    "#97cbff",
-    "#b6c6ed",
-    "#cabeff",
-    "#f7adfd"
-)
 
 class QuickActionsSettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,6 +73,18 @@ class QuickActionsSettingsActivity : ComponentActivity() {
 fun QuickActionsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
+    val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
+    val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
+    val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
+
+    val availableIcons: Map<String, ImageVector> = remember(icSick, icMind, icMixture) {
+        val tempMap = AVAILABLE_ICONS.toMutableMap()
+        tempMap["MixtureMed"] = icSick
+        tempMap["Bed"] = icMind
+        tempMap["Mood"] = icMixture
+        tempMap
+    }
 
     var presetsList by remember {
         mutableStateOf(loadPresets(prefs))
@@ -145,15 +128,14 @@ fun QuickActionsScreen(onBack: () -> Unit) {
         }
     }
 
-    // --- OVERRIDE TIPOGRAFICO ---
     val appBarTypography = MaterialTheme.typography.copy(
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
-            fontWeight = FontWeight.Bold // BOLD quando espanso
+            fontWeight = FontWeight.Bold
         ),
         titleLarge = MaterialTheme.typography.titleLarge.copy(
             fontFamily = GoogleSansFlex,
-            fontWeight = FontWeight.Normal // NORMAL quando collassato
+            fontWeight = FontWeight.Normal
         )
     )
 
@@ -169,7 +151,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                         )
                     },
                     navigationIcon = {
-                        // Padding applicato all'icona
                         Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                             ExpressiveIconButton(
                                 onClick = onBack,
@@ -191,7 +172,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
-        // Convertito in LazyColumn
         LazyColumn(
             contentPadding = padding,
             modifier = Modifier
@@ -200,7 +180,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
         ) {
             item { Spacer(modifier = Modifier.height(8.dp)) }
 
-            // Preview Card
             item {
                 Card(
                     modifier = Modifier
@@ -211,7 +190,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        val iconVector = AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
+                        val iconVector = availableIcons[selectedIconName] ?: Icons.Rounded.Event
 
                         val previewBackgroundColor = if (selectedColor == "dynamic") {
                             MaterialTheme.colorScheme.surfaceContainerHighest
@@ -251,7 +230,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
             item { Spacer(modifier = Modifier.height(2.dp)) }
 
-            // Name Input Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -280,7 +258,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
             item { Spacer(modifier = Modifier.height(2.dp)) }
 
-            // Icon Selection Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -291,8 +268,8 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                     Column(
                         modifier = Modifier.padding(start = 48.dp, end = 48.dp, top = 16.dp, bottom = 16.dp)
                     ) {
-                        val icons = AVAILABLE_ICONS.toList()
-                        val rows = icons.chunked(4)
+                        val iconsList = availableIcons.toList()
+                        val rows = iconsList.chunked(4)
 
                         rows.forEachIndexed { index, rowItems ->
                             Row(
@@ -349,7 +326,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
             item { Spacer(modifier = Modifier.height(2.dp)) }
 
-            // Color Selection Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -431,7 +407,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
             item { Spacer(modifier = Modifier.height(2.dp)) }
 
-            // Add Button Card
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -453,7 +428,6 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
             item { Spacer(modifier = Modifier.height(32.dp)) }
 
-            // --- ACTIVE ACTIONS LIST ---
             if (presetsList.isNotEmpty()) {
                 item {
                     Text(
@@ -473,7 +447,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                     val iconName = parts.getOrNull(2) ?: "Event"
                     val colorCode = parts.getOrNull(3) ?: "dynamic"
 
-                    val icon = AVAILABLE_ICONS[iconName] ?: Icons.Rounded.Event
+                    val icon = availableIcons[iconName] ?: Icons.Rounded.Event
 
                     val itemBgColor = if (colorCode == "dynamic") {
                         MaterialTheme.colorScheme.secondaryContainer

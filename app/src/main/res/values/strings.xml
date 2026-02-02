@@ -151,4 +151,19 @@
     <string name="export_error">Error exporting settings</string>
     <string name="import_error">Error importing settings</string>
     <string name="perm_toast_required">Please grant all permissions to proceed.</string>
+
+    <string name="title_hint">Title</string>
+    <string name="medicine_name_hint">Medicine Name</string>
+    <string name="select_icon">Icon</string>
+    <string name="select_color">Color</string>
+    <string name="time_label">Time</string>
+    <string name="date_label">Date</string>
+    <string name="save_event">Save Event</string>
+    <string name="save_medicine">Save Medicine</string>
+    <string name="choose_icon">Choose Icon</string>
+    <string name="choose_color">Choose Color</string>
+    <string name="frequency_label">Frequency</string>
+    <string name="add_time">Add Time</string>
+    <string name="days_label">Specific Days</string>
+    <string name="every_day_hint">Every day</string>
 </resources>

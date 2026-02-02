@@ -39,7 +39,7 @@ sealed class UpdateStatus {
 
 object Updater {
     private const val REPO_OWNER = "FeDeveloper95"
-    private const val REPO_NAME = "Med" // Modificato per la repo Med
+    private const val REPO_NAME = "Med"
     private const val GITHUB_API_URL = "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases"
     private const val CHANNEL_ID = "update_channel"
 
