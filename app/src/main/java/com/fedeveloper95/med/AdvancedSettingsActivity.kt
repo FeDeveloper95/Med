@@ -26,6 +26,7 @@ import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ViewStream
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -77,6 +78,7 @@ class AdvancedSettingsActivity : ComponentActivity() {
 }
 
 const val PREF_AUTO_UPDATES = "pref_auto_updates"
+const val PREF_EXPERIMENTAL_BOTTOM_SHEET = "pref_experimental_bottom_sheet"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,6 +87,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     var autoUpdates by remember { mutableStateOf(prefs.getBoolean(PREF_AUTO_UPDATES, true)) }
+    var experimentalBottomSheet by remember { mutableStateOf(prefs.getBoolean(PREF_EXPERIMENTAL_BOTTOM_SHEET, false)) }
     var showRestartDialog by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -200,6 +203,36 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                             putExtra("FORCE_SHOW", true)
                         }
                         context.startActivity(intent)
+                    }
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+            item {
+                Text(
+                    text = stringResource(R.string.settings_experimental_header),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
+
+            item {
+                SettingsSwitchCard(
+                    icon = Icons.Rounded.ViewStream,
+                    title = stringResource(R.string.settings_bottom_sheet_title),
+                    subtitle = stringResource(R.string.settings_bottom_sheet_desc),
+                    containerColor = Color(0xFFB39DDB),
+                    iconColor = Color(0xFF4527A0),
+                    shape = RoundedCornerShape(28.dp),
+                    checked = experimentalBottomSheet,
+                    onCheckedChange = {
+                        experimentalBottomSheet = it
+                        prefs.edit().putBoolean(PREF_EXPERIMENTAL_BOTTOM_SHEET, it).apply()
                     }
                 )
             }

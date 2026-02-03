@@ -212,4 +212,10 @@
     <string name="day_short_fri">V</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">D</string>
+    <string name="settings_experimental_header">Sperimentale</string>
+    <string name="settings_bottom_sheet_title">Prova design scheda</string>
+    <string name="settings_bottom_sheet_desc">Usa le schede sperimentali invece dei popup</string>
+    <string name="settings_header_language">Lingua</string>
+    <string name="settings_language_title">Lingua app</string>
+    <string name="settings_language_desc">Cambia lingua nelle impostazioni di sistema</string>
 </resources>

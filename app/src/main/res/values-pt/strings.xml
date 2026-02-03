@@ -212,4 +212,10 @@
     <string name="day_short_fri">S</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">D</string>
+    <string name="settings_experimental_header">Experimental</string>
+    <string name="settings_bottom_sheet_title">Testar design do cartão inferior</string>
+    <string name="settings_bottom_sheet_desc">Usar cartões inferiores experimentais em vez de pop-ups</string>
+    <string name="settings_header_language">Idioma</string>
+    <string name="settings_language_title">Idioma da aplicação</string>
+    <string name="settings_language_desc">Alterar idioma nas definições do sistema</string>
 </resources>

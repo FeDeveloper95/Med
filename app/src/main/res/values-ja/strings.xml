@@ -212,4 +212,10 @@
     <string name="day_short_fri">金</string>
     <string name="day_short_sat">土</string>
     <string name="day_short_sun">日</string>
+    <string name="settings_experimental_header">実験的</string>
+    <string name="settings_bottom_sheet_title">ボトムカードのデザインをテスト</string>
+    <string name="settings_bottom_sheet_desc">ポップアップの代わりに実験的なボトムカードを使用</string>
+    <string name="settings_header_language">言語</string>
+    <string name="settings_language_title">アプリの言語</string>
+    <string name="settings_language_desc">システム設定で言語を変更</string>
 </resources>

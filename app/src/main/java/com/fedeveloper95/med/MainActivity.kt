@@ -83,9 +83,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fedeveloper95.med.elements.MainActivity.EventBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.EventPopup
 import com.fedeveloper95.med.elements.MainActivity.MainFAB
 import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
+import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.MedicinePopup
 import com.fedeveloper95.med.services.NotificationReceiver
 import com.fedeveloper95.med.services.Updater
@@ -113,15 +115,12 @@ val AVAILABLE_ICONS: Map<String, ImageVector> = mapOf(
     "Restaurant" to Icons.Rounded.Restaurant,
     "Thermometer" to Icons.Rounded.DeviceThermostat,
     "Mindfulness" to Icons.Rounded.SelfImprovement,
-    "MixtureMed" to Icons.Rounded.School,
     "LocalHospital" to Icons.Rounded.LocalHospital,
     "Favorite" to Icons.Rounded.Favorite,
     "Star" to Icons.Rounded.Star,
     "Bolt" to Icons.Rounded.Bolt,
     "WaterDrop" to Icons.Rounded.WaterDrop,
-    "Bed" to Icons.Rounded.Bed,
     "DirectionsRun" to Icons.Rounded.DirectionsRun,
-    "Mood" to Icons.Rounded.Mood,
     "Healing" to Icons.Rounded.Healing
 )
 
@@ -301,6 +300,7 @@ class MainActivity : ComponentActivity() {
             var currentTheme by remember { mutableIntStateOf(prefs.getInt(PREF_THEME, THEME_SYSTEM)) }
             var currentWeekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
             var currentPresets by remember { mutableStateOf(loadPresets(prefs)) }
+            var useBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", false)) }
 
             val currentVersionName = remember { try { packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0" } catch (e: Exception) { "1.0" } }
             val notificationPermissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
@@ -319,6 +319,7 @@ class MainActivity : ComponentActivity() {
                         PREF_THEME -> currentTheme = sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
                         PREF_WEEK_START -> currentWeekStart = sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
                         PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets = loadPresets(sharedPreferences)
+                        "pref_experimental_bottom_sheet" -> useBottomSheet = sharedPreferences.getBoolean("pref_experimental_bottom_sheet", false)
                     }
                 }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -326,7 +327,7 @@ class MainActivity : ComponentActivity() {
             }
 
             MedTheme(themeOverride = currentTheme) {
-                MedApp(viewModel = viewModel, weekStart = currentWeekStart, presets = currentPresets)
+                MedApp(viewModel = viewModel, weekStart = currentWeekStart, presets = currentPresets, useBottomSheet = useBottomSheet)
             }
         }
     }
@@ -450,7 +451,7 @@ fun ExpressiveTextButton(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: List<String>) {
+fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: List<String>, useBottomSheet: Boolean) {
     var fabMenuExpanded by remember { mutableStateOf(false) }
     var showMedicineDialog by remember { mutableStateOf(false) }
     var showEventDialog by remember { mutableStateOf(false) }
@@ -664,25 +665,49 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
             colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh), shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp
         ) { DatePicker(state = datePickerState) }
     }
+
     if (showMedicineDialog) {
-        MedicinePopup(
-            onDismiss = { showMedicineDialog = false },
-            onConfirm = { title, iconName, colorCode, times, days ->
-                viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days)
-                showMedicineDialog = false
-            },
-            initialText = preFilledText
-        )
+        if (useBottomSheet) {
+            MedicineBottomSheet(
+                onDismiss = { showMedicineDialog = false },
+                onConfirm = { title, iconName, colorCode, times, days ->
+                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days)
+                    showMedicineDialog = false
+                },
+                initialText = preFilledText
+            )
+        } else {
+            MedicinePopup(
+                onDismiss = { showMedicineDialog = false },
+                onConfirm = { title, iconName, colorCode, times, days ->
+                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days)
+                    showMedicineDialog = false
+                },
+                initialText = preFilledText
+            )
+        }
     }
+
     if (showEventDialog) {
-        EventPopup(
-            onDismiss = { showEventDialog = false },
-            onConfirm = { title, iconName, colorCode, times, days ->
-                viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days)
-                showEventDialog = false
-            },
-            initialText = preFilledText
-        )
+        if (useBottomSheet) {
+            EventBottomSheet(
+                onDismiss = { showEventDialog = false },
+                onConfirm = { title, iconName, colorCode, times, days ->
+                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days)
+                    showEventDialog = false
+                },
+                initialText = preFilledText
+            )
+        } else {
+            EventPopup(
+                onDismiss = { showEventDialog = false },
+                onConfirm = { title, iconName, colorCode, times, days ->
+                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days)
+                    showEventDialog = false
+                },
+                initialText = preFilledText
+            )
+        }
     }
 }
 

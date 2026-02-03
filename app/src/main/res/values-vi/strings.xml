@@ -212,4 +212,10 @@
     <string name="day_short_fri">T6</string>
     <string name="day_short_sat">T7</string>
     <string name="day_short_sun">CN</string>
+    <string name="settings_experimental_header">Thử nghiệm</string>
+    <string name="settings_bottom_sheet_title">Thử nghiệm thiết kế Thẻ dưới cùng</string>
+    <string name="settings_bottom_sheet_desc">Sử dụng thẻ dưới cùng thử nghiệm thay vì cửa sổ bật lên</string>
+    <string name="settings_header_language">Ngôn ngữ</string>
+    <string name="settings_language_title">Ngôn ngữ ứng dụng</string>
+    <string name="settings_language_desc">Thay đổi ngôn ngữ trong cài đặt hệ thống</string>
 </resources>

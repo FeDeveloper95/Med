@@ -212,4 +212,10 @@
     <string name="day_short_fri">P</string>
     <string name="day_short_sat">L</string>
     <string name="day_short_sun">S</string>
+    <string name="settings_experimental_header">Kokeellinen</string>
+    <string name="settings_bottom_sheet_title">Testaa alareunan kortin muotoilua</string>
+    <string name="settings_bottom_sheet_desc">Käytä kokeellisia alareunan kortteja ponnahdusikkunoiden sijaan</string>
+    <string name="settings_header_language">Kieli</string>
+    <string name="settings_language_title">Sovelluksen kieli</string>
+    <string name="settings_language_desc">Vaihda kieli järjestelmän asetuksissa</string>
 </resources>

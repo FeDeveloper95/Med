@@ -212,4 +212,10 @@
     <string name="day_short_fri">श</string>
     <string name="day_short_sat">श</string>
     <string name="day_short_sun">र</string>
+    <string name="settings_experimental_header">प्रायोगिक</string>
+    <string name="settings_bottom_sheet_title">बॉटम कार्ड डिज़ाइन का परीक्षण करें</string>
+    <string name="settings_bottom_sheet_desc">पॉपअप के बजाय प्रायोगिक बॉटम कार्ड का उपयोग करें</string>
+    <string name="settings_header_language">भाषा</string>
+    <string name="settings_language_title">ऐप की भाषा</string>
+    <string name="settings_language_desc">सिस्टम सेटिंग्स में भाषा बदलें</string>
 </resources>

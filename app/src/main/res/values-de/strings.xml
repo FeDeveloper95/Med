@@ -212,4 +212,10 @@
     <string name="day_short_fri">F</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">S</string>
+    <string name="settings_experimental_header">Experimentell</string>
+    <string name="settings_bottom_sheet_title">Bottom-Card-Design testen</string>
+    <string name="settings_bottom_sheet_desc">Experimentelle Bottom-Cards statt Pop-ups verwenden</string>
+    <string name="settings_header_language">Sprache</string>
+    <string name="settings_language_title">App-Sprache</string>
+    <string name="settings_language_desc">Sprache in den Systemeinstellungen ändern</string>
 </resources>

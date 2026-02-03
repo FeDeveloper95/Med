@@ -212,4 +212,10 @@
     <string name="day_short_fri">V</string>
     <string name="day_short_sat">Z</string>
     <string name="day_short_sun">Z</string>
+    <string name="settings_experimental_header">Experimenteel</string>
+    <string name="settings_bottom_sheet_title">Test ontwerp van onderste kaart</string>
+    <string name="settings_bottom_sheet_desc">Gebruik experimentele onderste kaarten in plaats van pop-ups</string>
+    <string name="settings_header_language">Taal</string>
+    <string name="settings_language_title">App-taal</string>
+    <string name="settings_language_desc">Taal wijzigen in systeeminstellingen</string>
 </resources>

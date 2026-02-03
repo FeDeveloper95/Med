@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
+import com.fedeveloper95.med.ui.theme.darken
 import org.json.JSONArray
 
 class QuickActionsSettingsActivity : ComponentActivity() {
@@ -569,13 +570,4 @@ fun loadPresets(prefs: android.content.SharedPreferences): List<String> {
 
     val oldSet = prefs.getStringSet(PREF_PRESETS, null)
     return oldSet?.toList() ?: emptyList()
-}
-
-fun Color.darken(factor: Float = 0.7f): Color {
-    return Color(
-        red = this.red * factor,
-        green = this.green * factor,
-        blue = this.blue * factor,
-        alpha = this.alpha
-    )
 }

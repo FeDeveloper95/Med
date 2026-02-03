@@ -212,4 +212,10 @@
     <string name="day_short_fri">C</string>
     <string name="day_short_sat">C</string>
     <string name="day_short_sun">P</string>
+    <string name="settings_experimental_header">Deneysel</string>
+    <string name="settings_bottom_sheet_title">Alt Kart tasarımını test et</string>
+    <string name="settings_bottom_sheet_desc">Açılır pencereler yerine deneysel alt kartları kullan</string>
+    <string name="settings_header_language">Dil</string>
+    <string name="settings_language_title">Uygulama Dili</string>
+    <string name="settings_language_desc">Sistem ayarlarından dili değiştirin</string>
 </resources>

@@ -212,4 +212,10 @@
     <string name="day_short_fri">V</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">D</string>
+    <string name="settings_experimental_header">Expérimental</string>
+    <string name="settings_bottom_sheet_title">Tester le design de la fiche inférieure</string>
+    <string name="settings_bottom_sheet_desc">Utiliser des fiches inférieures expérimentales au lieu des pop-ups</string>
+    <string name="settings_header_language">Langue</string>
+    <string name="settings_language_title">Langue de l\'application</string>
+    <string name="settings_language_desc">Changer la langue dans les paramètres système</string>
 </resources>

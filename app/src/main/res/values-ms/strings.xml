@@ -212,4 +212,10 @@
     <string name="day_short_fri">J</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">A</string>
+    <string name="settings_experimental_header">Eksperimen</string>
+    <string name="settings_bottom_sheet_title">Uji reka bentuk Kad Bawah</string>
+    <string name="settings_bottom_sheet_desc">Gunakan kad bawah percubaan dan bukannya tetingkap timbul</string>
+    <string name="settings_header_language">Bahasa</string>
+    <string name="settings_language_title">Bahasa Apl</string>
+    <string name="settings_language_desc">Tukar bahasa dalam tetapan sistem</string>
 </resources>

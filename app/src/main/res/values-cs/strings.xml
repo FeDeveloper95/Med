@@ -212,4 +212,10 @@
     <string name="day_short_fri">P</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">N</string>
+    <string name="settings_experimental_header">Experimentální</string>
+    <string name="settings_bottom_sheet_title">Otestovat design spodní karty</string>
+    <string name="settings_bottom_sheet_desc">Použít experimentální spodní karty místo vyskakovacích oken</string>
+    <string name="settings_header_language">Jazyk</string>
+    <string name="settings_language_title">Jazyk aplikace</string>
+    <string name="settings_language_desc">Změnit jazyk v nastavení systému</string>
 </resources>

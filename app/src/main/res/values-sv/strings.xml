@@ -212,4 +212,10 @@
     <string name="day_short_fri">F</string>
     <string name="day_short_sat">L</string>
     <string name="day_short_sun">S</string>
+    <string name="settings_experimental_header">Experimentell</string>
+    <string name="settings_bottom_sheet_title">Testa design för bottenkort</string>
+    <string name="settings_bottom_sheet_desc">Använd experimentella bottenkort istället för popup-fönster</string>
+    <string name="settings_header_language">Språk</string>
+    <string name="settings_language_title">App-språk</string>
+    <string name="settings_language_desc">Ändra språk i systeminställningarna</string>
 </resources>

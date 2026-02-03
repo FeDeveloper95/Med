@@ -212,4 +212,10 @@
     <string name="day_short_fri">П</string>
     <string name="day_short_sat">С</string>
     <string name="day_short_sun">Н</string>
+    <string name="settings_experimental_header">Експериментальні</string>
+    <string name="settings_bottom_sheet_title">Тест дизайну нижньої картки</string>
+    <string name="settings_bottom_sheet_desc">Використовувати експериментальні нижні картки замість спливаючих вікон</string>
+    <string name="settings_header_language">Мова</string>
+    <string name="settings_language_title">Мова додатка</string>
+    <string name="settings_language_desc">Змінити мову в налаштуваннях системи</string>
 </resources>

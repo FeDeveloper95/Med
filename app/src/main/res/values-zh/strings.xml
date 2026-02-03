@@ -212,4 +212,10 @@
     <string name="day_short_fri">五</string>
     <string name="day_short_sat">六</string>
     <string name="day_short_sun">日</string>
+    <string name="settings_experimental_header">实验性</string>
+    <string name="settings_bottom_sheet_title">测试底部卡片设计</string>
+    <string name="settings_bottom_sheet_desc">使用实验性底部卡片代替弹出窗口</string>
+    <string name="settings_header_language">语言</string>
+    <string name="settings_language_title">应用语言</string>
+    <string name="settings_language_desc">在系统设置中更改语言</string>
 </resources>

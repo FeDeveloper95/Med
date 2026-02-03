@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Tune
@@ -274,6 +276,43 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
 
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_header_language),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Language,
+                        title = stringResource(R.string.settings_language_title),
+                        subtitle = stringResource(R.string.settings_language_desc),
+                        containerColor = Color(0xFFffb3ae),
+                        iconColor = Color(0xFF8a1a16),
+                        shape = RoundedCornerShape(28.dp),
+                        onClick = {
+                            try {
+                                val intent = Intent(
+                                    Settings.ACTION_APP_LOCALE_SETTINGS,
+                                    Uri.fromParts("package", context.packageName, null)
+                                )
+                                context.startActivity(intent)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+
             item {
                 Text(
                     text = stringResource(R.string.settings_header_info),
@@ -302,7 +341,7 @@ fun SettingsScreen(
                     onClick = {
                         try {
                             val intent = Intent(
-                                android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS
                             ).apply {
                                 data = Uri.fromParts("package", context.packageName, null)
                             }

@@ -212,4 +212,10 @@
     <string name="day_short_fri">P</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">N</string>
+    <string name="settings_experimental_header">Eksperymentalne</string>
+    <string name="settings_bottom_sheet_title">Testuj wygląd dolnej karty</string>
+    <string name="settings_bottom_sheet_desc">Używaj eksperymentalnych dolnych kart zamiast wyskakujących okienek</string>
+    <string name="settings_header_language">Język</string>
+    <string name="settings_language_title">Język aplikacji</string>
+    <string name="settings_language_desc">Zmień język w ustawieniach systemu</string>
 </resources>

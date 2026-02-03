@@ -212,4 +212,10 @@
     <string name="day_short_fri">P</string>
     <string name="day_short_sat">Sz</string>
     <string name="day_short_sun">V</string>
+    <string name="settings_experimental_header">Kísérleti</string>
+    <string name="settings_bottom_sheet_title">Alsó kártya dizájn tesztelése</string>
+    <string name="settings_bottom_sheet_desc">Kísérleti alsó kártyák használata felugró ablakok helyett</string>
+    <string name="settings_header_language">Nyelv</string>
+    <string name="settings_language_title">Alkalmazás nyelve</string>
+    <string name="settings_language_desc">Nyelv módosítása a rendszerbeállításokban</string>
 </resources>

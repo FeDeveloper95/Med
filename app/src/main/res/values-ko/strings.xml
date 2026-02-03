@@ -212,4 +212,10 @@
     <string name="day_short_fri">금</string>
     <string name="day_short_sat">토</string>
     <string name="day_short_sun">일</string>
+    <string name="settings_experimental_header">실험</string>
+    <string name="settings_bottom_sheet_title">하단 카드 디자인 테스트</string>
+    <string name="settings_bottom_sheet_desc">팝업 대신 실험적인 하단 카드 사용</string>
+    <string name="settings_header_language">언어</string>
+    <string name="settings_language_title">앱 언어</string>
+    <string name="settings_language_desc">시스템 설정에서 언어 변경</string>
 </resources>

@@ -212,4 +212,10 @@
     <string name="day_short_fri">П</string>
     <string name="day_short_sat">С</string>
     <string name="day_short_sun">В</string>
+    <string name="settings_experimental_header">Экспериментальные</string>
+    <string name="settings_bottom_sheet_title">Тест дизайна нижней карточки</string>
+    <string name="settings_bottom_sheet_desc">Использовать экспериментальные нижние карточки вместо всплывающих окон</string>
+    <string name="settings_header_language">Язык</string>
+    <string name="settings_language_title">Язык приложения</string>
+    <string name="settings_language_desc">Изменить язык в настройках системы</string>
 </resources>

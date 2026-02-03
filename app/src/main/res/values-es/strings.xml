@@ -212,4 +212,10 @@
     <string name="day_short_fri">V</string>
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">D</string>
+    <string name="settings_experimental_header">Experimental</string>
+    <string name="settings_bottom_sheet_title">Probar diseño de tarjeta inferior</string>
+    <string name="settings_bottom_sheet_desc">Usar tarjetas inferiores experimentales en lugar de ventanas emergentes</string>
+    <string name="settings_header_language">Idioma</string>
+    <string name="settings_language_title">Idioma de la aplicación</string>
+    <string name="settings_language_desc">Cambiar idioma en ajustes del sistema</string>
 </resources>

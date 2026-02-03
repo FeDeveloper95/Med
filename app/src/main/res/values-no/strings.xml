@@ -212,4 +212,10 @@
     <string name="day_short_fri">F</string>
     <string name="day_short_sat">L</string>
     <string name="day_short_sun">S</string>
+    <string name="settings_experimental_header">Eksperimentell</string>
+    <string name="settings_bottom_sheet_title">Test design for bunnkort</string>
+    <string name="settings_bottom_sheet_desc">Bruk eksperimentelle bunnkort i stedet for popup-vinduer</string>
+    <string name="settings_header_language">Språk</string>
+    <string name="settings_language_title">Appspråk</string>
+    <string name="settings_language_desc">Endre språk i systeminnstillinger</string>
 </resources>

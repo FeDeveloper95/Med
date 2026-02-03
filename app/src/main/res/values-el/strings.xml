@@ -212,4 +212,10 @@
     <string name="day_short_fri">Π</string>
     <string name="day_short_sat">Σ</string>
     <string name="day_short_sun">Κ</string>
+    <string name="settings_experimental_header">Πειραματικό</string>
+    <string name="settings_bottom_sheet_title">Δοκιμή σχεδίασης κάτω κάρτας</string>
+    <string name="settings_bottom_sheet_desc">Χρήση πειραματικών κάτω καρτών αντί για αναδυόμενα παράθυρα</string>
+    <string name="settings_header_language">Γλώσσα</string>
+    <string name="settings_language_title">Γλώσσα εφαρμογής</string>
+    <string name="settings_language_desc">Αλλαγή γλώσσας στις ρυθμίσεις συστήματος</string>
 </resources>
