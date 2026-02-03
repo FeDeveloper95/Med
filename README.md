@@ -2,7 +2,7 @@
 
 **Never miss your medicine ever again.**
 
-BANNER PLACEHOLDER
+![Med banner](https://github.com/user-attachments/assets/ef6e55c7-bc86-4b78-8707-e59e3636c5a1)
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=android&logoColor=white) ![Material 3](https://img.shields.io/badge/Material%203-Expressive-purple?style=for-the-badge)
 
@@ -33,5 +33,7 @@ No fork of this project will recieve support, if you use a fork, ask the forker 
 <details>
   <summary><b>Click to expand screenshots</b></summary>
   <br>
+<img width="260" alt="Screenshot_20260203-160232" src="https://github.com/user-attachments/assets/d13fdf16-e53b-438a-8ebb-9c08d2eaeeaa" />
+<img width="260" alt="Screenshot_20260203-160254" src="https://github.com/user-attachments/assets/254e3a3b-7628-4028-997f-00d617023adf" />
 
 </details>
