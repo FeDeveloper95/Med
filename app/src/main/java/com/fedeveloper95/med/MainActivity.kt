@@ -792,12 +792,11 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
                 }
             },
             trailingContent = if (isMedicine) { {
-                IconButton(onClick = onToggle, enabled = toggleEnabled) {
-                    AnimatedContent(targetState = isTakenToday, label = "checkAnim") { taken ->
-                        if (taken) Icon(Icons.Rounded.CheckCircle, stringResource(R.string.taken_desc), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-                        else Icon(Icons.Rounded.Circle, stringResource(R.string.to_take_desc), tint = if (toggleEnabled) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), modifier = Modifier.size(24.dp))
-                    }
-                }
+                Checkbox(
+                    checked = isTakenToday,
+                    onCheckedChange = { onToggle() },
+                    enabled = toggleEnabled
+                )
             } } else null,
             modifier = Modifier.padding(vertical = 4.dp), colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )
