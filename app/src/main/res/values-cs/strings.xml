@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Lék</string>
+    <string name="event_label">Událost</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Menu akcí</string>
+    <string name="expanded_state">Rozbaleno</string>
+    <string name="collapsed_state">Sbaleno</string>
+    <string name="close_menu_action">Zavřít menu</string>
+    <string name="choose_date_desc">Vybrat datum</string>
+    <string name="settings_desc">Nastavení</string>
+    <string name="no_events_label">Žádné události pro dnešek</string>
+
+    <string name="item_deleted">Smazáno: %1$s</string>
+    <string name="undo_action">Zpět</string>
+
+    <string name="cancel_action">Zrušit</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Uložit</string>
+    <string name="new_event_title">Nová událost</string>
+    <string name="new_medicine_title">Nový lék</string>
+    <string name="add_detail_label">Přidat událost do Med</string>
+    <string name="name_hint">Název</string>
+    <string name="to_take_label">K užití</string>
+    <string name="taken_desc">Užito</string>
+    <string name="to_take_desc">K užití</string>
+
+    <string name="notif_channel_name">Připomínky léků</string>
+    <string name="notif_channel_desc">Upozornění na naplánované léky</string>
+    <string name="notif_title">Připomínka léku</string>
+    <string name="notif_content">Užili jste %1$s?</string>
+    <string name="action_yes">Ano</string>
+    <string name="action_skip">Vynechat</string>
+    <string name="action_snooze">Odložit</string>
+    <string name="snoozed_message">Odloženo o 10 minut</string>
+    <string name="taken_message">Označeno jako užité</string>
+    <string name="skipped_message">Vynecháno</string>
+
+    <string name="settings_title">Nastavení</string>
+    <string name="discard">Zpět</string>
+    <string name="cancel">Zrušit</string>
+    <string name="save">Uložit</string>
+    <string name="restart_now">Restartovat nyní</string>
+
+    <string name="settings_header_appearance">Vzhled</string>
+    <string name="settings_theme_title">Motiv</string>
+    <string name="settings_theme_system">Systémový</string>
+    <string name="settings_theme_light">Světlý</string>
+    <string name="settings_theme_dark">Tmavý</string>
+
+    <string name="settings_header_calendar">Kalendář</string>
+    <string name="settings_week_start_title">Začátek týdne</string>
+    <string name="sunday">Neděle</string>
+    <string name="monday">Pondělí</string>
+
+    <string name="settings_header_customization">Přizpůsobení</string>
+    <string name="settings_presets_title">Rychlé akce</string>
+    <string name="settings_presets_desc">Spravovat vlastní události v hlavním menu</string>
+    <string name="add_action">Přidat</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">Verze aplikace</string>
+    <string name="unknown">Neznámé</string>
+    <string name="settings_developer_title">Vývojář</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Nahlásit chybu / Funkci</string>
+    <string name="settings_report_desc">Kontaktovat na Telegramu</string>
+
+    <string name="settings_check_updates_title">Zkontrolovat aktualizace</string>
+    <string name="settings_check_updates_desc">Najít nejnovější verzi</string>
+    <string name="update_action">Aktualizovat</string>
+    <string name="update_checking">Kontrola aktualizací…</string>
+    <string name="update_no_update">Máte nejnovější verzi</string>
+    <string name="update_available">Dostupná aktualizace: v%1$s</string>
+    <string name="update_error">Chyba při kontrole aktualizací</string>
+    <string name="update_latest_version_msg">Momentálně nejsou dostupné žádné aktualizace.</string>
+    <string name="update_error_msg">Nelze zkontrolovat aktualizace. Zkontrolujte připojení.</string>
+    <string name="later">Později</string>
+    <string name="close">Zavřít</string>
+
+    <string name="quick_actions_title">Rychlé akce</string>
+    <string name="quick_actions_info">Rychlé akce vám pomohou rychle přidat opakující se jevy nebo události do Med.</string>
+    <string name="active_actions_header">Aktivní akce</string>
+
+    <string name="welcome_to">Vítejte v</string>
+    <string name="welcome_preparing_subtitle">Připravujeme pro vás vše potřebné.</string>
+    <string name="next">Další</string>
+    <string name="back">Zpět</string>
+    <string name="get_started">Začít</string>
+
+    <string name="perm_required">Vyžadováno</string>
+    <string name="perm_permissions">Oprávnění</string>
+    <string name="perm_intro_text">Tato oprávnění jsou vyžadována pro správné fungování Med. Prosím, udělte je pro pokračování.</string>
+
+    <string name="perm_notif_title">Upozornění</string>
+    <string name="perm_notif_desc">Vědět okamžitě, kdy si vzít léky.</string>
+
+    <string name="perm_install_title">Instalace aplikací</string>
+    <string name="perm_install_desc">Vyžadováno pro stažení a instalaci aktualizací.</string>
+
+    <string name="perm_usage_desc">Vyžadováno pro sledování statistik používání.</string>
+    <string name="perm_dashboard_title">Nástěnka</string>
+    <string name="perm_dashboard_desc">Povolit funkce překrytí systému.</string>
+
+    <string name="feat_discover">Objevit</string>
+    <string name="feat_features">Funkce</string>
+    <string name="feat_intro">Zde je to, co můžete dělat s vaší novou aplikací Med.</string>
+
+    <string name="feat_custom_events_title">Vlastní události</string>
+    <string name="feat_custom_events_desc">Vytvářejte a spravujte své osobní zdravotní události.</string>
+
+    <string name="feat_reminders_title">Chytré připomínky</string>
+    <string name="feat_reminders_desc">Dostávejte včasná upozornění na své léky.</string>
+
+    <string name="feat_tracking_title">Sledování</string>
+    <string name="feat_tracking_desc">Uchovávejte historii užívání léků.</string>
+
+    <string name="feat_presets_title">Rychlé akce</string>
+    <string name="feat_presets_desc">Okamžitě nastavte předvolby pro opakující se události.</string>
+
+    <string name="feat_update_title">Zůstaňte v obraze</string>
+    <string name="feat_update_desc">Kontrolujte aktualizace přímo v nastavení aplikace.</string>
+
+    <string name="feat_order_title">Úplná kontrola</string>
+    <string name="feat_order_desc">Spravujte svůj rozvrh přesně tak, jak chcete.</string>
+    <string name="feat_layout_title">Chytré rozvržení</string>
+    <string name="feat_layout_desc">Čisté rozhraní pro soustředění na vaše zdraví.</string>
+    <string name="feat_name_title">Osobní dotek</string>
+    <string name="feat_name_desc">Přizpůsobte si zážitek v nastavení.</string>
+    <string name="feat_manage_title">Snadná správa</string>
+    <string name="feat_manage_desc">Rychle přidejte léky a události.</string>
+    <string name="feat_store_title">Obchod</string>
+    <string name="feat_store_desc">Popis obchodu.</string>
+    <string name="feat_history_title">Historie</string>
+    <string name="feat_history_desc">Sledujte dodržování a minulé události.</string>
+
+    <string name="settings_advanced_title">Pokročilé</string>
+    <string name="settings_advanced_desc">Experimentální funkce a aktualizace</string>
+    <string name="settings_auto_updates_title">Automatické aktualizace</string>
+    <string name="settings_auto_updates_desc">Kontrolovat aktualizace při spuštění</string>
+    <string name="settings_setup_title">Počáteční nastavení</string>
+    <string name="settings_setup_desc">Spustit znovu průvodce nastavením</string>
+    <string name="settings_backup_header">Záloha a obnovení</string>
+    <string name="settings_export_title">Exportovat nastavení</string>
+    <string name="settings_export_desc">Uložit konfiguraci</string>
+    <string name="settings_import_title">Importovat nastavení</string>
+    <string name="settings_import_desc">Obnovit ze záložního souboru</string>
+    <string name="dialog_restart_title">Vyžadován restart</string>
+    <string name="dialog_restart_desc">Nastavení bylo importováno. Restartujte aplikaci pro uplatnění změn.</string>
+    <string name="export_success">Nastavení úspěšně exportováno</string>
+    <string name="export_error">Chyba při exportu nastavení</string>
+    <string name="import_error">Chyba při importu nastavení</string>
+    <string name="perm_toast_required">Pro pokračování prosím udělte všechna oprávnění.</string>
+
+    <string name="title_hint">Název</string>
+    <string name="medicine_name_hint">Název léku</string>
+    <string name="select_icon">Ikona</string>
+    <string name="select_color">Barva</string>
+    <string name="time_label">Čas</string>
+    <string name="date_label">Datum</string>
+    <string name="save_event">Uložit událost</string>
+    <string name="save_medicine">Uložit lék</string>
+    <string name="choose_icon">Vybrat ikonu</string>
+    <string name="choose_color">Vybrat barvu</string>
+    <string name="frequency_label">Frekvence</string>
+    <string name="add_time">Přidat čas</string>
+    <string name="days_label">Konkrétní dny</string>
+    <string name="every_day_hint">Každý den</string>
+
+    <string name="frequency_unit_day">Den</string>
+    <string name="frequency_unit_week">Týden</string>
+    <string name="times_label">krát</string>
+    <string name="schedule_label_format">Plán %1$d</string>
+
+    <string name="download_title">Aktualizace Med</string>
+    <string name="download_desc">Stahování verze %1$s…</string>
+    <string name="download_started">Stahování zahájeno…</string>
+    <string name="download_failed">Stahování selhalo: %1$s</string>
+    <string name="notif_channel_updates">Aktualizace</string>
+    <string name="update_notif_desc">Klepněte pro zobrazení podrobností a stažení.</string>
+    <string name="install_error">Chyba instalace: %1$s</string>
+
+    <string name="switch_to_text_input">Přepnout na textový vstup</string>
+    <string name="switch_to_touch_input">Přepnout na dotykový vstup</string>
+
+    <string name="frequency_specific_days">Konkrétní dny</string>
+    <string name="frequency_daily_multiple">%1$dx Denně</string>
+    <string name="frequency_daily">Denně</string>
+    <string name="edit_time_desc">Upravit čas</string>
+    <string name="status_taken_format">Užito %1$s%2$s</string>
+    <string name="status_scheduled_format">Naplánováno na %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynamický motiv</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Leden</string>
+    <string name="month_february">Únor</string>
+    <string name="month_march">Březen</string>
+    <string name="month_april">Duben</string>
+    <string name="month_may">Květen</string>
+    <string name="month_june">Červen</string>
+    <string name="month_july">Červenec</string>
+    <string name="month_august">Srpen</string>
+    <string name="month_september">Září</string>
+    <string name="month_october">Říjen</string>
+    <string name="month_november">Listopad</string>
+    <string name="month_december">Prosinec</string>
+
+    <string name="day_short_mon">P</string>
+    <string name="day_short_tue">Ú</string>
+    <string name="day_short_wed">S</string>
+    <string name="day_short_thu">Č</string>
+    <string name="day_short_fri">P</string>
+    <string name="day_short_sat">S</string>
+    <string name="day_short_sun">N</string>
+</resources>

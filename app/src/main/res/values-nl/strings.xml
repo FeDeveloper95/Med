@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Medicijn</string>
+    <string name="event_label">Gebeurtenis</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Actiemenu</string>
+    <string name="expanded_state">Uitgeklapt</string>
+    <string name="collapsed_state">Ingeklapt</string>
+    <string name="close_menu_action">Menu sluiten</string>
+    <string name="choose_date_desc">Datum kiezen</string>
+    <string name="settings_desc">Instellingen</string>
+    <string name="no_events_label">Geen gebeurtenissen voor vandaag</string>
+
+    <string name="item_deleted">Verwijderd: %1$s</string>
+    <string name="undo_action">Ongedaan maken</string>
+
+    <string name="cancel_action">Annuleren</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Opslaan</string>
+    <string name="new_event_title">Nieuwe gebeurtenis</string>
+    <string name="new_medicine_title">Nieuw medicijn</string>
+    <string name="add_detail_label">Voeg een gebeurtenis toe aan Med</string>
+    <string name="name_hint">Naam</string>
+    <string name="to_take_label">In te nemen</string>
+    <string name="taken_desc">Ingenomen</string>
+    <string name="to_take_desc">In te nemen</string>
+
+    <string name="notif_channel_name">Medicijnherinneringen</string>
+    <string name="notif_channel_desc">Meldingen voor geplande medicijnen</string>
+    <string name="notif_title">Medicijnherinnering</string>
+    <string name="notif_content">Heb je %1$s ingenomen?</string>
+    <string name="action_yes">Ja</string>
+    <string name="action_skip">Overslaan</string>
+    <string name="action_snooze">Snoozen</string>
+    <string name="snoozed_message">10 minuten gesnoozed</string>
+    <string name="taken_message">Gemarkeerd als ingenomen</string>
+    <string name="skipped_message">Overgeslagen</string>
+
+    <string name="settings_title">Instellingen</string>
+    <string name="discard">Terug</string>
+    <string name="cancel">Annuleren</string>
+    <string name="save">Opslaan</string>
+    <string name="restart_now">Nu opnieuw opstarten</string>
+
+    <string name="settings_header_appearance">Uiterlijk</string>
+    <string name="settings_theme_title">Thema</string>
+    <string name="settings_theme_system">Systeem</string>
+    <string name="settings_theme_light">Licht</string>
+    <string name="settings_theme_dark">Donker</string>
+
+    <string name="settings_header_calendar">Kalender</string>
+    <string name="settings_week_start_title">Begin van de week</string>
+    <string name="sunday">Zondag</string>
+    <string name="monday">Maandag</string>
+
+    <string name="settings_header_customization">Aanpassing</string>
+    <string name="settings_presets_title">Snelle acties</string>
+    <string name="settings_presets_desc">Beheer aangepaste gebeurtenissen in het hoofdmenu</string>
+    <string name="add_action">Toevoegen</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">App-versie</string>
+    <string name="unknown">Onbekend</string>
+    <string name="settings_developer_title">Ontwikkelaar</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Fout melden / Functie</string>
+    <string name="settings_report_desc">Contact opnemen via Telegram</string>
+
+    <string name="settings_check_updates_title">Controleren op updates</string>
+    <string name="settings_check_updates_desc">Zoek de nieuwste versie</string>
+    <string name="update_action">Updaten</string>
+    <string name="update_checking">Controleren op updates…</string>
+    <string name="update_no_update">Je hebt de nieuwste versie</string>
+    <string name="update_available">Update beschikbaar: v%1$s</string>
+    <string name="update_error">Fout bij controleren op updates</string>
+    <string name="update_latest_version_msg">Er zijn momenteel geen updates beschikbaar.</string>
+    <string name="update_error_msg">Kan niet controleren op updates. Controleer je verbinding.</string>
+    <string name="later">Later</string>
+    <string name="close">Sluiten</string>
+
+    <string name="quick_actions_title">Snelle acties</string>
+    <string name="quick_actions_info">Snelle acties helpen je om snel terugkerende fenomenen of gebeurtenissen aan Med toe te voegen.</string>
+    <string name="active_actions_header">Actieve acties</string>
+
+    <string name="welcome_to">Welkom bij</string>
+    <string name="welcome_preparing_subtitle">Laten we alles voor je klaarmaken.</string>
+    <string name="next">Volgende</string>
+    <string name="back">Terug</string>
+    <string name="get_started">Aan de slag</string>
+
+    <string name="perm_required">Vereist</string>
+    <string name="perm_permissions">Machtigingen</string>
+    <string name="perm_intro_text">Deze machtigingen zijn vereist voor de juiste werking van Med. Verleen ze om door te gaan.</string>
+
+    <string name="perm_notif_title">Meldingen</string>
+    <string name="perm_notif_desc">Weet direct wanneer je je medicijnen moet innemen.</string>
+
+    <string name="perm_install_title">App-installatie</string>
+    <string name="perm_install_desc">Vereist om updates te downloaden en te installeren.</string>
+
+    <string name="perm_usage_desc">Vereist om gebruiksstatistieken bij te houden.</string>
+    <string name="perm_dashboard_title">Dashboard</string>
+    <string name="perm_dashboard_desc">Schakel systeemoverlay-functies in.</string>
+
+    <string name="feat_discover">Ontdekken</string>
+    <string name="feat_features">Functies</string>
+    <string name="feat_intro">Dit is wat je kunt doen met je nieuwe Med-app.</string>
+
+    <string name="feat_custom_events_title">Aangepaste gebeurtenissen</string>
+    <string name="feat_custom_events_desc">Maak en beheer je persoonlijke gezondheidsgebeurtenissen.</string>
+
+    <string name="feat_reminders_title">Slimme herinneringen</string>
+    <string name="feat_reminders_desc">Ontvang tijdige meldingen voor je medicijnen.</string>
+
+    <string name="feat_tracking_title">Bijhouden</string>
+    <string name="feat_tracking_desc">Houd een geschiedenis bij van wanneer je je medicijnen hebt ingenomen.</string>
+
+    <string name="feat_presets_title">Snelle acties</string>
+    <string name="feat_presets_desc">Stel direct voorinstellingen in voor terugkerende gebeurtenissen.</string>
+
+    <string name="feat_update_title">Blijf up-to-date</string>
+    <string name="feat_update_desc">Controleer op updates direct in de app-instellingen.</string>
+
+    <string name="feat_order_title">Volledige controle</string>
+    <string name="feat_order_desc">Beheer je schema precies zoals jij dat wilt.</string>
+    <string name="feat_layout_title">Slimme lay-out</string>
+    <string name="feat_layout_desc">Een schone interface om je op je gezondheid te concentreren.</string>
+    <string name="feat_name_title">Persoonlijk tintje</string>
+    <string name="feat_name_desc">Pas je ervaring aan in de instellingen.</string>
+    <string name="feat_manage_title">Eenvoudig beheer</string>
+    <string name="feat_manage_desc">Voeg snel medicijnen en gebeurtenissen toe.</string>
+    <string name="feat_store_title">Winkel</string>
+    <string name="feat_store_desc">Winkelbeschrijving.</string>
+    <string name="feat_history_title">Geschiedenis</string>
+    <string name="feat_history_desc">Volg je therapietrouw en eerdere gebeurtenissen.</string>
+
+    <string name="settings_advanced_title">Geavanceerd</string>
+    <string name="settings_advanced_desc">Experimentele functies en updates</string>
+    <string name="settings_auto_updates_title">Automatische updates</string>
+    <string name="settings_auto_updates_desc">Controleren op updates bij opstarten</string>
+    <string name="settings_setup_title">Eerste installatie</string>
+    <string name="settings_setup_desc">Welkomstwizard opnieuw uitvoeren</string>
+    <string name="settings_backup_header">Back-up en herstel</string>
+    <string name="settings_export_title">Instellingen exporteren</string>
+    <string name="settings_export_desc">Configuratie opslaan</string>
+    <string name="settings_import_title">Instellingen importeren</string>
+    <string name="settings_import_desc">Herstellen van een back-upbestand</string>
+    <string name="dialog_restart_title">Opnieuw opstarten vereist</string>
+    <string name="dialog_restart_desc">Instellingen zijn geïmporteerd. Start de app opnieuw op om de wijzigingen toe te passen.</string>
+    <string name="export_success">Instellingen succesvol geëxporteerd</string>
+    <string name="export_error">Fout bij exporteren van instellingen</string>
+    <string name="import_error">Fout bij importeren van instellingen</string>
+    <string name="perm_toast_required">Verleen alle machtigingen om door te gaan.</string>
+
+    <string name="title_hint">Titel</string>
+    <string name="medicine_name_hint">Naam medicijn</string>
+    <string name="select_icon">Pictogram</string>
+    <string name="select_color">Kleur</string>
+    <string name="time_label">Tijd</string>
+    <string name="date_label">Datum</string>
+    <string name="save_event">Gebeurtenis opslaan</string>
+    <string name="save_medicine">Medicijn opslaan</string>
+    <string name="choose_icon">Kies pictogram</string>
+    <string name="choose_color">Kies kleur</string>
+    <string name="frequency_label">Frequentie</string>
+    <string name="add_time">Tijd toevoegen</string>
+    <string name="days_label">Specifieke dagen</string>
+    <string name="every_day_hint">Elke dag</string>
+
+    <string name="frequency_unit_day">Dag</string>
+    <string name="frequency_unit_week">Week</string>
+    <string name="times_label">keer</string>
+    <string name="schedule_label_format">Schema %1$d</string>
+
+    <string name="download_title">Med Update</string>
+    <string name="download_desc">Versie %1$s downloaden…</string>
+    <string name="download_started">Download gestart…</string>
+    <string name="download_failed">Download mislukt: %1$s</string>
+    <string name="notif_channel_updates">Updates</string>
+    <string name="update_notif_desc">Tik om details te bekijken en te downloaden.</string>
+    <string name="install_error">Installatiefout: %1$s</string>
+
+    <string name="switch_to_text_input">Overschakelen naar tekstinvoer</string>
+    <string name="switch_to_touch_input">Overschakelen naar aanraakinvoer</string>
+
+    <string name="frequency_specific_days">Specifieke dagen</string>
+    <string name="frequency_daily_multiple">%1$dx dagelijks</string>
+    <string name="frequency_daily">Dagelijks</string>
+    <string name="edit_time_desc">Tijd bewerken</string>
+    <string name="status_taken_format">Ingenomen %1$s%2$s</string>
+    <string name="status_scheduled_format">Gepland voor %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynamisch thema</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Januari</string>
+    <string name="month_february">Februari</string>
+    <string name="month_march">Maart</string>
+    <string name="month_april">April</string>
+    <string name="month_may">Mei</string>
+    <string name="month_june">Juni</string>
+    <string name="month_july">Juli</string>
+    <string name="month_august">Augustus</string>
+    <string name="month_september">September</string>
+    <string name="month_october">Oktober</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">D</string>
+    <string name="day_short_wed">W</string>
+    <string name="day_short_thu">D</string>
+    <string name="day_short_fri">V</string>
+    <string name="day_short_sat">Z</string>
+    <string name="day_short_sun">Z</string>
+</resources>

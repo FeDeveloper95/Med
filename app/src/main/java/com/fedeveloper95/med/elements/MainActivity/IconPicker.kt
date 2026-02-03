@@ -46,7 +46,7 @@ fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected:
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Choose Icon", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
+        title = { Text(text = stringResource(R.string.choose_icon), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val rows = displayIcons.chunked(4)

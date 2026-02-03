@@ -115,7 +115,7 @@ class NotificationReceiver : BroadcastReceiver() {
         }
 
         val itemId = intent.getLongExtra(EXTRA_ITEM_ID, -1L)
-        val itemTitle = intent.getStringExtra(EXTRA_ITEM_TITLE) ?: "Medicine"
+        val itemTitle = intent.getStringExtra(EXTRA_ITEM_TITLE) ?: context.getString(R.string.medicine_label)
         val notifId = intent.getIntExtra(EXTRA_NOTIF_ID, 0)
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 

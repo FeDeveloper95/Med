@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Medicin</string>
+    <string name="event_label">Händelse</string>
+    <string name="menu_tooltip">Meny</string>
+    <string name="menu_action_desc">Åtgärdsmeny</string>
+    <string name="expanded_state">Expanderad</string>
+    <string name="collapsed_state">Komprimerad</string>
+    <string name="close_menu_action">Stäng meny</string>
+    <string name="choose_date_desc">Välj datum</string>
+    <string name="settings_desc">Inställningar</string>
+    <string name="no_events_label">Inga händelser idag</string>
+
+    <string name="item_deleted">Raderad: %1$s</string>
+    <string name="undo_action">Ångra</string>
+
+    <string name="cancel_action">Avbryt</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Spara</string>
+    <string name="new_event_title">Ny händelse</string>
+    <string name="new_medicine_title">Ny medicin</string>
+    <string name="add_detail_label">Lägg till en händelse i Med</string>
+    <string name="name_hint">Namn</string>
+    <string name="to_take_label">Att ta</string>
+    <string name="taken_desc">Tagen</string>
+    <string name="to_take_desc">Att ta</string>
+
+    <string name="notif_channel_name">Medicinpåminnelser</string>
+    <string name="notif_channel_desc">Aviseringar för schemalagda mediciner</string>
+    <string name="notif_title">Medicinpåminnelse</string>
+    <string name="notif_content">Har du tagit %1$s?</string>
+    <string name="action_yes">Ja</string>
+    <string name="action_skip">Hoppa över</string>
+    <string name="action_snooze">Skjut upp</string>
+    <string name="snoozed_message">Uppskjutet i 10 minuter</string>
+    <string name="taken_message">Markerad som tagen</string>
+    <string name="skipped_message">Hoppade över</string>
+
+    <string name="settings_title">Inställningar</string>
+    <string name="discard">Tillbaka</string>
+    <string name="cancel">Avbryt</string>
+    <string name="save">Spara</string>
+    <string name="restart_now">Starta om nu</string>
+
+    <string name="settings_header_appearance">Utseende</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Ljust</string>
+    <string name="settings_theme_dark">Mörkt</string>
+
+    <string name="settings_header_calendar">Kalender</string>
+    <string name="settings_week_start_title">Veckostart</string>
+    <string name="sunday">Söndag</string>
+    <string name="monday">Måndag</string>
+
+    <string name="settings_header_customization">Anpassning</string>
+    <string name="settings_presets_title">Snabbåtgärder</string>
+    <string name="settings_presets_desc">Hantera anpassade händelser i huvudmenyn</string>
+    <string name="add_action">Lägg till</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">Appversion</string>
+    <string name="unknown">Okänd</string>
+    <string name="settings_developer_title">Utvecklare</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Rapportera fel / Funktion</string>
+    <string name="settings_report_desc">Kontakta på Telegram</string>
+
+    <string name="settings_check_updates_title">Sök efter uppdateringar</string>
+    <string name="settings_check_updates_desc">Hitta den senaste versionen</string>
+    <string name="update_action">Uppdatera</string>
+    <string name="update_checking">Söker efter uppdateringar…</string>
+    <string name="update_no_update">Du har den senaste versionen</string>
+    <string name="update_available">Uppdatering tillgänglig: v%1$s</string>
+    <string name="update_error">Fel vid sökning efter uppdateringar</string>
+    <string name="update_latest_version_msg">Inga uppdateringar tillgängliga för tillfället.</string>
+    <string name="update_error_msg">Kan inte söka efter uppdateringar. Kontrollera din anslutning.</string>
+    <string name="later">Senare</string>
+    <string name="close">Stäng</string>
+
+    <string name="quick_actions_title">Snabbåtgärder</string>
+    <string name="quick_actions_info">Snabbåtgärder hjälper dig att snabbt lägga till återkommande händelser i Med.</string>
+    <string name="active_actions_header">Aktiva åtgärder</string>
+
+    <string name="welcome_to">Välkommen till</string>
+    <string name="welcome_preparing_subtitle">Låt oss göra allt redo för dig.</string>
+    <string name="next">Nästa</string>
+    <string name="back">Tillbaka</string>
+    <string name="get_started">Kom igång</string>
+
+    <string name="perm_required">Krävs</string>
+    <string name="perm_permissions">Behörigheter</string>
+    <string name="perm_intro_text">Dessa behörigheter krävs för att Med ska fungera korrekt. Vänligen bevilja dem för att fortsätta.</string>
+
+    <string name="perm_notif_title">Aviseringar</string>
+    <string name="perm_notif_desc">Få veta direkt när du ska ta dina mediciner.</string>
+
+    <string name="perm_install_title">Appinstallation</string>
+    <string name="perm_install_desc">Krävs för att ladda ner och installera uppdateringar.</string>
+
+    <string name="perm_usage_desc">Krävs för att spåra användningsstatistik.</string>
+    <string name="perm_dashboard_title">Instrumentpanel</string>
+    <string name="perm_dashboard_desc">Aktivera systemöverlagringsfunktioner.</string>
+
+    <string name="feat_discover">Upptäck</string>
+    <string name="feat_features">Funktioner</string>
+    <string name="feat_intro">Här är vad du kan göra med din nya Med-app.</string>
+
+    <string name="feat_custom_events_title">Anpassade händelser</string>
+    <string name="feat_custom_events_desc">Skapa och hantera dina personliga hälsohändelser.</string>
+
+    <string name="feat_reminders_title">Smarta påminnelser</string>
+    <string name="feat_reminders_desc">Få aviseringar i tid för dina mediciner.</string>
+
+    <string name="feat_tracking_title">Spårning</string>
+    <string name="feat_tracking_desc">Håll historik över när du tog dina mediciner.</string>
+
+    <string name="feat_presets_title">Snabbåtgärder</string>
+    <string name="feat_presets_desc">Ställ in förinställningar för återkommande händelser direkt.</string>
+
+    <string name="feat_update_title">Håll dig uppdaterad</string>
+    <string name="feat_update_desc">Sök efter uppdateringar direkt i appinställningarna.</string>
+
+    <string name="feat_order_title">Full kontroll</string>
+    <string name="feat_order_desc">Hantera ditt schema precis som du vill.</string>
+    <string name="feat_layout_title">Smart layout</string>
+    <string name="feat_layout_desc">Ett rent gränssnitt för att fokusera på din hälsa.</string>
+    <string name="feat_name_title">Personlig touch</string>
+    <string name="feat_name_desc">Anpassa din upplevelse i inställningarna.</string>
+    <string name="feat_manage_title">Enkel hantering</string>
+    <string name="feat_manage_desc">Lägg till mediciner och händelser snabbt.</string>
+    <string name="feat_store_title">Butik</string>
+    <string name="feat_store_desc">Butiksbeskrivning.</string>
+    <string name="feat_history_title">Historik</string>
+    <string name="feat_history_desc">Spåra efterlevnad och tidigare händelser.</string>
+
+    <string name="settings_advanced_title">Avancerat</string>
+    <string name="settings_advanced_desc">Experimentella funktioner och uppdateringar</string>
+    <string name="settings_auto_updates_title">Automatiska uppdateringar</string>
+    <string name="settings_auto_updates_desc">Sök efter uppdateringar vid start</string>
+    <string name="settings_setup_title">Första inställning</string>
+    <string name="settings_setup_desc">Kör välkomstguiden igen</string>
+    <string name="settings_backup_header">Säkerhetskopiering och återställning</string>
+    <string name="settings_export_title">Exportera inställningar</string>
+    <string name="settings_export_desc">Spara konfiguration</string>
+    <string name="settings_import_title">Importera inställningar</string>
+    <string name="settings_import_desc">Återställ från en säkerhetskopia</string>
+    <string name="dialog_restart_title">Omstart krävs</string>
+    <string name="dialog_restart_desc">Inställningar har importerats. Starta om appen för att tillämpa ändringarna.</string>
+    <string name="export_success">Inställningar exporterades</string>
+    <string name="export_error">Fel vid export av inställningar</string>
+    <string name="import_error">Fel vid import av inställningar</string>
+    <string name="perm_toast_required">Vänligen bevilja alla behörigheter för att fortsätta.</string>
+
+    <string name="title_hint">Titel</string>
+    <string name="medicine_name_hint">Medicinnamn</string>
+    <string name="select_icon">Ikon</string>
+    <string name="select_color">Färg</string>
+    <string name="time_label">Tid</string>
+    <string name="date_label">Datum</string>
+    <string name="save_event">Spara händelse</string>
+    <string name="save_medicine">Spara medicin</string>
+    <string name="choose_icon">Välj ikon</string>
+    <string name="choose_color">Välj färg</string>
+    <string name="frequency_label">Frekvens</string>
+    <string name="add_time">Lägg till tid</string>
+    <string name="days_label">Specifika dagar</string>
+    <string name="every_day_hint">Varje dag</string>
+
+    <string name="frequency_unit_day">Dag</string>
+    <string name="frequency_unit_week">Vecka</string>
+    <string name="times_label">gånger</string>
+    <string name="schedule_label_format">Schema %1$d</string>
+
+    <string name="download_title">Med-uppdatering</string>
+    <string name="download_desc">Laddar ner version %1$s…</string>
+    <string name="download_started">Nedladdning startad…</string>
+    <string name="download_failed">Nedladdning misslyckades: %1$s</string>
+    <string name="notif_channel_updates">Uppdateringar</string>
+    <string name="update_notif_desc">Tryck för att visa detaljer och ladda ner.</string>
+    <string name="install_error">Installationsfel: %1$s</string>
+
+    <string name="switch_to_text_input">Byt till textinmatning</string>
+    <string name="switch_to_touch_input">Byt till touchinmatning</string>
+
+    <string name="frequency_specific_days">Specifika dagar</string>
+    <string name="frequency_daily_multiple">%1$dx dagligen</string>
+    <string name="frequency_daily">Dagligen</string>
+    <string name="edit_time_desc">Redigera tid</string>
+    <string name="status_taken_format">Tagen %1$s%2$s</string>
+    <string name="status_scheduled_format">Schemalagd till %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynamiskt tema</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Januari</string>
+    <string name="month_february">Februari</string>
+    <string name="month_march">Mars</string>
+    <string name="month_april">April</string>
+    <string name="month_may">Maj</string>
+    <string name="month_june">Juni</string>
+    <string name="month_july">Juli</string>
+    <string name="month_august">Augusti</string>
+    <string name="month_september">September</string>
+    <string name="month_october">Oktober</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">O</string>
+    <string name="day_short_thu">T</string>
+    <string name="day_short_fri">F</string>
+    <string name="day_short_sat">L</string>
+    <string name="day_short_sun">S</string>
+</resources>

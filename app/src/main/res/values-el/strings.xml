@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Φάρμακο</string>
+    <string name="event_label">Συμβάν</string>
+    <string name="menu_tooltip">Μενού</string>
+    <string name="menu_action_desc">Μενού ενεργειών</string>
+    <string name="expanded_state">Ανεπτυγμένο</string>
+    <string name="collapsed_state">Συμπτυγμένο</string>
+    <string name="close_menu_action">Κλείσιμο μενού</string>
+    <string name="choose_date_desc">Επιλογή ημερομηνίας</string>
+    <string name="settings_desc">Ρυθμίσεις</string>
+    <string name="no_events_label">Κανένα συμβάν για σήμερα</string>
+
+    <string name="item_deleted">Διαγράφηκε: %1$s</string>
+    <string name="undo_action">Αναίρεση</string>
+
+    <string name="cancel_action">Ακύρωση</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Αποθήκευση</string>
+    <string name="new_event_title">Νέο Συμβάν</string>
+    <string name="new_medicine_title">Νέο Φάρμακο</string>
+    <string name="add_detail_label">Προσθήκη συμβάντος στο Med</string>
+    <string name="name_hint">Όνομα</string>
+    <string name="to_take_label">Για λήψη</string>
+    <string name="taken_desc">Ελήφθη</string>
+    <string name="to_take_desc">Για λήψη</string>
+
+    <string name="notif_channel_name">Υπενθυμίσεις Φαρμάκων</string>
+    <string name="notif_channel_desc">Ειδοποιήσεις για προγραμματισμένα φάρμακα</string>
+    <string name="notif_title">Υπενθύμιση Φαρμάκου</string>
+    <string name="notif_content">Πήρατε το %1$s;</string>
+    <string name="action_yes">Ναι</string>
+    <string name="action_skip">Παράλειψη</string>
+    <string name="action_snooze">Αναβολή</string>
+    <string name="snoozed_message">Αναβολή για 10 λεπτά</string>
+    <string name="taken_message">Σημειώθηκε ως ελήφθη</string>
+    <string name="skipped_message">Παραλείφθηκε</string>
+
+    <string name="settings_title">Ρυθμίσεις</string>
+    <string name="discard">Πίσω</string>
+    <string name="cancel">Ακύρωση</string>
+    <string name="save">Αποθήκευση</string>
+    <string name="restart_now">Επανεκκίνηση Τώρα</string>
+
+    <string name="settings_header_appearance">Εμφάνιση</string>
+    <string name="settings_theme_title">Θέμα</string>
+    <string name="settings_theme_system">Συστήματος</string>
+    <string name="settings_theme_light">Φωτεινό</string>
+    <string name="settings_theme_dark">Σκοτεινό</string>
+
+    <string name="settings_header_calendar">Ημερολόγιο</string>
+    <string name="settings_week_start_title">Έναρξη εβδομάδας</string>
+    <string name="sunday">Κυριακή</string>
+    <string name="monday">Δευτέρα</string>
+
+    <string name="settings_header_customization">Προσαρμογή</string>
+    <string name="settings_presets_title">Γρήγορες Ενέργειες</string>
+    <string name="settings_presets_desc">Διαχείριση προσαρμοσμένων συμβάντων στο κύριο μενού</string>
+    <string name="add_action">Προσθήκη</string>
+
+    <string name="settings_header_info">Πληροφορίες</string>
+    <string name="settings_version_title">Έκδοση Εφαρμογής</string>
+    <string name="unknown">Άγνωστο</string>
+    <string name="settings_developer_title">Προγραμματιστής</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Αναφορά Σφάλματος / Λειτουργίας</string>
+    <string name="settings_report_desc">Επικοινωνία στο Telegram</string>
+
+    <string name="settings_check_updates_title">Έλεγχος για Ενημερώσεις</string>
+    <string name="settings_check_updates_desc">Εύρεση της τελευταίας έκδοσης</string>
+    <string name="update_action">Ενημέρωση</string>
+    <string name="update_checking">Έλεγχος για ενημερώσεις…</string>
+    <string name="update_no_update">Έχετε την τελευταία έκδοση</string>
+    <string name="update_available">Διαθέσιμη ενημέρωση: v%1$s</string>
+    <string name="update_error">Σφάλμα ελέγχου ενημερώσεων</string>
+    <string name="update_latest_version_msg">Δεν υπάρχουν διαθέσιμες ενημερώσεις αυτή τη στιγμή.</string>
+    <string name="update_error_msg">Αδυναμία ελέγχου για ενημερώσεις. Ελέγξτε τη σύνδεσή σας.</string>
+    <string name="later">Αργότερα</string>
+    <string name="close">Κλείσιμο</string>
+
+    <string name="quick_actions_title">Γρήγορες Ενέργειες</string>
+    <string name="quick_actions_info">Οι Γρήγορες Ενέργειες σας βοηθούν να προσθέσετε γρήγορα επαναλαμβανόμενα φαινόμενα ή συμβάντα στο Med.</string>
+    <string name="active_actions_header">Ενεργές Ενέργειες</string>
+
+    <string name="welcome_to">Καλώς ήρθατε στο</string>
+    <string name="welcome_preparing_subtitle">Ας ετοιμάσουμε τα πάντα για εσάς.</string>
+    <string name="next">Επόμενο</string>
+    <string name="back">Πίσω</string>
+    <string name="get_started">Ξεκινήστε</string>
+
+    <string name="perm_required">Απαιτείται</string>
+    <string name="perm_permissions">Άδειες</string>
+    <string name="perm_intro_text">Αυτές οι άδειες απαιτούνται για τη σωστή λειτουργία του Med. Παρακαλούμε παραχωρήστε τις για να συνεχίσετε.</string>
+
+    <string name="perm_notif_title">Ειδοποιήσεις</string>
+    <string name="perm_notif_desc">Μάθετε αμέσως πότε να πάρετε τα φάρμακά σας.</string>
+
+    <string name="perm_install_title">Εγκατάσταση Εφαρμογής</string>
+    <string name="perm_install_desc">Απαιτείται για τη λήψη και εγκατάσταση ενημερώσεων.</string>
+
+    <string name="perm_usage_desc">Απαιτείται για την παρακολούθηση στατιστικών χρήσης.</string>
+    <string name="perm_dashboard_title">Πίνακας Ελέγχου</string>
+    <string name="perm_dashboard_desc">Ενεργοποίηση λειτουργιών επικάλυψης συστήματος.</string>
+
+    <string name="feat_discover">Ανακαλύψτε</string>
+    <string name="feat_features">Λειτουργίες</string>
+    <string name="feat_intro">Δείτε τι μπορείτε να κάνετε με τη νέα σας εφαρμογή Med.</string>
+
+    <string name="feat_custom_events_title">Προσαρμοσμένα Συμβάντα</string>
+    <string name="feat_custom_events_desc">Δημιουργήστε και διαχειριστείτε τα προσωπικά σας συμβάντα υγείας.</string>
+
+    <string name="feat_reminders_title">Έξυπνες Υπενθυμίσεις</string>
+    <string name="feat_reminders_desc">Λάβετε έγκαιρες ειδοποιήσεις για τα φάρμακά σας.</string>
+
+    <string name="feat_tracking_title">Παρακολούθηση</string>
+    <string name="feat_tracking_desc">Κρατήστε ιστορικό για το πότε πήρατε τα φάρμακά σας.</string>
+
+    <string name="feat_presets_title">Γρήγορες Ενέργειες</string>
+    <string name="feat_presets_desc">Ρυθμίστε άμεσα προεπιλογές για επαναλαμβανόμενα συμβάντα.</string>
+
+    <string name="feat_update_title">Μείνετε Ενημερωμένοι</string>
+    <string name="feat_update_desc">Ελέγξτε για ενημερώσεις απευθείας στις ρυθμίσεις της εφαρμογής.</string>
+
+    <string name="feat_order_title">Απόλυτος Έλεγχος</string>
+    <string name="feat_order_desc">Διαχειριστείτε το πρόγραμμά σας ακριβώς όπως θέλετε.</string>
+    <string name="feat_layout_title">Έξυπνη Διάταξη</string>
+    <string name="feat_layout_desc">Μια καθαρή διεπαφή για να εστιάσετε στην υγεία σας.</string>
+    <string name="feat_name_title">Προσωπική Πινελιά</string>
+    <string name="feat_name_desc">Προσαρμόστε την εμπειρία σας στις ρυθμίσεις.</string>
+    <string name="feat_manage_title">Εύκολη Διαχείριση</string>
+    <string name="feat_manage_desc">Προσθέστε γρήγορα φάρμακα και συμβάντα.</string>
+    <string name="feat_store_title">Κατάστημα</string>
+    <string name="feat_store_desc">Περιγραφή καταστήματος.</string>
+    <string name="feat_history_title">Ιστορικό</string>
+    <string name="feat_history_desc">Παρακολουθήστε τη συμμόρφωσή σας και τα προηγούμενα συμβάντα.</string>
+
+    <string name="settings_advanced_title">Για προχωρημένους</string>
+    <string name="settings_advanced_desc">Πειραματικές λειτουργίες και ενημερώσεις</string>
+    <string name="settings_auto_updates_title">Αυτόματες ενημερώσεις</string>
+    <string name="settings_auto_updates_desc">Έλεγχος για ενημερώσεις κατά την εκκίνηση</string>
+    <string name="settings_setup_title">Αρχική Ρύθμιση</string>
+    <string name="settings_setup_desc">Εκτέλεση του οδηγού καλωσορίσματος ξανά</string>
+    <string name="settings_backup_header">Αντίγραφο Ασφαλείας &amp; Επαναφορά</string>
+    <string name="settings_export_title">Εξαγωγή Ρυθμίσεων</string>
+    <string name="settings_export_desc">Αποθήκευση διαμόρφωσης</string>
+    <string name="settings_import_title">Εισαγωγή Ρυθμίσεων</string>
+    <string name="settings_import_desc">Επαναφορά από αρχείο αντιγράφου ασφαλείας</string>
+    <string name="dialog_restart_title">Απαιτείται Επανεκκίνηση</string>
+    <string name="dialog_restart_desc">Οι ρυθμίσεις έχουν εισαχθεί. Επανεκκινήστε την εφαρμογή για να εφαρμοστούν οι αλλαγές.</string>
+    <string name="export_success">Οι ρυθμίσεις εξήχθησαν επιτυχώς</string>
+    <string name="export_error">Σφάλμα κατά την εξαγωγή ρυθμίσεων</string>
+    <string name="import_error">Σφάλμα κατά την εισαγωγή ρυθμίσεων</string>
+    <string name="perm_toast_required">Παρακαλώ παραχωρήστε όλες τις άδειες για να συνεχίσετε.</string>
+
+    <string name="title_hint">Τίτλος</string>
+    <string name="medicine_name_hint">Όνομα Φαρμάκου</string>
+    <string name="select_icon">Εικονίδιο</string>
+    <string name="select_color">Χρώμα</string>
+    <string name="time_label">Ώρα</string>
+    <string name="date_label">Ημερομηνία</string>
+    <string name="save_event">Αποθήκευση Συμβάντος</string>
+    <string name="save_medicine">Αποθήκευση Φαρμάκου</string>
+    <string name="choose_icon">Επιλογή Εικονιδίου</string>
+    <string name="choose_color">Επιλογή Χρώματος</string>
+    <string name="frequency_label">Συχνότητα</string>
+    <string name="add_time">Προσθήκη Ώρας</string>
+    <string name="days_label">Συγκεκριμένες Ημέρες</string>
+    <string name="every_day_hint">Κάθε μέρα</string>
+
+    <string name="frequency_unit_day">Ημέρα</string>
+    <string name="frequency_unit_week">Εβδομάδα</string>
+    <string name="times_label">φορές</string>
+    <string name="schedule_label_format">Πρόγραμμα %1$d</string>
+
+    <string name="download_title">Ενημέρωση Med</string>
+    <string name="download_desc">Λήψη έκδοσης %1$s…</string>
+    <string name="download_started">Η λήψη ξεκίνησε…</string>
+    <string name="download_failed">Η λήψη απέτυχε: %1$s</string>
+    <string name="notif_channel_updates">Ενημερώσεις</string>
+    <string name="update_notif_desc">Πατήστε για λεπτομέρειες και λήψη.</string>
+    <string name="install_error">Σφάλμα εγκατάστασης: %1$s</string>
+
+    <string name="switch_to_text_input">Εναλλαγή σε Εισαγωγή Κειμένου</string>
+    <string name="switch_to_touch_input">Εναλλαγή σε Εισαγωγή Αφής</string>
+
+    <string name="frequency_specific_days">Συγκεκριμένες Ημέρες</string>
+    <string name="frequency_daily_multiple">%1$dx Ημερησίως</string>
+    <string name="frequency_daily">Ημερησίως</string>
+    <string name="edit_time_desc">Επεξεργασία ώρας</string>
+    <string name="status_taken_format">Ελήφθη %1$s%2$s</string>
+    <string name="status_scheduled_format">Προγραμματισμένο για %1$s</string>
+
+    <string name="dynamic_theme_desc">Δυναμικό Θέμα</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Ιανουάριος</string>
+    <string name="month_february">Φεβρουάριος</string>
+    <string name="month_march">Μάρτιος</string>
+    <string name="month_april">Απρίλιος</string>
+    <string name="month_may">Μάιος</string>
+    <string name="month_june">Ιούνιος</string>
+    <string name="month_july">Ιούλιος</string>
+    <string name="month_august">Αύγουστος</string>
+    <string name="month_september">Σεπτέμβριος</string>
+    <string name="month_october">Οκτώβριος</string>
+    <string name="month_november">Νοέμβριος</string>
+    <string name="month_december">Δεκέμβριος</string>
+
+    <string name="day_short_mon">Δ</string>
+    <string name="day_short_tue">Τ</string>
+    <string name="day_short_wed">Τ</string>
+    <string name="day_short_thu">Π</string>
+    <string name="day_short_fri">Π</string>
+    <string name="day_short_sat">Σ</string>
+    <string name="day_short_sun">Κ</string>
+</resources>

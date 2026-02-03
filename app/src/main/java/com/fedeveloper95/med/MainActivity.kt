@@ -187,6 +187,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
     ) {
         val groupId = System.currentTimeMillis()
         val baseDate = selectedDate
+        val context = getApplication<Application>()
 
         times.forEach { time ->
             val newItem = MedItem(
@@ -196,7 +197,9 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 title = title,
                 iconName = iconName,
                 colorCode = colorCode,
-                frequencyLabel = if (days != null) "Specific Days" else if (times.size > 1) "${times.size}x Daily" else "Daily",
+                frequencyLabel = if (days != null) context.getString(R.string.frequency_specific_days)
+                else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
+                else context.getString(R.string.frequency_daily),
                 creationDate = baseDate,
                 creationTime = time,
                 recurrenceDays = days,
@@ -273,7 +276,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val context = LocalContext.current
-            val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+            val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val viewModel: MedViewModel = viewModel()
             val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -288,7 +291,9 @@ class MainActivity : ComponentActivity() {
                     override fun onReceive(context: Context?, intent: Intent?) { viewModel.reloadData() }
                 }
                 val filter = IntentFilter("com.fedeveloper95.med.REFRESH_DATA")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(receiver, filter, Context.RECEIVER_NOT_EXPORTED)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(receiver, filter,
+                    RECEIVER_NOT_EXPORTED
+                )
                 else context.registerReceiver(receiver, filter)
                 onDispose { context.unregisterReceiver(receiver) }
             }
@@ -656,7 +661,7 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
             onDismissRequest = { showDatePicker = false },
             confirmButton = { ExpressiveTextButton(onClick = { datePickerState.selectedDateMillis?.let { millis -> viewModel.selectedDate = LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000)) }; showDatePicker = false }, text = stringResource(R.string.ok_action)) },
             dismissButton = { ExpressiveTextButton(onClick = { showDatePicker = false }, text = stringResource(R.string.cancel_action)) },
-            colors = androidx.compose.material3.DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh), shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh), shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp
         ) { DatePicker(state = datePickerState) }
     }
     if (showMedicineDialog) {
@@ -691,7 +696,7 @@ fun TimeSelectorItem(label: String, time: LocalTime, onClick: () -> Unit) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(time.format(DateTimeFormatter.ofPattern("HH:mm")), fontFamily = GoogleSansFlex, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.Rounded.Edit, contentDescription = "Edit time", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+            Icon(Icons.Rounded.Edit, contentDescription = stringResource(R.string.edit_time_desc), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
         }
     }
 }
@@ -705,7 +710,19 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
 
     val toggleEnabled = isMedicine && !currentViewDate.isAfter(LocalDate.now())
 
-    val icon = if (item.iconName != null && AVAILABLE_ICONS.containsKey(item.iconName)) AVAILABLE_ICONS[item.iconName]!! else if (isMedicine) Icons.Rounded.MedicalServices else Icons.Rounded.Event
+    val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
+    val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
+    val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
+
+    val icon = when (item.iconName) {
+        "MixtureMed" -> icSick
+        "Bed" -> icMind
+        "Mood" -> icMixture
+        else -> if (item.iconName != null && AVAILABLE_ICONS.containsKey(item.iconName)) AVAILABLE_ICONS[item.iconName]!!
+        else if (isMedicine) Icons.Rounded.MedicalServices
+        else Icons.Rounded.Event
+    }
+
     val customColor = remember(item.colorCode) { if (item.colorCode != null && item.colorCode != "dynamic") try { Color(parseColor(item.colorCode)) } catch (e: Exception) { null } else null }
 
     val cardContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
@@ -732,9 +749,9 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
 
                                 Icon(Icons.Rounded.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text("Taken $datePart$takenTime", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                                Text(stringResource(R.string.status_taken_format, datePart, takenTime), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
                             } else {
-                                Text("Scheduled for $scheduledTime", fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                                Text(stringResource(R.string.status_scheduled_format, scheduledTime), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
                             }
                         } else if (timestamp != null) {
                             Icon(Icons.Rounded.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
@@ -867,9 +884,25 @@ fun WeeklyCalendarPager(
 
     HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp), pageSpacing = 16.dp) { page ->
         val weekStart = currentWeekStart.plusWeeks((page - 1000).toLong())
+        val monthName = when (weekStart.month) {
+            java.time.Month.JANUARY -> R.string.month_january
+            java.time.Month.FEBRUARY -> R.string.month_february
+            java.time.Month.MARCH -> R.string.month_march
+            java.time.Month.APRIL -> R.string.month_april
+            java.time.Month.MAY -> R.string.month_may
+            java.time.Month.JUNE -> R.string.month_june
+            java.time.Month.JULY -> R.string.month_july
+            java.time.Month.AUGUST -> R.string.month_august
+            java.time.Month.SEPTEMBER -> R.string.month_september
+            java.time.Month.OCTOBER -> R.string.month_october
+            java.time.Month.NOVEMBER -> R.string.month_november
+            java.time.Month.DECEMBER -> R.string.month_december
+            else -> R.string.unknown
+        }
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
-                text = weekStart.month.getDisplayName(JavaTextStyle.FULL, Locale.ENGLISH).replaceFirstChar { it.uppercase() },
+                text = stringResource(monthName),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
@@ -895,6 +928,16 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
     val cornerRadius by animateIntAsState(targetValue = if (isPressed) 12 else 32, animationSpec = spring(stiffness = Spring.StiffnessMediumLow), label = "corner")
 
     val isToday = date == LocalDate.now()
+    val dayInitial = when (date.dayOfWeek) {
+        DayOfWeek.MONDAY -> R.string.day_short_mon
+        DayOfWeek.TUESDAY -> R.string.day_short_tue
+        DayOfWeek.WEDNESDAY -> R.string.day_short_wed
+        DayOfWeek.THURSDAY -> R.string.day_short_thu
+        DayOfWeek.FRIDAY -> R.string.day_short_fri
+        DayOfWeek.SATURDAY -> R.string.day_short_sat
+        DayOfWeek.SUNDAY -> R.string.day_short_sun
+        else -> R.string.unknown
+    }
 
     Column(
         modifier = Modifier
@@ -910,7 +953,7 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = date.dayOfWeek.getDisplayName(JavaTextStyle.NARROW, Locale.ENGLISH), style = MaterialTheme.typography.labelSmall, color = contentColor.copy(alpha = 0.8f))
+        Text(text = stringResource(dayInitial), style = MaterialTheme.typography.labelSmall, color = contentColor.copy(alpha = 0.8f))
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = date.dayOfMonth.toString(), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = contentColor)
     }

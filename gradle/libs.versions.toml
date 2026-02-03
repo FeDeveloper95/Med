@@ -5,7 +5,7 @@ coreKtx = "1.15.0"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
 composeBom = "2024.12.01"
-material3 = "1.4.0-alpha06"
+material3 = "1.5.0-alpha13"
 coreSplashscreen = "1.0.1"
 
 [libraries]

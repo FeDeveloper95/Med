@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">दवा</string>
+    <string name="event_label">इवेंट</string>
+    <string name="menu_tooltip">मेनू</string>
+    <string name="menu_action_desc">एक्शन मेनू</string>
+    <string name="expanded_state">विस्तारित</string>
+    <string name="collapsed_state">संक्षिप्त</string>
+    <string name="close_menu_action">मेनू बंद करें</string>
+    <string name="choose_date_desc">तारीख चुनें</string>
+    <string name="settings_desc">सेटिंग्स</string>
+    <string name="no_events_label">आज के लिए कोई इवेंट नहीं</string>
+
+    <string name="item_deleted">हटाया गया: %1$s</string>
+    <string name="undo_action">पूर्ववत करें</string>
+
+    <string name="cancel_action">रद्द करें</string>
+    <string name="ok_action">ठीक है</string>
+    <string name="save_action">सहेजें</string>
+    <string name="new_event_title">नया इवेंट</string>
+    <string name="new_medicine_title">नई दवा</string>
+    <string name="add_detail_label">Med में एक इवेंट जोड़ें</string>
+    <string name="name_hint">नाम</string>
+    <string name="to_take_label">लेने के लिए</string>
+    <string name="taken_desc">लिया गया</string>
+    <string name="to_take_desc">लेने के लिए</string>
+
+    <string name="notif_channel_name">दवा रिमाइंडर्स</string>
+    <string name="notif_channel_desc">निर्धारित दवाओं के लिए सूचनाएं</string>
+    <string name="notif_title">दवा रिमाइंडर</string>
+    <string name="notif_content">क्या आपने %1$s ली?</string>
+    <string name="action_yes">हाँ</string>
+    <string name="action_skip">छोड़ें</string>
+    <string name="action_snooze">स्नूज़</string>
+    <string name="snoozed_message">10 मिनट के लिए स्नूज़ किया गया</string>
+    <string name="taken_message">लिया हुआ चिह्नित किया गया</string>
+    <string name="skipped_message">छोड़ा गया</string>
+
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="discard">वापस</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="save">सहेजें</string>
+    <string name="restart_now">अभी पुनरारंभ करें</string>
+
+    <string name="settings_header_appearance">दिखावट</string>
+    <string name="settings_theme_title">थीम</string>
+    <string name="settings_theme_system">सिस्टम</string>
+    <string name="settings_theme_light">लाइट</string>
+    <string name="settings_theme_dark">डार्क</string>
+
+    <string name="settings_header_calendar">कैलेंडर</string>
+    <string name="settings_week_start_title">सप्ताह की शुरुआत</string>
+    <string name="sunday">रविवार</string>
+    <string name="monday">सोमवार</string>
+
+    <string name="settings_header_customization">अनुकूलन</string>
+    <string name="settings_presets_title">त्वरित क्रियाएँ</string>
+    <string name="settings_presets_desc">मुख्य मेनू में कस्टम इवेंट प्रबंधित करें</string>
+    <string name="add_action">जोड़ें</string>
+
+    <string name="settings_header_info">जानकारी</string>
+    <string name="settings_version_title">ऐप संस्करण</string>
+    <string name="unknown">अज्ञात</string>
+    <string name="settings_developer_title">डेवलपर</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">बग / फ़ीचर रिपोर्ट करें</string>
+    <string name="settings_report_desc">Telegram पर संपर्क करें</string>
+
+    <string name="settings_check_updates_title">अपडेट के लिए देखें</string>
+    <string name="settings_check_updates_desc">नवीनतम संस्करण खोजें</string>
+    <string name="update_action">अपडेट करें</string>
+    <string name="update_checking">अपडेट की जाँच की जा रही है…</string>
+    <string name="update_no_update">आपके पास नवीनतम संस्करण है</string>
+    <string name="update_available">अपडेट उपलब्ध: v%1$s</string>
+    <string name="update_error">अपडेट जाँचने में त्रुटि</string>
+    <string name="update_latest_version_msg">फिलहाल कोई अपडेट उपलब्ध नहीं है।</string>
+    <string name="update_error_msg">अपडेट की जाँच नहीं की जा सकी। अपना कनेक्शन जांचें।</string>
+    <string name="later">बाद में</string>
+    <string name="close">बंद करें</string>
+
+    <string name="quick_actions_title">त्वरित क्रियाएँ</string>
+    <string name="quick_actions_info">त्वरित क्रियाएँ आपको Med में आवर्ती घटनाओं या इवेंट्स को जल्दी से जोड़ने में मदद करती हैं।</string>
+    <string name="active_actions_header">सक्रिय क्रियाएँ</string>
+
+    <string name="welcome_to">में आपका स्वागत है</string>
+    <string name="welcome_preparing_subtitle">आइए आपके लिए सब कुछ तैयार करें।</string>
+    <string name="next">अगला</string>
+    <string name="back">वापस</string>
+    <string name="get_started">शुरू करें</string>
+
+    <string name="perm_required">आवश्यक</string>
+    <string name="perm_permissions">अनुमतियाँ</string>
+    <string name="perm_intro_text">Med को सही ढंग से काम करने के लिए इन अनुमतियों की आवश्यकता है। कृपया आगे बढ़ने के लिए उन्हें प्रदान करें।</string>
+
+    <string name="perm_notif_title">सूचनाएं</string>
+    <string name="perm_notif_desc">तुरंत जानें कि अपनी दवा कब लेनी है।</string>
+
+    <string name="perm_install_title">ऐप इंस्टॉलेशन</string>
+    <string name="perm_install_desc">अपडेट डाउनलोड और इंस्टॉल करने के लिए आवश्यक।</string>
+
+    <string name="perm_usage_desc">उपयोग के आँकड़े ट्रैक करने के लिए आवश्यक।</string>
+    <string name="perm_dashboard_title">डैशबोर्ड</string>
+    <string name="perm_dashboard_desc">सिस्टम ओवरले सुविधाओं को सक्षम करें।</string>
+
+    <string name="feat_discover">खोजें</string>
+    <string name="feat_features">विशेषताएँ</string>
+    <string name="feat_intro">यहाँ बताया गया है कि आप अपने नए Med ऐप के साथ क्या कर सकते हैं।</string>
+
+    <string name="feat_custom_events_title">कस्टम इवेंट्स</string>
+    <string name="feat_custom_events_desc">अपने व्यक्तिगत स्वास्थ्य कार्यक्रमों को बनाएं और प्रबंधित करें।</string>
+
+    <string name="feat_reminders_title">स्मार्ट रिमाइंडर्स</string>
+    <string name="feat_reminders_desc">अपनी दवाओं के लिए समय पर सूचनाएं प्राप्त करें।</string>
+
+    <string name="feat_tracking_title">ट्रैकिंग</string>
+    <string name="feat_tracking_desc">अपनी दवा कब ली, इसका इतिहास रखें।</string>
+
+    <string name="feat_presets_title">त्वरित क्रियाएँ</string>
+    <string name="feat_presets_desc">आवर्ती कार्यक्रमों के लिए तुरंत प्रीसेट सेट करें।</string>
+
+    <string name="feat_update_title">अपडेट रहें</string>
+    <string name="feat_update_desc">सीधे ऐप सेटिंग्स में अपडेट के लिए जाँच करें।</string>
+
+    <string name="feat_order_title">पूर्ण नियंत्रण</string>
+    <string name="feat_order_desc">अपने शेड्यूल को ठीक वैसे ही प्रबंधित करें जैसा आप चाहते हैं।</string>
+    <string name="feat_layout_title">स्मार्ट लेआउट</string>
+    <string name="feat_layout_desc">अपने स्वास्थ्य पर ध्यान केंद्रित करने के लिए एक साफ इंटरफ़ेस।</string>
+    <string name="feat_name_title">व्यक्तिगत स्पर्श</string>
+    <string name="feat_name_desc">सेटिंग्स में अपने अनुभव को अनुकूलित करें।</string>
+    <string name="feat_manage_title">आसान प्रबंधन</string>
+    <string name="feat_manage_desc">जल्दी से दवाएं और कार्यक्रम जोड़ें।</string>
+    <string name="feat_store_title">स्टोर</string>
+    <string name="feat_store_desc">स्टोर विवरण।</string>
+    <string name="feat_history_title">इतिहास</string>
+    <string name="feat_history_desc">अपने पालन और पिछली घटनाओं को ट्रैक करें।</string>
+
+    <string name="settings_advanced_title">उन्नत</string>
+    <string name="settings_advanced_desc">प्रायोगिक सुविधाएँ और अपडेट</string>
+    <string name="settings_auto_updates_title">स्वचालित अपडेट</string>
+    <string name="settings_auto_updates_desc">स्टार्टअप पर अपडेट की जाँच करें</string>
+    <string name="settings_setup_title">प्रारंभिक सेटअप</string>
+    <string name="settings_setup_desc">वेलकम विजार्ड फिर से चलाएं</string>
+    <string name="settings_backup_header">बैकअप और रिस्टोर</string>
+    <string name="settings_export_title">सेटिंग्स निर्यात करें</string>
+    <string name="settings_export_desc">कॉन्फ़िगरेशन सहेजें</string>
+    <string name="settings_import_title">सेटिंग्स आयात करें</string>
+    <string name="settings_import_desc">बैकअप फ़ाइल से पुनर्स्थापित करें</string>
+    <string name="dialog_restart_title">पुनरारंभ आवश्यक</string>
+    <string name="dialog_restart_desc">सेटिंग्स आयात की गई हैं। परिवर्तन लागू करने के लिए ऐप को पुनरारंभ करें।</string>
+    <string name="export_success">सेटिंग्स सफलतापूर्वक निर्यात की गईं</string>
+    <string name="export_error">सेटिंग्स निर्यात करने में त्रुटि</string>
+    <string name="import_error">सेटिंग्स आयात करने में त्रुटि</string>
+    <string name="perm_toast_required">कृपया आगे बढ़ने के लिए सभी अनुमतियाँ प्रदान करें।</string>
+
+    <string name="title_hint">शीर्षक</string>
+    <string name="medicine_name_hint">दवा का नाम</string>
+    <string name="select_icon">आइकन</string>
+    <string name="select_color">रंग</string>
+    <string name="time_label">समय</string>
+    <string name="date_label">तारीख</string>
+    <string name="save_event">इवेंट सहेजें</string>
+    <string name="save_medicine">दवा सहेजें</string>
+    <string name="choose_icon">आइकन चुनें</string>
+    <string name="choose_color">रंग चुनें</string>
+    <string name="frequency_label">आवृत्ति</string>
+    <string name="add_time">समय जोड़ें</string>
+    <string name="days_label">विशिष्ट दिन</string>
+    <string name="every_day_hint">हर दिन</string>
+
+    <string name="frequency_unit_day">दिन</string>
+    <string name="frequency_unit_week">सप्ताह</string>
+    <string name="times_label">बार</string>
+    <string name="schedule_label_format">शेड्यूल %1$d</string>
+
+    <string name="download_title">Med अपडेट</string>
+    <string name="download_desc">संस्करण %1$s डाउनलोड हो रहा है…</string>
+    <string name="download_started">डाउनलोड शुरू हुआ…</string>
+    <string name="download_failed">डाउनलोड विफल: %1$s</string>
+    <string name="notif_channel_updates">अपडेट</string>
+    <string name="update_notif_desc">विवरण देखने और डाउनलोड करने के लिए टैप करें।</string>
+    <string name="install_error">इंस्टॉल त्रुटि: %1$s</string>
+
+    <string name="switch_to_text_input">टेक्स्ट इनपुट पर स्विच करें</string>
+    <string name="switch_to_touch_input">टच इनपुट पर स्विच करें</string>
+
+    <string name="frequency_specific_days">विशिष्ट दिन</string>
+    <string name="frequency_daily_multiple">%1$dx दैनिक</string>
+    <string name="frequency_daily">दैनिक</string>
+    <string name="edit_time_desc">समय संपादित करें</string>
+    <string name="status_taken_format">%1$s%2$s को लिया गया</string>
+    <string name="status_scheduled_format">%1$s के लिए निर्धारित</string>
+
+    <string name="dynamic_theme_desc">डायनामिक थीम</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">जनवरी</string>
+    <string name="month_february">फ़रवरी</string>
+    <string name="month_march">मार्च</string>
+    <string name="month_april">अप्रैल</string>
+    <string name="month_may">मई</string>
+    <string name="month_june">जून</string>
+    <string name="month_july">जुलाई</string>
+    <string name="month_august">अगस्त</string>
+    <string name="month_september">सितंबर</string>
+    <string name="month_october">अक्टूबर</string>
+    <string name="month_november">नवंबर</string>
+    <string name="month_december">दिसंबर</string>
+
+    <string name="day_short_mon">स</string>
+    <string name="day_short_tue">म</string>
+    <string name="day_short_wed">ब</string>
+    <string name="day_short_thu">ग</string>
+    <string name="day_short_fri">श</string>
+    <string name="day_short_sat">श</string>
+    <string name="day_short_sun">र</string>
+</resources>

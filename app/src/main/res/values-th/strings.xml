@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">ยา</string>
+    <string name="event_label">เหตุการณ์</string>
+    <string name="menu_tooltip">เมนู</string>
+    <string name="menu_action_desc">เมนูการกระทำ</string>
+    <string name="expanded_state">ขยาย</string>
+    <string name="collapsed_state">ย่อ</string>
+    <string name="close_menu_action">ปิดเมนู</string>
+    <string name="choose_date_desc">เลือกวันที่</string>
+    <string name="settings_desc">การตั้งค่า</string>
+    <string name="no_events_label">ไม่มีรายการสำหรับวันนี้</string>
+
+    <string name="item_deleted">ลบแล้ว: %1$s</string>
+    <string name="undo_action">เลิกทำ</string>
+
+    <string name="cancel_action">ยกเลิก</string>
+    <string name="ok_action">ตกลง</string>
+    <string name="save_action">บันทึก</string>
+    <string name="new_event_title">เหตุการณ์ใหม่</string>
+    <string name="new_medicine_title">ยาใหม่</string>
+    <string name="add_detail_label">เพิ่มรายการใน Med</string>
+    <string name="name_hint">ชื่อ</string>
+    <string name="to_take_label">ที่ต้องกิน</string>
+    <string name="taken_desc">กินแล้ว</string>
+    <string name="to_take_desc">ที่ต้องกิน</string>
+
+    <string name="notif_channel_name">เตือนความจำยา</string>
+    <string name="notif_channel_desc">การแจ้งเตือนสำหรับยาตามกำหนดการ</string>
+    <string name="notif_title">เตือนความจำยา</string>
+    <string name="notif_content">คุณกิน %1$s หรือยัง?</string>
+    <string name="action_yes">ใช่</string>
+    <string name="action_skip">ข้าม</string>
+    <string name="action_snooze">เลื่อน</string>
+    <string name="snoozed_message">เลื่อนไป 10 นาที</string>
+    <string name="taken_message">ทำเครื่องหมายว่ากินแล้ว</string>
+    <string name="skipped_message">ข้ามแล้ว</string>
+
+    <string name="settings_title">การตั้งค่า</string>
+    <string name="discard">ย้อนกลับ</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="save">บันทึก</string>
+    <string name="restart_now">รีสตาร์ททันที</string>
+
+    <string name="settings_header_appearance">รูปลักษณ์</string>
+    <string name="settings_theme_title">ธีม</string>
+    <string name="settings_theme_system">ระบบ</string>
+    <string name="settings_theme_light">สว่าง</string>
+    <string name="settings_theme_dark">มืด</string>
+
+    <string name="settings_header_calendar">ปฏิทิน</string>
+    <string name="settings_week_start_title">วันเริ่มสัปดาห์</string>
+    <string name="sunday">วันอาทิตย์</string>
+    <string name="monday">วันจันทร์</string>
+
+    <string name="settings_header_customization">การปรับแต่ง</string>
+    <string name="settings_presets_title">การกระทำด่วน</string>
+    <string name="settings_presets_desc">จัดการเหตุการณ์กำหนดเองในเมนูหลัก</string>
+    <string name="add_action">เพิ่ม</string>
+
+    <string name="settings_header_info">ข้อมูล</string>
+    <string name="settings_version_title">เวอร์ชันแอป</string>
+    <string name="unknown">ไม่ทราบ</string>
+    <string name="settings_developer_title">นักพัฒนา</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">รายงานข้อผิดพลาด / ฟีเจอร์</string>
+    <string name="settings_report_desc">ติดต่อทาง Telegram</string>
+
+    <string name="settings_check_updates_title">ตรวจสอบการอัปเดต</string>
+    <string name="settings_check_updates_desc">หาเวอร์ชันล่าสุด</string>
+    <string name="update_action">อัปเดต</string>
+    <string name="update_checking">กำลังตรวจสอบการอัปเดต…</string>
+    <string name="update_no_update">คุณใช้เวอร์ชันล่าสุดแล้ว</string>
+    <string name="update_available">มีการอัปเดต: v%1$s</string>
+    <string name="update_error">เกิดข้อผิดพลาดในการตรวจสอบการอัปเดต</string>
+    <string name="update_latest_version_msg">ไม่มีการอัปเดตในขณะนี้</string>
+    <string name="update_error_msg">ไม่สามารถตรวจสอบการอัปเดต ตรวจสอบการเชื่อมต่อของคุณ</string>
+    <string name="later">ภายหลัง</string>
+    <string name="close">ปิด</string>
+
+    <string name="quick_actions_title">การกระทำด่วน</string>
+    <string name="quick_actions_info">การกระทำด่วนช่วยให้คุณเพิ่มปรากฏการณ์หรือเหตุการณ์ที่เกิดขึ้นซ้ำๆ ลงใน Med ได้อย่างรวดเร็ว</string>
+    <string name="active_actions_header">การกระทำที่ใช้งานอยู่</string>
+
+    <string name="welcome_to">ยินดีต้อนรับสู่</string>
+    <string name="welcome_preparing_subtitle">เราจะเตรียมทุกอย่างให้พร้อมสำหรับคุณ</string>
+    <string name="next">ถัดไป</string>
+    <string name="back">ย้อนกลับ</string>
+    <string name="get_started">เริ่มต้นใช้งาน</string>
+
+    <string name="perm_required">จำเป็น</string>
+    <string name="perm_permissions">สิทธิ์</string>
+    <string name="perm_intro_text">สิทธิ์เหล่านี้จำเป็นสำหรับการทำงานที่ถูกต้องของ Med โปรดอนุญาตเพื่อดำเนินการต่อ</string>
+
+    <string name="perm_notif_title">การแจ้งเตือน</string>
+    <string name="perm_notif_desc">ทราบทันทีเมื่อถึงเวลากินยา</string>
+
+    <string name="perm_install_title">การติดตั้งแอป</string>
+    <string name="perm_install_desc">จำเป็นสำหรับการดาวน์โหลดและติดตั้งการอัปเดต</string>
+
+    <string name="perm_usage_desc">จำเป็นสำหรับการติดตามสถิติการใช้งาน</string>
+    <string name="perm_dashboard_title">แดชบอร์ด</string>
+    <string name="perm_dashboard_desc">เปิดใช้งานคุณสมบัติการซ้อนทับระบบ</string>
+
+    <string name="feat_discover">ค้นพบ</string>
+    <string name="feat_features">ฟีเจอร์</string>
+    <string name="feat_intro">นี่คือสิ่งที่คุณสามารถทำได้กับแอป Med ใหม่ของคุณ</string>
+
+    <string name="feat_custom_events_title">เหตุการณ์กำหนดเอง</string>
+    <string name="feat_custom_events_desc">สร้างและจัดการเหตุการณ์สุขภาพส่วนตัวของคุณ</string>
+
+    <string name="feat_reminders_title">การแจ้งเตือนอัจฉริยะ</string>
+    <string name="feat_reminders_desc">รับการแจ้งเตือนยาของคุณอย่างทันท่วงที</string>
+
+    <string name="feat_tracking_title">การติดตาม</string>
+    <string name="feat_tracking_desc">เก็บประวัติเวลาที่คุณกินยา</string>
+
+    <string name="feat_presets_title">การกระทำด่วน</string>
+    <string name="feat_presets_desc">ตั้งค่าพรีเซ็ตสำหรับเหตุการณ์ที่เกิดซ้ำได้ทันที</string>
+
+    <string name="feat_update_title">ทันสมัยอยู่เสมอ</string>
+    <string name="feat_update_desc">ตรวจสอบการอัปเดตโดยตรงในการตั้งค่าแอป</string>
+
+    <string name="feat_order_title">ควบคุมได้อย่างสมบูรณ์</string>
+    <string name="feat_order_desc">จัดการตารางเวลาของคุณได้ตามที่คุณต้องการ</string>
+    <string name="feat_layout_title">เลย์เอาต์อัจฉริยะ</string>
+    <string name="feat_layout_desc">อินเทอร์เฟซที่สะอาดตาเพื่อโฟกัสที่สุขภาพของคุณ</string>
+    <string name="feat_name_title">สัมผัสส่วนตัว</string>
+    <string name="feat_name_desc">ปรับแต่งประสบการณ์ของคุณในการตั้งค่า</string>
+    <string name="feat_manage_title">จัดการง่าย</string>
+    <string name="feat_manage_desc">เพิ่มยาและเหตุการณ์ได้อย่างรวดเร็ว</string>
+    <string name="feat_store_title">ร้านค้า</string>
+    <string name="feat_store_desc">คำอธิบายร้านค้า</string>
+    <string name="feat_history_title">ประวัติ</string>
+    <string name="feat_history_desc">ติดตามการปฏิบัติตามและเหตุการณ์ในอดีต</string>
+
+    <string name="settings_advanced_title">ขั้นสูง</string>
+    <string name="settings_advanced_desc">ฟีเจอร์ทดลองและการอัปเดต</string>
+    <string name="settings_auto_updates_title">อัปเดตอัตโนมัติ</string>
+    <string name="settings_auto_updates_desc">ตรวจสอบการอัปเดตเมื่อเริ่มต้น</string>
+    <string name="settings_setup_title">การตั้งค่าเริ่มต้น</string>
+    <string name="settings_setup_desc">รันวิซาร์ดต้อนรับอีกครั้ง</string>
+    <string name="settings_backup_header">สำรองข้อมูลและกู้คืน</string>
+    <string name="settings_export_title">ส่งออกการตั้งค่า</string>
+    <string name="settings_export_desc">บันทึกการกำหนดค่า</string>
+    <string name="settings_import_title">นำเข้าการตั้งค่า</string>
+    <string name="settings_import_desc">กู้คืนจากไฟล์สำรอง</string>
+    <string name="dialog_restart_title">จำเป็นต้องรีสตาร์ท</string>
+    <string name="dialog_restart_desc">นำเข้าการตั้งค่าแล้ว รีสตาร์ทแอปเพื่อใช้การเปลี่ยนแปลง</string>
+    <string name="export_success">ส่งออกการตั้งค่าสำเร็จ</string>
+    <string name="export_error">เกิดข้อผิดพลาดในการส่งออกการตั้งค่า</string>
+    <string name="import_error">เกิดข้อผิดพลาดในการนำเข้าการตั้งค่า</string>
+    <string name="perm_toast_required">โปรดให้สิทธิ์ทั้งหมดเพื่อดำเนินการต่อ</string>
+
+    <string name="title_hint">ชื่อเรื่อง</string>
+    <string name="medicine_name_hint">ชื่อยา</string>
+    <string name="select_icon">ไอคอน</string>
+    <string name="select_color">สี</string>
+    <string name="time_label">เวลา</string>
+    <string name="date_label">วันที่</string>
+    <string name="save_event">บันทึกเหตุการณ์</string>
+    <string name="save_medicine">บันทึกยา</string>
+    <string name="choose_icon">เลือกไอคอน</string>
+    <string name="choose_color">เลือกสี</string>
+    <string name="frequency_label">ความถี่</string>
+    <string name="add_time">เพิ่มเวลา</string>
+    <string name="days_label">วันที่กำหนด</string>
+    <string name="every_day_hint">ทุกวัน</string>
+
+    <string name="frequency_unit_day">วัน</string>
+    <string name="frequency_unit_week">สัปดาห์</string>
+    <string name="times_label">ครั้ง</string>
+    <string name="schedule_label_format">ตารางเวลา %1$d</string>
+
+    <string name="download_title">อัปเดต Med</string>
+    <string name="download_desc">กำลังดาวน์โหลดเวอร์ชัน %1$s…</string>
+    <string name="download_started">เริ่มดาวน์โหลด…</string>
+    <string name="download_failed">ดาวน์โหลดล้มเหลว: %1$s</string>
+    <string name="notif_channel_updates">อัปเดต</string>
+    <string name="update_notif_desc">แตะเพื่อดูรายละเอียดและดาวน์โหลด</string>
+    <string name="install_error">ติดตั้งผิดพลาด: %1$s</string>
+
+    <string name="switch_to_text_input">สลับไปป้อนข้อความ</string>
+    <string name="switch_to_touch_input">สลับไปป้อนด้วยการสัมผัส</string>
+
+    <string name="frequency_specific_days">วันที่กำหนด</string>
+    <string name="frequency_daily_multiple">%1$d ครั้งต่อวัน</string>
+    <string name="frequency_daily">ทุกวัน</string>
+    <string name="edit_time_desc">แก้ไขเวลา</string>
+    <string name="status_taken_format">กินแล้ว %1$s%2$s</string>
+    <string name="status_scheduled_format">กำหนดไว้สำหรับ %1$s</string>
+
+    <string name="dynamic_theme_desc">ธีมไดนามิก</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Januari</string>
+    <string name="month_february">Februari</string>
+    <string name="month_march">Mars</string>
+    <string name="month_april">April</string>
+    <string name="month_may">Maj</string>
+    <string name="month_june">Juni</string>
+    <string name="month_july">Juli</string>
+    <string name="month_august">Augusti</string>
+    <string name="month_september">September</string>
+    <string name="month_october">Oktober</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">O</string>
+    <string name="day_short_thu">T</string>
+    <string name="day_short_fri">F</string>
+    <string name="day_short_sat">L</string>
+    <string name="day_short_sun">S</string>
+</resources>

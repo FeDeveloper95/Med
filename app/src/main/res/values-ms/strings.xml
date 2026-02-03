@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Ubat</string>
+    <string name="event_label">Acara</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Menu tindakan</string>
+    <string name="expanded_state">Dikembangkan</string>
+    <string name="collapsed_state">Diciutkan</string>
+    <string name="close_menu_action">Tutup menu</string>
+    <string name="choose_date_desc">Pilih tarikh</string>
+    <string name="settings_desc">Tetapan</string>
+    <string name="no_events_label">Tiada acara untuk hari ini</string>
+
+    <string name="item_deleted">Dihapus: %1$s</string>
+    <string name="undo_action">Buat asal</string>
+
+    <string name="cancel_action">Batal</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Simpan</string>
+    <string name="new_event_title">Acara Baru</string>
+    <string name="new_medicine_title">Ubat Baru</string>
+    <string name="add_detail_label">Tambah acara ke Med</string>
+    <string name="name_hint">Nama</string>
+    <string name="to_take_label">Untuk diambil</string>
+    <string name="taken_desc">Diambil</string>
+    <string name="to_take_desc">Untuk diambil</string>
+
+    <string name="notif_channel_name">Peringatan Ubat</string>
+    <string name="notif_channel_desc">Pemberitahuan untuk ubat berjadual</string>
+    <string name="notif_title">Peringatan Ubat</string>
+    <string name="notif_content">Adakah anda sudah ambil %1$s?</string>
+    <string name="action_yes">Ya</string>
+    <string name="action_skip">Langkau</string>
+    <string name="action_snooze">Tunda</string>
+    <string name="snoozed_message">Ditunda selama 10 minit</string>
+    <string name="taken_message">Ditanda sebagai diambil</string>
+    <string name="skipped_message">Dilangkau</string>
+
+    <string name="settings_title">Tetapan</string>
+    <string name="discard">Kembali</string>
+    <string name="cancel">Batal</string>
+    <string name="save">Simpan</string>
+    <string name="restart_now">Mula Semula Sekarang</string>
+
+    <string name="settings_header_appearance">Penampilan</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Cerah</string>
+    <string name="settings_theme_dark">Gelap</string>
+
+    <string name="settings_header_calendar">Kalendar</string>
+    <string name="settings_week_start_title">Mula minggu</string>
+    <string name="sunday">Ahad</string>
+    <string name="monday">Isnin</string>
+
+    <string name="settings_header_customization">Penyesuaian</string>
+    <string name="settings_presets_title">Tindakan Pantas</string>
+    <string name="settings_presets_desc">Urus acara tersuai dalam menu utama</string>
+    <string name="add_action">Tambah</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">Versi Apl</string>
+    <string name="unknown">Tidak diketahui</string>
+    <string name="settings_developer_title">Pembangun</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Lapor Pepijat / Ciri</string>
+    <string name="settings_report_desc">Hubungi di Telegram</string>
+
+    <string name="settings_check_updates_title">Semak Kemas Kini</string>
+    <string name="settings_check_updates_desc">Cari versi terkini</string>
+    <string name="update_action">Kemas kini</string>
+    <string name="update_checking">Menyemak kemas kini…</string>
+    <string name="update_no_update">Anda mempunyai versi terkini</string>
+    <string name="update_available">Kemas kini tersedia: v%1$s</string>
+    <string name="update_error">Ralat menyemak kemas kini</string>
+    <string name="update_latest_version_msg">Tiada kemas kini tersedia pada masa ini.</string>
+    <string name="update_error_msg">Tidak dapat menyemak kemas kini. Semak sambungan anda.</string>
+    <string name="later">Nanti</string>
+    <string name="close">Tutup</string>
+
+    <string name="quick_actions_title">Tindakan Pantas</string>
+    <string name="quick_actions_info">Tindakan Pantas membantu anda menambah fenomena atau acara berulang ke Med dengan cepat.</string>
+    <string name="active_actions_header">Tindakan Aktif</string>
+
+    <string name="welcome_to">Selamat datang ke</string>
+    <string name="welcome_preparing_subtitle">Mari sediakan segalanya untuk anda.</string>
+    <string name="next">Seterusnya</string>
+    <string name="back">Kembali</string>
+    <string name="get_started">Mula</string>
+
+    <string name="perm_required">Diperlukan</string>
+    <string name="perm_permissions">Kebenaran</string>
+    <string name="perm_intro_text">Kebenaran ini diperlukan untuk Med berfungsi dengan betul. Sila berikan untuk meneruskan.</string>
+
+    <string name="perm_notif_title">Pemberitahuan</string>
+    <string name="perm_notif_desc">Ketahui serta-merta bila perlu ambil ubat anda.</string>
+
+    <string name="perm_install_title">Pemasangan Apl</string>
+    <string name="perm_install_desc">Diperlukan untuk memuat turun dan memasang kemas kini.</string>
+
+    <string name="perm_usage_desc">Diperlukan untuk menjejaki statistik penggunaan.</string>
+    <string name="perm_dashboard_title">Papan Pemuka</string>
+    <string name="perm_dashboard_desc">Dayakan ciri tindanan sistem.</string>
+
+    <string name="feat_discover">Temui</string>
+    <string name="feat_features">Ciri</string>
+    <string name="feat_intro">Berikut ialah apa yang anda boleh lakukan dengan apl Med baru anda.</string>
+
+    <string name="feat_custom_events_title">Acara Tersuai</string>
+    <string name="feat_custom_events_desc">Cipta dan urus acara kesihatan peribadi anda.</string>
+
+    <string name="feat_reminders_title">Peringatan Pintar</string>
+    <string name="feat_reminders_desc">Terima pemberitahuan tepat pada masanya untuk ubat anda.</string>
+
+    <string name="feat_tracking_title">Penjejakan</string>
+    <string name="feat_tracking_desc">Simpan sejarah bila anda ambil ubat anda.</string>
+
+    <string name="feat_presets_title">Tindakan Pantas</string>
+    <string name="feat_presets_desc">Sediakan pratetap untuk acara berulang serta-merta.</string>
+
+    <string name="feat_update_title">Kekal Terkini</string>
+    <string name="feat_update_desc">Semak kemas kini terus dalam tetapan apl.</string>
+
+    <string name="feat_order_title">Kawalan Penuh</string>
+    <string name="feat_order_desc">Urus jadual anda tepat seperti yang anda mahukan.</string>
+    <string name="feat_layout_title">Susun Atur Pintar</string>
+    <string name="feat_layout_desc">Antara muka bersih untuk fokus pada kesihatan anda.</string>
+    <string name="feat_name_title">Sentuhan Peribadi</string>
+    <string name="feat_name_desc">Sesuaikan pengalaman anda dalam tetapan.</string>
+    <string name="feat_manage_title">Pengurusan Mudah</string>
+    <string name="feat_manage_desc">Tambah ubat dan acara dengan cepat.</string>
+    <string name="feat_store_title">Kedai</string>
+    <string name="feat_store_desc">Penerangan kedai.</string>
+    <string name="feat_history_title">Sejarah</string>
+    <string name="feat_history_desc">Jejaki kepatuhan dan acara lalu anda.</string>
+
+    <string name="settings_advanced_title">Lanjutan</string>
+    <string name="settings_advanced_desc">Ciri percubaan dan kemas kini</string>
+    <string name="settings_auto_updates_title">Kemas kini automatik</string>
+    <string name="settings_auto_updates_desc">Semak kemas kini semasa permulaan</string>
+    <string name="settings_setup_title">Persediaan Awal</string>
+    <string name="settings_setup_desc">Jalankan wizard alu-aluan semula</string>
+    <string name="settings_backup_header">Sandaran &amp; Pulihkan</string>
+    <string name="settings_export_title">Eksport Tetapan</string>
+    <string name="settings_export_desc">Simpan konfigurasi</string>
+    <string name="settings_import_title">Import Tetapan</string>
+    <string name="settings_import_desc">Pulihkan daripada fail sandaran</string>
+    <string name="dialog_restart_title">Mula Semula Diperlukan</string>
+    <string name="dialog_restart_desc">Tetapan telah diimport. Mula semula apl untuk menggunakan perubahan.</string>
+    <string name="export_success">Tetapan berjaya dieksport</string>
+    <string name="export_error">Ralat mengeksport tetapan</string>
+    <string name="import_error">Ralat mengimport tetapan</string>
+    <string name="perm_toast_required">Sila berikan semua kebenaran untuk meneruskan.</string>
+
+    <string name="title_hint">Tajuk</string>
+    <string name="medicine_name_hint">Nama Ubat</string>
+    <string name="select_icon">Ikon</string>
+    <string name="select_color">Warna</string>
+    <string name="time_label">Masa</string>
+    <string name="date_label">Tarikh</string>
+    <string name="save_event">Simpan Acara</string>
+    <string name="save_medicine">Simpan Ubat</string>
+    <string name="choose_icon">Pilih Ikon</string>
+    <string name="choose_color">Pilih Warna</string>
+    <string name="frequency_label">Kekerapan</string>
+    <string name="add_time">Tambah Masa</string>
+    <string name="days_label">Hari Tertentu</string>
+    <string name="every_day_hint">Setiap hari</string>
+
+    <string name="frequency_unit_day">Hari</string>
+    <string name="frequency_unit_week">Minggu</string>
+    <string name="times_label">kali</string>
+    <string name="schedule_label_format">Jadual %1$d</string>
+
+    <string name="download_title">Kemas Kini Med</string>
+    <string name="download_desc">Memuat turun versi %1$s…</string>
+    <string name="download_started">Muat turun bermula…</string>
+    <string name="download_failed">Muat turun gagal: %1$s</string>
+    <string name="notif_channel_updates">Kemas kini</string>
+    <string name="update_notif_desc">Ketik untuk lihat butiran dan muat turun.</string>
+    <string name="install_error">Ralat pemasangan: %1$s</string>
+
+    <string name="switch_to_text_input">Tukar ke Input Teks</string>
+    <string name="switch_to_touch_input">Tukar ke Input Sentuh</string>
+
+    <string name="frequency_specific_days">Hari Tertentu</string>
+    <string name="frequency_daily_multiple">%1$dx Sehari</string>
+    <string name="frequency_daily">Harian</string>
+    <string name="edit_time_desc">Edit masa</string>
+    <string name="status_taken_format">Diambil %1$s%2$s</string>
+    <string name="status_scheduled_format">Dijadualkan untuk %1$s</string>
+
+    <string name="dynamic_theme_desc">Tema Dinamik</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Januari</string>
+    <string name="month_february">Februari</string>
+    <string name="month_march">Mac</string>
+    <string name="month_april">April</string>
+    <string name="month_may">Mei</string>
+    <string name="month_june">Jun</string>
+    <string name="month_july">Julai</string>
+    <string name="month_august">Ogos</string>
+    <string name="month_september">September</string>
+    <string name="month_october">Oktober</string>
+    <string name="month_november">November</string>
+    <string name="month_december">Disember</string>
+
+    <string name="day_short_mon">I</string>
+    <string name="day_short_tue">S</string>
+    <string name="day_short_wed">R</string>
+    <string name="day_short_thu">K</string>
+    <string name="day_short_fri">J</string>
+    <string name="day_short_sat">S</string>
+    <string name="day_short_sun">A</string>
+</resources>

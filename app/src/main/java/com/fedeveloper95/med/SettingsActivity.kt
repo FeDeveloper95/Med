@@ -59,7 +59,7 @@ class SettingsActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
-            val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+            val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
             var currentThemeOverride by remember { mutableIntStateOf(savedTheme) }
 
@@ -112,7 +112,7 @@ fun SettingsScreen(
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             val version = pInfo.versionName ?: "1.0"
             val build = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pInfo.longVersionCode else pInfo.versionCode.toLong()
-            "v$version ($build)"
+            context.getString(R.string.version_format, version, build)
         } catch (e: Exception) {
             context.getString(R.string.unknown)
         }

@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Gyógyszer</string>
+    <string name="event_label">Esemény</string>
+    <string name="menu_tooltip">Menü</string>
+    <string name="menu_action_desc">Művelet menü</string>
+    <string name="expanded_state">Kibontva</string>
+    <string name="collapsed_state">Összecsukva</string>
+    <string name="close_menu_action">Menü bezárása</string>
+    <string name="choose_date_desc">Dátum kiválasztása</string>
+    <string name="settings_desc">Beállítások</string>
+    <string name="no_events_label">Nincs esemény mára</string>
+
+    <string name="item_deleted">Törölve: %1$s</string>
+    <string name="undo_action">Visszavonás</string>
+
+    <string name="cancel_action">Mégse</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Mentés</string>
+    <string name="new_event_title">Új esemény</string>
+    <string name="new_medicine_title">Új gyógyszer</string>
+    <string name="add_detail_label">Esemény hozzáadása a Medhez</string>
+    <string name="name_hint">Név</string>
+    <string name="to_take_label">Bevenni</string>
+    <string name="taken_desc">Bevéve</string>
+    <string name="to_take_desc">Bevenni</string>
+
+    <string name="notif_channel_name">Gyógyszer emlékeztetők</string>
+    <string name="notif_channel_desc">Értesítések ütemezett gyógyszerekről</string>
+    <string name="notif_title">Gyógyszer emlékeztető</string>
+    <string name="notif_content">Bevette a következőt: %1$s?</string>
+    <string name="action_yes">Igen</string>
+    <string name="action_skip">Kihagyás</string>
+    <string name="action_snooze">Szundítás</string>
+    <string name="snoozed_message">Szundítva 10 percre</string>
+    <string name="taken_message">Bevettnek jelölve</string>
+    <string name="skipped_message">Kihagyva</string>
+
+    <string name="settings_title">Beállítások</string>
+    <string name="discard">Vissza</string>
+    <string name="cancel">Mégse</string>
+    <string name="save">Mentés</string>
+    <string name="restart_now">Újraindítás most</string>
+
+    <string name="settings_header_appearance">Megjelenés</string>
+    <string name="settings_theme_title">Téma</string>
+    <string name="settings_theme_system">Rendszer</string>
+    <string name="settings_theme_light">Világos</string>
+    <string name="settings_theme_dark">Sötét</string>
+
+    <string name="settings_header_calendar">Naptár</string>
+    <string name="settings_week_start_title">Hét kezdete</string>
+    <string name="sunday">Vasárnap</string>
+    <string name="monday">Hétfő</string>
+
+    <string name="settings_header_customization">Testreszabás</string>
+    <string name="settings_presets_title">Gyorsműveletek</string>
+    <string name="settings_presets_desc">Egyéni események kezelése a főmenüben</string>
+    <string name="add_action">Hozzáadás</string>
+
+    <string name="settings_header_info">Infó</string>
+    <string name="settings_version_title">Alkalmazás verzió</string>
+    <string name="unknown">Ismeretlen</string>
+    <string name="settings_developer_title">Fejlesztő</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Hiba / Funkció jelentése</string>
+    <string name="settings_report_desc">Kapcsolat Telegramon</string>
+
+    <string name="settings_check_updates_title">Frissítések keresése</string>
+    <string name="settings_check_updates_desc">Legújabb verzió keresése</string>
+    <string name="update_action">Frissítés</string>
+    <string name="update_checking">Frissítések keresése…</string>
+    <string name="update_no_update">A legújabb verziót használja</string>
+    <string name="update_available">Frissítés elérhető: v%1$s</string>
+    <string name="update_error">Hiba a frissítések keresésekor</string>
+    <string name="update_latest_version_msg">Jelenleg nincs elérhető frissítés.</string>
+    <string name="update_error_msg">Nem sikerült frissítéseket keresni. Ellenőrizze a kapcsolatot.</string>
+    <string name="later">Később</string>
+    <string name="close">Bezárás</string>
+
+    <string name="quick_actions_title">Gyorsműveletek</string>
+    <string name="quick_actions_info">A Gyorsműveletek segítségével gyorsan hozzáadhat ismétlődő jelenségeket vagy eseményeket a Medhez.</string>
+    <string name="active_actions_header">Aktív műveletek</string>
+
+    <string name="welcome_to">Üdvözli a</string>
+    <string name="welcome_preparing_subtitle">Előkészítünk mindent az Ön számára.</string>
+    <string name="next">Tovább</string>
+    <string name="back">Vissza</string>
+    <string name="get_started">Kezdés</string>
+
+    <string name="perm_required">Szükséges</string>
+    <string name="perm_permissions">Engedélyek</string>
+    <string name="perm_intro_text">Ezek az engedélyek szükségesek a Med megfelelő működéséhez. Kérjük, adja meg őket a folytatáshoz.</string>
+
+    <string name="perm_notif_title">Értesítések</string>
+    <string name="perm_notif_desc">Azonnal tudja, mikor kell bevennie a gyógyszereit.</string>
+
+    <string name="perm_install_title">Alkalmazás telepítése</string>
+    <string name="perm_install_desc">Szükséges a frissítések letöltéséhez és telepítéséhez.</string>
+
+    <string name="perm_usage_desc">Szükséges a használati statisztikák követéséhez.</string>
+    <string name="perm_dashboard_title">Irányítópult</string>
+    <string name="perm_dashboard_desc">Rendszer átfedés funkciók engedélyezése.</string>
+
+    <string name="feat_discover">Felfedezés</string>
+    <string name="feat_features">Funkciók</string>
+    <string name="feat_intro">Itt van, mit tehet az új Med alkalmazásával.</string>
+
+    <string name="feat_custom_events_title">Egyéni események</string>
+    <string name="feat_custom_events_desc">Hozza létre és kezelje személyes egészségügyi eseményeit.</string>
+
+    <string name="feat_reminders_title">Okos emlékeztetők</string>
+    <string name="feat_reminders_desc">Kapjon időben értesítéseket a gyógyszereiről.</string>
+
+    <string name="feat_tracking_title">Követés</string>
+    <string name="feat_tracking_desc">Tartsa nyilván, mikor vette be a gyógyszereit.</string>
+
+    <string name="feat_presets_title">Gyorsműveletek</string>
+    <string name="feat_presets_desc">Állítson be előre beállításokat ismétlődő eseményekhez azonnal.</string>
+
+    <string name="feat_update_title">Maradjon naprakész</string>
+    <string name="feat_update_desc">Ellenőrizze a frissítéseket közvetlenül az alkalmazás beállításaiban.</string>
+
+    <string name="feat_order_title">Teljes irányítás</string>
+    <string name="feat_order_desc">Kezelje ütemtervét pontosan úgy, ahogy szeretné.</string>
+    <string name="feat_layout_title">Okos elrendezés</string>
+    <string name="feat_layout_desc">Tiszta felület, hogy az egészségére összpontosíthasson.</string>
+    <string name="feat_name_title">Személyes érintés</string>
+    <string name="feat_name_desc">Szabja testre élményét a beállításokban.</string>
+    <string name="feat_manage_title">Könnyű kezelés</string>
+    <string name="feat_manage_desc">Adjon hozzá gyorsan gyógyszereket és eseményeket.</string>
+    <string name="feat_store_title">Áruház</string>
+    <string name="feat_store_desc">Áruház leírása.</string>
+    <string name="feat_history_title">Előzmények</string>
+    <string name="feat_history_desc">Kövesse nyomon a betartást és a múltbeli eseményeket.</string>
+
+    <string name="settings_advanced_title">Haladó</string>
+    <string name="settings_advanced_desc">Kísérleti funkciók és frissítések</string>
+    <string name="settings_auto_updates_title">Automatikus frissítések</string>
+    <string name="settings_auto_updates_desc">Frissítések keresése indításkor</string>
+    <string name="settings_setup_title">Kezdeti beállítás</string>
+    <string name="settings_setup_desc">Üdvözlő varázsló újrafuttatása</string>
+    <string name="settings_backup_header">Biztonsági mentés és visszaállítás</string>
+    <string name="settings_export_title">Beállítások exportálása</string>
+    <string name="settings_export_desc">Konfiguráció mentése</string>
+    <string name="settings_import_title">Beállítások importálása</string>
+    <string name="settings_import_desc">Visszaállítás biztonsági mentés fájlból</string>
+    <string name="dialog_restart_title">Újraindítás szükséges</string>
+    <string name="dialog_restart_desc">A beállítások importálva lettek. Indítsa újra az alkalmazást a változtatások érvényesítéséhez.</string>
+    <string name="export_success">Beállítások sikeresen exportálva</string>
+    <string name="export_error">Hiba a beállítások exportálásakor</string>
+    <string name="import_error">Hiba a beállítások importálásakor</string>
+    <string name="perm_toast_required">Kérjük, adja meg az összes engedélyt a folytatáshoz.</string>
+
+    <string name="title_hint">Cím</string>
+    <string name="medicine_name_hint">Gyógyszer neve</string>
+    <string name="select_icon">Ikon</string>
+    <string name="select_color">Szín</string>
+    <string name="time_label">Idő</string>
+    <string name="date_label">Dátum</string>
+    <string name="save_event">Esemény mentése</string>
+    <string name="save_medicine">Gyógyszer mentése</string>
+    <string name="choose_icon">Ikon választása</string>
+    <string name="choose_color">Szín választása</string>
+    <string name="frequency_label">Gyakoriság</string>
+    <string name="add_time">Idő hozzáadása</string>
+    <string name="days_label">Adott napok</string>
+    <string name="every_day_hint">Minden nap</string>
+
+    <string name="frequency_unit_day">Nap</string>
+    <string name="frequency_unit_week">Hét</string>
+    <string name="times_label">alkalom</string>
+    <string name="schedule_label_format">Ütemterv %1$d</string>
+
+    <string name="download_title">Med frissítés</string>
+    <string name="download_desc">%1$s verzió letöltése…</string>
+    <string name="download_started">Letöltés elindult…</string>
+    <string name="download_failed">Letöltés sikertelen: %1$s</string>
+    <string name="notif_channel_updates">Frissítések</string>
+    <string name="update_notif_desc">Koppintson a részletekért és a letöltéshez.</string>
+    <string name="install_error">Telepítési hiba: %1$s</string>
+
+    <string name="switch_to_text_input">Váltás szöveges bevitelre</string>
+    <string name="switch_to_touch_input">Váltás érintéses bevitelre</string>
+
+    <string name="frequency_specific_days">Adott napok</string>
+    <string name="frequency_daily_multiple">Napi %1$dx</string>
+    <string name="frequency_daily">Naponta</string>
+    <string name="edit_time_desc">Idő szerkesztése</string>
+    <string name="status_taken_format">Bevéve: %1$s%2$s</string>
+    <string name="status_scheduled_format">Ütemezve: %1$s</string>
+
+    <string name="dynamic_theme_desc">Dinamikus téma</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Január</string>
+    <string name="month_february">Február</string>
+    <string name="month_march">Március</string>
+    <string name="month_april">Április</string>
+    <string name="month_may">Május</string>
+    <string name="month_june">Június</string>
+    <string name="month_july">Július</string>
+    <string name="month_august">Augusztus</string>
+    <string name="month_september">Szeptember</string>
+    <string name="month_october">Október</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_short_mon">H</string>
+    <string name="day_short_tue">K</string>
+    <string name="day_short_wed">Sz</string>
+    <string name="day_short_thu">Cs</string>
+    <string name="day_short_fri">P</string>
+    <string name="day_short_sat">Sz</string>
+    <string name="day_short_sun">V</string>
+</resources>

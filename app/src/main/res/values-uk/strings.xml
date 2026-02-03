@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Ліки</string>
+    <string name="event_label">Подія</string>
+    <string name="menu_tooltip">Меню</string>
+    <string name="menu_action_desc">Меню дій</string>
+    <string name="expanded_state">Розгорнуто</string>
+    <string name="collapsed_state">Згорнуто</string>
+    <string name="close_menu_action">Закрити меню</string>
+    <string name="choose_date_desc">Вибрати дату</string>
+    <string name="settings_desc">Налаштування</string>
+    <string name="no_events_label">Немає подій на сьогодні</string>
+
+    <string name="item_deleted">Видалено: %1$s</string>
+    <string name="undo_action">Скасувати</string>
+
+    <string name="cancel_action">Скасувати</string>
+    <string name="ok_action">ОК</string>
+    <string name="save_action">Зберегти</string>
+    <string name="new_event_title">Нова подія</string>
+    <string name="new_medicine_title">Нові ліки</string>
+    <string name="add_detail_label">Додати подію в Med</string>
+    <string name="name_hint">Назва</string>
+    <string name="to_take_label">Прийняти</string>
+    <string name="taken_desc">Прийнято</string>
+    <string name="to_take_desc">Прийняти</string>
+
+    <string name="notif_channel_name">Нагадування про ліки</string>
+    <string name="notif_channel_desc">Сповіщення про заплановані ліки</string>
+    <string name="notif_title">Нагадування про ліки</string>
+    <string name="notif_content">Ви прийняли %1$s?</string>
+    <string name="action_yes">Так</string>
+    <string name="action_skip">Пропустити</string>
+    <string name="action_snooze">Відкласти</string>
+    <string name="snoozed_message">Відкладено на 10 хвилин</string>
+    <string name="taken_message">Позначено як прийняте</string>
+    <string name="skipped_message">Пропущено</string>
+
+    <string name="settings_title">Налаштування</string>
+    <string name="discard">Назад</string>
+    <string name="cancel">Скасувати</string>
+    <string name="save">Зберегти</string>
+    <string name="restart_now">Перезапустити зараз</string>
+
+    <string name="settings_header_appearance">Вигляд</string>
+    <string name="settings_theme_title">Тема</string>
+    <string name="settings_theme_system">Системна</string>
+    <string name="settings_theme_light">Світла</string>
+    <string name="settings_theme_dark">Темна</string>
+
+    <string name="settings_header_calendar">Календар</string>
+    <string name="settings_week_start_title">Початок тижня</string>
+    <string name="sunday">Неділя</string>
+    <string name="monday">Понеділок</string>
+
+    <string name="settings_header_customization">Персоналізація</string>
+    <string name="settings_presets_title">Швидкі дії</string>
+    <string name="settings_presets_desc">Керування власними подіями в головному меню</string>
+    <string name="add_action">Додати</string>
+
+    <string name="settings_header_info">Інфо</string>
+    <string name="settings_version_title">Версія програми</string>
+    <string name="unknown">Невідомо</string>
+    <string name="settings_developer_title">Розробник</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Повідомити про помилку / функцію</string>
+    <string name="settings_report_desc">Зв\'язатися в Telegram</string>
+
+    <string name="settings_check_updates_title">Перевірити оновлення</string>
+    <string name="settings_check_updates_desc">Знайти останню версію</string>
+    <string name="update_action">Оновити</string>
+    <string name="update_checking">Перевірка оновлень…</string>
+    <string name="update_no_update">У вас остання версія</string>
+    <string name="update_available">Доступне оновлення: v%1$s</string>
+    <string name="update_error">Помилка перевірки оновлень</string>
+    <string name="update_latest_version_msg">На даний момент оновлень немає.</string>
+    <string name="update_error_msg">Не вдалося перевірити оновлення. Перевірте з\'єднання.</string>
+    <string name="later">Пізніше</string>
+    <string name="close">Закрити</string>
+
+    <string name="quick_actions_title">Швидкі дії</string>
+    <string name="quick_actions_info">Швидкі дії допомагають швидко додавати повторювані явища або події в Med.</string>
+    <string name="active_actions_header">Активні дії</string>
+
+    <string name="welcome_to">Ласкаво просимо в</string>
+    <string name="welcome_preparing_subtitle">Давайте все підготуємо для вас.</string>
+    <string name="next">Далі</string>
+    <string name="back">Назад</string>
+    <string name="get_started">Розпочати</string>
+
+    <string name="perm_required">Потрібно</string>
+    <string name="perm_permissions">Дозволи</string>
+    <string name="perm_intro_text">Ці дозволи необхідні для коректної роботи Med. Будь ласка, надайте їх для продовження.</string>
+
+    <string name="perm_notif_title">Сповіщення</string>
+    <string name="perm_notif_desc">Дізнавайтеся відразу, коли приймати ліки.</string>
+
+    <string name="perm_install_title">Встановлення програм</string>
+    <string name="perm_install_desc">Потрібно для завантаження та встановлення оновлень.</string>
+
+    <string name="perm_usage_desc">Потрібно для відстеження статистики використання.</string>
+    <string name="perm_dashboard_title">Панель керування</string>
+    <string name="perm_dashboard_desc">Увімкнути функції накладання поверх вікон.</string>
+
+    <string name="feat_discover">Відкрийте</string>
+    <string name="feat_features">Можливості</string>
+    <string name="feat_intro">Ось що ви можете робити з новим додатком Med.</string>
+
+    <string name="feat_custom_events_title">Власні події</string>
+    <string name="feat_custom_events_desc">Створюйте та керуйте особистими подіями здоров\'я.</string>
+
+    <string name="feat_reminders_title">Розумні нагадування</string>
+    <string name="feat_reminders_desc">Отримуйте своєчасні сповіщення про ліки.</string>
+
+    <string name="feat_tracking_title">Відстеження</string>
+    <string name="feat_tracking_desc">Зберігайте історію прийому ліків.</string>
+
+    <string name="feat_presets_title">Швидкі дії</string>
+    <string name="feat_presets_desc">Миттєво налаштовуйте шаблони для повторюваних подій.</string>
+
+    <string name="feat_update_title">Будьте в курсі</string>
+    <string name="feat_update_desc">Перевіряйте оновлення безпосередньо в налаштуваннях програми.</string>
+
+    <string name="feat_order_title">Повний контроль</string>
+    <string name="feat_order_desc">Керуйте своїм розкладом так, як вам зручно.</string>
+    <string name="feat_layout_title">Розумний інтерфейс</string>
+    <string name="feat_layout_desc">Чистий інтерфейс, щоб зосередитися на здоров\'ї.</string>
+    <string name="feat_name_title">Особистий підхід</string>
+    <string name="feat_name_desc">Налаштуйте додаток під себе.</string>
+    <string name="feat_manage_title">Легке керування</string>
+    <string name="feat_manage_desc">Швидко додавайте ліки та події.</string>
+    <string name="feat_store_title">Магазин</string>
+    <string name="feat_store_desc">Опис магазину.</string>
+    <string name="feat_history_title">Історія</string>
+    <string name="feat_history_desc">Відстежуйте дотримання режиму та минулі події.</string>
+
+    <string name="settings_advanced_title">Додатково</string>
+    <string name="settings_advanced_desc">Експериментальні функції та оновлення</string>
+    <string name="settings_auto_updates_title">Автооновлення</string>
+    <string name="settings_auto_updates_desc">Перевіряти оновлення під час запуску</string>
+    <string name="settings_setup_title">Початкове налаштування</string>
+    <string name="settings_setup_desc">Запустити майстер налаштування знову</string>
+    <string name="settings_backup_header">Резервне копіювання та відновлення</string>
+    <string name="settings_export_title">Експорт налаштувань</string>
+    <string name="settings_export_desc">Зберегти конфігурацію</string>
+    <string name="settings_import_title">Імпорт налаштувань</string>
+    <string name="settings_import_desc">Відновити з файлу резервної копії</string>
+    <string name="dialog_restart_title">Потрібен перезапуск</string>
+    <string name="dialog_restart_desc">Налаштування імпортовано. Перезапустіть додаток, щоб застосувати зміни.</string>
+    <string name="export_success">Налаштування успішно експортовано</string>
+    <string name="export_error">Помилка експорту налаштувань</string>
+    <string name="import_error">Помилка імпорту налаштувань</string>
+    <string name="perm_toast_required">Будь ласка, надайте всі дозволи для продовження.</string>
+
+    <string name="title_hint">Заголовок</string>
+    <string name="medicine_name_hint">Назва ліків</string>
+    <string name="select_icon">Піктограма</string>
+    <string name="select_color">Колір</string>
+    <string name="time_label">Час</string>
+    <string name="date_label">Дата</string>
+    <string name="save_event">Зберегти подію</string>
+    <string name="save_medicine">Зберегти ліки</string>
+    <string name="choose_icon">Вибрати піктограму</string>
+    <string name="choose_color">Вибрати колір</string>
+    <string name="frequency_label">Частота</string>
+    <string name="add_time">Додати час</string>
+    <string name="days_label">Конкретні дні</string>
+    <string name="every_day_hint">Кожен день</string>
+
+    <string name="frequency_unit_day">День</string>
+    <string name="frequency_unit_week">Тиждень</string>
+    <string name="times_label">разів</string>
+    <string name="schedule_label_format">Розклад %1$d</string>
+
+    <string name="download_title">Оновлення Med</string>
+    <string name="download_desc">Завантаження версії %1$s…</string>
+    <string name="download_started">Завантаження розпочато…</string>
+    <string name="download_failed">Помилка завантаження: %1$s</string>
+    <string name="notif_channel_updates">Оновлення</string>
+    <string name="update_notif_desc">Натисніть, щоб переглянути деталі та завантажити.</string>
+    <string name="install_error">Помилка встановлення: %1$s</string>
+
+    <string name="switch_to_text_input">Переключитися на введення тексту</string>
+    <string name="switch_to_touch_input">Переключитися на сенсорне введення</string>
+
+    <string name="frequency_specific_days">Конкретні дні</string>
+    <string name="frequency_daily_multiple">%1$dx на день</string>
+    <string name="frequency_daily">Щодня</string>
+    <string name="edit_time_desc">Змінити час</string>
+    <string name="status_taken_format">Прийнято о %1$s%2$s</string>
+    <string name="status_scheduled_format">Заплановано на %1$s</string>
+
+    <string name="dynamic_theme_desc">Динамічна тема</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Січень</string>
+    <string name="month_february">Лютий</string>
+    <string name="month_march">Березень</string>
+    <string name="month_april">Квітень</string>
+    <string name="month_may">Травень</string>
+    <string name="month_june">Червень</string>
+    <string name="month_july">Липень</string>
+    <string name="month_august">Серпень</string>
+    <string name="month_september">Вересень</string>
+    <string name="month_october">Жовтень</string>
+    <string name="month_november">Листопад</string>
+    <string name="month_december">Грудень</string>
+
+    <string name="day_short_mon">П</string>
+    <string name="day_short_tue">В</string>
+    <string name="day_short_wed">С</string>
+    <string name="day_short_thu">Ч</string>
+    <string name="day_short_fri">П</string>
+    <string name="day_short_sat">С</string>
+    <string name="day_short_sun">Н</string>
+</resources>

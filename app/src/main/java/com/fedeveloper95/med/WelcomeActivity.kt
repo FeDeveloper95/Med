@@ -1,4 +1,4 @@
-@file:OptIn(androidx.compose.ui.text.ExperimentalTextApi::class)
+@file:OptIn(ExperimentalTextApi::class)
 
 package com.fedeveloper95.med
 
@@ -89,7 +89,7 @@ class WelcomeActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
 
-        val prefs = getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
         val isFirstRun = prefs.getBoolean("is_first_run", true)
         val forceShow = intent.getBooleanExtra("FORCE_SHOW", false)
 

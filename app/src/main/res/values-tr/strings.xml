@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">İlaç</string>
+    <string name="event_label">Etkinlik</string>
+    <string name="menu_tooltip">Menü</string>
+    <string name="menu_action_desc">İşlem menüsü</string>
+    <string name="expanded_state">Genişletilmiş</string>
+    <string name="collapsed_state">Daraltılmış</string>
+    <string name="close_menu_action">Menüyü kapat</string>
+    <string name="choose_date_desc">Tarih seç</string>
+    <string name="settings_desc">Ayarlar</string>
+    <string name="no_events_label">Bugün için etkinlik yok</string>
+
+    <string name="item_deleted">Silindi: %1$s</string>
+    <string name="undo_action">Geri al</string>
+
+    <string name="cancel_action">İptal</string>
+    <string name="ok_action">Tamam</string>
+    <string name="save_action">Kaydet</string>
+    <string name="new_event_title">Yeni Etkinlik</string>
+    <string name="new_medicine_title">Yeni İlaç</string>
+    <string name="add_detail_label">Med\'e bir etkinlik ekle</string>
+    <string name="name_hint">İsim</string>
+    <string name="to_take_label">Alınacak</string>
+    <string name="taken_desc">Alındı</string>
+    <string name="to_take_desc">Alınacak</string>
+
+    <string name="notif_channel_name">İlaç Hatırlatıcıları</string>
+    <string name="notif_channel_desc">Planlanan ilaçlar için bildirimler</string>
+    <string name="notif_title">İlaç Hatırlatıcısı</string>
+    <string name="notif_content">%1$s ilacını aldın mı?</string>
+    <string name="action_yes">Evet</string>
+    <string name="action_skip">Atla</string>
+    <string name="action_snooze">Ertele</string>
+    <string name="snoozed_message">10 dakika ertelendi</string>
+    <string name="taken_message">Alındı olarak işaretlendi</string>
+    <string name="skipped_message">Atlandı</string>
+
+    <string name="settings_title">Ayarlar</string>
+    <string name="discard">Geri</string>
+    <string name="cancel">İptal</string>
+    <string name="save">Kaydet</string>
+    <string name="restart_now">Şimdi Yeniden Başlat</string>
+
+    <string name="settings_header_appearance">Görünüm</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Açık</string>
+    <string name="settings_theme_dark">Koyu</string>
+
+    <string name="settings_header_calendar">Takvim</string>
+    <string name="settings_week_start_title">Hafta başlangıcı</string>
+    <string name="sunday">Pazar</string>
+    <string name="monday">Pazartesi</string>
+
+    <string name="settings_header_customization">Özelleştirme</string>
+    <string name="settings_presets_title">Hızlı İşlemler</string>
+    <string name="settings_presets_desc">Ana menüde özel etkinlikleri yönet</string>
+    <string name="add_action">Ekle</string>
+
+    <string name="settings_header_info">Bilgi</string>
+    <string name="settings_version_title">Uygulama Sürümü</string>
+    <string name="unknown">Bilinmiyor</string>
+    <string name="settings_developer_title">Geliştirici</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Hata / Özellik Bildir</string>
+    <string name="settings_report_desc">Telegram üzerinden iletişime geç</string>
+
+    <string name="settings_check_updates_title">Güncellemeleri Kontrol Et</string>
+    <string name="settings_check_updates_desc">En son sürümü bul</string>
+    <string name="update_action">Güncelle</string>
+    <string name="update_checking">Güncellemeler kontrol ediliyor…</string>
+    <string name="update_no_update">En son sürüme sahipsiniz</string>
+    <string name="update_available">Güncelleme mevcut: v%1$s</string>
+    <string name="update_error">Güncelleme kontrol hatası</string>
+    <string name="update_latest_version_msg">Şu anda güncelleme mevcut değil.</string>
+    <string name="update_error_msg">Güncellemeler kontrol edilemiyor. Bağlantınızı kontrol edin.</string>
+    <string name="later">Daha sonra</string>
+    <string name="close">Kapat</string>
+
+    <string name="quick_actions_title">Hızlı İşlemler</string>
+    <string name="quick_actions_info">Hızlı İşlemler, tekrarlayan olayları veya etkinlikleri Med\'e hızlıca eklemenize yardımcı olur.</string>
+    <string name="active_actions_header">Aktif İşlemler</string>
+
+    <string name="welcome_to">Hoş Geldiniz</string>
+    <string name="welcome_preparing_subtitle">Her şeyi sizin için hazırlayalım.</string>
+    <string name="next">İleri</string>
+    <string name="back">Geri</string>
+    <string name="get_started">Başla</string>
+
+    <string name="perm_required">Gerekli</string>
+    <string name="perm_permissions">İzinler</string>
+    <string name="perm_intro_text">Med\'in düzgün çalışması için bu izinler gereklidir. Devam etmek için lütfen izin verin.</string>
+
+    <string name="perm_notif_title">Bildirimler</string>
+    <string name="perm_notif_desc">İlaçlarınızı ne zaman alacağınızı anında öğrenin.</string>
+
+    <string name="perm_install_title">Uygulama Yükleme</string>
+    <string name="perm_install_desc">Güncellemeleri indirmek ve yüklemek için gereklidir.</string>
+
+    <string name="perm_usage_desc">Kullanım istatistiklerini izlemek için gereklidir.</string>
+    <string name="perm_dashboard_title">Kontrol Paneli</string>
+    <string name="perm_dashboard_desc">Sistem kaplaması özelliklerini etkinleştir.</string>
+
+    <string name="feat_discover">Keşfet</string>
+    <string name="feat_features">Özellikler</string>
+    <string name="feat_intro">İşte yeni Med uygulamanızla yapabilecekleriniz.</string>
+
+    <string name="feat_custom_events_title">Özel Etkinlikler</string>
+    <string name="feat_custom_events_desc">Kişisel sağlık etkinliklerinizi oluşturun ve yönetin.</string>
+
+    <string name="feat_reminders_title">Akıllı Hatırlatıcılar</string>
+    <string name="feat_reminders_desc">İlaçlarınız için zamanında bildirimler alın.</string>
+
+    <string name="feat_tracking_title">Takip</string>
+    <string name="feat_tracking_desc">İlaçlarınızı ne zaman aldığınızın geçmişini tutun.</string>
+
+    <string name="feat_presets_title">Hızlı İşlemler</string>
+    <string name="feat_presets_desc">Tekrarlayan etkinlikler için anında ön ayarlar oluşturun.</string>
+
+    <string name="feat_update_title">Güncel Kalın</string>
+    <string name="feat_update_desc">Güncellemeleri doğrudan uygulama ayarlarından kontrol edin.</string>
+
+    <string name="feat_order_title">Tam Kontrol</string>
+    <string name="feat_order_desc">Programınızı tam olarak istediğiniz gibi yönetin.</string>
+    <string name="feat_layout_title">Akıllı Düzen</string>
+    <string name="feat_layout_desc">Sağlığınıza odaklanmanız için temiz bir arayüz.</string>
+    <string name="feat_name_title">Kişisel Dokunuş</string>
+    <string name="feat_name_desc">Deneyiminizi ayarlarda özelleştirin.</string>
+    <string name="feat_manage_title">Kolay Yönetim</string>
+    <string name="feat_manage_desc">İlaçları ve etkinlikleri hızlıca ekleyin.</string>
+    <string name="feat_store_title">Mağaza</string>
+    <string name="feat_store_desc">Mağaza açıklaması.</string>
+    <string name="feat_history_title">Geçmiş</string>
+    <string name="feat_history_desc">Uyumluluğunuzu ve geçmiş etkinlikleri takip edin.</string>
+
+    <string name="settings_advanced_title">Gelişmiş</string>
+    <string name="settings_advanced_desc">Deneysel özellikler ve güncellemeler</string>
+    <string name="settings_auto_updates_title">Otomatik güncellemeler</string>
+    <string name="settings_auto_updates_desc">Başlangıçta güncellemeleri kontrol et</string>
+    <string name="settings_setup_title">İlk Kurulum</string>
+    <string name="settings_setup_desc">Karşılama sihirbazını tekrar çalıştır</string>
+    <string name="settings_backup_header">Yedekleme ve Geri Yükleme</string>
+    <string name="settings_export_title">Ayarları Dışa Aktar</string>
+    <string name="settings_export_desc">Yapılandırmayı kaydet</string>
+    <string name="settings_import_title">Ayarları İçe Aktar</string>
+    <string name="settings_import_desc">Yedek dosyasından geri yükle</string>
+    <string name="dialog_restart_title">Yeniden Başlatma Gerekli</string>
+    <string name="dialog_restart_desc">Ayarlar içe aktarıldı. Değişiklikleri uygulamak için uygulamayı yeniden başlatın.</string>
+    <string name="export_success">Ayarlar başarıyla dışa aktarıldı</string>
+    <string name="export_error">Ayarları dışa aktarma hatası</string>
+    <string name="import_error">Ayarları içe aktarma hatası</string>
+    <string name="perm_toast_required">Devam etmek için lütfen tüm izinleri verin.</string>
+
+    <string name="title_hint">Başlık</string>
+    <string name="medicine_name_hint">İlaç Adı</string>
+    <string name="select_icon">Simge</string>
+    <string name="select_color">Renk</string>
+    <string name="time_label">Zaman</string>
+    <string name="date_label">Tarih</string>
+    <string name="save_event">Etkinliği Kaydet</string>
+    <string name="save_medicine">İlacı Kaydet</string>
+    <string name="choose_icon">Simge Seç</string>
+    <string name="choose_color">Renk Seç</string>
+    <string name="frequency_label">Sıklık</string>
+    <string name="add_time">Zaman Ekle</string>
+    <string name="days_label">Belirli Günler</string>
+    <string name="every_day_hint">Her gün</string>
+
+    <string name="frequency_unit_day">Gün</string>
+    <string name="frequency_unit_week">Hafta</string>
+    <string name="times_label">kez</string>
+    <string name="schedule_label_format">Program %1$d</string>
+
+    <string name="download_title">Med Güncellemesi</string>
+    <string name="download_desc">%1$s sürümü indiriliyor…</string>
+    <string name="download_started">İndirme başladı…</string>
+    <string name="download_failed">İndirme başarısız: %1$s</string>
+    <string name="notif_channel_updates">Güncellemeler</string>
+    <string name="update_notif_desc">Ayrıntıları görmek ve indirmek için dokunun.</string>
+    <string name="install_error">Yükleme hatası: %1$s</string>
+
+    <string name="switch_to_text_input">Metin Girişine Geç</string>
+    <string name="switch_to_touch_input">Dokunmatik Girişe Geç</string>
+
+    <string name="frequency_specific_days">Belirli Günler</string>
+    <string name="frequency_daily_multiple">Günde %1$dx</string>
+    <string name="frequency_daily">Günlük</string>
+    <string name="edit_time_desc">Zamanı düzenle</string>
+    <string name="status_taken_format">%1$s%2$s alındı</string>
+    <string name="status_scheduled_format">%1$s için planlandı</string>
+
+    <string name="dynamic_theme_desc">Dinamik Tema</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Ocak</string>
+    <string name="month_february">Şubat</string>
+    <string name="month_march">Mart</string>
+    <string name="month_april">Nisan</string>
+    <string name="month_may">Mayıs</string>
+    <string name="month_june">Haziran</string>
+    <string name="month_july">Temmuz</string>
+    <string name="month_august">Ağustos</string>
+    <string name="month_september">Eylül</string>
+    <string name="month_october">Ekim</string>
+    <string name="month_november">Kasım</string>
+    <string name="month_december">Aralık</string>
+
+    <string name="day_short_mon">P</string>
+    <string name="day_short_tue">S</string>
+    <string name="day_short_wed">Ç</string>
+    <string name="day_short_thu">P</string>
+    <string name="day_short_fri">C</string>
+    <string name="day_short_sat">C</string>
+    <string name="day_short_sun">P</string>
+</resources>

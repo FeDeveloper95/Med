@@ -166,4 +166,50 @@
     <string name="add_time">Add Time</string>
     <string name="days_label">Specific Days</string>
     <string name="every_day_hint">Every day</string>
+
+    <string name="frequency_unit_day">Day</string>
+    <string name="frequency_unit_week">Week</string>
+    <string name="times_label">Times</string>
+    <string name="schedule_label_format">Schedule %1$d</string>
+
+    <string name="download_title">Med Update</string>
+    <string name="download_desc">Downloading version %1$s…</string>
+    <string name="download_started">Download started…</string>
+    <string name="download_failed">Download failed: %1$s</string>
+    <string name="notif_channel_updates">Updates</string>
+    <string name="update_notif_desc">Tap to view details and download.</string>
+    <string name="install_error">Install error: %1$s</string>
+
+    <string name="switch_to_text_input">Switch to Text Input</string>
+    <string name="switch_to_touch_input">Switch to Touch Input</string>
+
+    <string name="frequency_specific_days">Specific Days</string>
+    <string name="frequency_daily_multiple">%1$dx Daily</string>
+    <string name="frequency_daily">Daily</string>
+    <string name="edit_time_desc">Edit time</string>
+    <string name="status_taken_format">Taken %1$s%2$s</string>
+    <string name="status_scheduled_format">Scheduled for %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynamic Theme</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">January</string>
+    <string name="month_february">February</string>
+    <string name="month_march">March</string>
+    <string name="month_april">April</string>
+    <string name="month_may">May</string>
+    <string name="month_june">June</string>
+    <string name="month_july">July</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">October</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">W</string>
+    <string name="day_short_thu">T</string>
+    <string name="day_short_fri">F</string>
+    <string name="day_short_sat">S</string>
+    <string name="day_short_sun">S</string>
 </resources>

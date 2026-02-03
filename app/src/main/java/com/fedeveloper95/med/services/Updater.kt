@@ -1,6 +1,5 @@
 package com.fedeveloper95.med.services
 
-import android.R
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -15,6 +14,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
 import com.fedeveloper95.med.SettingsActivity
+import com.fedeveloper95.med.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -85,8 +85,8 @@ object Updater {
         try {
             val fileName = "Med_$version.apk"
             val request = DownloadManager.Request(Uri.parse(url))
-                .setTitle("Med Update")
-                .setDescription("Downloading version $version...")
+                .setTitle(context.getString(R.string.download_title))
+                .setDescription(context.getString(R.string.download_desc, version))
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName)
                 .setMimeType("application/vnd.android.package-archive")
@@ -94,9 +94,9 @@ object Updater {
             val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             downloadManager.enqueue(request)
 
-            Toast.makeText(context, "Download started...", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, context.getString(R.string.download_started), Toast.LENGTH_SHORT).show()
         } catch (e: Exception) {
-            Toast.makeText(context, "Download failed: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.download_failed, e.message), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -106,7 +106,7 @@ object Updater {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Updates",
+                context.getString(R.string.notif_channel_updates),
                 NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
@@ -125,9 +125,9 @@ object Updater {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.stat_sys_download_done)
-            .setContentTitle("Update Available: v${updateInfo.version}")
-            .setContentText("Tap to view details and download.")
+            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+            .setContentTitle(context.getString(R.string.update_available, updateInfo.version))
+            .setContentText(context.getString(R.string.update_notif_desc))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -195,7 +195,7 @@ class UpdateReceiver : BroadcastReceiver() {
             }
             context.startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(context, "Install error: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, context.getString(R.string.install_error, e.message), Toast.LENGTH_LONG).show()
         }
     }
 }

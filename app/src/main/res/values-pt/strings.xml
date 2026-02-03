@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Medicamento</string>
+    <string name="event_label">Evento</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Menu de ações</string>
+    <string name="expanded_state">Expandido</string>
+    <string name="collapsed_state">Recolhido</string>
+    <string name="close_menu_action">Fechar menu</string>
+    <string name="choose_date_desc">Escolher data</string>
+    <string name="settings_desc">Configurações</string>
+    <string name="no_events_label">Sem eventos para hoje</string>
+
+    <string name="item_deleted">Excluído: %1$s</string>
+    <string name="undo_action">Desfazer</string>
+
+    <string name="cancel_action">Cancelar</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Salvar</string>
+    <string name="new_event_title">Novo Evento</string>
+    <string name="new_medicine_title">Novo Medicamento</string>
+    <string name="add_detail_label">Adicionar um evento ao Med</string>
+    <string name="name_hint">Nome</string>
+    <string name="to_take_label">A tomar</string>
+    <string name="taken_desc">Tomado</string>
+    <string name="to_take_desc">A tomar</string>
+
+    <string name="notif_channel_name">Lembretes de Medicamentos</string>
+    <string name="notif_channel_desc">Notificações para medicamentos agendados</string>
+    <string name="notif_title">Lembrete de Medicamento</string>
+    <string name="notif_content">Você tomou %1$s?</string>
+    <string name="action_yes">Sim</string>
+    <string name="action_skip">Pular</string>
+    <string name="action_snooze">Adiar</string>
+    <string name="snoozed_message">Adiado por 10 minutos</string>
+    <string name="taken_message">Marcado como tomado</string>
+    <string name="skipped_message">Pulado</string>
+
+    <string name="settings_title">Configurações</string>
+    <string name="discard">Voltar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="save">Salvar</string>
+    <string name="restart_now">Reiniciar Agora</string>
+
+    <string name="settings_header_appearance">Aparência</string>
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+
+    <string name="settings_header_calendar">Calendário</string>
+    <string name="settings_week_start_title">Início da semana</string>
+    <string name="sunday">Domingo</string>
+    <string name="monday">Segunda-feira</string>
+
+    <string name="settings_header_customization">Personalização</string>
+    <string name="settings_presets_title">Ações Rápidas</string>
+    <string name="settings_presets_desc">Gerenciar eventos personalizados no menu principal</string>
+    <string name="add_action">Adicionar</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">Versão do App</string>
+    <string name="unknown">Desconhecido</string>
+    <string name="settings_developer_title">Desenvolvedor</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Reportar Erro / Funcionalidade</string>
+    <string name="settings_report_desc">Contatar no Telegram</string>
+
+    <string name="settings_check_updates_title">Verificar Atualizações</string>
+    <string name="settings_check_updates_desc">Encontrar a versão mais recente</string>
+    <string name="update_action">Atualizar</string>
+    <string name="update_checking">Verificando atualizações…</string>
+    <string name="update_no_update">Você tem a versão mais recente</string>
+    <string name="update_available">Atualização disponível: v%1$s</string>
+    <string name="update_error">Erro ao verificar atualizações</string>
+    <string name="update_latest_version_msg">Nenhuma atualização disponível no momento.</string>
+    <string name="update_error_msg">Não foi possível verificar atualizações. Verifique sua conexão.</string>
+    <string name="later">Mais tarde</string>
+    <string name="close">Fechar</string>
+
+    <string name="quick_actions_title">Ações Rápidas</string>
+    <string name="quick_actions_info">Ações Rápidas ajudam você a adicionar rapidamente fenômenos recorrentes ou eventos ao Med.</string>
+    <string name="active_actions_header">Ações Ativas</string>
+
+    <string name="welcome_to">Bem-vindo ao</string>
+    <string name="welcome_preparing_subtitle">Vamos preparar tudo para você.</string>
+    <string name="next">Próximo</string>
+    <string name="back">Voltar</string>
+    <string name="get_started">Começar</string>
+
+    <string name="perm_required">Obrigatório</string>
+    <string name="perm_permissions">Permissões</string>
+    <string name="perm_intro_text">Estas permissões são necessárias para o Med funcionar corretamente. Por favor, conceda-as para continuar.</string>
+
+    <string name="perm_notif_title">Notificações</string>
+    <string name="perm_notif_desc">Saiba imediatamente quando tomar seus remédios.</string>
+
+    <string name="perm_install_title">Instalação de Apps</string>
+    <string name="perm_install_desc">Necessário para baixar e instalar atualizações.</string>
+
+    <string name="perm_usage_desc">Necessário para rastrear estatísticas de uso.</string>
+    <string name="perm_dashboard_title">Painel</string>
+    <string name="perm_dashboard_desc">Habilitar recursos de sobreposição do sistema.</string>
+
+    <string name="feat_discover">Descobrir</string>
+    <string name="feat_features">Funcionalidades</string>
+    <string name="feat_intro">Aqui está o que você pode fazer com seu novo app Med.</string>
+
+    <string name="feat_custom_events_title">Eventos Personalizados</string>
+    <string name="feat_custom_events_desc">Crie e gerencie seus eventos de saúde pessoais.</string>
+
+    <string name="feat_reminders_title">Lembretes Inteligentes</string>
+    <string name="feat_reminders_desc">Receba notificações pontuais para seus medicamentos.</string>
+
+    <string name="feat_tracking_title">Rastreamento</string>
+    <string name="feat_tracking_desc">Mantenha um histórico de quando tomou seus remédios.</string>
+
+    <string name="feat_presets_title">Ações Rápidas</string>
+    <string name="feat_presets_desc">Configure predefinições para eventos recorrentes instantaneamente.</string>
+
+    <string name="feat_update_title">Mantenha-se Atualizado</string>
+    <string name="feat_update_desc">Verifique atualizações diretamente nas configurações do app.</string>
+
+    <string name="feat_order_title">Controle Total</string>
+    <string name="feat_order_desc">Gerencie sua agenda exatamente como quiser.</string>
+    <string name="feat_layout_title">Layout Inteligente</string>
+    <string name="feat_layout_desc">Uma interface limpa para focar na sua saúde.</string>
+    <string name="feat_name_title">Toque Pessoal</string>
+    <string name="feat_name_desc">Personalize sua experiência nas configurações.</string>
+    <string name="feat_manage_title">Gerenciamento Fácil</string>
+    <string name="feat_manage_desc">Adicione rapidamente medicamentos e eventos.</string>
+    <string name="feat_store_title">Loja</string>
+    <string name="feat_store_desc">Descrição da loja.</string>
+    <string name="feat_history_title">Histórico</string>
+    <string name="feat_history_desc">Rastreie sua adesão e eventos passados.</string>
+
+    <string name="settings_advanced_title">Avançado</string>
+    <string name="settings_advanced_desc">Recursos experimentais e atualizações</string>
+    <string name="settings_auto_updates_title">Atualizações automáticas</string>
+    <string name="settings_auto_updates_desc">Verificar atualizações ao iniciar</string>
+    <string name="settings_setup_title">Configuração Inicial</string>
+    <string name="settings_setup_desc">Executar o assistente de boas-vindas novamente</string>
+    <string name="settings_backup_header">Backup e Restauração</string>
+    <string name="settings_export_title">Exportar Configurações</string>
+    <string name="settings_export_desc">Salvar configuração</string>
+    <string name="settings_import_title">Importar Configurações</string>
+    <string name="settings_import_desc">Restaurar de um arquivo de backup</string>
+    <string name="dialog_restart_title">Reinicialização Necessária</string>
+    <string name="dialog_restart_desc">Configurações importadas. Reinicie o app para aplicar as alterações.</string>
+    <string name="export_success">Configurações exportadas com sucesso</string>
+    <string name="export_error">Erro ao exportar configurações</string>
+    <string name="import_error">Erro ao importar configurações</string>
+    <string name="perm_toast_required">Por favor, conceda todas as permissões para continuar.</string>
+
+    <string name="title_hint">Título</string>
+    <string name="medicine_name_hint">Nome do Medicamento</string>
+    <string name="select_icon">Ícone</string>
+    <string name="select_color">Cor</string>
+    <string name="time_label">Hora</string>
+    <string name="date_label">Data</string>
+    <string name="save_event">Salvar Evento</string>
+    <string name="save_medicine">Salvar Medicamento</string>
+    <string name="choose_icon">Escolher Ícone</string>
+    <string name="choose_color">Escolher Cor</string>
+    <string name="frequency_label">Frequência</string>
+    <string name="add_time">Adicionar Hora</string>
+    <string name="days_label">Dias Específicos</string>
+    <string name="every_day_hint">Todo dia</string>
+
+    <string name="frequency_unit_day">Dia</string>
+    <string name="frequency_unit_week">Semana</string>
+    <string name="times_label">vezes</string>
+    <string name="schedule_label_format">Agendamento %1$d</string>
+
+    <string name="download_title">Atualização Med</string>
+    <string name="download_desc">Baixando versão %1$s…</string>
+    <string name="download_started">Download iniciado…</string>
+    <string name="download_failed">Download falhou: %1$s</string>
+    <string name="notif_channel_updates">Atualizações</string>
+    <string name="update_notif_desc">Toque para ver detalhes e baixar.</string>
+    <string name="install_error">Erro de instalação: %1$s</string>
+
+    <string name="switch_to_text_input">Alternar para Entrada de Texto</string>
+    <string name="switch_to_touch_input">Alternar para Entrada de Toque</string>
+
+    <string name="frequency_specific_days">Dias Específicos</string>
+    <string name="frequency_daily_multiple">%1$dx Diariamente</string>
+    <string name="frequency_daily">Diariamente</string>
+    <string name="edit_time_desc">Editar hora</string>
+    <string name="status_taken_format">Tomado às %1$s%2$s</string>
+    <string name="status_scheduled_format">Agendado para %1$s</string>
+
+    <string name="dynamic_theme_desc">Tema Dinâmico</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Janeiro</string>
+    <string name="month_february">Fevereiro</string>
+    <string name="month_march">Março</string>
+    <string name="month_april">Abril</string>
+    <string name="month_may">Maio</string>
+    <string name="month_june">Junho</string>
+    <string name="month_july">Julho</string>
+    <string name="month_august">Agosto</string>
+    <string name="month_september">Setembro</string>
+    <string name="month_october">Outubro</string>
+    <string name="month_november">Novembro</string>
+    <string name="month_december">Dezembro</string>
+
+    <string name="day_short_mon">S</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">Q</string>
+    <string name="day_short_thu">Q</string>
+    <string name="day_short_fri">S</string>
+    <string name="day_short_sat">S</string>
+    <string name="day_short_sun">D</string>
+</resources>

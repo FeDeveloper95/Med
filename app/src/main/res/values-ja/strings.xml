@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">薬</string>
+    <string name="event_label">イベント</string>
+    <string name="menu_tooltip">メニュー</string>
+    <string name="menu_action_desc">アクションメニュー</string>
+    <string name="expanded_state">展開</string>
+    <string name="collapsed_state">折りたたみ</string>
+    <string name="close_menu_action">メニューを閉じる</string>
+    <string name="choose_date_desc">日付を選択</string>
+    <string name="settings_desc">設定</string>
+    <string name="no_events_label">今日のイベントはありません</string>
+
+    <string name="item_deleted">削除しました: %1$s</string>
+    <string name="undo_action">元に戻す</string>
+
+    <string name="cancel_action">キャンセル</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">保存</string>
+    <string name="new_event_title">新しいイベント</string>
+    <string name="new_medicine_title">新しい薬</string>
+    <string name="add_detail_label">Medにイベントを追加</string>
+    <string name="name_hint">名前</string>
+    <string name="to_take_label">服用予定</string>
+    <string name="taken_desc">服用済み</string>
+    <string name="to_take_desc">服用予定</string>
+
+    <string name="notif_channel_name">服薬リマインダー</string>
+    <string name="notif_channel_desc">スケジュールされた薬の通知</string>
+    <string name="notif_title">服薬リマインダー</string>
+    <string name="notif_content">%1$sを服用しましたか？</string>
+    <string name="action_yes">はい</string>
+    <string name="action_skip">スキップ</string>
+    <string name="action_snooze">スヌーズ</string>
+    <string name="snoozed_message">10分間スヌーズしました</string>
+    <string name="taken_message">服用済みにしました</string>
+    <string name="skipped_message">スキップしました</string>
+
+    <string name="settings_title">設定</string>
+    <string name="discard">戻る</string>
+    <string name="cancel">キャンセル</string>
+    <string name="save">保存</string>
+    <string name="restart_now">今すぐ再起動</string>
+
+    <string name="settings_header_appearance">外観</string>
+    <string name="settings_theme_title">テーマ</string>
+    <string name="settings_theme_system">システム</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+
+    <string name="settings_header_calendar">カレンダー</string>
+    <string name="settings_week_start_title">週の始まり</string>
+    <string name="sunday">日曜日</string>
+    <string name="monday">月曜日</string>
+
+    <string name="settings_header_customization">カスタマイズ</string>
+    <string name="settings_presets_title">クイックアクション</string>
+    <string name="settings_presets_desc">メインメニューでカスタムイベントを管理</string>
+    <string name="add_action">追加</string>
+
+    <string name="settings_header_info">情報</string>
+    <string name="settings_version_title">アプリバージョン</string>
+    <string name="unknown">不明</string>
+    <string name="settings_developer_title">開発者</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">バグ / 機能の報告</string>
+    <string name="settings_report_desc">Telegramで連絡</string>
+
+    <string name="settings_check_updates_title">アップデートを確認</string>
+    <string name="settings_check_updates_desc">最新バージョンを検索</string>
+    <string name="update_action">アップデート</string>
+    <string name="update_checking">アップデートを確認中…</string>
+    <string name="update_no_update">最新バージョンを使用しています</string>
+    <string name="update_available">アップデート利用可能: v%1$s</string>
+    <string name="update_error">アップデート確認エラー</string>
+    <string name="update_latest_version_msg">現在利用可能なアップデートはありません。</string>
+    <string name="update_error_msg">アップデートを確認できませんでした。接続を確認してください。</string>
+    <string name="later">後で</string>
+    <string name="close">閉じる</string>
+
+    <string name="quick_actions_title">クイックアクション</string>
+    <string name="quick_actions_info">クイックアクションを使用すると、繰り返される現象やイベントをMedにすばやく追加できます。</string>
+    <string name="active_actions_header">アクティブなアクション</string>
+
+    <string name="welcome_to">へようこそ</string>
+    <string name="welcome_preparing_subtitle">準備を整えましょう。</string>
+    <string name="next">次へ</string>
+    <string name="back">戻る</string>
+    <string name="get_started">始める</string>
+
+    <string name="perm_required">必須</string>
+    <string name="perm_permissions">権限</string>
+    <string name="perm_intro_text">これらの権限は、Medが正しく機能するために必要です。続行するには許可してください。</string>
+
+    <string name="perm_notif_title">通知</string>
+    <string name="perm_notif_desc">薬を服用する時間をすぐに知ることができます。</string>
+
+    <string name="perm_install_title">アプリのインストール</string>
+    <string name="perm_install_desc">アップデートのダウンロードとインストールに必要です。</string>
+
+    <string name="perm_usage_desc">使用統計の追跡に必要です。</string>
+    <string name="perm_dashboard_title">ダッシュボード</string>
+    <string name="perm_dashboard_desc">システムオーバーレイ機能を有効にします。</string>
+
+    <string name="feat_discover">発見</string>
+    <string name="feat_features">機能</string>
+    <string name="feat_intro">新しいMedアプリでできることは次のとおりです。</string>
+
+    <string name="feat_custom_events_title">カスタムイベント</string>
+    <string name="feat_custom_events_desc">個人の健康イベントを作成および管理します。</string>
+
+    <string name="feat_reminders_title">スマートリマインダー</string>
+    <string name="feat_reminders_desc">薬のタイムリーな通知を受け取ります。</string>
+
+    <string name="feat_tracking_title">追跡</string>
+    <string name="feat_tracking_desc">薬を服用した履歴を保持します。</string>
+
+    <string name="feat_presets_title">クイックアクション</string>
+    <string name="feat_presets_desc">繰り返されるイベントのプリセットを即座に設定します。</string>
+
+    <string name="feat_update_title">最新情報を維持</string>
+    <string name="feat_update_desc">アプリの設定で直接アップデートを確認します。</string>
+
+    <string name="feat_order_title">完全なコントロール</string>
+    <string name="feat_order_desc">スケジュールを思い通りに管理します。</string>
+    <string name="feat_layout_title">スマートレイアウト</string>
+    <string name="feat_layout_desc">健康に集中するためのクリーンなインターフェース。</string>
+    <string name="feat_name_title">パーソナルタッチ</string>
+    <string name="feat_name_desc">設定で体験をカスタマイズします。</string>
+    <string name="feat_manage_title">簡単な管理</string>
+    <string name="feat_manage_desc">薬やイベントをすばやく追加します。</string>
+    <string name="feat_store_title">ストア</string>
+    <string name="feat_store_desc">ストアの説明。</string>
+    <string name="feat_history_title">履歴</string>
+    <string name="feat_history_desc">服薬順守と過去のイベントを追跡します。</string>
+
+    <string name="settings_advanced_title">詳細設定</string>
+    <string name="settings_advanced_desc">実験的な機能とアップデート</string>
+    <string name="settings_auto_updates_title">自動アップデート</string>
+    <string name="settings_auto_updates_desc">起動時にアップデートを確認</string>
+    <string name="settings_setup_title">初期設定</string>
+    <string name="settings_setup_desc">ウェルカムウィザードを再度実行</string>
+    <string name="settings_backup_header">バックアップと復元</string>
+    <string name="settings_export_title">設定のエクスポート</string>
+    <string name="settings_export_desc">構成を保存</string>
+    <string name="settings_import_title">設定のインポート</string>
+    <string name="settings_import_desc">バックアップファイルから復元</string>
+    <string name="dialog_restart_title">再起動が必要です</string>
+    <string name="dialog_restart_desc">設定がインポートされました。変更を適用するにはアプリを再起動してください。</string>
+    <string name="export_success">設定が正常にエクスポートされました</string>
+    <string name="export_error">設定のエクスポートエラー</string>
+    <string name="import_error">設定のインポートエラー</string>
+    <string name="perm_toast_required">続行するにはすべての権限を許可してください。</string>
+
+    <string name="title_hint">タイトル</string>
+    <string name="medicine_name_hint">薬の名前</string>
+    <string name="select_icon">アイコン</string>
+    <string name="select_color">色</string>
+    <string name="time_label">時間</string>
+    <string name="date_label">日付</string>
+    <string name="save_event">イベントを保存</string>
+    <string name="save_medicine">薬を保存</string>
+    <string name="choose_icon">アイコンを選択</string>
+    <string name="choose_color">色を選択</string>
+    <string name="frequency_label">頻度</string>
+    <string name="add_time">時間を追加</string>
+    <string name="days_label">特定の日</string>
+    <string name="every_day_hint">毎日</string>
+
+    <string name="frequency_unit_day">日</string>
+    <string name="frequency_unit_week">週</string>
+    <string name="times_label">回</string>
+    <string name="schedule_label_format">スケジュール %1$d</string>
+
+    <string name="download_title">Med アップデート</string>
+    <string name="download_desc">バージョン %1$s をダウンロード中…</string>
+    <string name="download_started">ダウンロードを開始しました…</string>
+    <string name="download_failed">ダウンロードに失敗しました: %1$s</string>
+    <string name="notif_channel_updates">アップデート</string>
+    <string name="update_notif_desc">タップして詳細を表示し、ダウンロードします。</string>
+    <string name="install_error">インストールエラー: %1$s</string>
+
+    <string name="switch_to_text_input">テキスト入力に切り替え</string>
+    <string name="switch_to_touch_input">タッチ入力に切り替え</string>
+
+    <string name="frequency_specific_days">特定の日</string>
+    <string name="frequency_daily_multiple">1日 %1$d 回</string>
+    <string name="frequency_daily">毎日</string>
+    <string name="edit_time_desc">時間を編集</string>
+    <string name="status_taken_format">服用: %1$s %2$s</string>
+    <string name="status_scheduled_format">予定: %1$s</string>
+
+    <string name="dynamic_theme_desc">ダイナミックテーマ</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">1月</string>
+    <string name="month_february">2月</string>
+    <string name="month_march">3月</string>
+    <string name="month_april">4月</string>
+    <string name="month_may">5月</string>
+    <string name="month_june">6月</string>
+    <string name="month_july">7月</string>
+    <string name="month_august">8月</string>
+    <string name="month_september">9月</string>
+    <string name="month_october">10月</string>
+    <string name="month_november">11月</string>
+    <string name="month_december">12月</string>
+
+    <string name="day_short_mon">月</string>
+    <string name="day_short_tue">火</string>
+    <string name="day_short_wed">水</string>
+    <string name="day_short_thu">木</string>
+    <string name="day_short_fri">金</string>
+    <string name="day_short_sat">土</string>
+    <string name="day_short_sun">日</string>
+</resources>

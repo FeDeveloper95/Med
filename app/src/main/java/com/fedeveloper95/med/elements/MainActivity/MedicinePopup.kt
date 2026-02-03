@@ -2,6 +2,7 @@
 
 package com.fedeveloper95.med.elements.MainActivity
 
+import android.annotation.SuppressLint
 import android.graphics.Color.parseColor
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
@@ -12,6 +13,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Palette
@@ -25,32 +27,69 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.*
 import com.fedeveloper95.med.R
+import com.fedeveloper95.med.elements.TimePickerSwitchable
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import java.time.DayOfWeek
+import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.TextStyle
+import java.util.*
 
+@SuppressLint("NewApi")
 @Composable
-fun EventPopup(
+fun MedicinePopup(
     onDismiss: () -> Unit,
     onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?) -> Unit,
     initialText: String = ""
 ) {
     var text by remember { mutableStateOf(initialText) }
+    var frequencyCountStr by remember { mutableStateOf("1") }
+    var frequencyUnit by remember { mutableStateOf("Day") }
+    var expandedUnit by remember { mutableStateOf(false) }
+    var selectedDays by remember { mutableStateOf(setOf(LocalDate.now().dayOfWeek)) }
     var selectedTimes by remember { mutableStateOf(listOf(LocalTime.now())) }
 
-    var selectedIconName by remember { mutableStateOf("Event") }
+    var selectedIconName by remember { mutableStateOf("MedicalServices") }
     var selectedColor by remember { mutableStateOf("dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
     var showTimePickerForIndex by remember { mutableStateOf<Int?>(null) }
 
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit) { if (initialText.isEmpty()) focusRequester.requestFocus() }
+
+    LaunchedEffect(frequencyCountStr, frequencyUnit) {
+        if (frequencyUnit == "Day") {
+            val count = frequencyCountStr.toIntOrNull() ?: 1
+            if (count > 0 && count != selectedTimes.size) {
+                val newTimes = selectedTimes.toMutableList()
+                if (count > newTimes.size) {
+                    repeat(count - newTimes.size) { newTimes.add(LocalTime.now()) }
+                } else {
+                    while (newTimes.size > count) newTimes.removeLast()
+                }
+                selectedTimes = newTimes
+            }
+        } else {
+            if (selectedTimes.isEmpty()) selectedTimes = listOf(LocalTime.now())
+            if (selectedTimes.size > 1) selectedTimes = listOf(selectedTimes.first())
+
+            val limit = frequencyCountStr.toIntOrNull()
+            if (limit != null && selectedDays.size > limit) {
+                selectedDays = selectedDays.toList().take(limit).toSet()
+            }
+        }
+    }
 
     if (showIconPicker) {
         IconPickerDialog(currentIcon = selectedIconName, onDismiss = { showIconPicker = false }, onIconSelected = { selectedIconName = it; showIconPicker = false })
@@ -59,18 +98,17 @@ fun EventPopup(
     if (showTimePickerForIndex != null) {
         val index = showTimePickerForIndex!!
         val initialTime = selectedTimes.getOrElse(index) { LocalTime.now() }
-        val timeState = rememberTimePickerState(initialHour = initialTime.hour, initialMinute = initialTime.minute, is24Hour = true)
-        TimePickerDialog(
-            onDismissRequest = { showTimePickerForIndex = null },
-            confirmButton = { ExpressiveTextButton(onClick = {
-                val newTime = LocalTime.of(timeState.hour, timeState.minute)
+
+        TimePickerSwitchable(
+            onDismiss = { showTimePickerForIndex = null },
+            onConfirm = { newTime ->
                 val newTimes = selectedTimes.toMutableList()
-                if (index < newTimes.size) newTimes[index] = newTime
+                if (index < newTimes.size) newTimes[index] = newTime else newTimes.add(newTime)
                 selectedTimes = newTimes
                 showTimePickerForIndex = null
-            }, text = "OK") },
-            dismissButton = { ExpressiveTextButton(onClick = { showTimePickerForIndex = null }, text = "Cancel") }
-        ) { TimePicker(state = timeState) }
+            },
+            initialTime = initialTime
+        )
     }
 
     val interactionSource = remember { MutableInteractionSource() }
@@ -81,13 +119,23 @@ fun EventPopup(
         label = "btnMorph"
     )
 
+    val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
+    val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
+    val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
+
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.new_event_title), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+        title = { Text(text = stringResource(R.string.new_medicine_title), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    val iconVector = AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
+                    val iconVector = when (selectedIconName) {
+                        "MixtureMed" -> icSick
+                        "Bed" -> icMind
+                        "Mood" -> icMixture
+                        else -> AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
+                    }
                     val headerBg = if (selectedColor == "dynamic") MaterialTheme.colorScheme.surfaceVariant else try { Color(parseColor(selectedColor)) } catch(e:Exception) { MaterialTheme.colorScheme.surfaceVariant }
                     val headerTint = if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else Color.Black.copy(0.7f)
                     Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(headerBg).clickable { showIconPicker = true }, contentAlignment = Alignment.Center) {
@@ -106,11 +154,93 @@ fun EventPopup(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-                TimeSelectorItem(label = "Time", time = selectedTimes.first()) { showTimePickerForIndex = 0 }
+                Text(text = stringResource(R.string.frequency_label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = frequencyCountStr,
+                        onValueChange = { if (it.all { char -> char.isDigit() }) frequencyCountStr = it },
+                        modifier = Modifier.weight(1f),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                        colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                    )
+
+                    ExposedDropdownMenuBox(
+                        expanded = expandedUnit,
+                        onExpandedChange = { expandedUnit = !expandedUnit },
+                        modifier = Modifier.weight(2f)
+                    ) {
+                        val dayLabel = stringResource(R.string.frequency_unit_day)
+                        val weekLabel = stringResource(R.string.frequency_unit_week)
+                        OutlinedTextField(
+                            value = if (frequencyUnit == "Day") dayLabel else weekLabel,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedUnit) },
+                            modifier = Modifier.menuAnchor().fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                        )
+                        ExposedDropdownMenu(expanded = expandedUnit, onDismissRequest = { expandedUnit = false }) {
+                            DropdownMenuItem(text = { Text(dayLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "Day"; expandedUnit = false })
+                            DropdownMenuItem(text = { Text(weekLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "Week"; expandedUnit = false })
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text("Color", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                if (frequencyUnit == "Week") {
+                    Text(text = stringResource(R.string.days_label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        val days = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+                        days.forEach { day ->
+                            val isSelected = selectedDays.contains(day)
+                            val bg = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh
+                            val content = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(bg)
+                                    .clickable {
+                                        val limit = frequencyCountStr.toIntOrNull() ?: 7
+                                        selectedDays = if (isSelected) {
+                                            if (selectedDays.size > 1) selectedDays - day else selectedDays
+                                        } else {
+                                            if (selectedDays.size < limit) selectedDays + day else selectedDays
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                                    color = content,
+                                    fontFamily = GoogleSansFlex
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    TimeSelectorItem(label = stringResource(R.string.time_label), time = selectedTimes.firstOrNull() ?: LocalTime.now()) { showTimePickerForIndex = 0 }
+                } else {
+                    Text(text = stringResource(R.string.times_label), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    selectedTimes.forEachIndexed { index, time ->
+                        TimeSelectorItem(label = stringResource(R.string.schedule_label_format, index + 1), time = time) { showTimePickerForIndex = index }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(text = stringResource(R.string.select_color), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     AVAILABLE_COLORS.forEach { colorCode ->
@@ -129,7 +259,8 @@ fun EventPopup(
             Button(
                 onClick = {
                     if (text.isNotBlank()) {
-                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, null)
+                        val days = if (frequencyUnit == "Week") selectedDays.toList() else null
+                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, days)
                     }
                 },
                 shape = RoundedCornerShape(cornerPercent),

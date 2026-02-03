@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Lääke</string>
+    <string name="event_label">Tapahtuma</string>
+    <string name="menu_tooltip">Valikko</string>
+    <string name="menu_action_desc">Toimintovalikko</string>
+    <string name="expanded_state">Laajennettu</string>
+    <string name="collapsed_state">Pienennetty</string>
+    <string name="close_menu_action">Sulje valikko</string>
+    <string name="choose_date_desc">Valitse päivämäärä</string>
+    <string name="settings_desc">Asetukset</string>
+    <string name="no_events_label">Ei tapahtumia tälle päivälle</string>
+
+    <string name="item_deleted">Poistettu: %1$s</string>
+    <string name="undo_action">Kumoa</string>
+
+    <string name="cancel_action">Peruuta</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Tallenna</string>
+    <string name="new_event_title">Uusi Tapahtuma</string>
+    <string name="new_medicine_title">Uusi Lääke</string>
+    <string name="add_detail_label">Lisää tapahtuma Med-sovellukseen</string>
+    <string name="name_hint">Nimi</string>
+    <string name="to_take_label">Otettava</string>
+    <string name="taken_desc">Otettu</string>
+    <string name="to_take_desc">Otettava</string>
+
+    <string name="notif_channel_name">Lääkemuistutukset</string>
+    <string name="notif_channel_desc">Ilmoitukset ajastetuista lääkkeistä</string>
+    <string name="notif_title">Lääkemuistutus</string>
+    <string name="notif_content">Otitko lääkkeen %1$s?</string>
+    <string name="action_yes">Kyllä</string>
+    <string name="action_skip">Ohita</string>
+    <string name="action_snooze">Torkku</string>
+    <string name="snoozed_message">Siirretty 10 minuutilla</string>
+    <string name="taken_message">Merkitty otetuksi</string>
+    <string name="skipped_message">Ohitettu</string>
+
+    <string name="settings_title">Asetukset</string>
+    <string name="discard">Takaisin</string>
+    <string name="cancel">Peruuta</string>
+    <string name="save">Tallenna</string>
+    <string name="restart_now">Käynnistä uudelleen nyt</string>
+
+    <string name="settings_header_appearance">Ulkoasu</string>
+    <string name="settings_theme_title">Teema</string>
+    <string name="settings_theme_system">Järjestelmä</string>
+    <string name="settings_theme_light">Vaalea</string>
+    <string name="settings_theme_dark">Tumma</string>
+
+    <string name="settings_header_calendar">Kalenteri</string>
+    <string name="settings_week_start_title">Viikon alku</string>
+    <string name="sunday">Sunnuntai</string>
+    <string name="monday">Maanantai</string>
+
+    <string name="settings_header_customization">Mukauttaminen</string>
+    <string name="settings_presets_title">Pikatoiminnot</string>
+    <string name="settings_presets_desc">Hallitse mukautettuja tapahtumia päävalikossa</string>
+    <string name="add_action">Lisää</string>
+
+    <string name="settings_header_info">Tiedot</string>
+    <string name="settings_version_title">Sovelluksen Versio</string>
+    <string name="unknown">Tuntematon</string>
+    <string name="settings_developer_title">Kehittäjä</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Ilmoita Virheestä / Ominaisuudesta</string>
+    <string name="settings_report_desc">Ota yhteyttä Telegramissa</string>
+
+    <string name="settings_check_updates_title">Tarkista päivitykset</string>
+    <string name="settings_check_updates_desc">Etsi uusin versio</string>
+    <string name="update_action">Päivitä</string>
+    <string name="update_checking">Tarkistetaan päivityksiä…</string>
+    <string name="update_no_update">Sinulla on uusin versio</string>
+    <string name="update_available">Päivitys saatavilla: v%1$s</string>
+    <string name="update_error">Virhe päivitysten tarkistuksessa</string>
+    <string name="update_latest_version_msg">Päivityksiä ei ole tällä hetkellä saatavilla.</string>
+    <string name="update_error_msg">Päivityksiä ei voitu tarkistaa. Tarkista yhteytesi.</string>
+    <string name="later">Myöhemmin</string>
+    <string name="close">Sulje</string>
+
+    <string name="quick_actions_title">Pikatoiminnot</string>
+    <string name="quick_actions_info">Pikatoiminnot auttavat lisäämään toistuvia ilmiöitä tai tapahtumia Med-sovellukseen nopeasti.</string>
+    <string name="active_actions_header">Aktiiviset toiminnot</string>
+
+    <string name="welcome_to">Tervetuloa</string>
+    <string name="welcome_preparing_subtitle">Valmistellaan kaikki sinua varten.</string>
+    <string name="next">Seuraava</string>
+    <string name="back">Takaisin</string>
+    <string name="get_started">Aloita</string>
+
+    <string name="perm_required">Vaadittu</string>
+    <string name="perm_permissions">Luvat</string>
+    <string name="perm_intro_text">Nämä luvat vaaditaan Med-sovelluksen oikeaan toimintaan. Myönnä ne jatkaaksesi.</string>
+
+    <string name="perm_notif_title">Ilmoitukset</string>
+    <string name="perm_notif_desc">Tiedä heti, milloin ottaa lääkkeesi.</string>
+
+    <string name="perm_install_title">Sovelluksen Asennus</string>
+    <string name="perm_install_desc">Vaaditaan päivitysten lataamiseen ja asentamiseen.</string>
+
+    <string name="perm_usage_desc">Vaaditaan käyttötilastojen seurantaan.</string>
+    <string name="perm_dashboard_title">Kojelauta</string>
+    <string name="perm_dashboard_desc">Ota käyttöön järjestelmän peittokuvaominaisuudet.</string>
+
+    <string name="feat_discover">Tutustu</string>
+    <string name="feat_features">Ominaisuudet</string>
+    <string name="feat_intro">Tässä on mitä voit tehdä uudella Med-sovelluksellasi.</string>
+
+    <string name="feat_custom_events_title">Mukautetut Tapahtumat</string>
+    <string name="feat_custom_events_desc">Luo ja hallitse henkilökohtaisia terveystapahtumiasi.</string>
+
+    <string name="feat_reminders_title">Älykkäät Muistutukset</string>
+    <string name="feat_reminders_desc">Vastaanota oikea-aikaisia ilmoituksia lääkkeistäsi.</string>
+
+    <string name="feat_tracking_title">Seuranta</string>
+    <string name="feat_tracking_desc">Pidä historiaa siitä, milloin otit lääkkeesi.</string>
+
+    <string name="feat_presets_title">Pikatoiminnot</string>
+    <string name="feat_presets_desc">Määritä esiasetukset toistuville tapahtumille välittömästi.</string>
+
+    <string name="feat_update_title">Pysy Ajan Tasalla</string>
+    <string name="feat_update_desc">Tarkista päivitykset suoraan sovelluksen asetuksista.</string>
+
+    <string name="feat_order_title">Täysi Hallinta</string>
+    <string name="feat_order_desc">Hallitse aikatauluasi juuri haluamallasi tavalla.</string>
+    <string name="feat_layout_title">Älykäs Asettelu</string>
+    <string name="feat_layout_desc">Selkeä käyttöliittymä, jotta voit keskittyä terveyteesi.</string>
+    <string name="feat_name_title">Henkilökohtainen Kosketus</string>
+    <string name="feat_name_desc">Mukauta kokemustasi asetuksissa.</string>
+    <string name="feat_manage_title">Helppo Hallinta</string>
+    <string name="feat_manage_desc">Lisää lääkkeitä ja tapahtumia nopeasti.</string>
+    <string name="feat_store_title">Kauppa</string>
+    <string name="feat_store_desc">Kaupan kuvaus.</string>
+    <string name="feat_history_title">Historia</string>
+    <string name="feat_history_desc">Seuraa noudattamistasi ja menneitä tapahtumia.</string>
+
+    <string name="settings_advanced_title">Lisäasetukset</string>
+    <string name="settings_advanced_desc">Kokeelliset ominaisuudet ja päivitykset</string>
+    <string name="settings_auto_updates_title">Automaattiset päivitykset</string>
+    <string name="settings_auto_updates_desc">Tarkista päivitykset käynnistyksessä</string>
+    <string name="settings_setup_title">Alkuasennus</string>
+    <string name="settings_setup_desc">Suorita tervetulotoiminto uudelleen</string>
+    <string name="settings_backup_header">Varmuuskopiointi &amp; Palautus</string>
+    <string name="settings_export_title">Vie Asetukset</string>
+    <string name="settings_export_desc">Tallenna määritykset</string>
+    <string name="settings_import_title">Tuo Asetukset</string>
+    <string name="settings_import_desc">Palauta varmuuskopiotiedostosta</string>
+    <string name="dialog_restart_title">Uudelleenkäynnistys Vaaditaan</string>
+    <string name="dialog_restart_desc">Asetukset on tuotu. Käynnistä sovellus uudelleen ottaaksesi muutokset käyttöön.</string>
+    <string name="export_success">Asetukset viety onnistuneesti</string>
+    <string name="export_error">Virhe asetusten viennissä</string>
+    <string name="import_error">Virhe asetusten tuonnissa</string>
+    <string name="perm_toast_required">Myönnä kaikki luvat jatkaaksesi.</string>
+
+    <string name="title_hint">Otsikko</string>
+    <string name="medicine_name_hint">Lääkkeen Nimi</string>
+    <string name="select_icon">Kuvake</string>
+    <string name="select_color">Väri</string>
+    <string name="time_label">Aika</string>
+    <string name="date_label">Päivämäärä</string>
+    <string name="save_event">Tallenna Tapahtuma</string>
+    <string name="save_medicine">Tallenna Lääke</string>
+    <string name="choose_icon">Valitse Kuvake</string>
+    <string name="choose_color">Valitse Väri</string>
+    <string name="frequency_label">Toistuvuus</string>
+    <string name="add_time">Lisää Aika</string>
+    <string name="days_label">Tietyt Päivät</string>
+    <string name="every_day_hint">Joka päivä</string>
+
+    <string name="frequency_unit_day">Päivä</string>
+    <string name="frequency_unit_week">Viikko</string>
+    <string name="times_label">kertaa</string>
+    <string name="schedule_label_format">Aikataulu %1$d</string>
+
+    <string name="download_title">Med Päivitys</string>
+    <string name="download_desc">Ladataan versiota %1$s…</string>
+    <string name="download_started">Lataus aloitettu…</string>
+    <string name="download_failed">Lataus epäonnistui: %1$s</string>
+    <string name="notif_channel_updates">Päivitykset</string>
+    <string name="update_notif_desc">Napauta nähdäksesi tiedot ja ladataksesi.</string>
+    <string name="install_error">Asennusvirhe: %1$s</string>
+
+    <string name="switch_to_text_input">Vaihda Tekstinsyöttöön</string>
+    <string name="switch_to_touch_input">Vaihda Kosketussyöttöön</string>
+
+    <string name="frequency_specific_days">Tietyt Päivät</string>
+    <string name="frequency_daily_multiple">%1$dx Päivittäin</string>
+    <string name="frequency_daily">Päivittäin</string>
+    <string name="edit_time_desc">Muokkaa aikaa</string>
+    <string name="status_taken_format">Otettu %1$s%2$s</string>
+    <string name="status_scheduled_format">Ajastettu ajalle %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynaaminen Teema</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Tammikuu</string>
+    <string name="month_february">Helmikuu</string>
+    <string name="month_march">Maaliskuu</string>
+    <string name="month_april">Huhtikuu</string>
+    <string name="month_may">Toukokuu</string>
+    <string name="month_june">Kesäkuu</string>
+    <string name="month_july">Heinäkuu</string>
+    <string name="month_august">Elokuu</string>
+    <string name="month_september">Syyskuu</string>
+    <string name="month_october">Lokakuu</string>
+    <string name="month_november">Marraskuu</string>
+    <string name="month_december">Joulukuu</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">K</string>
+    <string name="day_short_thu">T</string>
+    <string name="day_short_fri">P</string>
+    <string name="day_short_sat">L</string>
+    <string name="day_short_sun">S</string>
+</resources>

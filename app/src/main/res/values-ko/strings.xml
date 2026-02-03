@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">약</string>
+    <string name="event_label">이벤트</string>
+    <string name="menu_tooltip">메뉴</string>
+    <string name="menu_action_desc">작업 메뉴</string>
+    <string name="expanded_state">확장됨</string>
+    <string name="collapsed_state">축소됨</string>
+    <string name="close_menu_action">메뉴 닫기</string>
+    <string name="choose_date_desc">날짜 선택</string>
+    <string name="settings_desc">설정</string>
+    <string name="no_events_label">오늘 이벤트 없음</string>
+
+    <string name="item_deleted">삭제됨: %1$s</string>
+    <string name="undo_action">실행 취소</string>
+
+    <string name="cancel_action">취소</string>
+    <string name="ok_action">확인</string>
+    <string name="save_action">저장</string>
+    <string name="new_event_title">새 이벤트</string>
+    <string name="new_medicine_title">새 약</string>
+    <string name="add_detail_label">Med에 이벤트 추가</string>
+    <string name="name_hint">이름</string>
+    <string name="to_take_label">복용 예정</string>
+    <string name="taken_desc">복용함</string>
+    <string name="to_take_desc">복용 예정</string>
+
+    <string name="notif_channel_name">약 알림</string>
+    <string name="notif_channel_desc">예정된 약에 대한 알림</string>
+    <string name="notif_title">약 알림</string>
+    <string name="notif_content">%1$s을(를) 복용하셨나요?</string>
+    <string name="action_yes">네</string>
+    <string name="action_skip">건너뛰기</string>
+    <string name="action_snooze">다시 알림</string>
+    <string name="snoozed_message">10분 후 다시 알림</string>
+    <string name="taken_message">복용함으로 표시됨</string>
+    <string name="skipped_message">건너뜀</string>
+
+    <string name="settings_title">설정</string>
+    <string name="discard">뒤로</string>
+    <string name="cancel">취소</string>
+    <string name="save">저장</string>
+    <string name="restart_now">지금 다시 시작</string>
+
+    <string name="settings_header_appearance">화면</string>
+    <string name="settings_theme_title">테마</string>
+    <string name="settings_theme_system">시스템</string>
+    <string name="settings_theme_light">라이트</string>
+    <string name="settings_theme_dark">다크</string>
+
+    <string name="settings_header_calendar">달력</string>
+    <string name="settings_week_start_title">한 주의 시작</string>
+    <string name="sunday">일요일</string>
+    <string name="monday">월요일</string>
+
+    <string name="settings_header_customization">맞춤 설정</string>
+    <string name="settings_presets_title">빠른 작업</string>
+    <string name="settings_presets_desc">메인 메뉴에서 맞춤 이벤트 관리</string>
+    <string name="add_action">추가</string>
+
+    <string name="settings_header_info">정보</string>
+    <string name="settings_version_title">앱 버전</string>
+    <string name="unknown">알 수 없음</string>
+    <string name="settings_developer_title">개발자</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">버그 / 기능 신고</string>
+    <string name="settings_report_desc">Telegram으로 문의</string>
+
+    <string name="settings_check_updates_title">업데이트 확인</string>
+    <string name="settings_check_updates_desc">최신 버전 찾기</string>
+    <string name="update_action">업데이트</string>
+    <string name="update_checking">업데이트 확인 중…</string>
+    <string name="update_no_update">최신 버전을 사용 중입니다</string>
+    <string name="update_available">업데이트 가능: v%1$s</string>
+    <string name="update_error">업데이트 확인 오류</string>
+    <string name="update_latest_version_msg">현재 사용 가능한 업데이트가 없습니다.</string>
+    <string name="update_error_msg">업데이트를 확인할 수 없습니다. 연결을 확인하세요.</string>
+    <string name="later">나중에</string>
+    <string name="close">닫기</string>
+
+    <string name="quick_actions_title">빠른 작업</string>
+    <string name="quick_actions_info">빠른 작업을 통해 반복되는 현상이나 이벤트를 Med에 빠르게 추가할 수 있습니다.</string>
+    <string name="active_actions_header">활성 작업</string>
+
+    <string name="welcome_to">환영합니다</string>
+    <string name="welcome_preparing_subtitle">모든 준비를 도와드리겠습니다.</string>
+    <string name="next">다음</string>
+    <string name="back">뒤로</string>
+    <string name="get_started">시작하기</string>
+
+    <string name="perm_required">필수</string>
+    <string name="perm_permissions">권한</string>
+    <string name="perm_intro_text">Med가 올바르게 작동하려면 이 권한이 필요합니다. 계속하려면 권한을 허용해 주세요.</string>
+
+    <string name="perm_notif_title">알림</string>
+    <string name="perm_notif_desc">약 복용 시간을 즉시 알 수 있습니다.</string>
+
+    <string name="perm_install_title">앱 설치</string>
+    <string name="perm_install_desc">업데이트를 다운로드하고 설치하는 데 필요합니다.</string>
+
+    <string name="perm_usage_desc">사용 통계를 추적하는 데 필요합니다.</string>
+    <string name="perm_dashboard_title">대시보드</string>
+    <string name="perm_dashboard_desc">시스템 오버레이 기능을 활성화합니다.</string>
+
+    <string name="feat_discover">둘러보기</string>
+    <string name="feat_features">기능</string>
+    <string name="feat_intro">새로운 Med 앱으로 할 수 있는 작업은 다음과 같습니다.</string>
+
+    <string name="feat_custom_events_title">맞춤 이벤트</string>
+    <string name="feat_custom_events_desc">개인 건강 이벤트를 만들고 관리합니다.</string>
+
+    <string name="feat_reminders_title">스마트 알림</string>
+    <string name="feat_reminders_desc">약에 대한 적절한 알림을 받습니다.</string>
+
+    <string name="feat_tracking_title">추적</string>
+    <string name="feat_tracking_desc">약 복용 기록을 유지합니다.</string>
+
+    <string name="feat_presets_title">빠른 작업</string>
+    <string name="feat_presets_desc">반복되는 이벤트에 대한 사전 설정을 즉시 설정합니다.</string>
+
+    <string name="feat_update_title">최신 상태 유지</string>
+    <string name="feat_update_desc">앱 설정에서 직접 업데이트를 확인합니다.</string>
+
+    <string name="feat_order_title">완벽한 제어</string>
+    <string name="feat_order_desc">일정을 원하는 대로 정확하게 관리합니다.</string>
+    <string name="feat_layout_title">스마트 레이아웃</string>
+    <string name="feat_layout_desc">건강에 집중할 수 있는 깔끔한 인터페이스.</string>
+    <string name="feat_name_title">개인화</string>
+    <string name="feat_name_desc">설정에서 환경을 맞춤 설정합니다.</string>
+    <string name="feat_manage_title">쉬운 관리</string>
+    <string name="feat_manage_desc">약과 이벤트를 빠르게 추가합니다.</string>
+    <string name="feat_store_title">스토어</string>
+    <string name="feat_store_desc">스토어 설명.</string>
+    <string name="feat_history_title">기록</string>
+    <string name="feat_history_desc">복용 준수 및 과거 이벤트를 추적합니다.</string>
+
+    <string name="settings_advanced_title">고급</string>
+    <string name="settings_advanced_desc">실험적 기능 및 업데이트</string>
+    <string name="settings_auto_updates_title">자동 업데이트</string>
+    <string name="settings_auto_updates_desc">시작 시 업데이트 확인</string>
+    <string name="settings_setup_title">초기 설정</string>
+    <string name="settings_setup_desc">환영 마법사 다시 실행</string>
+    <string name="settings_backup_header">백업 및 복원</string>
+    <string name="settings_export_title">설정 내보내기</string>
+    <string name="settings_export_desc">구성 저장</string>
+    <string name="settings_import_title">설정 가져오기</string>
+    <string name="settings_import_desc">백업 파일에서 복원</string>
+    <string name="dialog_restart_title">다시 시작 필요</string>
+    <string name="dialog_restart_desc">설정을 가져왔습니다. 변경 사항을 적용하려면 앱을 다시 시작하세요.</string>
+    <string name="export_success">설정을 성공적으로 내보냈습니다</string>
+    <string name="export_error">설정 내보내기 오류</string>
+    <string name="import_error">설정 가져오기 오류</string>
+    <string name="perm_toast_required">계속하려면 모든 권한을 허용해 주세요.</string>
+
+    <string name="title_hint">제목</string>
+    <string name="medicine_name_hint">약 이름</string>
+    <string name="select_icon">아이콘</string>
+    <string name="select_color">색상</string>
+    <string name="time_label">시간</string>
+    <string name="date_label">날짜</string>
+    <string name="save_event">이벤트 저장</string>
+    <string name="save_medicine">약 저장</string>
+    <string name="choose_icon">아이콘 선택</string>
+    <string name="choose_color">색상 선택</string>
+    <string name="frequency_label">빈도</string>
+    <string name="add_time">시간 추가</string>
+    <string name="days_label">특정 요일</string>
+    <string name="every_day_hint">매일</string>
+
+    <string name="frequency_unit_day">일</string>
+    <string name="frequency_unit_week">주</string>
+    <string name="times_label">회</string>
+    <string name="schedule_label_format">일정 %1$d</string>
+
+    <string name="download_title">Med 업데이트</string>
+    <string name="download_desc">버전 %1$s 다운로드 중…</string>
+    <string name="download_started">다운로드 시작됨…</string>
+    <string name="download_failed">다운로드 실패: %1$s</string>
+    <string name="notif_channel_updates">업데이트</string>
+    <string name="update_notif_desc">탭하여 세부정보 확인 및 다운로드.</string>
+    <string name="install_error">설치 오류: %1$s</string>
+
+    <string name="switch_to_text_input">텍스트 입력으로 전환</string>
+    <string name="switch_to_touch_input">터치 입력으로 전환</string>
+
+    <string name="frequency_specific_days">특정 요일</string>
+    <string name="frequency_daily_multiple">매일 %1$d회</string>
+    <string name="frequency_daily">매일</string>
+    <string name="edit_time_desc">시간 수정</string>
+    <string name="status_taken_format">복용: %1$s %2$s</string>
+    <string name="status_scheduled_format">예정: %1$s</string>
+
+    <string name="dynamic_theme_desc">동적 테마</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">1월</string>
+    <string name="month_february">2월</string>
+    <string name="month_march">3월</string>
+    <string name="month_april">4월</string>
+    <string name="month_may">5월</string>
+    <string name="month_june">6월</string>
+    <string name="month_july">7월</string>
+    <string name="month_august">8월</string>
+    <string name="month_september">9월</string>
+    <string name="month_october">10월</string>
+    <string name="month_november">11월</string>
+    <string name="month_december">12월</string>
+
+    <string name="day_short_mon">월</string>
+    <string name="day_short_tue">화</string>
+    <string name="day_short_wed">수</string>
+    <string name="day_short_thu">목</string>
+    <string name="day_short_fri">금</string>
+    <string name="day_short_sat">토</string>
+    <string name="day_short_sun">일</string>
+</resources>

@@ -54,7 +54,7 @@ class QuickActionsSettingsActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
-            val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+            val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val currentTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
 
             MedTheme(themeOverride = currentTheme) {
@@ -196,7 +196,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                             MaterialTheme.colorScheme.surfaceContainerHighest
                         } else {
                             try {
-                                Color(android.graphics.Color.parseColor(selectedColor))
+                                Color(parseColor(selectedColor))
                             } catch (e: Exception) {
                                 MaterialTheme.colorScheme.surfaceContainerHighest
                             }
@@ -367,7 +367,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                                     MaterialTheme.colorScheme.surfaceVariant
                                 } else {
                                     try {
-                                        Color(android.graphics.Color.parseColor(colorCode))
+                                        Color(parseColor(colorCode))
                                     } catch (e: Exception) {
                                         Color.Gray
                                     }
@@ -393,7 +393,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                                     if (isDynamic) {
                                         Icon(
                                             imageVector = Icons.Rounded.Palette,
-                                            contentDescription = "Dynamic Theme",
+                                            contentDescription = stringResource(R.string.dynamic_theme_desc),
                                             tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(24.dp)
                                         )
@@ -443,7 +443,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
                 itemsIndexed(presetsList) { index, itemString ->
                     val parts = itemString.split("|")
-                    val name = parts.getOrNull(1) ?: "Unknown"
+                    val name = parts.getOrNull(1) ?: stringResource(R.string.unknown)
                     val iconName = parts.getOrNull(2) ?: "Event"
                     val colorCode = parts.getOrNull(3) ?: "dynamic"
 
@@ -453,7 +453,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                         MaterialTheme.colorScheme.secondaryContainer
                     } else {
                         try {
-                            Color(android.graphics.Color.parseColor(colorCode))
+                            Color(parseColor(colorCode))
                         } catch (e: Exception) {
                             MaterialTheme.colorScheme.secondaryContainer
                         }

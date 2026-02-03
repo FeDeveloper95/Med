@@ -1,0 +1,215 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">药物</string>
+    <string name="event_label">事件</string>
+    <string name="menu_tooltip">菜单</string>
+    <string name="menu_action_desc">操作菜单</string>
+    <string name="expanded_state">展开</string>
+    <string name="collapsed_state">折叠</string>
+    <string name="close_menu_action">关闭菜单</string>
+    <string name="choose_date_desc">选择日期</string>
+    <string name="settings_desc">设置</string>
+    <string name="no_events_label">今天没有事件</string>
+
+    <string name="item_deleted">已删除: %1$s</string>
+    <string name="undo_action">撤销</string>
+
+    <string name="cancel_action">取消</string>
+    <string name="ok_action">确定</string>
+    <string name="save_action">保存</string>
+    <string name="new_event_title">新事件</string>
+    <string name="new_medicine_title">新药物</string>
+    <string name="add_detail_label">添加事件到 Med</string>
+    <string name="name_hint">名称</string>
+    <string name="to_take_label">待服用</string>
+    <string name="taken_desc">已服用</string>
+    <string name="to_take_desc">待服用</string>
+
+    <string name="notif_channel_name">服药提醒</string>
+    <string name="notif_channel_desc">计划服药的通知</string>
+    <string name="notif_title">服药提醒</string>
+    <string name="notif_content">您服用了 %1$s 吗？</string>
+    <string name="action_yes">是</string>
+    <string name="action_skip">跳过</string>
+    <string name="action_snooze">推迟</string>
+    <string name="snoozed_message">推迟 10 分钟</string>
+    <string name="taken_message">标记为已服用</string>
+    <string name="skipped_message">已跳过</string>
+
+    <string name="settings_title">设置</string>
+    <string name="discard">返回</string>
+    <string name="cancel">取消</string>
+    <string name="save">保存</string>
+    <string name="restart_now">立即重启</string>
+
+    <string name="settings_header_appearance">外观</string>
+    <string name="settings_theme_title">主题</string>
+    <string name="settings_theme_system">系统</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+
+    <string name="settings_header_calendar">日历</string>
+    <string name="settings_week_start_title">本周开始</string>
+    <string name="sunday">星期日</string>
+    <string name="monday">星期一</string>
+
+    <string name="settings_header_customization">自定义</string>
+    <string name="settings_presets_title">快速操作</string>
+    <string name="settings_presets_desc">在主菜单中管理自定义事件</string>
+    <string name="add_action">添加</string>
+
+    <string name="settings_header_info">信息</string>
+    <string name="settings_version_title">应用版本</string>
+    <string name="unknown">未知</string>
+    <string name="settings_developer_title">开发者</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">报告错误 / 功能</string>
+    <string name="settings_report_desc">在 Telegram 上联系</string>
+
+    <string name="settings_check_updates_title">检查更新</string>
+    <string name="settings_check_updates_desc">查找最新版本</string>
+    <string name="update_action">更新</string>
+    <string name="update_checking">正在检查更新…</string>
+    <string name="update_no_update">您已拥有最新版本</string>
+    <string name="update_available">可用更新: v%1$s</string>
+    <string name="update_error">检查更新时出错</string>
+    <string name="update_latest_version_msg">目前没有可用更新。</string>
+    <string name="update_error_msg">无法检查更新。请检查您的连接。</string>
+    <string name="later">稍后</string>
+    <string name="close">关闭</string>
+
+    <string name="quick_actions_title">快速操作</string>
+    <string name="quick_actions_info">快速操作可帮助您快速将重复出现的现象或事件添加到 Med。</string>
+    <string name="active_actions_header">活动操作</string>
+
+    <string name="welcome_to">欢迎使用</string>
+    <string name="welcome_preparing_subtitle">让我们为您准备好一切。</string>
+    <string name="next">下一步</string>
+    <string name="back">返回</string>
+    <string name="get_started">开始</string>
+
+    <string name="perm_required">需要</string>
+    <string name="perm_permissions">权限</string>
+    <string name="perm_intro_text">Med 需要这些权限才能正常工作。请授予权限以继续。</string>
+
+    <string name="perm_notif_title">通知</string>
+    <string name="perm_notif_desc">立即知道何时服药。</string>
+
+    <string name="perm_install_title">应用安装</string>
+    <string name="perm_install_desc">下载和安装更新所需。</string>
+
+    <string name="perm_usage_desc">跟踪使用情况统计信息所需。</string>
+    <string name="perm_dashboard_title">仪表板</string>
+    <string name="perm_dashboard_desc">启用系统覆盖功能。</string>
+
+    <string name="feat_discover">发现</string>
+    <string name="feat_features">功能</string>
+    <string name="feat_intro">以下是您可以使用新 Med 应用执行的操作。</string>
+
+    <string name="feat_custom_events_title">自定义事件</string>
+    <string name="feat_custom_events_desc">创建和管理您的个人健康事件。</string>
+
+    <string name="feat_reminders_title">智能提醒</string>
+    <string name="feat_reminders_desc">及时收到药物通知。</string>
+
+    <string name="feat_tracking_title">跟踪</string>
+    <string name="feat_tracking_desc">保留服药历史记录。</string>
+
+    <string name="feat_presets_title">快速操作</string>
+    <string name="feat_presets_desc">立即为重复事件设置预设。</string>
+
+    <string name="feat_update_title">保持更新</string>
+    <string name="feat_update_desc">直接在应用设置中检查更新。</string>
+
+    <string name="feat_order_title">完全控制</string>
+    <string name="feat_order_desc">完全按照您想要的方式管理日程安排。</string>
+    <string name="feat_layout_title">智能布局</string>
+    <string name="feat_layout_desc">简洁的界面，专注于您的健康。</string>
+    <string name="feat_name_title">个性化</string>
+    <string name="feat_name_desc">在设置中自定义您的体验。</string>
+    <string name="feat_manage_title">轻松管理</string>
+    <string name="feat_manage_desc">快速添加药物和事件。</string>
+    <string name="feat_store_title">商店</string>
+    <string name="feat_store_desc">商店描述。</string>
+    <string name="feat_history_title">历史记录</string>
+    <string name="feat_history_desc">跟踪您的依从性和过去的事件。</string>
+
+    <string name="settings_advanced_title">高级</string>
+    <string name="settings_advanced_desc">实验性功能和更新</string>
+    <string name="settings_auto_updates_title">自动更新</string>
+    <string name="settings_auto_updates_desc">启动时检查更新</string>
+    <string name="settings_setup_title">初始设置</string>
+    <string name="settings_setup_desc">再次运行欢迎向导</string>
+    <string name="settings_backup_header">备份和恢复</string>
+    <string name="settings_export_title">导出设置</string>
+    <string name="settings_export_desc">保存配置</string>
+    <string name="settings_import_title">导入设置</string>
+    <string name="settings_import_desc">从备份文件恢复</string>
+    <string name="dialog_restart_title">需要重启</string>
+    <string name="dialog_restart_desc">设置已导入。重启应用以应用更改。</string>
+    <string name="export_success">设置导出成功</string>
+    <string name="export_error">导出设置时出错</string>
+    <string name="import_error">导入设置时出错</string>
+    <string name="perm_toast_required">请授予所有权限以继续。</string>
+
+    <string name="title_hint">标题</string>
+    <string name="medicine_name_hint">药物名称</string>
+    <string name="select_icon">图标</string>
+    <string name="select_color">颜色</string>
+    <string name="time_label">时间</string>
+    <string name="date_label">日期</string>
+    <string name="save_event">保存事件</string>
+    <string name="save_medicine">保存药物</string>
+    <string name="choose_icon">选择图标</string>
+    <string name="choose_color">选择颜色</string>
+    <string name="frequency_label">频率</string>
+    <string name="add_time">添加时间</string>
+    <string name="days_label">特定日期</string>
+    <string name="every_day_hint">每天</string>
+
+    <string name="frequency_unit_day">天</string>
+    <string name="frequency_unit_week">周</string>
+    <string name="times_label">次</string>
+    <string name="schedule_label_format">计划 %1$d</string>
+
+    <string name="download_title">Med 更新</string>
+    <string name="download_desc">正在下载版本 %1$s…</string>
+    <string name="download_started">下载已开始…</string>
+    <string name="download_failed">下载失败: %1$s</string>
+    <string name="notif_channel_updates">更新</string>
+    <string name="update_notif_desc">点击查看详情并下载。</string>
+    <string name="install_error">安装错误: %1$s</string>
+
+    <string name="switch_to_text_input">切换到文本输入</string>
+    <string name="switch_to_touch_input">切换到触摸输入</string>
+
+    <string name="frequency_specific_days">特定日期</string>
+    <string name="frequency_daily_multiple">每天 %1$d 次</string>
+    <string name="frequency_daily">每天</string>
+    <string name="edit_time_desc">编辑时间</string>
+    <string name="status_taken_format">已服用 %1$s%2$s</string>
+    <string name="status_scheduled_format">计划于 %1$s</string>
+
+    <string name="dynamic_theme_desc">动态主题</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">1月</string>
+    <string name="month_february">2月</string>
+    <string name="month_march">3月</string>
+    <string name="month_april">4月</string>
+    <string name="month_may">5月</string>
+    <string name="month_june">6月</string>
+    <string name="month_july">7月</string>
+    <string name="month_august">8月</string>
+    <string name="month_september">9月</string>
+    <string name="month_october">10月</string>
+    <string name="month_november">11月</string>
+    <string name="month_december">12月</string>
+
+    <string name="day_short_mon">一</string>
+    <string name="day_short_tue">二</string>
+    <string name="day_short_wed">三</string>
+    <string name="day_short_thu">四</string>
+    <string name="day_short_fri">五</string>
+    <string name="day_short_sat">六</string>
+    <string name="day_short_sun">日</string>
+</resources>
