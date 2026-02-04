@@ -2,7 +2,8 @@
 
 **Never miss your medicine ever again.**
 
-![Med banner](https://github.com/user-attachments/assets/ef6e55c7-bc86-4b78-8707-e59e3636c5a1)
+![Med banner](https://github.com/user-attachments/assets/3daf851e-922f-4743-b059-bfd933e3e20e)
+
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=android&logoColor=white) ![Material 3](https://img.shields.io/badge/Material%203-Expressive-purple?style=for-the-badge)
 
