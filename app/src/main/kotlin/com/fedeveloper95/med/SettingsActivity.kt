@@ -56,12 +56,8 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.elements.NotificationsSettingsActivity.SortOrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
 import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
-import com.fedeveloper95.med.elements.SettingsActivity.UpdateDialog
-import com.fedeveloper95.med.services.UpdateStatus
-import com.fedeveloper95.med.services.Updater
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
-import kotlinx.coroutines.launch
 
 class SettingsActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -105,14 +101,6 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
 
-    fun Context.findActivity(): Activity? = when (this) {
-        is Activity -> this
-        is android.content.ContextWrapper -> baseContext.findActivity()
-        else -> null
-    }
-
-    val activity = context.findActivity()
-    val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
     var weekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
@@ -123,10 +111,6 @@ fun SettingsScreen(
     var showWeekStartDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
 
-    val openUpdateDialog = remember { activity?.intent?.getBooleanExtra("EXTRA_OPEN_UPDATE_DIALOG", false) == true }
-    var showUpdateDialog by remember { mutableStateOf(openUpdateDialog) }
-    var updateStatus by remember { mutableStateOf<UpdateStatus>(UpdateStatus.Idle) }
-
     val appInfo = remember {
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -135,22 +119,6 @@ fun SettingsScreen(
             context.getString(R.string.version_format, version, build)
         } catch (e: Exception) {
             context.getString(R.string.unknown)
-        }
-    }
-
-    val currentVersionName = remember {
-        try {
-            context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "1.0"
-        } catch (e: Exception) {
-            "1.0"
-        }
-    }
-
-    LaunchedEffect(openUpdateDialog) {
-        if (openUpdateDialog) {
-            updateStatus = UpdateStatus.Checking
-            val update = Updater.checkForUpdates(currentVersionName)
-            updateStatus = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
         }
     }
 
@@ -494,13 +462,7 @@ fun SettingsScreen(
                         bottomEnd = 28.dp
                     ),
                     onClick = {
-                        showUpdateDialog = true
-                        updateStatus = UpdateStatus.Checking
-                        scope.launch {
-                            val update = Updater.checkForUpdates(currentVersionName)
-                            updateStatus =
-                                if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
-                        }
+                        context.startActivity(Intent(context, UpdaterActivity::class.java))
                     }
                 )
                 Spacer(modifier = Modifier.height(48.dp))
@@ -541,32 +503,6 @@ fun SettingsScreen(
                 showSortDialog = false
             },
             onDismiss = { showSortDialog = false }
-        )
-    }
-
-    if (showUpdateDialog) {
-        UpdateDialog(
-            status = updateStatus,
-            onDismiss = {
-                showUpdateDialog = false
-                activity?.intent?.removeExtra("EXTRA_OPEN_UPDATE_DIALOG")
-            },
-            onUpdate = { url ->
-                Updater.startDownload(
-                    context,
-                    url,
-                    (updateStatus as UpdateStatus.Available).info.version
-                )
-                showUpdateDialog = false
-            },
-            onCheckAgain = {
-                updateStatus = UpdateStatus.Checking
-                scope.launch {
-                    val update = Updater.checkForUpdates(currentVersionName)
-                    updateStatus =
-                        if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
-                }
-            }
         )
     }
 }

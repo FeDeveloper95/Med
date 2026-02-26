@@ -88,6 +88,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fedeveloper95.med.elements.MainActivity.CommunityBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.EventBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.EventPopup
 import com.fedeveloper95.med.elements.MainActivity.MainFAB
@@ -187,7 +188,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 title = title,
                 iconName = iconName,
                 colorCode = colorCode,
-                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_every_two_weeks)
+                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
                 else if (days != null) context.getString(R.string.frequency_specific_days)
                 else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
                 else context.getString(R.string.frequency_daily),
@@ -229,7 +230,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 recurrenceDays = days,
                 notes = notes,
                 intervalGap = intervalGap,
-                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_every_two_weeks)
+                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
                 else if (days != null) context.getString(R.string.frequency_specific_days)
                 else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
                 else context.getString(R.string.frequency_daily)
@@ -502,6 +503,11 @@ fun MedApp(
     useBottomSheet: Boolean,
     isExpandedScreen: Boolean
 ) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
+    var showCommunitySheet by remember { mutableStateOf(!prefs.getBoolean("pref_community_shown", false)) }
+
     var fabMenuExpanded by remember { mutableStateOf(false) }
     var showMedicineDialog by remember { mutableStateOf(false) }
     var showEventDialog by remember { mutableStateOf(false) }
@@ -513,7 +519,6 @@ fun MedApp(
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
     val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
@@ -778,6 +783,15 @@ fun MedApp(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 120.dp)
+        )
+    }
+
+    if (showCommunitySheet) {
+        CommunityBottomSheet(
+            onDismiss = {
+                showCommunitySheet = false
+                prefs.edit().putBoolean("pref_community_shown", true).apply()
+            }
         )
     }
 

@@ -56,6 +56,11 @@
             android:theme="@style/Theme.Med" />
 
         <activity
+            android:name=".UpdaterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Med" />
+
+        <activity
             android:name=".NotificationsSettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.Med" />

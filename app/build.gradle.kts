@@ -69,4 +69,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.graphics.shapes)
+    implementation("com.github.jeziellago:compose-markdown:0.5.4")
 }

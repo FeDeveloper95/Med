@@ -13,7 +13,7 @@ import android.os.Environment
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.content.FileProvider
-import com.fedeveloper95.med.SettingsActivity
+import com.fedeveloper95.med.UpdaterActivity
 import com.fedeveloper95.med.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -112,8 +112,7 @@ object Updater {
             notificationManager.createNotificationChannel(channel)
         }
 
-        val intent = Intent(context, SettingsActivity::class.java).apply {
-            putExtra("EXTRA_OPEN_UPDATE_DIALOG", true)
+        val intent = Intent(context, UpdaterActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
 

@@ -256,5 +256,11 @@
     <string name="notes_hint">Notes (Optional)</string>
     <string name="frequency_unit_biweek">Every 2 Weeks</string>
     <string name="more_options">More</string>
+    <string name="community_title">Join the community</string>
+    <string name="community_desc">Join my Telegram channel to not miss the latest news and updates on my projects, along with some exclusive sneak peeks!</string>
+    <string name="no_thanks">No, thanks</string>
+    <string name="sure_action">Sure!</string>
+    <string name="see_source_code">See source code</string>
+    <string name="check_updates_action">Check for updates</string>
 
 </resources>
