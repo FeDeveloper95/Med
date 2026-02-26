@@ -7,7 +7,6 @@ package com.fedeveloper95.med.elements.MainActivity
 import android.annotation.SuppressLint
 import android.graphics.Color.parseColor
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
@@ -43,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.*
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.elements.TimePickerSwitchable
+import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.darken
 import kotlinx.coroutines.launch
@@ -56,21 +56,33 @@ import java.util.*
 @Composable
 fun MedicineBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?) -> Unit,
+    initialItem: MedData? = null,
     initialText: String = ""
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
-    var text by remember { mutableStateOf(initialText) }
-    var frequencyCountStr by remember { mutableStateOf("1") }
-    var frequencyUnit by remember { mutableStateOf("Day") }
-    var expandedUnit by remember { mutableStateOf(false) }
-    var selectedDays by remember { mutableStateOf(setOf(LocalDate.now().dayOfWeek)) }
-    var selectedTimes by remember { mutableStateOf(listOf(LocalTime.now())) }
+    var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
+    var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
 
-    var selectedIconName by remember { mutableStateOf("MedicalServices") }
-    var selectedColor by remember { mutableStateOf("dynamic") }
+    var frequencyUnit by remember {
+        mutableStateOf(
+            when {
+                initialItem?.intervalGap == 14 -> "BiWeek"
+                initialItem?.recurrenceDays != null -> "Week"
+                else -> "Day"
+            }
+        )
+    }
+
+    var frequencyCountStr by remember { mutableStateOf(if (frequencyUnit == "Day" && initialItem == null) "1" else "1") }
+    var expandedUnit by remember { mutableStateOf(false) }
+    var selectedDays by remember { mutableStateOf(initialItem?.recurrenceDays?.toSet() ?: setOf(LocalDate.now().dayOfWeek)) }
+    var selectedTimes by remember { mutableStateOf(if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())) }
+
+    var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "MedicalServices") }
+    var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
     var showTimePickerForIndex by remember { mutableStateOf<Int?>(null) }
 
@@ -132,15 +144,15 @@ fun MedicineBottomSheet(
     val isCancelPressed by cancelInteractionSource.collectIsPressedAsState()
     val isSavePressed by saveInteractionSource.collectIsPressedAsState()
 
-    val cancelWeight by animateFloatAsState(
-        targetValue = if (isCancelPressed) 1.2f else if (isSavePressed) 0.8f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium),
-        label = "cancelWeight"
+    val cancelCorner by animateIntAsState(
+        targetValue = if (isCancelPressed) 15 else 50,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "cancelCorner"
     )
-    val saveWeight by animateFloatAsState(
-        targetValue = if (isSavePressed) 1.2f else if (isCancelPressed) 0.8f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium),
-        label = "saveWeight"
+    val saveCorner by animateIntAsState(
+        targetValue = if (isSavePressed) 15 else 50,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "saveCorner"
     )
 
     ModalBottomSheet(
@@ -240,12 +252,25 @@ fun MedicineBottomSheet(
                                 fontFamily = GoogleSansFlex
                             )
                         },
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        singleLine = true
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                item {
+                    OutlinedTextField(
+                        value = notes,
+                        onValueChange = { notes = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.notes_hint),
+                                fontFamily = GoogleSansFlex
+                            )
+                        },
+                        minLines = 2,
+                        maxLines = 4
                     )
                 }
 
@@ -264,19 +289,16 @@ fun MedicineBottomSheet(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            OutlinedTextField(
-                                value = frequencyCountStr,
-                                onValueChange = { if (it.all { char -> char.isDigit() }) frequencyCountStr = it },
-                                modifier = Modifier.weight(1f),
-                                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                singleLine = true,
-                                shape = RoundedCornerShape(16.dp),
-                                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                            if (frequencyUnit != "BiWeek") {
+                                OutlinedTextField(
+                                    value = frequencyCountStr,
+                                    onValueChange = { if (it.all { char -> char.isDigit() }) frequencyCountStr = it },
+                                    modifier = Modifier.weight(1f),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    singleLine = true,
+                                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
                                 )
-                            )
+                            }
 
                             ExposedDropdownMenuBox(
                                 expanded = expandedUnit,
@@ -285,26 +307,27 @@ fun MedicineBottomSheet(
                             ) {
                                 val dayLabel = stringResource(R.string.frequency_unit_day)
                                 val weekLabel = stringResource(R.string.frequency_unit_week)
+                                val biWeekLabel = stringResource(R.string.frequency_unit_biweek)
+
                                 OutlinedTextField(
-                                    value = if (frequencyUnit == "Day") dayLabel else weekLabel,
+                                    value = when(frequencyUnit) {
+                                        "Day" -> dayLabel
+                                        "Week" -> weekLabel
+                                        else -> biWeekLabel
+                                    },
                                     onValueChange = {},
                                     readOnly = true,
                                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedUnit) },
-                                    modifier = Modifier.menuAnchor().fillMaxWidth(),
-                                    shape = RoundedCornerShape(16.dp),
-                                    colors = OutlinedTextFieldDefaults.colors(
-                                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                                    )
+                                    modifier = Modifier.menuAnchor().fillMaxWidth()
                                 )
                                 ExposedDropdownMenu(
                                     expanded = expandedUnit,
                                     onDismissRequest = { expandedUnit = false },
-                                    shape = RoundedCornerShape(16.dp),
                                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                                 ) {
                                     DropdownMenuItem(text = { Text(dayLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "Day"; expandedUnit = false })
                                     DropdownMenuItem(text = { Text(weekLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "Week"; expandedUnit = false })
+                                    DropdownMenuItem(text = { Text(biWeekLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "BiWeek"; expandedUnit = false })
                                 }
                             }
                         }
@@ -327,7 +350,7 @@ fun MedicineBottomSheet(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             overflowIndicator = { state ->
                                 IconButton(onClick = { state.show() }) {
-                                    Icon(Icons.Rounded.MoreHoriz, contentDescription = "More")
+                                    Icon(Icons.Rounded.MoreHoriz, contentDescription = stringResource(R.string.more_options))
                                 }
                             }
                         ) {
@@ -354,6 +377,10 @@ fun MedicineBottomSheet(
 
                     item { Spacer(modifier = Modifier.height(24.dp)) }
 
+                    item {
+                        TimeSelectorItem(label = stringResource(R.string.time_label), time = selectedTimes.firstOrNull() ?: LocalTime.now()) { showTimePickerForIndex = 0 }
+                    }
+                } else if (frequencyUnit == "BiWeek") {
                     item {
                         TimeSelectorItem(label = stringResource(R.string.time_label), time = selectedTimes.firstOrNull() ?: LocalTime.now()) { showTimePickerForIndex = 0 }
                     }
@@ -465,7 +492,7 @@ fun MedicineBottomSheet(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Button(
+                        OutlinedButton(
                             onClick = {
                                 scope.launch { sheetState.hide() }.invokeOnCompletion {
                                     if (!sheetState.isVisible) {
@@ -473,12 +500,8 @@ fun MedicineBottomSheet(
                                     }
                                 }
                             },
-                            modifier = Modifier.weight(cancelWeight).height(50.dp),
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
+                            modifier = Modifier.weight(1f).height(50.dp),
+                            shape = RoundedCornerShape(cancelCorner),
                             interactionSource = cancelInteractionSource
                         ) {
                             Text(
@@ -492,19 +515,21 @@ fun MedicineBottomSheet(
                         Button(
                             onClick = {
                                 if (text.isNotBlank()) {
-                                    val days =
-                                        if (frequencyUnit == "Week") selectedDays.toList() else null
+                                    val days = if (frequencyUnit == "Week") selectedDays.toList() else null
+                                    val gap = if (frequencyUnit == "BiWeek") 14 else null
                                     onConfirm(
                                         text,
                                         selectedIconName,
                                         selectedColor,
                                         selectedTimes,
-                                        days
+                                        days,
+                                        notes.takeIf { it.isNotBlank() },
+                                        gap
                                     )
                                 }
                             },
-                            modifier = Modifier.weight(saveWeight).height(50.dp),
-                            shape = RoundedCornerShape(50),
+                            modifier = Modifier.weight(1f).height(50.dp),
+                            shape = RoundedCornerShape(saveCorner),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary

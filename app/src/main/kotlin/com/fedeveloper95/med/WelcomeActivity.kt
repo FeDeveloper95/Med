@@ -430,9 +430,9 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 icon = Icons.Rounded.Alarm,
                                 iconColor = Color(0xFF80da88),
                                 iconTint = Color(0xFF00522c),
+                                shape = middleCardShape,
                                 title = stringResource(R.string.feat_reminders_title),
-                                description = stringResource(R.string.feat_reminders_desc),
-                                shape = middleCardShape
+                                description = stringResource(R.string.feat_reminders_desc)
                             )
 
                             Spacer(modifier = Modifier.height(2.dp))
@@ -589,13 +589,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                 WelcomeExpressiveButton(
                     text = if (isLastPage) stringResource(R.string.get_started) else stringResource(R.string.next),
                     onClick = {
-                        if (pagerState.currentPage == 1) {
-                            if (!hasNotificationPermission || !canInstallPackages) {
-                                Toast.makeText(context, R.string.perm_toast_required, Toast.LENGTH_SHORT).show()
-                                return@WelcomeExpressiveButton
-                            }
-                        }
-
                         if (isLastPage) {
                             if (isLastPageScrolledToEnd) onFinished()
                         } else {

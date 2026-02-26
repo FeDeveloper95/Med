@@ -1,10 +1,27 @@
+@file:OptIn(ExperimentalTextApi::class)
+
 package com.fedeveloper95.med.elements.SettingsActivity
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
+import com.fedeveloper95.med.ExpressiveTextButton
 import com.fedeveloper95.med.R
+import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 
 @Composable
 fun StartWeekPopup(
@@ -12,15 +29,71 @@ fun StartWeekPopup(
     onOptionSelected: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
-    ExpressiveSingleChoiceDialog(
-        icon = Icons.Default.DateRange,
-        title = stringResource(R.string.settings_week_start_title),
-        options = listOf(
-            stringResource(R.string.monday),
-            stringResource(R.string.sunday)
-        ),
-        selectedIndex = selectedIndex,
-        onOptionSelected = onOptionSelected,
-        onDismiss = onDismiss
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Event,
+                contentDescription = null,
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+        },
+        title = {
+            Text(
+                text = stringResource(R.string.settings_week_start_title),
+                fontFamily = GoogleSansFlex,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.headlineSmall
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                val options = listOf(
+                    stringResource(R.string.monday),
+                    stringResource(R.string.sunday)
+                )
+
+                options.forEachIndexed { index, title ->
+                    val isSelected = selectedIndex == index
+                    val containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+                    val contentColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(containerColor)
+                            .clickable { onOptionSelected(index) }
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = isSelected,
+                            onClick = null
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(
+                            text = title,
+                            fontFamily = GoogleSansFlex,
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                            ),
+                            color = contentColor
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            ExpressiveTextButton(onClick = onDismiss, text = stringResource(R.string.cancel_action))
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(32.dp),
+        tonalElevation = 6.dp
     )
 }

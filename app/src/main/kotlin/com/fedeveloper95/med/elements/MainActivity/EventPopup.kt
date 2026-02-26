@@ -35,6 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.*
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.elements.TimePickerSwitchable
+import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import java.time.DayOfWeek
 import java.time.LocalTime
@@ -42,14 +43,16 @@ import java.time.LocalTime
 @Composable
 fun EventPopup(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?) -> Unit,
+    initialItem: MedData? = null,
     initialText: String = ""
 ) {
-    var text by remember { mutableStateOf(initialText) }
-    var selectedTimes by remember { mutableStateOf(listOf(LocalTime.now())) }
+    var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
+    var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
+    var selectedTimes by remember { mutableStateOf(if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())) }
 
-    var selectedIconName by remember { mutableStateOf("Event") }
-    var selectedColor by remember { mutableStateOf("dynamic") }
+    var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Event") }
+    var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
     var showTimePickerForIndex by remember { mutableStateOf<Int?>(null) }
 
@@ -119,6 +122,15 @@ fun EventPopup(
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = notes, onValueChange = { notes = it }, modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(stringResource(R.string.notes_hint), fontFamily = GoogleSansFlex) },
+                    minLines = 2, maxLines = 4, shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
                 val time = selectedTimes.firstOrNull() ?: LocalTime.now()
                 TimeSelectorItem(label = stringResource(R.string.time_label), time = time) { showTimePickerForIndex = 0 }
 
@@ -143,7 +155,7 @@ fun EventPopup(
             Button(
                 onClick = {
                     if (text.isNotBlank()) {
-                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, null)
+                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, null, notes.takeIf { it.isNotBlank() }, null)
                     }
                 },
                 shape = RoundedCornerShape(cornerPercent),

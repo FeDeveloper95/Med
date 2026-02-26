@@ -30,6 +30,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,10 +53,14 @@ import com.fedeveloper95.med.ui.theme.darken
 import org.json.JSONArray
 
 class QuickActionsSettingsActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val windowSizeClass = calculateWindowSizeClass(this)
+            val isExpandedScreen = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val currentTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
@@ -63,15 +70,19 @@ class QuickActionsSettingsActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    QuickActionsScreen(onBack = { finish() })
+                    QuickActionsScreen(
+                        onBack = { finish() },
+                        isExpandedScreen = isExpandedScreen
+                    )
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QuickActionsScreen(onBack: () -> Unit) {
+fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
@@ -132,7 +143,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
     val appBarTypography = MaterialTheme.typography.copy(
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Normal
         ),
         titleLarge = MaterialTheme.typography.titleLarge.copy(
             fontFamily = GoogleSansFlex,
@@ -171,7 +182,11 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                 )
             }
         },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        containerColor = Color.Transparent,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
         LazyColumn(
             contentPadding = padding,
@@ -244,14 +259,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                             onValueChange = { newName = it },
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = { Text(stringResource(R.string.name_hint), fontFamily = GoogleSansFlex) },
-                            singleLine = true,
-                            shape = RoundedCornerShape(12.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Transparent,
-                                unfocusedBorderColor = Color.Transparent,
-                                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surface
-                            )
+                            singleLine = true
                         )
                     }
                 }
@@ -267,7 +275,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(start = 48.dp, end = 48.dp, top = 16.dp, bottom = 16.dp)
+                        modifier = Modifier.padding(vertical = 24.dp, horizontal = 16.dp)
                     ) {
                         val iconsList = availableIcons.toList()
                         val rows = iconsList.chunked(4)
@@ -277,48 +285,56 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                for ((name, icon) in rowItems) {
-                                    val isSelected = selectedIconName == name
+                                for (i in 0 until 4) {
+                                    if (i < rowItems.size) {
+                                        val (name, icon) = rowItems[i]
+                                        val isSelected = selectedIconName == name
 
-                                    val interactionSource = remember { MutableInteractionSource() }
-                                    val isPressed by interactionSource.collectIsPressedAsState()
+                                        val interactionSource = remember { MutableInteractionSource() }
+                                        val isPressed by interactionSource.collectIsPressedAsState()
 
-                                    val cornerPercent by animateIntAsState(
-                                        targetValue = if (isPressed) 15 else 50,
-                                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                        label = "corner"
-                                    )
-
-                                    val baseColor = MaterialTheme.colorScheme.surfaceVariant
-                                    val selectedColorBg = MaterialTheme.colorScheme.primaryContainer
-
-                                    val containerColor by animateColorAsState(if (isSelected) selectedColorBg else baseColor)
-                                    val iconTint by animateColorAsState(
-                                        if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-
-                                    Box(
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .aspectRatio(1f)
-                                            .padding(10.dp)
-                                            .clip(RoundedCornerShape(percent = cornerPercent))
-                                            .background(containerColor)
-                                            .clickable(interactionSource = interactionSource, indication = null) { selectedIconName = name },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = icon,
-                                            contentDescription = name,
-                                            tint = iconTint,
-                                            modifier = Modifier.size(28.dp)
+                                        val cornerPercent by animateIntAsState(
+                                            targetValue = if (isPressed) 15 else 50,
+                                            animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                            label = "corner"
                                         )
+
+                                        val baseColor = MaterialTheme.colorScheme.surfaceVariant
+                                        val selectedColorBg = MaterialTheme.colorScheme.primaryContainer
+
+                                        val containerColor by animateColorAsState(if (isSelected) selectedColorBg else baseColor)
+                                        val iconTint by animateColorAsState(
+                                            if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+
+                                        Box(
+                                            modifier = Modifier.weight(1f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(64.dp)
+                                                    .clip(RoundedCornerShape(percent = cornerPercent))
+                                                    .background(containerColor)
+                                                    .clickable(interactionSource = interactionSource, indication = null) { selectedIconName = name },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = icon,
+                                                    contentDescription = name,
+                                                    tint = iconTint,
+                                                    modifier = Modifier.size(28.dp)
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        Spacer(modifier = Modifier.weight(1f))
                                     }
                                 }
                             }
 
                             if (index < rows.lastIndex) {
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(12.dp))
                             }
                         }
                     }

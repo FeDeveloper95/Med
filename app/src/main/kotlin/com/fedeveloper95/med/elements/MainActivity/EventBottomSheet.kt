@@ -4,7 +4,6 @@ package com.fedeveloper95.med.elements.MainActivity
 
 import android.graphics.Color.parseColor
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.*
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.*
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.elements.TimePickerSwitchable
+import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.darken
 import kotlinx.coroutines.launch
@@ -44,17 +44,19 @@ import java.time.LocalTime
 @Composable
 fun EventBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?) -> Unit,
+    initialItem: MedData? = null,
     initialText: String = ""
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
 
-    var text by remember { mutableStateOf(initialText) }
-    var selectedTimes by remember { mutableStateOf(listOf(LocalTime.now())) }
+    var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
+    var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
+    var selectedTimes by remember { mutableStateOf(if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())) }
 
-    var selectedIconName by remember { mutableStateOf("Event") }
-    var selectedColor by remember { mutableStateOf("dynamic") }
+    var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Event") }
+    var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
     var showTimePickerForIndex by remember { mutableStateOf<Int?>(null) }
 
@@ -93,15 +95,15 @@ fun EventBottomSheet(
     val isCancelPressed by cancelInteractionSource.collectIsPressedAsState()
     val isSavePressed by saveInteractionSource.collectIsPressedAsState()
 
-    val cancelWeight by animateFloatAsState(
-        targetValue = if (isCancelPressed) 1.2f else if (isSavePressed) 0.8f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium),
-        label = "cancelWeight"
+    val cancelCorner by animateIntAsState(
+        targetValue = if (isCancelPressed) 15 else 50,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "cancelCorner"
     )
-    val saveWeight by animateFloatAsState(
-        targetValue = if (isSavePressed) 1.2f else if (isCancelPressed) 0.8f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium),
-        label = "saveWeight"
+    val saveCorner by animateIntAsState(
+        targetValue = if (isSavePressed) 15 else 50,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "saveCorner"
     )
 
     ModalBottomSheet(
@@ -201,12 +203,25 @@ fun EventBottomSheet(
                                 fontFamily = GoogleSansFlex
                             )
                         },
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.primary,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-                        )
+                        singleLine = true
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                item {
+                    OutlinedTextField(
+                        value = notes,
+                        onValueChange = { notes = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.notes_hint),
+                                fontFamily = GoogleSansFlex
+                            )
+                        },
+                        minLines = 2,
+                        maxLines = 4
                     )
                 }
 
@@ -312,7 +327,7 @@ fun EventBottomSheet(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Button(
+                        OutlinedButton(
                             onClick = {
                                 scope.launch { sheetState.hide() }.invokeOnCompletion {
                                     if (!sheetState.isVisible) {
@@ -320,12 +335,8 @@ fun EventBottomSheet(
                                     }
                                 }
                             },
-                            modifier = Modifier.weight(cancelWeight).height(50.dp),
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
+                            modifier = Modifier.weight(1f).height(50.dp),
+                            shape = RoundedCornerShape(cancelCorner),
                             interactionSource = cancelInteractionSource
                         ) {
                             Text(
@@ -344,12 +355,14 @@ fun EventBottomSheet(
                                         selectedIconName,
                                         selectedColor,
                                         selectedTimes,
+                                        null,
+                                        notes.takeIf { it.isNotBlank() },
                                         null
                                     )
                                 }
                             },
-                            modifier = Modifier.weight(saveWeight).height(50.dp),
-                            shape = RoundedCornerShape(50),
+                            modifier = Modifier.weight(1f).height(50.dp),
+                            shape = RoundedCornerShape(saveCorner),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,
                                 contentColor = MaterialTheme.colorScheme.onPrimary

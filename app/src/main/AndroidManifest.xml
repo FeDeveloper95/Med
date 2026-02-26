@@ -2,27 +2,28 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
 
     <application
-        android:allowBackup="false"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.App.Starting"
-        android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.Med"
         android:localeConfig="@xml/locales_config"
-        tools:targetApi="36">
+        tools:targetApi="31">
 
         <activity
             android:name=".WelcomeActivity"
@@ -36,11 +37,16 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.Med" />
 
         <activity
             android:name=".SettingsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Med" />
+
+        <activity
+            android:name=".QuickActionsSettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.Med" />
 
@@ -50,9 +56,35 @@
             android:theme="@style/Theme.Med" />
 
         <activity
-            android:name=".QuickActionsSettingsActivity"
+            android:name=".NotificationsSettingsActivity"
             android:exported="false"
             android:theme="@style/Theme.Med" />
+
+        <activity
+            android:name=".EditModeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Med" />
+
+        <activity
+            android:name=".AlarmActivity"
+            android:exported="false"
+            android:showOnLockScreen="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.Med" />
+
+        <receiver android:name=".services.NotificationReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="ACTION_SHOW_NOTIFICATION"/>
+                <action android:name="ACTION_TAKEN"/>
+                <action android:name="ACTION_SKIP"/>
+                <action android:name="ACTION_SNOOZE"/>
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -63,28 +95,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
-        <receiver
-            android:name=".services.UpdateReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name=".services.NotificationReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="ACTION_SHOW_NOTIFICATION" />
-                <action android:name="ACTION_TAKEN" />
-                <action android:name="ACTION_SKIP" />
-                <action android:name="ACTION_SNOOZE" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

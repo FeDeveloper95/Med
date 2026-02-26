@@ -1,13 +1,13 @@
 @file:OptIn(ExperimentalTextApi::class)
 
-package com.fedeveloper95.med.elements.SettingsActivity
+package com.fedeveloper95.med.elements.NotificationsSettingsActivity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,13 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.ExpressiveTextButton
 import com.fedeveloper95.med.R
-import com.fedeveloper95.med.THEME_DARK
-import com.fedeveloper95.med.THEME_LIGHT
-import com.fedeveloper95.med.THEME_SYSTEM
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 
 @Composable
-fun ThemePopup(
+fun SortOrderPopup(
     selectedIndex: Int,
     onOptionSelected: (Int) -> Unit,
     onDismiss: () -> Unit
@@ -37,7 +34,7 @@ fun ThemePopup(
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Palette,
+                imageVector = Icons.Rounded.Sort,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
                 tint = MaterialTheme.colorScheme.primary
@@ -45,7 +42,7 @@ fun ThemePopup(
         },
         title = {
             Text(
-                text = stringResource(R.string.settings_theme_title),
+                text = stringResource(R.string.settings_sort_order_title),
                 fontFamily = GoogleSansFlex,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineSmall
@@ -57,12 +54,10 @@ fun ThemePopup(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 val options = listOf(
-                    THEME_SYSTEM to stringResource(R.string.settings_theme_system),
-                    THEME_LIGHT to stringResource(R.string.settings_theme_light),
-                    THEME_DARK to stringResource(R.string.settings_theme_dark)
+                    stringResource(R.string.settings_sort_order_time),
+                    stringResource(R.string.settings_sort_order_custom)
                 )
-
-                options.forEach { (index, title) ->
+                options.forEachIndexed { index, title ->
                     val isSelected = selectedIndex == index
                     val containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
                     val contentColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant

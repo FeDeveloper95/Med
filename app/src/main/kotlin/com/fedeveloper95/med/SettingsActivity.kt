@@ -2,6 +2,7 @@
 
 package com.fedeveloper95.med
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -27,10 +28,16 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.ViewStream
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,6 +53,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.elements.NotificationsSettingsActivity.SortOrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
 import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
 import com.fedeveloper95.med.elements.SettingsActivity.UpdateDialog
@@ -56,10 +64,14 @@ import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
 
 class SettingsActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val windowSizeClass = calculateWindowSizeClass(this)
+            val isExpandedScreen = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
@@ -73,7 +85,8 @@ class SettingsActivity : ComponentActivity() {
                     SettingsScreen(
                         onBack = { finish() },
                         currentTheme = currentThemeOverride,
-                        onThemeChanged = { newTheme -> currentThemeOverride = newTheme }
+                        onThemeChanged = { newTheme -> currentThemeOverride = newTheme },
+                        isExpandedScreen = isExpandedScreen
                     )
                 }
             }
@@ -81,12 +94,14 @@ class SettingsActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("LocalContextGetResourceValueCall")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     currentTheme: Int,
-    onThemeChanged: (Int) -> Unit
+    onThemeChanged: (Int) -> Unit,
+    isExpandedScreen: Boolean
 ) {
     val context = LocalContext.current
 
@@ -101,9 +116,12 @@ fun SettingsScreen(
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
     var weekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
+    var sortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
+    var experimentalBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", true)) }
 
     var showThemeDialog by remember { mutableStateOf(false) }
     var showWeekStartDialog by remember { mutableStateOf(false) }
+    var showSortDialog by remember { mutableStateOf(false) }
 
     val openUpdateDialog = remember { activity?.intent?.getBooleanExtra("EXTRA_OPEN_UPDATE_DIALOG", false) == true }
     var showUpdateDialog by remember { mutableStateOf(openUpdateDialog) }
@@ -141,7 +159,7 @@ fun SettingsScreen(
     val appBarTypography = MaterialTheme.typography.copy(
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Normal
         ),
         titleLarge = MaterialTheme.typography.titleLarge.copy(
             fontFamily = GoogleSansFlex,
@@ -180,7 +198,11 @@ fun SettingsScreen(
                 )
             }
         },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        containerColor = Color.Transparent,
+        modifier = Modifier
+            .fillMaxSize()
+            .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
         LazyColumn(
             contentPadding = padding,
@@ -241,15 +263,83 @@ fun SettingsScreen(
 
             item {
                 SettingsItemCard(
+                    icon = Icons.Rounded.Sort,
+                    title = stringResource(R.string.settings_sort_order_title),
+                    subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(R.string.settings_sort_order_custom),
+                    containerColor = Color(0xFF40C4FF),
+                    iconColor = Color(0xFF003B5C),
+                    shape = RoundedCornerShape(4.dp),
+                    onClick = { showSortDialog = true }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
+
+            item {
+                SettingsItemCard(
                     icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
                     title = stringResource(R.string.settings_presets_title),
                     subtitle = stringResource(R.string.settings_presets_desc),
                     containerColor = Color(0xFF80da88),
                     iconColor = Color(0xFF00522c),
-                    shape = RoundedCornerShape(4.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 28.dp,
+                        bottomEnd = 28.dp
+                    ),
                     onClick = {
                         val intent = Intent(context, QuickActionsSettingsActivity::class.java)
                         context.startActivity(intent)
+                    }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
+            item {
+                Text(
+                    text = stringResource(R.string.settings_header_preferences),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
+
+            item {
+                SettingsItemCard(
+                    icon = Icons.Rounded.NotificationsActive,
+                    title = stringResource(R.string.settings_notifications_title),
+                    subtitle = stringResource(R.string.settings_notifications_desc),
+                    containerColor = Color(0xFFffb4ab),
+                    iconColor = Color(0xFF690005),
+                    shape = RoundedCornerShape(
+                        topStart = 28.dp,
+                        topEnd = 28.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onClick = {
+                        val intent = Intent(context, NotificationsSettingsActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
+
+            item {
+                SettingsSwitchCard(
+                    icon = Icons.Rounded.ViewStream,
+                    title = stringResource(R.string.settings_bottom_sheet_title),
+                    subtitle = stringResource(R.string.settings_bottom_sheet_desc),
+                    containerColor = Color(0xFFB39DDB),
+                    iconColor = Color(0xFF4527A0),
+                    shape = RoundedCornerShape(4.dp),
+                    checked = experimentalBottomSheet,
+                    onCheckedChange = {
+                        experimentalBottomSheet = it
+                        prefs.edit().putBoolean("pref_experimental_bottom_sheet", it).apply()
                     }
                 )
                 Spacer(modifier = Modifier.height(2.dp))
@@ -418,7 +508,6 @@ fun SettingsScreen(
         }
     }
 
-
     if (showThemeDialog) {
         ThemePopup(
             selectedIndex = currentTheme,
@@ -440,6 +529,18 @@ fun SettingsScreen(
                 showWeekStartDialog = false
             },
             onDismiss = { showWeekStartDialog = false }
+        )
+    }
+
+    if (showSortDialog) {
+        SortOrderPopup(
+            selectedIndex = if (sortOrder == "time") 0 else 1,
+            onOptionSelected = { index ->
+                sortOrder = if (index == 0) "time" else "custom"
+                prefs.edit().putString(PREF_SORT_ORDER, sortOrder).apply()
+                showSortDialog = false
+            },
+            onDismiss = { showSortDialog = false }
         )
     }
 
@@ -481,7 +582,7 @@ fun SettingsItemCard(
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clip(shape),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -544,7 +645,7 @@ fun SettingsSwitchCard(
     onCheckedChange: (Boolean) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clip(shape),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -606,7 +707,9 @@ fun SettingsSwitchCard(
                     }
                 )
             },
-            modifier = Modifier.padding(vertical = 4.dp),
+            modifier = Modifier
+                .clickable { onCheckedChange(!checked) }
+                .padding(vertical = 4.dp),
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent
             )

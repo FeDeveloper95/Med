@@ -1,3 +1,4 @@
+// app/build.gradle.kts
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -11,12 +12,12 @@ android {
     defaultConfig {
         applicationId = "com.fedeveloper95.med"
         minSdk = 26
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 37
+        versionCode = 11
+        versionName = "1.1"
     }
 
-     signingConfigs {
+    signingConfigs {
         create("release") {
             storeFile = file("release_key.jks")
             storePassword = System.getenv("KEY_STORE_PASSWORD")
@@ -62,7 +63,8 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
+    implementation("androidx.compose.material3:material3:1.5.0-alpha15")
+    implementation("androidx.compose.material3:material3-window-size-class:1.5.0-alpha15")
     implementation(libs.androidx.compose.material.icons.extended)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.palette.ktx)

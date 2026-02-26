@@ -214,9 +214,47 @@
     <string name="day_short_sun">S</string>
 
     <string name="settings_experimental_header">Experimental</string>
-    <string name="settings_bottom_sheet_title">Test Bottom Card design</string>
-    <string name="settings_bottom_sheet_desc">Use experimental bottom cards instead of popups</string>
+    <string name="settings_bottom_sheet_title">Use Bottom Card design</string>
+    <string name="settings_bottom_sheet_desc">Use bottom cards instead of popups</string>
     <string name="settings_header_language">Language</string>
     <string name="settings_language_title">App Language</string>
     <string name="settings_language_desc">Change language in system settings</string>
+
+    <string name="frequency_every_two_weeks">Every 2 weeks</string>
+    <string name="edit_mode_desc">Edit mode</string>
+    <string name="settings_sort_order_title">Display order</string>
+    <string name="settings_sort_order_time">By time</string>
+    <string name="settings_sort_order_custom">Custom</string>
+    <string name="settings_header_preferences">Preferences</string>
+    <string name="settings_notifications_title">Notifications</string>
+    <string name="settings_notifications_desc">Manage notification and alarm style</string>
+    <string name="settings_show_notifications_title">Show notifications</string>
+    <string name="settings_full_screen_alarm_title">Full screen alarm</string>
+    <string name="settings_full_screen_alarm_desc">Turns on the screen with an alarm instead of a heads-up notification</string>
+    <string name="settings_alarm_style_title">Alarm style</string>
+    <string name="settings_alarm_style_desc">Choose how to respond to the full screen alarm</string>
+    <string name="settings_alarm_style_slider">Slider (Swipe)</string>
+    <string name="settings_alarm_style_buttons">Buttons</string>
+    <string name="settings_snooze_duration_title">Snooze duration</string>
+    <string name="settings_snooze_duration_desc">%1$d minutes</string>
+    <string name="alarm_default_title">Reminder</string>
+    <string name="alarm_time_to_take">It\'s time to take\n%1$s</string>
+    <string name="alarm_swipe_to_respond">Swipe to reply</string>
+    <string name="alarm_taken_action">Taken</string>
+    <string name="alarm_snooze_action">Snooze (%1$d min)</string>
+    <string name="alarm_snooze_desc">Snooze</string>
+    <string name="alarm_taken_desc">Taken</string>
+    <string name="notif_reminder_title">Reminder: %1$s</string>
+    <string name="notif_reminder_desc">It\'s time to take your medicine</string>
+    <string name="notif_action_taken">Taken</string>
+    <string name="notif_action_snooze">Snooze</string>
+    <string name="notif_channel_alarms_name">Medicine alarms</string>
+    <string name="notif_channel_alarms_desc">Channel for medicine alarms</string>
+    <string name="unsaved_changes_title">Unsaved changes</string>
+    <string name="unsaved_changes_desc">Do you want to save the new order before exiting?</string>
+    <string name="discard_action">Discard</string>
+    <string name="notes_hint">Notes (Optional)</string>
+    <string name="frequency_unit_biweek">Every 2 Weeks</string>
+    <string name="more_options">More</string>
+
 </resources>

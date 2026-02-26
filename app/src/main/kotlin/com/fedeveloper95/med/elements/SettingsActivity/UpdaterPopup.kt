@@ -27,6 +27,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.services.UpdateStatus
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
@@ -101,6 +102,7 @@ fun UpdateDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
         icon = {
             Box(
                 modifier = Modifier

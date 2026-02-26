@@ -1,13 +1,13 @@
 @file:OptIn(ExperimentalTextApi::class)
 
-package com.fedeveloper95.med.elements.SettingsActivity
+package com.fedeveloper95.med.elements.NotificationsSettingsActivity
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,14 +21,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.ExpressiveTextButton
 import com.fedeveloper95.med.R
-import com.fedeveloper95.med.THEME_DARK
-import com.fedeveloper95.med.THEME_LIGHT
-import com.fedeveloper95.med.THEME_SYSTEM
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 
 @Composable
-fun ThemePopup(
-    selectedIndex: Int,
+fun SnoozeDurationPopup(
+    currentDuration: Int,
     onOptionSelected: (Int) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -37,7 +34,7 @@ fun ThemePopup(
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
         icon = {
             Icon(
-                imageVector = Icons.Rounded.Palette,
+                imageVector = Icons.Rounded.Snooze,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
                 tint = MaterialTheme.colorScheme.primary
@@ -45,7 +42,7 @@ fun ThemePopup(
         },
         title = {
             Text(
-                text = stringResource(R.string.settings_theme_title),
+                text = stringResource(R.string.settings_snooze_duration_title),
                 fontFamily = GoogleSansFlex,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.headlineSmall
@@ -56,14 +53,10 @@ fun ThemePopup(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                val options = listOf(
-                    THEME_SYSTEM to stringResource(R.string.settings_theme_system),
-                    THEME_LIGHT to stringResource(R.string.settings_theme_light),
-                    THEME_DARK to stringResource(R.string.settings_theme_dark)
-                )
+                val options = listOf(5, 10, 15, 30)
 
-                options.forEach { (index, title) ->
-                    val isSelected = selectedIndex == index
+                options.forEach { duration ->
+                    val isSelected = currentDuration == duration
                     val containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
                     val contentColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
@@ -72,7 +65,7 @@ fun ThemePopup(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(16.dp))
                             .background(containerColor)
-                            .clickable { onOptionSelected(index) }
+                            .clickable { onOptionSelected(duration) }
                             .padding(horizontal = 16.dp, vertical = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -82,7 +75,7 @@ fun ThemePopup(
                         )
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
-                            text = title,
+                            text = stringResource(R.string.settings_snooze_duration_desc, duration),
                             fontFamily = GoogleSansFlex,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal

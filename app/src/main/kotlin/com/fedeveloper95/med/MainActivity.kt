@@ -20,16 +20,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -38,19 +39,23 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,20 +94,19 @@ import com.fedeveloper95.med.elements.MainActivity.MainFAB
 import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
 import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.MedicinePopup
+import com.fedeveloper95.med.elements.MainActivity.NotesBottomSheet
+import com.fedeveloper95.med.services.DataRepository
+import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.services.NotificationReceiver
 import com.fedeveloper95.med.services.Updater
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle as JavaTextStyle
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 import java.util.HashMap
@@ -142,33 +146,17 @@ const val THEME_LIGHT = 1
 const val THEME_DARK = 2
 
 const val PREF_WEEK_START = "pref_week_start"
+const val PREF_SORT_ORDER = "pref_sort_order"
 const val PREF_PRESETS = "pref_presets"
 const val PREF_PRESETS_ORDERED = "pref_presets_ordered"
 
 val DeleteRed = Color(0xFFEF5350)
 
-data class MedItem(
-    val id: Long = System.currentTimeMillis(),
-    val groupId: Long? = null,
-    val type: ItemType,
-    val title: String,
-    val iconName: String? = null,
-    val colorCode: String? = null,
-    val frequencyLabel: String? = null,
-    val creationDate: LocalDate,
-    val creationTime: LocalTime = LocalTime.now(),
-    val takenHistory: HashMap<LocalDate, LocalTime> = HashMap(),
-    val recurrenceDays: List<DayOfWeek>? = null,
-    val endDate: LocalDate? = null
-) : Serializable
-
 enum class ItemType { Event, Medicine }
 
 class MedViewModel(application: Application) : AndroidViewModel(application) {
-    private val _items = mutableStateListOf<MedItem>()
-    val items: List<MedItem> get() = _items
-
-    private val fileName = "med_data.dat"
+    private val _items = mutableStateListOf<MedData>()
+    val items: List<MedData> get() = _items
 
     var selectedDate by mutableStateOf(LocalDate.now())
 
@@ -182,35 +170,89 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         iconName: String? = null,
         colorCode: String? = null,
         times: List<LocalTime>,
-        days: List<DayOfWeek>?
+        days: List<DayOfWeek>?,
+        notes: String? = null,
+        category: String? = null,
+        intervalGap: Int? = null
     ) {
         val groupId = System.currentTimeMillis()
         val baseDate = selectedDate
         val context = getApplication<Application>()
 
         times.forEach { time ->
-            val newItem = MedItem(
+            val newItem = MedData(
                 id = System.nanoTime(),
                 groupId = groupId,
                 type = type,
                 title = title,
                 iconName = iconName,
                 colorCode = colorCode,
-                frequencyLabel = if (days != null) context.getString(R.string.frequency_specific_days)
+                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_every_two_weeks)
+                else if (days != null) context.getString(R.string.frequency_specific_days)
                 else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
                 else context.getString(R.string.frequency_daily),
                 creationDate = baseDate,
                 creationTime = time,
                 recurrenceDays = days,
-                endDate = null
+                endDate = null,
+                notes = notes,
+                displayOrder = _items.size,
+                category = category,
+                intervalGap = intervalGap
             )
             _items.add(newItem)
-            if (type == ItemType.Medicine) NotificationReceiver.scheduleNotification(getApplication(), newItem)
+            if (type == ItemType.Medicine) {
+                NotificationReceiver.scheduleNotification(getApplication(), newItem)
+            }
         }
         saveData()
     }
 
-    fun deleteItem(item: MedItem, deleteDate: LocalDate) {
+    fun updateItem(
+        originalItem: MedData,
+        title: String,
+        iconName: String?,
+        colorCode: String?,
+        times: List<LocalTime>,
+        days: List<DayOfWeek>?,
+        notes: String?,
+        intervalGap: Int?
+    ) {
+        val index = _items.indexOfFirst { it.id == originalItem.id }
+        if (index != -1) {
+            val context = getApplication<Application>()
+            _items[index] = originalItem.copy(
+                title = title,
+                iconName = iconName,
+                colorCode = colorCode,
+                creationTime = times.firstOrNull() ?: originalItem.creationTime,
+                recurrenceDays = days,
+                notes = notes,
+                intervalGap = intervalGap,
+                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_every_two_weeks)
+                else if (days != null) context.getString(R.string.frequency_specific_days)
+                else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
+                else context.getString(R.string.frequency_daily)
+            )
+
+            if (times.size > 1) {
+                for (i in 1 until times.size) {
+                    val newItem = _items[index].copy(
+                        id = System.nanoTime() + i,
+                        creationTime = times[i],
+                        takenHistory = HashMap()
+                    )
+                    _items.add(newItem)
+                }
+            }
+            saveData()
+            if (originalItem.type == ItemType.Medicine) {
+                NotificationReceiver.scheduleNotification(getApplication(), _items[index])
+            }
+        }
+    }
+
+    fun deleteItem(item: MedData, deleteDate: LocalDate) {
         val index = _items.indexOfFirst { it.id == item.id }
         if (index == -1) return
 
@@ -223,7 +265,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         saveData()
     }
 
-    fun restoreItem(item: MedItem) {
+    fun restoreItem(item: MedData) {
         val index = _items.indexOfFirst { it.id == item.id }
         if (index != -1) {
             _items[index] = item
@@ -233,7 +275,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         saveData()
     }
 
-    fun toggleMedicine(item: MedItem, date: LocalDate) {
+    fun toggleMedicine(item: MedData, date: LocalDate) {
         if (item.type != ItemType.Medicine) return
         if (date.isAfter(LocalDate.now())) return
 
@@ -248,25 +290,18 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
     fun reloadData() { loadData() }
 
     private fun saveData() {
-        try {
-            val context = getApplication<Application>().applicationContext
-            context.openFileOutput(fileName, Context.MODE_PRIVATE).use { ObjectOutputStream(it).writeObject(ArrayList(_items)) }
-        } catch (e: Exception) { e.printStackTrace() }
+        DataRepository.saveData(getApplication(), _items)
     }
 
     private fun loadData() {
-        try {
-            val context = getApplication<Application>().applicationContext
-            context.openFileInput(fileName).use {
-                val list = ObjectInputStream(it).readObject() as ArrayList<MedItem>
-                _items.clear()
-                _items.addAll(list)
-            }
-        } catch (e: Exception) { _items.clear() }
+        val list = DataRepository.loadData(getApplication())
+        _items.clear()
+        _items.addAll(list)
     }
 }
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -274,6 +309,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            val windowSizeClass = calculateWindowSizeClass(this)
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val viewModel: MedViewModel = viewModel()
@@ -290,17 +326,16 @@ class MainActivity : ComponentActivity() {
                     override fun onReceive(context: Context?, intent: Intent?) { viewModel.reloadData() }
                 }
                 val filter = IntentFilter("com.fedeveloper95.med.REFRESH_DATA")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(receiver, filter,
-                    RECEIVER_NOT_EXPORTED
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(receiver, filter, RECEIVER_NOT_EXPORTED)
                 else context.registerReceiver(receiver, filter)
                 onDispose { context.unregisterReceiver(receiver) }
             }
 
             var currentTheme by remember { mutableIntStateOf(prefs.getInt(PREF_THEME, THEME_SYSTEM)) }
             var currentWeekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
+            var currentSortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
             var currentPresets by remember { mutableStateOf(loadPresets(prefs)) }
-            var useBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", false)) }
+            var useBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", true)) }
 
             val currentVersionName = remember { try { packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0" } catch (e: Exception) { "1.0" } }
             val notificationPermissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
@@ -318,6 +353,7 @@ class MainActivity : ComponentActivity() {
                     when (key) {
                         PREF_THEME -> currentTheme = sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
                         PREF_WEEK_START -> currentWeekStart = sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
+                        PREF_SORT_ORDER -> currentSortOrder = sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
                         PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets = loadPresets(sharedPreferences)
                         "pref_experimental_bottom_sheet" -> useBottomSheet = sharedPreferences.getBoolean("pref_experimental_bottom_sheet", false)
                     }
@@ -327,7 +363,14 @@ class MainActivity : ComponentActivity() {
             }
 
             MedTheme(themeOverride = currentTheme) {
-                MedApp(viewModel = viewModel, weekStart = currentWeekStart, presets = currentPresets, useBottomSheet = useBottomSheet)
+                MedApp(
+                    viewModel = viewModel,
+                    weekStart = currentWeekStart,
+                    sortOrder = currentSortOrder,
+                    presets = currentPresets,
+                    useBottomSheet = useBottomSheet,
+                    isExpandedScreen = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+                )
             }
         }
     }
@@ -451,13 +494,22 @@ fun ExpressiveTextButton(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: List<String>, useBottomSheet: Boolean) {
+fun MedApp(
+    viewModel: MedViewModel = viewModel(),
+    weekStart: String,
+    sortOrder: String,
+    presets: List<String>,
+    useBottomSheet: Boolean,
+    isExpandedScreen: Boolean
+) {
     var fabMenuExpanded by remember { mutableStateOf(false) }
     var showMedicineDialog by remember { mutableStateOf(false) }
     var showEventDialog by remember { mutableStateOf(false) }
+    var editingItem by remember { mutableStateOf<MedData?>(null) }
     var preFilledText by remember { mutableStateOf("") }
     var showDatePicker by remember { mutableStateOf(false) }
     var activeSwipingItemId by remember { mutableStateOf<Long?>(null) }
+    var noteToShow by remember { mutableStateOf<String?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -518,10 +570,21 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
             }
         ) { padding ->
             Box(modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
-                Column(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
+                ) {
                     Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                         Text(stringResource(R.string.app_name), style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
                         Row(verticalAlignment = Alignment.CenterVertically) {
+                            ExpressiveIconButton(onClick = {
+                                val intent = Intent(context, EditModeActivity::class.java).apply {
+                                    putExtra("SELECTED_DATE", viewModel.selectedDate.toEpochDay())
+                                }
+                                context.startActivity(intent)
+                            }, icon = Icons.Rounded.Edit, contentDescription = stringResource(R.string.edit_mode_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
+                            Spacer(modifier = Modifier.width(8.dp))
                             ExpressiveIconButton(onClick = { showDatePicker = true }, icon = Icons.Rounded.CalendarMonth, contentDescription = stringResource(R.string.choose_date_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
                             Spacer(modifier = Modifier.width(8.dp))
                             ExpressiveIconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }, icon = Icons.Rounded.Settings, contentDescription = stringResource(R.string.settings_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
@@ -531,6 +594,7 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
                     val localeForCalendar = if (weekStart == "sunday") Locale.US else Locale.ITALY
                     WeeklyCalendarPager(selectedDate = viewModel.selectedDate, onDateSelected = { viewModel.selectedDate = it }, locale = localeForCalendar)
                     Spacer(modifier = Modifier.height(24.dp))
+
                     val initialPage = 10000
                     val dayPagerState = rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
                     val today = remember { LocalDate.now() }
@@ -573,15 +637,33 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
                                     val isAfterStart = !pageDate.isBefore(item.creationDate)
                                     val isBeforeEnd = item.endDate == null || !pageDate.isAfter(item.endDate)
                                     val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(pageDate.dayOfWeek)
-                                    isAfterStart && isBeforeEnd && isCorrectDay
+                                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, pageDate) % item.intervalGap == 0L
+                                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                                 }
+                            }
+                        }.let { list ->
+                            if (sortOrder == "custom") {
+                                list.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+                            } else {
+                                list.sortedWith(compareBy { it.creationTime })
                             }
                         }
 
                         var isRefreshing by remember { mutableStateOf(false) }
                         val pullRefreshState = rememberPullToRefreshState()
                         val onRefresh: () -> Unit = { isRefreshing = true; scope.launch { delay(1000); viewModel.reloadData(); isRefreshing = false } }
-                        PullToRefreshBox(state = pullRefreshState, isRefreshing = isRefreshing, onRefresh = onRefresh, modifier = Modifier.fillMaxSize(), indicator = { PullToRefreshDefaults.LoadingIndicator(state = pullRefreshState, isRefreshing = isRefreshing, modifier = Modifier.align(Alignment.TopCenter)) }) {
+
+                        PullToRefreshBox(
+                            state = pullRefreshState,
+                            isRefreshing = isRefreshing,
+                            onRefresh = onRefresh,
+                            modifier = Modifier.fillMaxSize(),
+                            indicator = {
+                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+                                    PullToRefreshDefaults.LoadingIndicator(state = pullRefreshState, isRefreshing = isRefreshing)
+                                }
+                            }
+                        ) {
                             if (pageItems.isEmpty()) {
                                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -591,61 +673,104 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
                                     }
                                 }
                             } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
-                                        val topRadius = if (index == 0) 28.dp else 4.dp
-                                        val bottomRadius = if (index == pageItems.lastIndex) 28.dp else 4.dp
-                                        val shape = RoundedCornerShape(topStart = topRadius, topEnd = topRadius, bottomStart = bottomRadius, bottomEnd = bottomRadius)
-
-                                        Box(modifier = Modifier.animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold), fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow), fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
-                                            SwipeableSquishItem(
-                                                item = item,
-                                                shape = shape,
-                                                onDeleteThresholdReached = { resetAnimation ->
-                                                    val itemToRestore = item
-                                                    viewModel.deleteItem(item, pageDate)
-
-                                                    val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                    val undoMsg = context.getString(R.string.undo_action)
-
-                                                    scope.launch {
-                                                        snackbarHostState.currentSnackbarData?.dismiss()
-
-                                                        val dismissJob = launch {
-                                                            delay(2000)
+                                if (isExpandedScreen) {
+                                    LazyVerticalGrid(
+                                        columns = GridCells.Adaptive(minSize = 340.dp),
+                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        items(pageItems.size, key = { pageItems[it].id }) { idx ->
+                                            val item = pageItems[idx]
+                                            val shape = RoundedCornerShape(24.dp)
+                                            Box(modifier = Modifier.animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold), fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow), fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
+                                                SwipeableSquishItem(
+                                                    item = item,
+                                                    shape = shape,
+                                                    onDeleteThresholdReached = { resetAnimation ->
+                                                        val itemToRestore = item
+                                                        viewModel.deleteItem(item, pageDate)
+                                                        val deletedMsg = context.getString(R.string.item_deleted, item.title)
+                                                        val undoMsg = context.getString(R.string.undo_action)
+                                                        scope.launch {
                                                             snackbarHostState.currentSnackbarData?.dismiss()
+                                                            val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                            val result = snackbarHostState.showSnackbar(message = deletedMsg, actionLabel = undoMsg, withDismissAction = true, duration = SnackbarDuration.Indefinite)
+                                                            dismissJob.cancel()
+                                                            if (result == SnackbarResult.ActionPerformed) {
+                                                                viewModel.restoreItem(itemToRestore)
+                                                                resetAnimation()
+                                                            }
                                                         }
-
-                                                        val result = snackbarHostState.showSnackbar(
-                                                            message = deletedMsg,
-                                                            actionLabel = undoMsg,
-                                                            withDismissAction = true,
-                                                            duration = SnackbarDuration.Indefinite
-                                                        )
-
-                                                        dismissJob.cancel()
-
-                                                        if (result == SnackbarResult.ActionPerformed) {
-                                                            viewModel.restoreItem(itemToRestore)
-                                                            resetAnimation()
-                                                        }
-                                                    }
-                                                },
-                                                onSwipeStart = { activeSwipingItemId = item.id },
-                                                onSwipeCancel = { activeSwipingItemId = null }
-                                            ) {
-                                                MedItemCard(item = item, currentViewDate = pageDate, shape = shape, onToggle = { viewModel.toggleMedicine(item, pageDate) })
+                                                    },
+                                                    onSwipeStart = { activeSwipingItemId = item.id },
+                                                    onSwipeCancel = { activeSwipingItemId = null }
+                                                ) {
+                                                    MedDataCard(
+                                                        item = item,
+                                                        currentViewDate = pageDate,
+                                                        shape = shape,
+                                                        onToggle = { viewModel.toggleMedicine(item, pageDate) },
+                                                        onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
+                                                        onLongClick = { editingItem = item }
+                                                    )
+                                                }
                                             }
                                         }
+                                        item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height(100.dp)) }
                                     }
-                                    item { Spacer(modifier = Modifier.height(100.dp)) }
+                                } else {
+                                    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
+                                            val topRadius = if (index == 0) 28.dp else 4.dp
+                                            val bottomRadius = if (index == pageItems.lastIndex) 28.dp else 4.dp
+                                            val shape = RoundedCornerShape(topStart = topRadius, topEnd = topRadius, bottomStart = bottomRadius, bottomEnd = bottomRadius)
+
+                                            Box(modifier = Modifier.animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold), fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow), fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
+                                                SwipeableSquishItem(
+                                                    item = item,
+                                                    shape = shape,
+                                                    onDeleteThresholdReached = { resetAnimation ->
+                                                        val itemToRestore = item
+                                                        viewModel.deleteItem(item, pageDate)
+
+                                                        val deletedMsg = context.getString(R.string.item_deleted, item.title)
+                                                        val undoMsg = context.getString(R.string.undo_action)
+
+                                                        scope.launch {
+                                                            snackbarHostState.currentSnackbarData?.dismiss()
+                                                            val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                            val result = snackbarHostState.showSnackbar(message = deletedMsg, actionLabel = undoMsg, withDismissAction = true, duration = SnackbarDuration.Indefinite)
+                                                            dismissJob.cancel()
+                                                            if (result == SnackbarResult.ActionPerformed) {
+                                                                viewModel.restoreItem(itemToRestore)
+                                                                resetAnimation()
+                                                            }
+                                                        }
+                                                    },
+                                                    onSwipeStart = { activeSwipingItemId = item.id },
+                                                    onSwipeCancel = { activeSwipingItemId = null }
+                                                ) {
+                                                    MedDataCard(
+                                                        item = item,
+                                                        currentViewDate = pageDate,
+                                                        shape = shape,
+                                                        onToggle = { viewModel.toggleMedicine(item, pageDate) },
+                                                        onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
+                                                        onLongClick = { editingItem = item }
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        item { Spacer(modifier = Modifier.height(100.dp)) }
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                if (fabMenuExpanded) Box(modifier = Modifier.fillMaxSize().background(Color.Transparent).clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { fabMenuExpanded = false })
             }
+            if (fabMenuExpanded) Box(modifier = Modifier.fillMaxSize().background(Color.Transparent).clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { fabMenuExpanded = false })
         }
 
         MedSnackbarHost(
@@ -666,12 +791,59 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
         ) { DatePicker(state = datePickerState) }
     }
 
+    if (editingItem != null) {
+        val itemToEdit = editingItem!!
+        val isMed = itemToEdit.type == ItemType.Medicine
+
+        if (useBottomSheet) {
+            if (isMed) {
+                MedicineBottomSheet(
+                    onDismiss = { editingItem = null },
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        editingItem = null
+                    },
+                    initialItem = itemToEdit
+                )
+            } else {
+                EventBottomSheet(
+                    onDismiss = { editingItem = null },
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        editingItem = null
+                    },
+                    initialItem = itemToEdit
+                )
+            }
+        } else {
+            if (isMed) {
+                MedicinePopup(
+                    onDismiss = { editingItem = null },
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        editingItem = null
+                    },
+                    initialItem = itemToEdit
+                )
+            } else {
+                EventPopup(
+                    onDismiss = { editingItem = null },
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        editingItem = null
+                    },
+                    initialItem = itemToEdit
+                )
+            }
+        }
+    }
+
     if (showMedicineDialog) {
         if (useBottomSheet) {
             MedicineBottomSheet(
                 onDismiss = { showMedicineDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days ->
-                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days)
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -679,8 +851,8 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
         } else {
             MedicinePopup(
                 onDismiss = { showMedicineDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days ->
-                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days)
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -692,8 +864,8 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
         if (useBottomSheet) {
             EventBottomSheet(
                 onDismiss = { showEventDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days ->
-                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days)
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showEventDialog = false
                 },
                 initialText = preFilledText
@@ -701,13 +873,17 @@ fun MedApp(viewModel: MedViewModel = viewModel(), weekStart: String, presets: Li
         } else {
             EventPopup(
                 onDismiss = { showEventDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days ->
-                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days)
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
+                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showEventDialog = false
                 },
                 initialText = preFilledText
             )
         }
+    }
+
+    if (noteToShow != null) {
+        NotesBottomSheet(notes = noteToShow!!, onDismiss = { noteToShow = null })
     }
 }
 
@@ -726,8 +902,9 @@ fun TimeSelectorItem(label: String, time: LocalTime, onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggle: () -> Unit) {
+fun MedDataCard(item: MedData, currentViewDate: LocalDate, shape: Shape, onToggle: () -> Unit, onClick: () -> Unit, onLongClick: () -> Unit) {
     val isMedicine = item.type == ItemType.Medicine
     val isTakenToday = if (isMedicine) item.takenHistory.containsKey(currentViewDate) else false
     val timestamp = if (isMedicine) item.takenHistory[currentViewDate] else item.creationTime
@@ -755,7 +932,18 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
     val iconBoxColor = customColor ?: if (isMedicine) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer
     val iconBoxTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
 
-    Card(modifier = Modifier.fillMaxWidth(), shape = shape, colors = CardDefaults.cardColors(containerColor = cardContainerColor, contentColor = cardContentColor), elevation = CardDefaults.cardElevation(0.dp)) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            ),
+        shape = shape,
+        colors = CardDefaults.cardColors(containerColor = cardContainerColor, contentColor = cardContentColor),
+        elevation = CardDefaults.cardElevation(0.dp)
+    ) {
         ListItem(
             headlineContent = {
                 Text(item.title, fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
@@ -792,9 +980,9 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
                 }
             },
             trailingContent = if (isMedicine) { {
-                Checkbox(
-                    checked = isTakenToday,
-                    onCheckedChange = { onToggle() },
+                RadioButton(
+                    selected = isTakenToday,
+                    onClick = { onToggle() },
                     enabled = toggleEnabled
                 )
             } } else null,
@@ -805,7 +993,7 @@ fun MedItemCard(item: MedItem, currentViewDate: LocalDate, shape: Shape, onToggl
 
 @Composable
 fun SwipeableSquishItem(
-    item: MedItem,
+    item: MedData,
     shape: Shape,
     onDeleteThresholdReached: (() -> Unit) -> Unit,
     onSwipeStart: () -> Unit,
@@ -931,7 +1119,7 @@ fun WeeklyCalendarPager(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
             )
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 for (dayOffset in 0..6) {
                     val date = weekStart.plusDays(dayOffset.toLong())
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
@@ -965,7 +1153,8 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
 
     Column(
         modifier = Modifier
-            .width(44.dp).height(68.dp)
+            .fillMaxWidth()
+            .height(68.dp)
             .clip(RoundedCornerShape(cornerRadius.dp))
             .background(backgroundColor)
             .then(
