@@ -56,7 +56,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.FileNotFoundException
+import java.io.InputStream
 import java.io.InputStreamReader
+import java.io.ObjectInputStream
+import java.io.ObjectStreamClass
 import java.util.Calendar
 
 class AdvancedSettingsActivity : ComponentActivity() {
@@ -109,8 +112,11 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let {
             scope.launch(Dispatchers.IO) {
-                if (importSettings(context, it)) {
-                    showRestartDialog = true
+                val success = importSettings(context, it)
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        showRestartDialog = true
+                    }
                 }
             }
         }
@@ -319,12 +325,23 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
             root.put("med_settings", settingsJson)
 
             try {
+                val allItems = com.fedeveloper95.med.services.DataRepository.loadData(context)
+                val dataArray = JSONArray()
+                allItems.forEach { dataArray.put(it.toJson()) }
+                root.put("med_data_v2", dataArray)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            try {
                 val fileInputStream = context.openFileInput("med_data.dat")
                 val bytes = fileInputStream.readBytes()
                 fileInputStream.close()
                 val base64Data = Base64.encodeToString(bytes, Base64.DEFAULT)
                 root.put("med_data_file", base64Data)
             } catch (e: FileNotFoundException) {
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
 
             context.contentResolver.openOutputStream(uri)?.use {
@@ -358,61 +375,152 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
             val root = JSONObject(sb.toString())
 
             if (root.has("med_prefs")) {
-                val prefs = context.getSharedPreferences("med_prefs", Context.MODE_PRIVATE)
-                val editor = prefs.edit().clear()
-                val json = root.getJSONObject("med_prefs")
-                val keys = json.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    when (val value = json.get(key)) {
-                        is Boolean -> editor.putBoolean(key, value)
-                        is Int -> editor.putInt(key, value)
-                        is Long -> editor.putLong(key, value)
-                        is Double -> editor.putFloat(key, value.toFloat())
-                        is String -> editor.putString(key, value)
-                        is JSONArray -> {
-                            val set = mutableSetOf<String>()
-                            for (i in 0 until value.length()) set.add(value.getString(i))
-                            editor.putStringSet(key, set)
+                try {
+                    val prefs = context.getSharedPreferences("med_prefs", Context.MODE_PRIVATE)
+                    val editor = prefs.edit().clear()
+                    val json = root.getJSONObject("med_prefs")
+                    val keys = json.keys()
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        when (val value = json.get(key)) {
+                            is Boolean -> editor.putBoolean(key, value)
+                            is Int -> editor.putInt(key, value)
+                            is Long -> editor.putLong(key, value)
+                            is Double -> editor.putFloat(key, value.toFloat())
+                            is String -> editor.putString(key, value)
+                            is JSONArray -> {
+                                val set = mutableSetOf<String>()
+                                for (i in 0 until value.length()) set.add(value.getString(i))
+                                editor.putStringSet(key, set)
+                            }
                         }
                     }
+                    editor.apply()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                editor.apply()
             }
 
             if (root.has("med_settings")) {
-                val settings = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
-                val editor = settings.edit().clear()
-                val json = root.getJSONObject("med_settings")
-                val keys = json.keys()
-                while (keys.hasNext()) {
-                    val key = keys.next()
-                    when (val value = json.get(key)) {
-                        is Boolean -> editor.putBoolean(key, value)
-                        is Int -> editor.putInt(key, value)
-                        is Long -> editor.putLong(key, value)
-                        is Double -> editor.putFloat(key, value.toFloat())
-                        is String -> editor.putString(key, value)
-                        is JSONArray -> {
-                            val set = mutableSetOf<String>()
-                            for (i in 0 until value.length()) set.add(value.getString(i))
-                            editor.putStringSet(key, set)
+                try {
+                    val settings = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+                    val editor = settings.edit().clear()
+                    val json = root.getJSONObject("med_settings")
+                    val keys = json.keys()
+                    while (keys.hasNext()) {
+                        val key = keys.next()
+                        when (val value = json.get(key)) {
+                            is Boolean -> editor.putBoolean(key, value)
+                            is Int -> editor.putInt(key, value)
+                            is Long -> editor.putLong(key, value)
+                            is Double -> editor.putFloat(key, value.toFloat())
+                            is String -> editor.putString(key, value)
+                            is JSONArray -> {
+                                val set = mutableSetOf<String>()
+                                for (i in 0 until value.length()) set.add(value.getString(i))
+                                editor.putStringSet(key, set)
+                            }
                         }
                     }
+                    editor.apply()
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                editor.apply()
+            }
+
+            val importedItems = mutableListOf<com.fedeveloper95.med.services.MedData>()
+
+            if (root.has("med_data_v2")) {
+                try {
+                    val dataArray = root.getJSONArray("med_data_v2")
+                    for (i in 0 until dataArray.length()) {
+                        try {
+                            importedItems.add(com.fedeveloper95.med.services.MedData.fromJson(dataArray.getJSONObject(i)))
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             if (root.has("med_data_file")) {
                 try {
                     val base64Data = root.getString("med_data_file")
                     val bytes = Base64.decode(base64Data, Base64.DEFAULT)
-                    context.openFileOutput("med_data.dat", Context.MODE_PRIVATE).use {
+                    context.openFileOutput("med_data_temp.dat", Context.MODE_PRIVATE).use {
                         it.write(bytes)
+                    }
+                    val fis = context.openFileInput("med_data_temp.dat")
+                    val ois = LegacyObjectInputStream(fis)
+                    val oldList = ois.readObject() as? ArrayList<com.fedeveloper95.med.services.OldDatabase>
+                    ois.close()
+                    context.deleteFile("med_data_temp.dat")
+
+                    oldList?.forEach { old ->
+                        try {
+                            importedItems.add(
+                                com.fedeveloper95.med.services.MedData(
+                                    id = old.id,
+                                    groupId = old.groupId,
+                                    type = old.type,
+                                    title = old.title,
+                                    iconName = old.iconName,
+                                    colorCode = old.colorCode,
+                                    frequencyLabel = old.frequencyLabel,
+                                    creationDate = old.creationDate,
+                                    creationTime = old.creationTime,
+                                    takenHistory = old.takenHistory,
+                                    recurrenceDays = old.recurrenceDays,
+                                    endDate = old.endDate,
+                                    notes = null,
+                                    displayOrder = 0,
+                                    intervalGap = null,
+                                    category = null
+                                )
+                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+            }
+
+            val currentItems = try {
+                com.fedeveloper95.med.services.DataRepository.loadData(context)
+            } catch (e: Exception) {
+                emptyList()
+            }
+
+            val mergedItems = currentItems.toMutableList()
+            val existingIds = currentItems.map { it.id }.toSet()
+
+            importedItems.forEach { item ->
+                if (!existingIds.contains(item.id)) {
+                    mergedItems.add(item)
+                } else {
+                    val existingItemIndex = mergedItems.indexOfFirst { it.id == item.id }
+                    if (existingItemIndex != -1) {
+                        val existingItem = mergedItems[existingItemIndex]
+                        val mergedHistory = java.util.HashMap(existingItem.takenHistory)
+                        item.takenHistory.forEach { (date, time) ->
+                            if (!mergedHistory.containsKey(date)) {
+                                mergedHistory[date] = time
+                            }
+                        }
+                        mergedItems[existingItemIndex] = existingItem.copy(takenHistory = mergedHistory)
+                    }
+                }
+            }
+
+            try {
+                com.fedeveloper95.med.services.DataRepository.saveData(context, mergedItems)
+                context.deleteFile("med_data.dat")
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
 
             true
@@ -423,5 +531,15 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
             }
             false
         }
+    }
+}
+
+class LegacyObjectInputStream(inputStream: InputStream) : ObjectInputStream(inputStream) {
+    override fun readClassDescriptor(): ObjectStreamClass {
+        var desc = super.readClassDescriptor()
+        if (desc.name == "com.fedeveloper95.med.OldDatabase") {
+            desc = ObjectStreamClass.lookup(com.fedeveloper95.med.services.OldDatabase::class.java)
+        }
+        return desc
     }
 }

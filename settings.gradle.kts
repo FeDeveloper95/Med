@@ -17,10 +17,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven { url = uri("https://jitpack.io") } // <-- JITPACK AGGIUNTO QUI
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
 rootProject.name = "Med"
 include(":app")
-include(":wear")
