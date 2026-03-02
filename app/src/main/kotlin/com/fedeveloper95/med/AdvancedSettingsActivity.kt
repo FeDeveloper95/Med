@@ -188,8 +188,8 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     containerColor = Color(0xFFfcbd00),
                     iconColor = Color(0xFF6d3a01),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -213,8 +213,8 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     onClick = {
                         val intent = Intent(context, WelcomeActivity::class.java).apply {
@@ -247,8 +247,8 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     containerColor = Color(0xFF80da88),
                     iconColor = Color(0xFF00522c),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -271,8 +271,8 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     onClick = {
                         importLauncher.launch(arrayOf("application/json"))

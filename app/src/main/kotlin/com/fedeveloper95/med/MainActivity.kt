@@ -1017,9 +1017,9 @@ fun MedApp(
                                         itemsIndexed(
                                             items = pageItems,
                                             key = { _, item -> item.id }) { index, item ->
-                                            val topRadius = if (index == 0) 28.dp else 4.dp
+                                            val topRadius = if (index == 0) 20.dp else 4.dp
                                             val bottomRadius =
-                                                if (index == pageItems.lastIndex) 28.dp else 4.dp
+                                                if (index == pageItems.lastIndex) 20.dp else 4.dp
                                             val shape = RoundedCornerShape(
                                                 topStart = topRadius,
                                                 topEnd = topRadius,
@@ -1772,14 +1772,14 @@ fun TimePickerDialog(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
-            shape = RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(20.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 6.dp,
             modifier = Modifier
                 .width(IntrinsicSize.Min)
                 .height(IntrinsicSize.Min)
                 .background(
-                    shape = RoundedCornerShape(28.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHigh
                 )
         ) {

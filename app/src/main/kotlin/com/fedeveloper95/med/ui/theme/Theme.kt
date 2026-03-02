@@ -29,7 +29,6 @@ import com.fedeveloper95.med.THEME_DARK
 import com.fedeveloper95.med.THEME_LIGHT
 import com.fedeveloper95.med.THEME_SYSTEM
 
-// --- Fonts ---
 @androidx.compose.ui.text.ExperimentalTextApi
 val GoogleSansFlex = FontFamily(
     Font(
@@ -54,7 +53,6 @@ fun MedTheme(
     val view = LocalView.current
 
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
-    // Usa l'override se presente (per SettingsActivity), altrimenti leggi dalle preferenze
     val themePref = themeOverride ?: prefs.getInt(PREF_THEME, THEME_SYSTEM)
 
     val darkTheme = when (themePref) {

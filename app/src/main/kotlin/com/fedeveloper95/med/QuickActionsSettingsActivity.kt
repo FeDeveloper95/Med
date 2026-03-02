@@ -240,8 +240,8 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                         .fillMaxWidth()
                         .height(200.dp),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -379,7 +379,7 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                                     imageVector = icon,
                                                     contentDescription = name,
                                                     tint = iconTint,
-                                                    modifier = Modifier.size(28.dp)
+                                                    modifier = Modifier.size(20.dp)
                                                 )
                                             }
                                         }
@@ -497,8 +497,8 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                     elevation = CardDefaults.cardElevation(0.dp)
@@ -557,10 +557,10 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = when {
-                            presetsList.size == 1 -> RoundedCornerShape(28.dp)
+                            presetsList.size == 1 -> RoundedCornerShape(20.dp)
                             index == 0 -> RoundedCornerShape(
-                                topStart = 28.dp,
-                                topEnd = 28.dp,
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
                                 bottomStart = 4.dp,
                                 bottomEnd = 4.dp
                             )
@@ -568,8 +568,8 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                             index == presetsList.lastIndex -> RoundedCornerShape(
                                 topStart = 4.dp,
                                 topEnd = 4.dp,
-                                bottomStart = 28.dp,
-                                bottomEnd = 28.dp
+                                bottomStart = 20.dp,
+                                bottomEnd = 20.dp
                             )
 
                             else -> RoundedCornerShape(4.dp)

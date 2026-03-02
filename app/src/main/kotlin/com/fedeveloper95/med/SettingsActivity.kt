@@ -242,8 +242,8 @@ fun SettingsScreen(
                     containerColor = Color(0xFFfcbd00),
                     iconColor = Color(0xFF6d3a01),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -292,8 +292,8 @@ fun SettingsScreen(
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     onClick = {
                         val intent = Intent(context, QuickActionsSettingsActivity::class.java)
@@ -323,8 +323,8 @@ fun SettingsScreen(
                     containerColor = Color(0xFFffb4ab),
                     iconColor = Color(0xFF690005),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -363,8 +363,8 @@ fun SettingsScreen(
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     onClick = {
                         val intent = Intent(context, AdvancedSettingsActivity::class.java)
@@ -394,7 +394,7 @@ fun SettingsScreen(
                         subtitle = stringResource(R.string.settings_language_desc),
                         containerColor = Color(0xFFffb3ae),
                         iconColor = Color(0xFF8a1a16),
-                        shape = RoundedCornerShape(28.dp),
+                        shape = RoundedCornerShape(20.dp),
                         onClick = {
                             try {
                                 val intent = Intent(
@@ -431,8 +431,8 @@ fun SettingsScreen(
                     containerColor = Color(0xFFa1c9ff),
                     iconColor = Color(0xFF0641a0),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -498,8 +498,8 @@ fun SettingsScreen(
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     onClick = {
                         context.startActivity(Intent(context, UpdaterActivity::class.java))

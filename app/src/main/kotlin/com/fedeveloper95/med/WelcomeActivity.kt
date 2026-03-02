@@ -173,10 +173,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
     val commonAnimSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
     val topCardShape =
-        RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+        RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
     val middleCardShape = RoundedCornerShape(4.dp)
     val bottomCardShape =
-        RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp)
+        RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
 
     val customWelcomeFontFamily = FontFamily(
         Font(

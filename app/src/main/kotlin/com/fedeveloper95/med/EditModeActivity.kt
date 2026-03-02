@@ -217,8 +217,8 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
-                    val topRadius = if (index == 0) 28.dp else 4.dp
-                    val bottomRadius = if (index == pageItems.lastIndex) 28.dp else 4.dp
+                    val topRadius = if (index == 0) 20.dp else 4.dp
+                    val bottomRadius = if (index == pageItems.lastIndex) 20.dp else 4.dp
                     val shape = RoundedCornerShape(
                         topStart = topRadius,
                         topEnd = topRadius,

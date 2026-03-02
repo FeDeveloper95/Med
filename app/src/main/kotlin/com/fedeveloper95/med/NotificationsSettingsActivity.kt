@@ -305,8 +305,8 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     containerColor = Color(0xFFffb4ab),
                     iconColor = Color(0xFF690005),
                     shape = RoundedCornerShape(
-                        topStart = 28.dp,
-                        topEnd = 28.dp,
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
                         bottomStart = 4.dp,
                         bottomEnd = 4.dp
                     ),
@@ -358,8 +358,8 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
-                        bottomStart = 28.dp,
-                        bottomEnd = 28.dp
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
                     ),
                     enabled = showNotifications,
                     onClick = { showSnoozeDialog = true }
