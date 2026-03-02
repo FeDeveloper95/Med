@@ -307,7 +307,7 @@ fun EditMedDataCard(
     modifier: Modifier = Modifier
 ) {
     val isMedicine = item.type == ItemType.Medicine
-    val isToday = LocalDate.now() == currentViewDate
+    LocalDate.now() == currentViewDate
 
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
     val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
