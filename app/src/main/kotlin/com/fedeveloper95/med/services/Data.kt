@@ -1,19 +1,22 @@
 package com.fedeveloper95.med.services
 
 import android.content.Context
+import androidx.annotation.Keep
 import com.fedeveloper95.med.ItemType
-import com.fedeveloper95.med.MedItem
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.FileInputStream
+import java.io.InputStream
 import java.io.ObjectInputStream
+import java.io.ObjectStreamClass
 import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.HashMap
 
+@Keep
 data class MedData(
     val id: Long = System.currentTimeMillis(),
     val groupId: Long? = null,
@@ -104,6 +107,18 @@ data class MedData(
     }
 }
 
+class MigrationObjectInputStream(inStream: InputStream) : ObjectInputStream(inStream) {
+    override fun readClassDescriptor(): ObjectStreamClass {
+        val desc = super.readClassDescriptor()
+        return try {
+            val clazz = Class.forName(desc.name)
+            ObjectStreamClass.lookup(clazz) ?: desc
+        } catch (e: Exception) {
+            desc
+        }
+    }
+}
+
 object DataRepository {
     private const val OLD_FILE = "med_data.dat"
     private const val NEW_FILE = "med_data_v2.json"
@@ -147,34 +162,40 @@ object DataRepository {
 
         try {
             val fis = FileInputStream(oldFile)
-            val ois = ObjectInputStream(fis)
+            val ois = MigrationObjectInputStream(fis)
 
-            val oldList = ois.readObject() as? ArrayList<MedItem> ?: return emptyList()
+            val oldList = ois.readObject() as? ArrayList<*> ?: return emptyList()
             ois.close()
 
-            val migratedList = oldList.map { old ->
-                MedData(
-                    id = old.id,
-                    groupId = old.groupId,
-                    type = old.type,
-                    title = old.title,
-                    iconName = old.iconName,
-                    colorCode = old.colorCode,
-                    frequencyLabel = old.frequencyLabel,
-                    creationDate = old.creationDate,
-                    creationTime = old.creationTime,
-                    takenHistory = old.takenHistory,
-                    recurrenceDays = old.recurrenceDays,
-                    endDate = old.endDate,
-                    notes = null,
-                    displayOrder = 0,
-                    intervalGap = null,
-                    category = null
-                )
+            val migratedList = oldList.mapNotNull { obj ->
+                if (obj is j4.p1) {
+                    val migratedType = when(obj.f.name) {
+                        "Medicine", "b" -> ItemType.Medicine
+                        else -> ItemType.Event
+                    }
+
+                    MedData(
+                        id = obj.d,
+                        groupId = obj.e,
+                        type = migratedType,
+                        title = obj.g,
+                        iconName = obj.h,
+                        colorCode = obj.i,
+                        frequencyLabel = obj.j,
+                        creationDate = obj.k,
+                        creationTime = obj.l,
+                        takenHistory = obj.m,
+                        recurrenceDays = obj.n,
+                        endDate = obj.o,
+                        notes = null,
+                        displayOrder = 0,
+                        intervalGap = null,
+                        category = null
+                    )
+                } else null
             }
 
             oldFile.renameTo(File(context.filesDir, "med_data_migrated.dat"))
-
             return migratedList
         } catch (e: Exception) {
             e.printStackTrace()

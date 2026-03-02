@@ -379,7 +379,7 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                                     imageVector = icon,
                                                     contentDescription = name,
                                                     tint = iconTint,
-                                                    modifier = Modifier.size(20.dp)
+                                                    modifier = Modifier.size(28.dp)
                                                 )
                                             }
                                         }

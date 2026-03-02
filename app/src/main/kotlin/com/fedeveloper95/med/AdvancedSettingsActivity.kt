@@ -454,34 +454,40 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     }
                     val fis = context.openFileInput("med_data_temp.dat")
                     val ois = LegacyObjectInputStream(fis)
-                    val oldList = ois.readObject() as? ArrayList<MedItem>
+                    val oldList = ois.readObject() as? java.util.ArrayList<*>
                     ois.close()
                     context.deleteFile("med_data_temp.dat")
 
                     oldList?.forEach { old ->
-                        try {
-                            importedItems.add(
-                                com.fedeveloper95.med.services.MedData(
-                                    id = old.id,
-                                    groupId = old.groupId,
-                                    type = old.type,
-                                    title = old.title,
-                                    iconName = old.iconName,
-                                    colorCode = old.colorCode,
-                                    frequencyLabel = old.frequencyLabel,
-                                    creationDate = old.creationDate,
-                                    creationTime = old.creationTime,
-                                    takenHistory = old.takenHistory,
-                                    recurrenceDays = old.recurrenceDays,
-                                    endDate = old.endDate,
-                                    notes = null,
-                                    displayOrder = 0,
-                                    intervalGap = null,
-                                    category = null
+                        if (old is j4.p1) {
+                            try {
+                                val migratedType = when(old.f.name) {
+                                    "Medicine", "b" -> com.fedeveloper95.med.ItemType.Medicine
+                                    else -> com.fedeveloper95.med.ItemType.Event
+                                }
+                                importedItems.add(
+                                    com.fedeveloper95.med.services.MedData(
+                                        id = old.d,
+                                        groupId = old.e,
+                                        type = migratedType,
+                                        title = old.g,
+                                        iconName = old.h,
+                                        colorCode = old.i,
+                                        frequencyLabel = old.j,
+                                        creationDate = old.k,
+                                        creationTime = old.l,
+                                        takenHistory = old.m,
+                                        recurrenceDays = old.n,
+                                        endDate = old.o,
+                                        notes = null,
+                                        displayOrder = 0,
+                                        intervalGap = null,
+                                        category = null
+                                    )
                                 )
-                            )
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
                         }
                     }
                 } catch (e: Exception) {
@@ -536,10 +542,12 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
 
 class LegacyObjectInputStream(inputStream: InputStream) : ObjectInputStream(inputStream) {
     override fun readClassDescriptor(): ObjectStreamClass {
-        var desc = super.readClassDescriptor()
-        if (desc.name == "com.fedeveloper95.med.OldDatabase" || desc.name == "com.fedeveloper95.med.MedItem" || desc.name == "com.fedeveloper95.med.MainActivity\$MedItem") {
-            desc = ObjectStreamClass.lookup(MedItem::class.java)
+        val desc = super.readClassDescriptor()
+        return try {
+            val clazz = Class.forName(desc.name)
+            ObjectStreamClass.lookup(clazz) ?: desc
+        } catch (e: Exception) {
+            desc
         }
-        return desc
     }
 }
