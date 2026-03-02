@@ -1,4 +1,8 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalTextApi::class,
+    ExperimentalFoundationApi::class
+)
 
 package com.fedeveloper95.med.elements.MainActivity
 
@@ -87,7 +91,13 @@ fun EventBottomSheet(
 
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
-    var selectedTimes by remember { mutableStateOf(if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())) }
+    var selectedTimes by remember {
+        mutableStateOf(
+            if (initialItem != null) listOf(initialItem.creationTime) else listOf(
+                LocalTime.now()
+            )
+        )
+    }
 
     var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Event") }
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
@@ -147,7 +157,9 @@ fun EventBottomSheet(
         dragHandle = {
             Box(
                 modifier = Modifier
-                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {}
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) {}
                     .padding(vertical = 10.dp)
             ) {
                 BottomSheetDefaults.DragHandle()
@@ -230,7 +242,9 @@ fun EventBottomSheet(
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
                         placeholder = {
                             Text(
                                 stringResource(R.string.name_hint),
@@ -328,7 +342,11 @@ fun EventBottomSheet(
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(percent = cornerPercent))
                                         .background(backgroundColor)
-                                        .then(if (isDynamic && isSelected) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
+                                        .then(
+                                            if (isDynamic && isSelected) Modifier.background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            ) else Modifier
+                                        )
                                         .border(
                                             borderWidth,
                                             borderColor,
@@ -369,7 +387,9 @@ fun EventBottomSheet(
                                     }
                                 }
                             },
-                            modifier = Modifier.weight(1f).height(50.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(50.dp),
                             shape = RoundedCornerShape(cancelCorner),
                             interactionSource = cancelInteractionSource
                         ) {
@@ -395,7 +415,9 @@ fun EventBottomSheet(
                                     )
                                 }
                             },
-                            modifier = Modifier.weight(1f).height(50.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(50.dp),
                             shape = RoundedCornerShape(saveCorner),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

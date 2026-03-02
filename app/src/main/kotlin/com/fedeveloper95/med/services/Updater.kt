@@ -40,7 +40,8 @@ sealed class UpdateStatus {
 object Updater {
     private const val REPO_OWNER = "FeDeveloper95"
     private const val REPO_NAME = "Med"
-    private const val GITHUB_API_URL = "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases"
+    private const val GITHUB_API_URL =
+        "https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/releases"
     private const val CHANNEL_ID = "update_channel"
 
     suspend fun checkForUpdates(currentVersion: String): UpdateInfo? = withContext(Dispatchers.IO) {
@@ -88,20 +89,34 @@ object Updater {
                 .setTitle(context.getString(R.string.download_title))
                 .setDescription(context.getString(R.string.download_desc, version))
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DOWNLOADS, fileName)
+                .setDestinationInExternalFilesDir(
+                    context,
+                    Environment.DIRECTORY_DOWNLOADS,
+                    fileName
+                )
                 .setMimeType("application/vnd.android.package-archive")
 
-            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val downloadManager =
+                context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             downloadManager.enqueue(request)
 
-            Toast.makeText(context, context.getString(R.string.download_started), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.download_started),
+                Toast.LENGTH_SHORT
+            ).show()
         } catch (e: Exception) {
-            Toast.makeText(context, context.getString(R.string.download_failed, e.message), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.download_failed, e.message),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
     fun showUpdateNotification(context: Context, updateInfo: UpdateInfo) {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -159,7 +174,8 @@ class UpdateReceiver : BroadcastReceiver() {
         if (intent.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
             val downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             if (downloadId != -1L) {
-                val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                val downloadManager =
+                    context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                 val query = DownloadManager.Query().setFilterById(downloadId)
                 val cursor = downloadManager.query(query)
 
@@ -194,7 +210,11 @@ class UpdateReceiver : BroadcastReceiver() {
             }
             context.startActivity(intent)
         } catch (e: Exception) {
-            Toast.makeText(context, context.getString(R.string.install_error, e.message), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.install_error, e.message),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 }

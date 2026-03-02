@@ -172,9 +172,11 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
     val scope = rememberCoroutineScope()
     val commonAnimSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
-    val topCardShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
+    val topCardShape =
+        RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
     val middleCardShape = RoundedCornerShape(4.dp)
-    val bottomCardShape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp)
+    val bottomCardShape =
+        RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp)
 
     val customWelcomeFontFamily = FontFamily(
         Font(
@@ -197,7 +199,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
     var hasNotificationPermission by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             } else true
         )
     }
@@ -217,7 +222,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    hasNotificationPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                    hasNotificationPermission = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     canInstallPackages = context.packageManager.canRequestPackageInstalls()
@@ -339,9 +347,13 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                     checked = hasNotificationPermission,
                                     onCheckedChange = {
                                         if (hasNotificationPermission) {
-                                            val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                                putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                            }
+                                            val intent =
+                                                Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                                    putExtra(
+                                                        Settings.EXTRA_APP_PACKAGE,
+                                                        context.packageName
+                                                    )
+                                                }
                                             context.startActivity(intent)
                                         } else {
                                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -360,9 +372,13 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             },
                             onClick = {
                                 if (hasNotificationPermission) {
-                                    val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                    }
+                                    val intent =
+                                        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                            putExtra(
+                                                Settings.EXTRA_APP_PACKAGE,
+                                                context.packageName
+                                            )
+                                        }
                                     context.startActivity(intent)
                                 } else {
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -383,16 +399,17 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             shape = bottomCardShape,
                             control = {
                                 Icon(
-                                    imageVector = if(canInstallPackages) Icons.Rounded.Check else Icons.Rounded.ChevronRight,
+                                    imageVector = if (canInstallPackages) Icons.Rounded.Check else Icons.Rounded.ChevronRight,
                                     contentDescription = null,
                                     tint = if (canInstallPackages) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             },
                             onClick = {
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
-                                        data = Uri.parse("package:${context.packageName}")
-                                    }
+                                    val intent =
+                                        Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                            data = Uri.parse("package:${context.packageName}")
+                                        }
                                     installParamsLauncher.launch(intent)
                                 }
                             }
@@ -539,7 +556,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
 
     BackHandler(enabled = !isFirstPage) {
         scope.launch {
-            pagerState.animateScrollToPage(pagerState.currentPage - 1, animationSpec = commonAnimSpec)
+            pagerState.animateScrollToPage(
+                pagerState.currentPage - 1,
+                animationSpec = commonAnimSpec
+            )
         }
     }
 
@@ -603,7 +623,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                     onClick = {
                         if (!isFirstPage) {
                             scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1, animationSpec = commonAnimSpec)
+                                pagerState.animateScrollToPage(
+                                    pagerState.currentPage - 1,
+                                    animationSpec = commonAnimSpec
+                                )
                             }
                         }
                     },
@@ -628,13 +651,18 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                 )
 
                 WelcomeExpressiveButton(
-                    text = if (isLastPage) stringResource(R.string.get_started) else stringResource(R.string.next),
+                    text = if (isLastPage) stringResource(R.string.get_started) else stringResource(
+                        R.string.next
+                    ),
                     onClick = {
                         if (isLastPage) {
                             if (isLastPageScrolledToEnd) onFinished()
                         } else {
                             scope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1, animationSpec = commonAnimSpec)
+                                pagerState.animateScrollToPage(
+                                    pagerState.currentPage + 1,
+                                    animationSpec = commonAnimSpec
+                                )
                             }
                         }
                     },
@@ -682,7 +710,9 @@ fun RotatingShapeContainer(modifier: Modifier = Modifier) {
                 val path = Path()
                 for (i in 0 until steps) {
                     val theta = i * angleStep
-                    val r = (outerRadius + innerRadius) / 2 + (outerRadius - innerRadius) / 2 * cos(numPoints * theta).toFloat()
+                    val r = (outerRadius + innerRadius) / 2 + (outerRadius - innerRadius) / 2 * cos(
+                        numPoints * theta
+                    ).toFloat()
 
                     val x = cx + r * cos(theta).toFloat()
                     val y = cy + r * sin(theta).toFloat()
@@ -884,9 +914,17 @@ private fun WelcomeExpressiveButton(
 fun checkUsageStatsPermission(context: Context): Boolean {
     val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
     val mode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        appOps.unsafeCheckOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName)
+        appOps.unsafeCheckOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            context.packageName
+        )
     } else {
-        appOps.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, Process.myUid(), context.packageName)
+        appOps.checkOpNoThrow(
+            AppOpsManager.OPSTR_GET_USAGE_STATS,
+            Process.myUid(),
+            context.packageName
+        )
     }
     return mode == AppOpsManager.MODE_ALLOWED
 }

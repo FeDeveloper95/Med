@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class,
+@file:OptIn(
+    ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class,
     ExperimentalTextApi::class
 )
 
@@ -62,17 +63,28 @@ fun MainFAB(
             val menuActionDesc = stringResource(R.string.menu_action_desc)
             TooltipBox(
                 positionProvider = rememberCustomTooltipPositionProvider(tooltipPos),
-                tooltip = { PlainTooltip { Text(stringResource(R.string.menu_tooltip), fontFamily = GoogleSansFlex) } },
+                tooltip = {
+                    PlainTooltip {
+                        Text(
+                            stringResource(R.string.menu_tooltip),
+                            fontFamily = GoogleSansFlex
+                        )
+                    }
+                },
                 state = rememberTooltipState()
             ) {
                 ToggleFloatingActionButton(
                     modifier = Modifier
                         .semantics {
                             traversalIndex = -1f
-                            stateDescription = if (fabMenuExpanded) expandedString else collapsedString
+                            stateDescription =
+                                if (fabMenuExpanded) expandedString else collapsedString
                             contentDescription = menuActionDesc
                         }
-                        .animateFloatingActionButton(visible = true, alignment = Alignment.BottomEnd)
+                        .animateFloatingActionButton(
+                            visible = true,
+                            alignment = Alignment.BottomEnd
+                        )
                         .focusRequester(remember { FocusRequester() }),
                     checked = fabMenuExpanded,
                     onCheckedChange = { onExpandedChange(!fabMenuExpanded) }
@@ -95,7 +107,11 @@ fun MainFAB(
                 modifier = Modifier.semantics {
                     isTraversalGroup = true
                     if (i == menuItems.size - 1) customActions =
-                        listOf(CustomAccessibilityAction(label = closeMenuString, action = { onExpandedChange(false); true }))
+                        listOf(
+                            CustomAccessibilityAction(
+                                label = closeMenuString,
+                                action = { onExpandedChange(false); true })
+                        )
                 },
                 onClick = {
                     onExpandedChange(false)

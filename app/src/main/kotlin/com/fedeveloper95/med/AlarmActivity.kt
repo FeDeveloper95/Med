@@ -101,7 +101,8 @@ class AlarmActivity : ComponentActivity() {
             registerReceiver(closeReceiver, filter)
         }
 
-        val itemTitle = intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
+        val itemTitle =
+            intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
         val itemId = intent.getLongExtra("ITEM_ID", -1L)
 
         val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
@@ -120,7 +121,10 @@ class AlarmActivity : ComponentActivity() {
                         snoozeDuration = snoozeDuration,
                         useSlider = useSlider,
                         onTake = {
-                            val actionIntent = Intent(this@AlarmActivity, com.fedeveloper95.med.services.NotificationReceiver::class.java).apply {
+                            val actionIntent = Intent(
+                                this@AlarmActivity,
+                                com.fedeveloper95.med.services.NotificationReceiver::class.java
+                            ).apply {
                                 action = "ACTION_TAKEN"
                                 putExtra("ITEM_ID", itemId)
                             }
@@ -128,7 +132,10 @@ class AlarmActivity : ComponentActivity() {
                             finishAndRemoveTask()
                         },
                         onSnooze = {
-                            val actionIntent = Intent(this@AlarmActivity, com.fedeveloper95.med.services.NotificationReceiver::class.java).apply {
+                            val actionIntent = Intent(
+                                this@AlarmActivity,
+                                com.fedeveloper95.med.services.NotificationReceiver::class.java
+                            ).apply {
                                 action = "ACTION_SNOOZE"
                                 putExtra("ITEM_ID", itemId)
                             }
@@ -219,7 +226,11 @@ fun AlarmScreen(
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     )
                 ) {
-                    Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(32.dp))
+                    Icon(
+                        Icons.Rounded.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp)
+                    )
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(
                         text = stringResource(R.string.alarm_taken_action),
@@ -235,7 +246,11 @@ fun AlarmScreen(
                         .height(64.dp),
                     shape = RoundedCornerShape(24.dp)
                 ) {
-                    Icon(Icons.Rounded.Snooze, contentDescription = null, modifier = Modifier.size(24.dp))
+                    Icon(
+                        Icons.Rounded.Snooze,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = stringResource(R.string.alarm_snooze_action, snoozeDuration),
@@ -312,20 +327,31 @@ fun AlarmSlider(
                                     offsetX.animateTo(-maxDrag, spring())
                                     onSnooze()
                                 } else {
-                                    offsetX.animateTo(0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                                    offsetX.animateTo(
+                                        0f,
+                                        spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                                    )
                                 }
                             }
                         },
                         onDragCancel = {
                             scope.launch {
-                                offsetX.animateTo(0f, spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                                offsetX.animateTo(
+                                    0f,
+                                    spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                                )
                             }
                         },
                         onHorizontalDrag = { change, dragAmount ->
                             change.consume()
                             val maxDrag = (containerWidth - thumbWidthPx) / 2f
                             scope.launch {
-                                offsetX.snapTo((offsetX.value + dragAmount).coerceIn(-maxDrag, maxDrag))
+                                offsetX.snapTo(
+                                    (offsetX.value + dragAmount).coerceIn(
+                                        -maxDrag,
+                                        maxDrag
+                                    )
+                                )
                             }
                         }
                     )

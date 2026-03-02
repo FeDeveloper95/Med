@@ -249,7 +249,10 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 colorCode = colorCode,
                 frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
                 else if (days != null) context.getString(R.string.frequency_specific_days)
-                else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
+                else if (times.size > 1) context.getString(
+                    R.string.frequency_daily_multiple,
+                    times.size
+                )
                 else context.getString(R.string.frequency_daily),
                 creationDate = baseDate,
                 creationTime = time,
@@ -291,7 +294,10 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 intervalGap = intervalGap,
                 frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
                 else if (days != null) context.getString(R.string.frequency_specific_days)
-                else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
+                else if (times.size > 1) context.getString(
+                    R.string.frequency_daily_multiple,
+                    times.size
+                )
                 else context.getString(R.string.frequency_daily)
             )
 
@@ -340,14 +346,17 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         if (date.isAfter(LocalDate.now())) return
 
         val newHistory = HashMap(item.takenHistory)
-        if (newHistory.containsKey(date)) newHistory.remove(date) else newHistory[date] = LocalTime.now()
+        if (newHistory.containsKey(date)) newHistory.remove(date) else newHistory[date] =
+            LocalTime.now()
 
         val index = _items.indexOfFirst { it.id == item.id }
         if (index != -1) _items[index] = item.copy(takenHistory = newHistory)
         saveData()
     }
 
-    fun reloadData() { loadData() }
+    fun reloadData() {
+        loadData()
+    }
 
     private fun saveData() {
         DataRepository.saveData(getApplication(), _items)
@@ -376,32 +385,78 @@ class MainActivity : ComponentActivity() {
             val lifecycleOwner = LocalLifecycleOwner.current
 
             DisposableEffect(lifecycleOwner) {
-                val observer = LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) viewModel.reloadData() }
+                val observer =
+                    LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) viewModel.reloadData() }
                 lifecycleOwner.lifecycle.addObserver(observer)
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
             }
 
             DisposableEffect(Unit) {
                 val receiver = object : BroadcastReceiver() {
-                    override fun onReceive(context: Context?, intent: Intent?) { viewModel.reloadData() }
+                    override fun onReceive(context: Context?, intent: Intent?) {
+                        viewModel.reloadData()
+                    }
                 }
                 val filter = IntentFilter("com.fedeveloper95.med.REFRESH_DATA")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(receiver, filter, RECEIVER_NOT_EXPORTED)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) context.registerReceiver(
+                    receiver,
+                    filter,
+                    RECEIVER_NOT_EXPORTED
+                )
                 else context.registerReceiver(receiver, filter)
                 onDispose { context.unregisterReceiver(receiver) }
             }
 
-            var currentTheme by remember { mutableIntStateOf(prefs.getInt(PREF_THEME, THEME_SYSTEM)) }
-            var currentWeekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
-            var currentSortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
+            var currentTheme by remember {
+                mutableIntStateOf(
+                    prefs.getInt(
+                        PREF_THEME,
+                        THEME_SYSTEM
+                    )
+                )
+            }
+            var currentWeekStart by remember {
+                mutableStateOf(
+                    prefs.getString(
+                        PREF_WEEK_START,
+                        "monday"
+                    ) ?: "monday"
+                )
+            }
+            var currentSortOrder by remember {
+                mutableStateOf(
+                    prefs.getString(
+                        PREF_SORT_ORDER,
+                        "time"
+                    ) ?: "time"
+                )
+            }
             var currentPresets by remember { mutableStateOf(loadPresets(prefs)) }
-            var useBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", true)) }
+            var useBottomSheet by remember {
+                mutableStateOf(
+                    prefs.getBoolean(
+                        "pref_experimental_bottom_sheet",
+                        true
+                    )
+                )
+            }
 
-            val currentVersionName = remember { try { packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0" } catch (e: Exception) { "1.0" } }
-            val notificationPermissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
+            val currentVersionName = remember {
+                try {
+                    packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0"
+                } catch (e: Exception) {
+                    "1.0"
+                }
+            }
+            val notificationPermissionLauncher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
 
             LaunchedEffect(Unit) {
-                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
                 val update = Updater.checkForUpdates(currentVersionName)
@@ -409,15 +464,28 @@ class MainActivity : ComponentActivity() {
             }
 
             DisposableEffect(prefs) {
-                val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
-                    when (key) {
-                        PREF_THEME -> currentTheme = sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
-                        PREF_WEEK_START -> currentWeekStart = sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
-                        PREF_SORT_ORDER -> currentSortOrder = sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
-                        PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets = loadPresets(sharedPreferences)
-                        "pref_experimental_bottom_sheet" -> useBottomSheet = sharedPreferences.getBoolean("pref_experimental_bottom_sheet", false)
+                val listener =
+                    SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+                        when (key) {
+                            PREF_THEME -> currentTheme =
+                                sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
+
+                            PREF_WEEK_START -> currentWeekStart =
+                                sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
+
+                            PREF_SORT_ORDER -> currentSortOrder =
+                                sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
+
+                            PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets =
+                                loadPresets(sharedPreferences)
+
+                            "pref_experimental_bottom_sheet" -> useBottomSheet =
+                                sharedPreferences.getBoolean(
+                                    "pref_experimental_bottom_sheet",
+                                    false
+                                )
+                        }
                     }
-                }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
                 onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
             }
@@ -456,13 +524,16 @@ fun rememberCustomTooltipPositionProvider(
             ): IntOffset {
                 return when (position) {
                     TooltipPosition.Above -> {
-                        val x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
+                        val x =
+                            anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
                         val y = anchorBounds.top - popupContentSize.height - spacingPx
                         IntOffset(x, y)
                     }
+
                     TooltipPosition.Start -> {
                         val x = anchorBounds.left - popupContentSize.width - spacingPx
-                        val y = anchorBounds.top + (anchorBounds.height - popupContentSize.height) / 2
+                        val y =
+                            anchorBounds.top + (anchorBounds.height - popupContentSize.height) / 2
                         IntOffset(x, y)
                     }
                 }
@@ -521,7 +592,10 @@ fun ExpressiveButton(
         onClick = onClick,
         modifier = modifier.height(50.dp),
         shape = RoundedCornerShape(cornerPercent),
-        colors = ButtonDefaults.buttonColors(containerColor = containerColor, contentColor = contentColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
         interactionSource = interactionSource
     ) {
         Text(text, fontFamily = GoogleSansFlex, style = MaterialTheme.typography.titleMedium)
@@ -565,7 +639,14 @@ fun MedApp(
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
-    var showCommunitySheet by remember { mutableStateOf(!prefs.getBoolean("pref_community_shown", false)) }
+    var showCommunitySheet by remember {
+        mutableStateOf(
+            !prefs.getBoolean(
+                "pref_community_shown",
+                false
+            )
+        )
+    }
 
     var fabMenuExpanded by remember { mutableStateOf(false) }
     var showMedicineDialog by remember { mutableStateOf(false) }
@@ -584,30 +665,45 @@ fun MedApp(
     val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
 
     val menuItems = remember(presets, icSick, icMind, icMixture) {
-        val defaultItems: List<Triple<ItemType, ImageVector, Triple<String, String?, String?>>> = listOf(
-            Triple(ItemType.Medicine, Icons.Rounded.MedicalServices, Triple(context.getString(R.string.medicine_label), null as String?, null as String?)),
-            Triple(ItemType.Event, Icons.Rounded.Event, Triple(context.getString(R.string.event_label), null, null))
-        )
-        val presetItems: List<Triple<ItemType, ImageVector, Triple<String, String?, String?>>> = presets.mapNotNull { entry ->
-            val parts = entry.split("|")
-            if (parts.size >= 2) {
-                val type = if (parts[0] == ItemType.Medicine.name) ItemType.Medicine else ItemType.Event
-                val name = parts[1]
-                val iconName = parts.getOrNull(2)
-                val colorCode = parts.getOrNull(3)
+        val defaultItems: List<Triple<ItemType, ImageVector, Triple<String, String?, String?>>> =
+            listOf(
+                Triple(
+                    ItemType.Medicine,
+                    Icons.Rounded.MedicalServices,
+                    Triple(
+                        context.getString(R.string.medicine_label),
+                        null as String?,
+                        null as String?
+                    )
+                ),
+                Triple(
+                    ItemType.Event,
+                    Icons.Rounded.Event,
+                    Triple(context.getString(R.string.event_label), null, null)
+                )
+            )
+        val presetItems: List<Triple<ItemType, ImageVector, Triple<String, String?, String?>>> =
+            presets.mapNotNull { entry ->
+                val parts = entry.split("|")
+                if (parts.size >= 2) {
+                    val type =
+                        if (parts[0] == ItemType.Medicine.name) ItemType.Medicine else ItemType.Event
+                    val name = parts[1]
+                    val iconName = parts.getOrNull(2)
+                    val colorCode = parts.getOrNull(3)
 
-                val icon: ImageVector = when (iconName) {
-                    "MixtureMed" -> icSick
-                    "Bed" -> icMind
-                    "Mood" -> icMixture
-                    else -> if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!!
-                    else if (type == ItemType.Medicine) Icons.Rounded.MedicalServices
-                    else Icons.Rounded.Event
-                }
+                    val icon: ImageVector = when (iconName) {
+                        "MixtureMed" -> icSick
+                        "Bed" -> icMind
+                        "Mood" -> icMixture
+                        else -> if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!!
+                        else if (type == ItemType.Medicine) Icons.Rounded.MedicalServices
+                        else Icons.Rounded.Event
+                    }
 
-                Triple(type, icon, Triple(name, iconName, colorCode))
-            } else null
-        }
+                    Triple(type, icon, Triple(name, iconName, colorCode))
+                } else null
+            }
         defaultItems + presetItems
     }
 
@@ -625,48 +721,103 @@ fun MedApp(
                     onMenuItemClick = { type, name, iconName, colorCode ->
                         if (iconName == null) {
                             preFilledText = ""
-                            if (type == ItemType.Medicine) showMedicineDialog = true else showEventDialog = true
+                            if (type == ItemType.Medicine) showMedicineDialog =
+                                true else showEventDialog = true
                         } else {
-                            viewModel.addItem(type, name, iconName, colorCode, listOf(LocalTime.now()), null)
+                            viewModel.addItem(
+                                type,
+                                name,
+                                iconName,
+                                colorCode,
+                                listOf(LocalTime.now()),
+                                null
+                            )
                         }
                     }
                 )
             }
         ) { padding ->
-            Box(modifier = Modifier.fillMaxSize().padding(top = padding.calculateTopPadding())) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(top = padding.calculateTopPadding())) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
                 ) {
-                    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 16.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold), color = MaterialTheme.colorScheme.onSurface)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            ExpressiveIconButton(onClick = {
-                                val intent = Intent(context, EditModeActivity::class.java).apply {
-                                    putExtra("SELECTED_DATE", viewModel.selectedDate.toEpochDay())
-                                }
-                                context.startActivity(intent)
-                            }, icon = Icons.Rounded.Edit, contentDescription = stringResource(R.string.edit_mode_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
+                            ExpressiveIconButton(
+                                onClick = {
+                                    val intent =
+                                        Intent(context, EditModeActivity::class.java).apply {
+                                            putExtra(
+                                                "SELECTED_DATE",
+                                                viewModel.selectedDate.toEpochDay()
+                                            )
+                                        }
+                                    context.startActivity(intent)
+                                },
+                                icon = Icons.Rounded.Edit,
+                                contentDescription = stringResource(R.string.edit_mode_desc),
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
                             Spacer(modifier = Modifier.width(8.dp))
-                            ExpressiveIconButton(onClick = { showDatePicker = true }, icon = Icons.Rounded.CalendarMonth, contentDescription = stringResource(R.string.choose_date_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
+                            ExpressiveIconButton(
+                                onClick = { showDatePicker = true },
+                                icon = Icons.Rounded.CalendarMonth,
+                                contentDescription = stringResource(R.string.choose_date_desc),
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
                             Spacer(modifier = Modifier.width(8.dp))
-                            ExpressiveIconButton(onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) }, icon = Icons.Rounded.Settings, contentDescription = stringResource(R.string.settings_desc), containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, contentColor = MaterialTheme.colorScheme.onSurface)
+                            ExpressiveIconButton(
+                                onClick = {
+                                    context.startActivity(
+                                        Intent(
+                                            context,
+                                            SettingsActivity::class.java
+                                        )
+                                    )
+                                },
+                                icon = Icons.Rounded.Settings,
+                                contentDescription = stringResource(R.string.settings_desc),
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     val localeForCalendar = if (weekStart == "sunday") Locale.US else Locale.ITALY
-                    WeeklyCalendarPager(selectedDate = viewModel.selectedDate, onDateSelected = { viewModel.selectedDate = it }, locale = localeForCalendar)
+                    WeeklyCalendarPager(
+                        selectedDate = viewModel.selectedDate,
+                        onDateSelected = { viewModel.selectedDate = it },
+                        locale = localeForCalendar
+                    )
                     Spacer(modifier = Modifier.height(24.dp))
 
                     val initialPage = 10000
-                    val dayPagerState = rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
+                    val dayPagerState =
+                        rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
                     val today = remember { LocalDate.now() }
 
                     var isProgrammaticScroll by remember { mutableStateOf(false) }
 
                     LaunchedEffect(viewModel.selectedDate) {
-                        val daysDiff = ChronoUnit.DAYS.between(today, viewModel.selectedDate).toInt()
+                        val daysDiff =
+                            ChronoUnit.DAYS.between(today, viewModel.selectedDate).toInt()
                         val targetPage = initialPage + daysDiff
                         if (dayPagerState.currentPage != targetPage) {
                             isProgrammaticScroll = true
@@ -690,7 +841,12 @@ fun MedApp(
                         }
                     }
 
-                    HorizontalPager(state = dayPagerState, modifier = Modifier.weight(1f).fillMaxWidth()) { page ->
+                    HorizontalPager(
+                        state = dayPagerState,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) { page ->
                         val daysDiff = page - initialPage
                         val pageDate = today.plusDays(daysDiff.toLong())
 
@@ -699,9 +855,17 @@ fun MedApp(
                                 ItemType.Event -> item.creationDate == pageDate
                                 ItemType.Medicine -> {
                                     val isAfterStart = !pageDate.isBefore(item.creationDate)
-                                    val isBeforeEnd = item.endDate == null || !pageDate.isAfter(item.endDate)
-                                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(pageDate.dayOfWeek)
-                                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, pageDate) % item.intervalGap == 0L
+                                    val isBeforeEnd =
+                                        item.endDate == null || !pageDate.isAfter(item.endDate)
+                                    val isCorrectDay =
+                                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
+                                            pageDate.dayOfWeek
+                                        )
+                                    val isCorrectGap =
+                                        item.intervalGap == null || ChronoUnit.DAYS.between(
+                                            item.creationDate,
+                                            pageDate
+                                        ) % item.intervalGap == 0L
                                     isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                                 }
                             }
@@ -715,7 +879,11 @@ fun MedApp(
 
                         var isRefreshing by remember { mutableStateOf(false) }
                         val pullRefreshState = rememberPullToRefreshState()
-                        val onRefresh: () -> Unit = { isRefreshing = true; scope.launch { delay(1000); viewModel.reloadData(); isRefreshing = false } }
+                        val onRefresh: () -> Unit = {
+                            isRefreshing = true; scope.launch {
+                            delay(1000); viewModel.reloadData(); isRefreshing = false
+                        }
+                        }
 
                         PullToRefreshBox(
                             state = pullRefreshState,
@@ -723,43 +891,83 @@ fun MedApp(
                             onRefresh = onRefresh,
                             modifier = Modifier.fillMaxSize(),
                             indicator = {
-                                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
-                                    PullToRefreshDefaults.LoadingIndicator(state = pullRefreshState, isRefreshing = isRefreshing)
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.TopCenter
+                                ) {
+                                    PullToRefreshDefaults.LoadingIndicator(
+                                        state = pullRefreshState,
+                                        isRefreshing = isRefreshing
+                                    )
                                 }
                             }
                         ) {
                             if (pageItems.isEmpty()) {
-                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Icon(Icons.Rounded.Event, contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.surfaceVariant)
+                                        Icon(
+                                            Icons.Rounded.Event,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(64.dp),
+                                            tint = MaterialTheme.colorScheme.surfaceVariant
+                                        )
                                         Spacer(modifier = Modifier.height(16.dp))
-                                        Text(stringResource(R.string.no_events_label), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text(
+                                            stringResource(R.string.no_events_label),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
                                     }
                                 }
                             } else {
                                 if (isExpandedScreen) {
                                     LazyVerticalGrid(
                                         columns = GridCells.Adaptive(minSize = 340.dp),
-                                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(horizontal = 16.dp),
                                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                                         verticalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
                                         items(pageItems.size, key = { pageItems[it].id }) { idx ->
                                             val item = pageItems[idx]
                                             val shape = RoundedCornerShape(24.dp)
-                                            Box(modifier = Modifier.animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold), fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow), fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
+                                            Box(
+                                                modifier = Modifier.animateItem(
+                                                    placementSpec = spring(
+                                                        stiffness = Spring.StiffnessMediumLow,
+                                                        visibilityThreshold = IntOffset.VisibilityThreshold
+                                                    ),
+                                                    fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                                    fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                                )
+                                            ) {
                                                 SwipeableSquishItem(
                                                     item = item,
                                                     shape = shape,
                                                     onDeleteThresholdReached = { resetAnimation ->
                                                         val itemToRestore = item
                                                         viewModel.deleteItem(item, pageDate)
-                                                        val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                        val undoMsg = context.getString(R.string.undo_action)
+                                                        val deletedMsg = context.getString(
+                                                            R.string.item_deleted,
+                                                            item.title
+                                                        )
+                                                        val undoMsg =
+                                                            context.getString(R.string.undo_action)
                                                         scope.launch {
                                                             snackbarHostState.currentSnackbarData?.dismiss()
-                                                            val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                            val result = snackbarHostState.showSnackbar(message = deletedMsg, actionLabel = undoMsg, withDismissAction = true, duration = SnackbarDuration.Indefinite)
+                                                            val dismissJob =
+                                                                launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                            val result =
+                                                                snackbarHostState.showSnackbar(
+                                                                    message = deletedMsg,
+                                                                    actionLabel = undoMsg,
+                                                                    withDismissAction = true,
+                                                                    duration = SnackbarDuration.Indefinite
+                                                                )
                                                             dismissJob.cancel()
                                                             if (result == SnackbarResult.ActionPerformed) {
                                                                 viewModel.restoreItem(itemToRestore)
@@ -767,30 +975,68 @@ fun MedApp(
                                                             }
                                                         }
                                                     },
-                                                    onSwipeStart = { activeSwipingItemId = item.id },
+                                                    onSwipeStart = {
+                                                        activeSwipingItemId = item.id
+                                                    },
                                                     onSwipeCancel = { activeSwipingItemId = null }
                                                 ) {
                                                     MedDataCard(
                                                         item = item,
                                                         currentViewDate = pageDate,
                                                         shape = shape,
-                                                        onToggle = { viewModel.toggleMedicine(item, pageDate) },
-                                                        onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
+                                                        onToggle = {
+                                                            viewModel.toggleMedicine(
+                                                                item,
+                                                                pageDate
+                                                            )
+                                                        },
+                                                        onClick = {
+                                                            if (!item.notes.isNullOrBlank()) noteToShow =
+                                                                item.notes
+                                                        },
                                                         onLongClick = { editingItem = item }
                                                     )
                                                 }
                                             }
                                         }
-                                        item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height(100.dp)) }
+                                        item(span = { GridItemSpan(maxLineSpan) }) {
+                                            Spacer(
+                                                modifier = Modifier.height(
+                                                    100.dp
+                                                )
+                                            )
+                                        }
                                     }
                                 } else {
-                                    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                        itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(horizontal = 16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        itemsIndexed(
+                                            items = pageItems,
+                                            key = { _, item -> item.id }) { index, item ->
                                             val topRadius = if (index == 0) 28.dp else 4.dp
-                                            val bottomRadius = if (index == pageItems.lastIndex) 28.dp else 4.dp
-                                            val shape = RoundedCornerShape(topStart = topRadius, topEnd = topRadius, bottomStart = bottomRadius, bottomEnd = bottomRadius)
+                                            val bottomRadius =
+                                                if (index == pageItems.lastIndex) 28.dp else 4.dp
+                                            val shape = RoundedCornerShape(
+                                                topStart = topRadius,
+                                                topEnd = topRadius,
+                                                bottomStart = bottomRadius,
+                                                bottomEnd = bottomRadius
+                                            )
 
-                                            Box(modifier = Modifier.animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow, visibilityThreshold = IntOffset.VisibilityThreshold), fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow), fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
+                                            Box(
+                                                modifier = Modifier.animateItem(
+                                                    placementSpec = spring(
+                                                        stiffness = Spring.StiffnessMediumLow,
+                                                        visibilityThreshold = IntOffset.VisibilityThreshold
+                                                    ),
+                                                    fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                                    fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                                )
+                                            ) {
                                                 SwipeableSquishItem(
                                                     item = item,
                                                     shape = shape,
@@ -798,13 +1044,24 @@ fun MedApp(
                                                         val itemToRestore = item
                                                         viewModel.deleteItem(item, pageDate)
 
-                                                        val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                        val undoMsg = context.getString(R.string.undo_action)
+                                                        val deletedMsg = context.getString(
+                                                            R.string.item_deleted,
+                                                            item.title
+                                                        )
+                                                        val undoMsg =
+                                                            context.getString(R.string.undo_action)
 
                                                         scope.launch {
                                                             snackbarHostState.currentSnackbarData?.dismiss()
-                                                            val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                            val result = snackbarHostState.showSnackbar(message = deletedMsg, actionLabel = undoMsg, withDismissAction = true, duration = SnackbarDuration.Indefinite)
+                                                            val dismissJob =
+                                                                launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                            val result =
+                                                                snackbarHostState.showSnackbar(
+                                                                    message = deletedMsg,
+                                                                    actionLabel = undoMsg,
+                                                                    withDismissAction = true,
+                                                                    duration = SnackbarDuration.Indefinite
+                                                                )
                                                             dismissJob.cancel()
                                                             if (result == SnackbarResult.ActionPerformed) {
                                                                 viewModel.restoreItem(itemToRestore)
@@ -812,15 +1069,25 @@ fun MedApp(
                                                             }
                                                         }
                                                     },
-                                                    onSwipeStart = { activeSwipingItemId = item.id },
+                                                    onSwipeStart = {
+                                                        activeSwipingItemId = item.id
+                                                    },
                                                     onSwipeCancel = { activeSwipingItemId = null }
                                                 ) {
                                                     MedDataCard(
                                                         item = item,
                                                         currentViewDate = pageDate,
                                                         shape = shape,
-                                                        onToggle = { viewModel.toggleMedicine(item, pageDate) },
-                                                        onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
+                                                        onToggle = {
+                                                            viewModel.toggleMedicine(
+                                                                item,
+                                                                pageDate
+                                                            )
+                                                        },
+                                                        onClick = {
+                                                            if (!item.notes.isNullOrBlank()) noteToShow =
+                                                                item.notes
+                                                        },
                                                         onLongClick = { editingItem = item }
                                                     )
                                                 }
@@ -834,7 +1101,14 @@ fun MedApp(
                     }
                 }
             }
-            if (fabMenuExpanded) Box(modifier = Modifier.fillMaxSize().background(Color.Transparent).clickable(interactionSource = remember { MutableInteractionSource() }, indication = null) { fabMenuExpanded = false })
+            if (fabMenuExpanded) Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent)
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null
+                    ) { fabMenuExpanded = false })
         }
 
         MedSnackbarHost(
@@ -855,12 +1129,27 @@ fun MedApp(
     }
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = viewModel.selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
+        val datePickerState =
+            rememberDatePickerState(initialSelectedDateMillis = viewModel.selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
-            confirmButton = { ExpressiveTextButton(onClick = { datePickerState.selectedDateMillis?.let { millis -> viewModel.selectedDate = LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000)) }; showDatePicker = false }, text = stringResource(R.string.ok_action)) },
-            dismissButton = { ExpressiveTextButton(onClick = { showDatePicker = false }, text = stringResource(R.string.cancel_action)) },
-            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh), shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp
+            confirmButton = {
+                ExpressiveTextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        viewModel.selectedDate =
+                            LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000))
+                    }; showDatePicker = false
+                }, text = stringResource(R.string.ok_action))
+            },
+            dismissButton = {
+                ExpressiveTextButton(
+                    onClick = { showDatePicker = false },
+                    text = stringResource(R.string.cancel_action)
+                )
+            },
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            shape = RoundedCornerShape(32.dp),
+            tonalElevation = 6.dp
         ) { DatePicker(state = datePickerState) }
     }
 
@@ -873,7 +1162,16 @@ fun MedApp(
                 MedicineBottomSheet(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            times,
+                            days,
+                            notes,
+                            intervalGap
+                        )
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -882,7 +1180,16 @@ fun MedApp(
                 EventBottomSheet(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            times,
+                            days,
+                            notes,
+                            intervalGap
+                        )
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -893,7 +1200,16 @@ fun MedApp(
                 MedicinePopup(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            times,
+                            days,
+                            notes,
+                            intervalGap
+                        )
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -902,7 +1218,16 @@ fun MedApp(
                 EventPopup(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            times,
+                            days,
+                            notes,
+                            intervalGap
+                        )
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -916,7 +1241,16 @@ fun MedApp(
             MedicineBottomSheet(
                 onDismiss = { showMedicineDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
+                    viewModel.addItem(
+                        ItemType.Medicine,
+                        title,
+                        iconName,
+                        colorCode,
+                        times,
+                        days,
+                        notes = notes,
+                        intervalGap = intervalGap
+                    )
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -925,7 +1259,16 @@ fun MedApp(
             MedicinePopup(
                 onDismiss = { showMedicineDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
+                    viewModel.addItem(
+                        ItemType.Medicine,
+                        title,
+                        iconName,
+                        colorCode,
+                        times,
+                        days,
+                        notes = notes,
+                        intervalGap = intervalGap
+                    )
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -938,7 +1281,16 @@ fun MedApp(
             EventBottomSheet(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
+                    viewModel.addItem(
+                        ItemType.Event,
+                        title,
+                        iconName,
+                        colorCode,
+                        times,
+                        days,
+                        notes = notes,
+                        intervalGap = intervalGap
+                    )
                     showEventDialog = false
                 },
                 initialText = preFilledText
@@ -947,7 +1299,16 @@ fun MedApp(
             EventPopup(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
+                    viewModel.addItem(
+                        ItemType.Event,
+                        title,
+                        iconName,
+                        colorCode,
+                        times,
+                        days,
+                        notes = notes,
+                        intervalGap = intervalGap
+                    )
                     showEventDialog = false
                 },
                 initialText = preFilledText
@@ -963,21 +1324,50 @@ fun MedApp(
 @Composable
 fun TimeSelectorItem(label: String, time: LocalTime, onClick: () -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)).clickable(onClick = onClick).padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .clickable(onClick = onClick)
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(label, fontFamily = GoogleSansFlex, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurface)
+        Text(
+            label,
+            fontFamily = GoogleSansFlex,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(time.format(DateTimeFormatter.ofPattern("HH:mm")), fontFamily = GoogleSansFlex, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+            Text(
+                time.format(DateTimeFormatter.ofPattern("HH:mm")),
+                fontFamily = GoogleSansFlex,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            Icon(Icons.Rounded.Edit, contentDescription = stringResource(R.string.edit_time_desc), tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+            Icon(
+                Icons.Rounded.Edit,
+                contentDescription = stringResource(R.string.edit_time_desc),
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun MedDataCard(item: MedData, currentViewDate: LocalDate, shape: Shape, onToggle: () -> Unit, onClick: () -> Unit, onLongClick: () -> Unit) {
+fun MedDataCard(
+    item: MedData,
+    currentViewDate: LocalDate,
+    shape: Shape,
+    onToggle: () -> Unit,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
     val isMedicine = item.type == ItemType.Medicine
     val isTakenToday = if (isMedicine) item.takenHistory.containsKey(currentViewDate) else false
     val timestamp = if (isMedicine) item.takenHistory[currentViewDate] else item.creationTime
@@ -998,12 +1388,20 @@ fun MedDataCard(item: MedData, currentViewDate: LocalDate, shape: Shape, onToggl
         else Icons.Rounded.Event
     }
 
-    val customColor = remember(item.colorCode) { if (item.colorCode != null && item.colorCode != "dynamic") try { Color(parseColor(item.colorCode)) } catch (e: Exception) { null } else null }
+    val customColor = remember(item.colorCode) {
+        if (item.colorCode != null && item.colorCode != "dynamic") try {
+            Color(parseColor(item.colorCode))
+        } catch (e: Exception) {
+            null
+        } else null
+    }
 
     val cardContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     val cardContentColor = MaterialTheme.colorScheme.onSurface
-    val iconBoxColor = customColor ?: if (isMedicine) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer
-    val iconBoxTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
+    val iconBoxColor = customColor
+        ?: if (isMedicine) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer
+    val iconBoxTintColor =
+        if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
 
     Card(
         modifier = Modifier
@@ -1014,52 +1412,135 @@ fun MedDataCard(item: MedData, currentViewDate: LocalDate, shape: Shape, onToggl
                 onLongClick = onLongClick
             ),
         shape = shape,
-        colors = CardDefaults.cardColors(containerColor = cardContainerColor, contentColor = cardContentColor),
+        colors = CardDefaults.cardColors(
+            containerColor = cardContainerColor,
+            contentColor = cardContentColor
+        ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
         ListItem(
             headlineContent = {
-                Text(item.title, fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                Text(
+                    item.title,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    softWrap = false
+                )
             },
             supportingContent = {
                 Column {
                     if (isMedicine && !item.frequencyLabel.isNullOrBlank()) {
-                        Text(item.frequencyLabel, fontFamily = GoogleSansFlex, style = MaterialTheme.typography.bodySmall, color = cardContentColor.copy(alpha = 0.6f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                        Text(
+                            item.frequencyLabel,
+                            fontFamily = GoogleSansFlex,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = cardContentColor.copy(alpha = 0.6f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = false
+                        )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         if (isMedicine) {
-                            val scheduledTime = item.creationTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                            val scheduledTime =
+                                item.creationTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                             if (isTakenToday && timestamp != null) {
-                                val takenTime = timestamp.format(DateTimeFormatter.ofPattern("HH:mm"))
-                                val datePart = if (isToday) "" else "${currentViewDate.format(DateTimeFormatter.ofPattern("dd/MM"))} "
+                                val takenTime =
+                                    timestamp.format(DateTimeFormatter.ofPattern("HH:mm"))
+                                val datePart = if (isToday) "" else "${
+                                    currentViewDate.format(
+                                        DateTimeFormatter.ofPattern("dd/MM")
+                                    )
+                                } "
 
-                                Icon(Icons.Rounded.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
+                                Icon(
+                                    Icons.Rounded.Schedule,
+                                    null,
+                                    modifier = Modifier.size(12.dp),
+                                    tint = cardContentColor.copy(alpha = 0.7f)
+                                )
                                 Spacer(modifier = Modifier.width(4.dp))
-                                Text(stringResource(R.string.status_taken_format, datePart, takenTime), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                                Text(
+                                    stringResource(
+                                        R.string.status_taken_format,
+                                        datePart,
+                                        takenTime
+                                    ),
+                                    fontFamily = GoogleSansFlex,
+                                    fontWeight = FontWeight.Normal,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = cardContentColor.copy(alpha = 0.7f),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    softWrap = false
+                                )
                             } else {
-                                Text(stringResource(R.string.status_scheduled_format, scheduledTime), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                                Text(
+                                    stringResource(
+                                        R.string.status_scheduled_format,
+                                        scheduledTime
+                                    ),
+                                    fontFamily = GoogleSansFlex,
+                                    fontWeight = FontWeight.Normal,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = cardContentColor.copy(alpha = 0.7f),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    softWrap = false
+                                )
                             }
                         } else if (timestamp != null) {
-                            Icon(Icons.Rounded.Schedule, null, modifier = Modifier.size(12.dp), tint = cardContentColor.copy(alpha = 0.7f))
+                            Icon(
+                                Icons.Rounded.Schedule,
+                                null,
+                                modifier = Modifier.size(12.dp),
+                                tint = cardContentColor.copy(alpha = 0.7f)
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(timestamp.format(DateTimeFormatter.ofPattern("HH:mm")), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = cardContentColor.copy(alpha = 0.7f), maxLines = 1, overflow = TextOverflow.Ellipsis, softWrap = false)
+                            Text(
+                                timestamp.format(DateTimeFormatter.ofPattern("HH:mm")),
+                                fontFamily = GoogleSansFlex,
+                                fontWeight = FontWeight.Normal,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = cardContentColor.copy(alpha = 0.7f),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                softWrap = false
+                            )
                         }
                     }
                 }
             },
             leadingContent = {
-                Box(modifier = Modifier.size(48.dp).clip(CircleShape).background(iconBoxColor), contentAlignment = Alignment.Center) {
-                    Icon(icon, contentDescription = null, tint = iconBoxTintColor, modifier = Modifier.size(24.dp))
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(iconBoxColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = iconBoxTintColor,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             },
-            trailingContent = if (isMedicine) { {
-                RadioButton(
-                    selected = isTakenToday,
-                    onClick = { onToggle() },
-                    enabled = toggleEnabled
-                )
-            } } else null,
-            modifier = Modifier.padding(vertical = 4.dp), colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+            trailingContent = if (isMedicine) {
+                {
+                    RadioButton(
+                        selected = isTakenToday,
+                        onClick = { onToggle() },
+                        enabled = toggleEnabled
+                    )
+                }
+            } else null,
+            modifier = Modifier.padding(vertical = 4.dp),
+            colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )
     }
 }
@@ -1159,15 +1640,24 @@ fun WeeklyCalendarPager(
 ) {
     val pagerState = rememberPagerState(initialPage = 1000, pageCount = { 2000 })
     val today = remember { LocalDate.now() }
-    val currentWeekStart = remember(locale, today) { today.with(WeekFields.of(locale).dayOfWeek(), 1L) }
+    val currentWeekStart =
+        remember(locale, today) { today.with(WeekFields.of(locale).dayOfWeek(), 1L) }
 
     LaunchedEffect(selectedDate, locale) {
-        val weeksDiff = ChronoUnit.WEEKS.between(currentWeekStart, selectedDate.with(WeekFields.of(locale).dayOfWeek(), 1L))
+        val weeksDiff = ChronoUnit.WEEKS.between(
+            currentWeekStart,
+            selectedDate.with(WeekFields.of(locale).dayOfWeek(), 1L)
+        )
         val targetPage = 1000 + weeksDiff.toInt()
         if (pagerState.currentPage != targetPage) pagerState.animateScrollToPage(targetPage)
     }
 
-    HorizontalPager(state = pagerState, modifier = Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp), pageSpacing = 16.dp) { page ->
+    HorizontalPager(
+        state = pagerState,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        pageSpacing = 16.dp
+    ) { page ->
         val weekStart = currentWeekStart.plusWeeks((page - 1000).toLong())
         val monthName = when (weekStart.month) {
             java.time.Month.JANUARY -> R.string.month_january
@@ -1192,11 +1682,17 @@ fun WeeklyCalendarPager(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
             )
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
                 for (dayOffset in 0..6) {
                     val date = weekStart.plusDays(dayOffset.toLong())
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        CalendarDayItem(date = date, isSelected = date == selectedDate, onClick = { onDateSelected(date) })
+                        CalendarDayItem(
+                            date = date,
+                            isSelected = date == selectedDate,
+                            onClick = { onDateSelected(date) })
                     }
                 }
             }
@@ -1208,9 +1704,19 @@ fun WeeklyCalendarPager(
 fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
-    val backgroundColor by animateColorAsState(if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh, label = "bgColor")
-    val contentColor by animateColorAsState(if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface, label = "contentColor")
-    val cornerRadius by animateIntAsState(targetValue = if (isPressed) 12 else 32, animationSpec = spring(stiffness = Spring.StiffnessMediumLow), label = "corner")
+    val backgroundColor by animateColorAsState(
+        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
+        label = "bgColor"
+    )
+    val contentColor by animateColorAsState(
+        if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+        label = "contentColor"
+    )
+    val cornerRadius by animateIntAsState(
+        targetValue = if (isPressed) 12 else 32,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "corner"
+    )
 
     val isToday = date == LocalDate.now()
     val dayInitial = when (date.dayOfWeek) {
@@ -1231,7 +1737,11 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
             .clip(RoundedCornerShape(cornerRadius.dp))
             .background(backgroundColor)
             .then(
-                if (isToday) Modifier.border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(cornerRadius.dp))
+                if (isToday) Modifier.border(
+                    1.dp,
+                    MaterialTheme.colorScheme.primary,
+                    RoundedCornerShape(cornerRadius.dp)
+                )
                 else Modifier
             )
             .clickable(interactionSource = interactionSource, indication = null, onClick = onClick)
@@ -1239,17 +1749,51 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(text = stringResource(dayInitial), style = MaterialTheme.typography.labelSmall, color = contentColor.copy(alpha = 0.8f))
+        Text(
+            text = stringResource(dayInitial),
+            style = MaterialTheme.typography.labelSmall,
+            color = contentColor.copy(alpha = 0.8f)
+        )
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = date.dayOfMonth.toString(), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), color = contentColor)
+        Text(
+            text = date.dayOfMonth.toString(),
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            color = contentColor
+        )
     }
 }
 
 @Composable
-fun TimePickerDialog(onDismissRequest: () -> Unit, confirmButton: @Composable () -> Unit, dismissButton: @Composable () -> Unit, content: @Composable () -> Unit) {
+fun TimePickerDialog(
+    onDismissRequest: () -> Unit,
+    confirmButton: @Composable () -> Unit,
+    dismissButton: @Composable () -> Unit,
+    content: @Composable () -> Unit
+) {
     Dialog(onDismissRequest = onDismissRequest) {
-        Surface(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh, tonalElevation = 6.dp, modifier = Modifier.width(IntrinsicSize.Min).height(IntrinsicSize.Min).background(shape = RoundedCornerShape(28.dp), color = MaterialTheme.colorScheme.surfaceContainerHigh)) {
-            Column(modifier = Modifier.padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally) { content(); Row(modifier = Modifier.height(40.dp).fillMaxWidth(), horizontalArrangement = Arrangement.End) { dismissButton(); confirmButton() } }
+        Surface(
+            shape = RoundedCornerShape(28.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = 6.dp,
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .height(IntrinsicSize.Min)
+                .background(
+                    shape = RoundedCornerShape(28.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh
+                )
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                content(); Row(
+                modifier = Modifier
+                    .height(40.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) { dismissButton(); confirmButton() }
+            }
         }
     }
 }

@@ -70,8 +70,10 @@ fun SortOrderPopup(
                 )
                 options.forEachIndexed { index, title ->
                     val isSelected = selectedIndex == index
-                    val containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
-                    val contentColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                    val containerColor =
+                        if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+                    val contentColor =
+                        if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
                     Row(
                         modifier = Modifier

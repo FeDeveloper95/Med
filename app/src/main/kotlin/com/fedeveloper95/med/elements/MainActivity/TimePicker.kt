@@ -84,7 +84,9 @@ fun TimePickerSwitchable(
                     val icon = if (showPicker) Icons.Rounded.Keyboard else Icons.Rounded.Schedule
                     Icon(
                         imageVector = icon,
-                        contentDescription = if (showPicker) stringResource(R.string.switch_to_text_input) else stringResource(R.string.switch_to_touch_input)
+                        contentDescription = if (showPicker) stringResource(R.string.switch_to_text_input) else stringResource(
+                            R.string.switch_to_touch_input
+                        )
                     )
                 }
             }

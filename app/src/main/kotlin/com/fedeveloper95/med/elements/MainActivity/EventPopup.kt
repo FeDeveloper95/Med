@@ -78,7 +78,13 @@ fun EventPopup(
 ) {
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
-    var selectedTimes by remember { mutableStateOf(if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())) }
+    var selectedTimes by remember {
+        mutableStateOf(
+            if (initialItem != null) listOf(initialItem.creationTime) else listOf(
+                LocalTime.now()
+            )
+        )
+    }
 
     var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Event") }
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
@@ -89,7 +95,10 @@ fun EventPopup(
     LaunchedEffect(Unit) { if (initialText.isEmpty()) focusRequester.requestFocus() }
 
     if (showIconPicker) {
-        IconPickerDialog(currentIcon = selectedIconName, onDismiss = { showIconPicker = false }, onIconSelected = { selectedIconName = it; showIconPicker = false })
+        IconPickerDialog(
+            currentIcon = selectedIconName,
+            onDismiss = { showIconPicker = false },
+            onIconSelected = { selectedIconName = it; showIconPicker = false })
     }
 
     if (showTimePickerForIndex != null) {
@@ -123,7 +132,13 @@ fun EventPopup(
     AlertDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = false),
-        title = { Text(text = stringResource(R.string.new_event_title), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
+        title = {
+            Text(
+                text = stringResource(R.string.new_event_title),
+                fontFamily = GoogleSansFlex,
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -133,48 +148,150 @@ fun EventPopup(
                         "Mood" -> icMixture
                         else -> AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
                     }
-                    val headerBg = if (selectedColor == "dynamic") MaterialTheme.colorScheme.surfaceVariant else try { Color(parseColor(selectedColor)) } catch(e:Exception) { MaterialTheme.colorScheme.surfaceVariant }
-                    val headerTint = if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else Color.Black.copy(0.7f)
-                    Box(modifier = Modifier.size(80.dp).clip(CircleShape).background(headerBg).clickable { showIconPicker = true }, contentAlignment = Alignment.Center) {
-                        Icon(imageVector = iconVector, contentDescription = null, modifier = Modifier.size(40.dp), tint = headerTint)
-                        Box(modifier = Modifier.align(Alignment.BottomEnd).offset((-4).dp, (-4).dp).size(24.dp).clip(CircleShape).background(MaterialTheme.colorScheme.surface), contentAlignment = Alignment.Center) {
-                            Icon(Icons.Filled.Edit, null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.onSurface)
+                    val headerBg =
+                        if (selectedColor == "dynamic") MaterialTheme.colorScheme.surfaceVariant else try {
+                            Color(parseColor(selectedColor))
+                        } catch (e: Exception) {
+                            MaterialTheme.colorScheme.surfaceVariant
+                        }
+                    val headerTint =
+                        if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else Color.Black.copy(
+                            0.7f
+                        )
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(CircleShape)
+                            .background(headerBg)
+                            .clickable { showIconPicker = true },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = iconVector,
+                            contentDescription = null,
+                            modifier = Modifier.size(40.dp),
+                            tint = headerTint
+                        )
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset((-4).dp, (-4).dp)
+                                .size(24.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.surface),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Filled.Edit,
+                                null,
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
-                    value = text, onValueChange = { text = it }, modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                    placeholder = { Text(stringResource(R.string.name_hint), fontFamily = GoogleSansFlex) }, singleLine = true, shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                    value = text,
+                    onValueChange = { text = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    placeholder = {
+                        Text(
+                            stringResource(R.string.name_hint),
+                            fontFamily = GoogleSansFlex
+                        )
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 OutlinedTextField(
-                    value = notes, onValueChange = { notes = it }, modifier = Modifier.fillMaxWidth(),
-                    placeholder = { Text(stringResource(R.string.notes_hint), fontFamily = GoogleSansFlex) },
-                    minLines = 2, maxLines = 4, shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = MaterialTheme.colorScheme.primary, unfocusedBorderColor = MaterialTheme.colorScheme.outline)
+                    value = notes,
+                    onValueChange = { notes = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(
+                            stringResource(R.string.notes_hint),
+                            fontFamily = GoogleSansFlex
+                        )
+                    },
+                    minLines = 2,
+                    maxLines = 4,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
                 val time = selectedTimes.firstOrNull() ?: LocalTime.now()
-                TimeSelectorItem(label = stringResource(R.string.time_label), time = time) { showTimePickerForIndex = 0 }
+                TimeSelectorItem(
+                    label = stringResource(R.string.time_label),
+                    time = time
+                ) { showTimePickerForIndex = 0 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = stringResource(R.string.select_color), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = stringResource(R.string.select_color),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     AVAILABLE_COLORS.forEach { colorCode ->
                         val isSelected = selectedColor == colorCode
                         val isDynamic = colorCode == "dynamic"
-                        val bg = if (isDynamic) MaterialTheme.colorScheme.surfaceVariant else try { Color(parseColor(colorCode)) } catch(e:Exception) { Color.Gray }
-                        Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(bg).border(if (isSelected) 3.dp else 0.dp, if(isDynamic) MaterialTheme.colorScheme.primary else Color(red = bg.red * 0.7f, green = bg.green * 0.7f, blue = bg.blue * 0.7f, alpha = bg.alpha), CircleShape).clickable { selectedColor = colorCode }, contentAlignment = Alignment.Center) {
-                            if (isDynamic) Icon(Icons.Filled.Palette, null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(20.dp))
-                            if (isSelected && !isDynamic) Icon(Icons.Outlined.CheckCircle, null, tint = Color.Black.copy(0.5f), modifier = Modifier.size(20.dp))
+                        val bg = if (isDynamic) MaterialTheme.colorScheme.surfaceVariant else try {
+                            Color(parseColor(colorCode))
+                        } catch (e: Exception) {
+                            Color.Gray
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(CircleShape)
+                                .background(bg)
+                                .border(
+                                    if (isSelected) 3.dp else 0.dp,
+                                    if (isDynamic) MaterialTheme.colorScheme.primary else Color(
+                                        red = bg.red * 0.7f,
+                                        green = bg.green * 0.7f,
+                                        blue = bg.blue * 0.7f,
+                                        alpha = bg.alpha
+                                    ),
+                                    CircleShape
+                                )
+                                .clickable { selectedColor = colorCode },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isDynamic) Icon(
+                                Icons.Filled.Palette,
+                                null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            if (isSelected && !isDynamic) Icon(
+                                Icons.Outlined.CheckCircle,
+                                null,
+                                tint = Color.Black.copy(0.5f),
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
                 }
@@ -184,7 +301,15 @@ fun EventPopup(
             Button(
                 onClick = {
                     if (text.isNotBlank()) {
-                        onConfirm(text, selectedIconName, selectedColor, selectedTimes, null, notes.takeIf { it.isNotBlank() }, null)
+                        onConfirm(
+                            text,
+                            selectedIconName,
+                            selectedColor,
+                            selectedTimes,
+                            null,
+                            notes.takeIf { it.isNotBlank() },
+                            null
+                        )
                     }
                 },
                 shape = RoundedCornerShape(cornerPercent),
@@ -201,7 +326,14 @@ fun EventPopup(
                 )
             }
         },
-        dismissButton = { ExpressiveTextButton(onClick = onDismiss, text = stringResource(R.string.cancel_action)) },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh, shape = RoundedCornerShape(32.dp), tonalElevation = 6.dp
+        dismissButton = {
+            ExpressiveTextButton(
+                onClick = onDismiss,
+                text = stringResource(R.string.cancel_action)
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(32.dp),
+        tonalElevation = 6.dp
     )
 }

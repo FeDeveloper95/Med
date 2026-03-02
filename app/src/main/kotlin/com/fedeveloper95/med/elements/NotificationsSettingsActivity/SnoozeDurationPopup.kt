@@ -68,8 +68,10 @@ fun SnoozeDurationPopup(
 
                 options.forEach { duration ->
                     val isSelected = currentDuration == duration
-                    val containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
-                    val contentColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                    val containerColor =
+                        if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
+                    val contentColor =
+                        if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
                     Row(
                         modifier = Modifier

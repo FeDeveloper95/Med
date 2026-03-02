@@ -136,7 +136,9 @@ fun CommunityBottomSheet(
                             }
                         }
                     },
-                    modifier = Modifier.weight(1f).height(50.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp),
                     shape = RoundedCornerShape(cancelCorner),
                     interactionSource = cancelInteractionSource
                 ) {
@@ -150,7 +152,8 @@ fun CommunityBottomSheet(
 
                 Button(
                     onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/FeDeveloper95lab"))
+                        val intent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/FeDeveloper95lab"))
                         context.startActivity(intent)
                         scope.launch { sheetState.hide() }.invokeOnCompletion {
                             if (!sheetState.isVisible) {
@@ -158,7 +161,9 @@ fun CommunityBottomSheet(
                             }
                         }
                     },
-                    modifier = Modifier.weight(1f).height(50.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(50.dp),
                     shape = RoundedCornerShape(saveCorner),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,

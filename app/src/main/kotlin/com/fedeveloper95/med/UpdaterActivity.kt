@@ -1,4 +1,8 @@
-@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(
+    ExperimentalTextApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
 
 package com.fedeveloper95.med
 
@@ -185,7 +189,8 @@ fun UpdaterScreen(onBack: () -> Unit) {
                 if (intent.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
                     if (id != -1L) {
-                        val downloadManager = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                        val downloadManager =
+                            ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                         val query = DownloadManager.Query().setFilterById(id)
                         val cursor = downloadManager.query(query)
                         if (cursor != null && cursor.moveToFirst()) {
@@ -196,8 +201,12 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     val uri = downloadManager.getUriForDownloadedFile(id)
                                     if (uri != null) {
                                         val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                                            setDataAndType(uri, "application/vnd.android.package-archive")
-                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                            setDataAndType(
+                                                uri,
+                                                "application/vnd.android.package-archive"
+                                            )
+                                            flags =
+                                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
                                         }
                                         try {
                                             ctx.startActivity(installIntent)
@@ -240,10 +249,12 @@ fun UpdaterScreen(onBack: () -> Unit) {
             var isOnline = true
 
             try {
-                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val connectivityManager =
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 val network = connectivityManager.activeNetwork
                 val capabilities = connectivityManager.getNetworkCapabilities(network)
-                isOnline = capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                isOnline =
+                    capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -268,7 +279,8 @@ fun UpdaterScreen(onBack: () -> Unit) {
                 if (elapsed < 3000L) {
                     delay(3000L - elapsed)
                 }
-                status = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+                status =
+                    if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
             } catch (e: Exception) {
                 val elapsed = System.currentTimeMillis() - startTime
                 if (elapsed < 3000L) {
@@ -342,7 +354,10 @@ fun UpdaterScreen(onBack: () -> Unit) {
                     AnimatedActionButton(
                         text = stringResource(R.string.see_source_code),
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/FeDeveloper95/Med"))
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/FeDeveloper95/Med")
+                            )
                             context.startActivity(intent)
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -362,6 +377,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
+
                         is UpdateStatus.Available -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -378,7 +394,11 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     text = if (isDownloading) "Downloading..." else stringResource(R.string.update_action),
                                     onClick = {
                                         isDownloading = true
-                                        Updater.startDownload(context, currentStatus.info.downloadUrl, currentStatus.info.version)
+                                        Updater.startDownload(
+                                            context,
+                                            currentStatus.info.downloadUrl,
+                                            currentStatus.info.version
+                                        )
                                     },
                                     modifier = Modifier.weight(1f),
                                     enabled = !isDownloading
@@ -419,6 +439,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     modifier = Modifier.size(64.dp)
                                 )
                             }
+
                             is UpdateStatus.NoUpdate -> {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally
@@ -439,6 +460,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     )
                                 }
                             }
+
                             is UpdateStatus.Error -> {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally
@@ -459,12 +481,16 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     )
                                 }
                             }
+
                             is UpdateStatus.Available -> {
                                 Column(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = stringResource(R.string.update_available, currentStatus.info.version),
+                                        text = stringResource(
+                                            R.string.update_available,
+                                            currentStatus.info.version
+                                        ),
                                         fontFamily = GoogleSansFlex,
                                         style = MaterialTheme.typography.headlineSmall,
                                         color = MaterialTheme.colorScheme.primary,
@@ -486,6 +512,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     }
                                 }
                             }
+
                             else -> {}
                         }
                     }

@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class,
+@file:OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalTextApi::class,
     ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class
 )
 
@@ -120,8 +121,20 @@ fun MedicineBottomSheet(
 
     var frequencyCountStr by remember { mutableStateOf(if (frequencyUnit == "Day" && initialItem == null) "1" else "1") }
     var expandedUnit by remember { mutableStateOf(false) }
-    var selectedDays by remember { mutableStateOf(initialItem?.recurrenceDays?.toSet() ?: setOf(LocalDate.now().dayOfWeek)) }
-    var selectedTimes by remember { mutableStateOf(if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())) }
+    var selectedDays by remember {
+        mutableStateOf(
+            initialItem?.recurrenceDays?.toSet() ?: setOf(
+                LocalDate.now().dayOfWeek
+            )
+        )
+    }
+    var selectedTimes by remember {
+        mutableStateOf(
+            if (initialItem != null) listOf(initialItem.creationTime) else listOf(
+                LocalTime.now()
+            )
+        )
+    }
 
     var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "MedicalServices") }
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
@@ -204,7 +217,9 @@ fun MedicineBottomSheet(
         dragHandle = {
             Box(
                 modifier = Modifier
-                    .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) {}
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }) {}
                     .padding(vertical = 10.dp)
             ) {
                 BottomSheetDefaults.DragHandle()
@@ -287,7 +302,9 @@ fun MedicineBottomSheet(
                     OutlinedTextField(
                         value = text,
                         onValueChange = { text = it },
-                        modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
                         placeholder = {
                             Text(
                                 stringResource(R.string.name_hint),
@@ -334,7 +351,10 @@ fun MedicineBottomSheet(
                             if (frequencyUnit != "BiWeek") {
                                 OutlinedTextField(
                                     value = frequencyCountStr,
-                                    onValueChange = { if (it.all { char -> char.isDigit() }) frequencyCountStr = it },
+                                    onValueChange = {
+                                        if (it.all { char -> char.isDigit() }) frequencyCountStr =
+                                            it
+                                    },
                                     modifier = Modifier.weight(1f),
                                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                                     singleLine = true,
@@ -352,24 +372,45 @@ fun MedicineBottomSheet(
                                 val biWeekLabel = stringResource(R.string.frequency_unit_biweek)
 
                                 OutlinedTextField(
-                                    value = when(frequencyUnit) {
+                                    value = when (frequencyUnit) {
                                         "Day" -> dayLabel
                                         "Week" -> weekLabel
                                         else -> biWeekLabel
                                     },
                                     onValueChange = {},
                                     readOnly = true,
-                                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedUnit) },
-                                    modifier = Modifier.menuAnchor().fillMaxWidth()
+                                    trailingIcon = {
+                                        ExposedDropdownMenuDefaults.TrailingIcon(
+                                            expanded = expandedUnit
+                                        )
+                                    },
+                                    modifier = Modifier
+                                        .menuAnchor()
+                                        .fillMaxWidth()
                                 )
                                 ExposedDropdownMenu(
                                     expanded = expandedUnit,
                                     onDismissRequest = { expandedUnit = false },
                                     containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                                 ) {
-                                    DropdownMenuItem(text = { Text(dayLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "Day"; expandedUnit = false })
-                                    DropdownMenuItem(text = { Text(weekLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "Week"; expandedUnit = false })
-                                    DropdownMenuItem(text = { Text(biWeekLabel, fontFamily = GoogleSansFlex) }, onClick = { frequencyUnit = "BiWeek"; expandedUnit = false })
+                                    DropdownMenuItem(text = {
+                                        Text(
+                                            dayLabel,
+                                            fontFamily = GoogleSansFlex
+                                        )
+                                    }, onClick = { frequencyUnit = "Day"; expandedUnit = false })
+                                    DropdownMenuItem(text = {
+                                        Text(
+                                            weekLabel,
+                                            fontFamily = GoogleSansFlex
+                                        )
+                                    }, onClick = { frequencyUnit = "Week"; expandedUnit = false })
+                                    DropdownMenuItem(text = {
+                                        Text(
+                                            biWeekLabel,
+                                            fontFamily = GoogleSansFlex
+                                        )
+                                    }, onClick = { frequencyUnit = "BiWeek"; expandedUnit = false })
                                 }
                             }
                         }
@@ -392,18 +433,32 @@ fun MedicineBottomSheet(
                             horizontalArrangement = Arrangement.spacedBy(4.dp),
                             overflowIndicator = { state ->
                                 IconButton(onClick = { state.show() }) {
-                                    Icon(Icons.Rounded.MoreHoriz, contentDescription = stringResource(R.string.more_options))
+                                    Icon(
+                                        Icons.Rounded.MoreHoriz,
+                                        contentDescription = stringResource(R.string.more_options)
+                                    )
                                 }
                             }
                         ) {
-                            val days = listOf(DayOfWeek.MONDAY, DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)
+                            val days = listOf(
+                                DayOfWeek.MONDAY,
+                                DayOfWeek.TUESDAY,
+                                DayOfWeek.WEDNESDAY,
+                                DayOfWeek.THURSDAY,
+                                DayOfWeek.FRIDAY,
+                                DayOfWeek.SATURDAY,
+                                DayOfWeek.SUNDAY
+                            )
 
                             days.forEach { day ->
                                 val isSelected = selectedDays.contains(day)
 
                                 toggleableItem(
                                     checked = isSelected,
-                                    label = day.getDisplayName(TextStyle.NARROW, Locale.getDefault()),
+                                    label = day.getDisplayName(
+                                        TextStyle.NARROW,
+                                        Locale.getDefault()
+                                    ),
                                     onCheckedChange = { _ ->
                                         val limit = frequencyCountStr.toIntOrNull() ?: 7
                                         selectedDays = if (isSelected) {
@@ -420,11 +475,17 @@ fun MedicineBottomSheet(
                     item { Spacer(modifier = Modifier.height(24.dp)) }
 
                     item {
-                        TimeSelectorItem(label = stringResource(R.string.time_label), time = selectedTimes.firstOrNull() ?: LocalTime.now()) { showTimePickerForIndex = 0 }
+                        TimeSelectorItem(
+                            label = stringResource(R.string.time_label),
+                            time = selectedTimes.firstOrNull() ?: LocalTime.now()
+                        ) { showTimePickerForIndex = 0 }
                     }
                 } else if (frequencyUnit == "BiWeek") {
                     item {
-                        TimeSelectorItem(label = stringResource(R.string.time_label), time = selectedTimes.firstOrNull() ?: LocalTime.now()) { showTimePickerForIndex = 0 }
+                        TimeSelectorItem(
+                            label = stringResource(R.string.time_label),
+                            time = selectedTimes.firstOrNull() ?: LocalTime.now()
+                        ) { showTimePickerForIndex = 0 }
                     }
                 } else {
                     item {
@@ -437,7 +498,12 @@ fun MedicineBottomSheet(
                     }
 
                     itemsIndexed(selectedTimes) { index, time ->
-                        TimeSelectorItem(label = stringResource(R.string.schedule_label_format, index + 1), time = time) { showTimePickerForIndex = index }
+                        TimeSelectorItem(
+                            label = stringResource(
+                                R.string.schedule_label_format,
+                                index + 1
+                            ), time = time
+                        ) { showTimePickerForIndex = index }
                         Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
@@ -501,7 +567,11 @@ fun MedicineBottomSheet(
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(percent = cornerPercent))
                                         .background(backgroundColor)
-                                        .then(if (isDynamic && isSelected) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
+                                        .then(
+                                            if (isDynamic && isSelected) Modifier.background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            ) else Modifier
+                                        )
                                         .border(
                                             borderWidth,
                                             borderColor,
@@ -542,7 +612,9 @@ fun MedicineBottomSheet(
                                     }
                                 }
                             },
-                            modifier = Modifier.weight(1f).height(50.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(50.dp),
                             shape = RoundedCornerShape(cancelCorner),
                             interactionSource = cancelInteractionSource
                         ) {
@@ -557,7 +629,8 @@ fun MedicineBottomSheet(
                         Button(
                             onClick = {
                                 if (text.isNotBlank()) {
-                                    val days = if (frequencyUnit == "Week") selectedDays.toList() else null
+                                    val days =
+                                        if (frequencyUnit == "Week") selectedDays.toList() else null
                                     val gap = if (frequencyUnit == "BiWeek") 14 else null
                                     onConfirm(
                                         text,
@@ -570,7 +643,9 @@ fun MedicineBottomSheet(
                                     )
                                 }
                             },
-                            modifier = Modifier.weight(1f).height(50.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(50.dp),
                             shape = RoundedCornerShape(saveCorner),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

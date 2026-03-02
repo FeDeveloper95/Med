@@ -127,9 +127,20 @@ fun SettingsScreen(
 
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
-    var weekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
+    var weekStart by remember {
+        mutableStateOf(
+            prefs.getString(PREF_WEEK_START, "monday") ?: "monday"
+        )
+    }
     var sortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
-    var experimentalBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", true)) }
+    var experimentalBottomSheet by remember {
+        mutableStateOf(
+            prefs.getBoolean(
+                "pref_experimental_bottom_sheet",
+                true
+            )
+        )
+    }
 
     var showThemeDialog by remember { mutableStateOf(false) }
     var showWeekStartDialog by remember { mutableStateOf(false) }
@@ -139,7 +150,8 @@ fun SettingsScreen(
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             val version = pInfo.versionName ?: "1.0"
-            val build = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pInfo.longVersionCode else pInfo.versionCode.toLong()
+            val build =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) pInfo.longVersionCode else pInfo.versionCode.toLong()
             context.getString(R.string.version_format, version, build)
         } catch (e: Exception) {
             context.getString(R.string.unknown)
@@ -244,7 +256,9 @@ fun SettingsScreen(
                 SettingsItemCard(
                     icon = Icons.Rounded.Event,
                     title = stringResource(R.string.settings_week_start_title),
-                    subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(R.string.monday),
+                    subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(
+                        R.string.monday
+                    ),
                     containerColor = Color(0xFFffb683),
                     iconColor = Color(0xFF753403),
                     shape = RoundedCornerShape(4.dp),
@@ -257,7 +271,9 @@ fun SettingsScreen(
                 SettingsItemCard(
                     icon = Icons.Rounded.Sort,
                     title = stringResource(R.string.settings_sort_order_title),
-                    subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(R.string.settings_sort_order_custom),
+                    subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(
+                        R.string.settings_sort_order_custom
+                    ),
                     containerColor = Color(0xFF40C4FF),
                     iconColor = Color(0xFF003B5C),
                     shape = RoundedCornerShape(4.dp),
@@ -542,7 +558,9 @@ fun SettingsItemCard(
     onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clip(shape),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -605,7 +623,9 @@ fun SettingsSwitchCard(
     onCheckedChange: (Boolean) -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().clip(shape),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)

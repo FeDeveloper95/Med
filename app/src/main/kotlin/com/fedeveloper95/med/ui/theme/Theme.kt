@@ -57,7 +57,7 @@ fun MedTheme(
     // Usa l'override se presente (per SettingsActivity), altrimenti leggi dalle preferenze
     val themePref = themeOverride ?: prefs.getInt(PREF_THEME, THEME_SYSTEM)
 
-    val darkTheme = when(themePref) {
+    val darkTheme = when (themePref) {
         THEME_LIGHT -> false
         THEME_DARK -> true
         else -> isSystemInDarkTheme()

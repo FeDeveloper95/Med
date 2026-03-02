@@ -107,26 +107,28 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     var autoUpdates by remember { mutableStateOf(prefs.getBoolean(PREF_AUTO_UPDATES, true)) }
     var showRestartDialog by remember { mutableStateOf(false) }
 
-    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-        uri?.let {
-            scope.launch(Dispatchers.IO) {
-                exportSettings(context, it)
+    val exportLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+            uri?.let {
+                scope.launch(Dispatchers.IO) {
+                    exportSettings(context, it)
+                }
             }
         }
-    }
 
-    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        uri?.let {
-            scope.launch(Dispatchers.IO) {
-                val success = importSettings(context, it)
-                withContext(Dispatchers.Main) {
-                    if (success) {
-                        showRestartDialog = true
+    val importLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            uri?.let {
+                scope.launch(Dispatchers.IO) {
+                    val success = importSettings(context, it)
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            showRestartDialog = true
+                        }
                     }
                 }
             }
         }
-    }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -354,12 +356,20 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 it.write(root.toString().toByteArray())
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.export_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.export_success),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.export_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.export_error),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -409,7 +419,8 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
 
             if (root.has("med_settings")) {
                 try {
-                    val settings = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+                    val settings =
+                        context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
                     val editor = settings.edit().clear()
                     val json = root.getJSONObject("med_settings")
                     val keys = json.keys()
@@ -441,7 +452,11 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     val dataArray = root.getJSONArray("med_data_v2")
                     for (i in 0 until dataArray.length()) {
                         try {
-                            importedItems.add(com.fedeveloper95.med.services.MedData.fromJson(dataArray.getJSONObject(i)))
+                            importedItems.add(
+                                com.fedeveloper95.med.services.MedData.fromJson(
+                                    dataArray.getJSONObject(i)
+                                )
+                            )
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -517,7 +532,8 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                                 mergedHistory[date] = time
                             }
                         }
-                        mergedItems[existingItemIndex] = existingItem.copy(takenHistory = mergedHistory)
+                        mergedItems[existingItemIndex] =
+                            existingItem.copy(takenHistory = mergedHistory)
                     }
                 }
             }
@@ -533,7 +549,11 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.import_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.import_error),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             false
         }

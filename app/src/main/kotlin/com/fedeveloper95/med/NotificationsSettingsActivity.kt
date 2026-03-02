@@ -1,4 +1,8 @@
-@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    ExperimentalTextApi::class,
+    ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.fedeveloper95.med
 
@@ -128,7 +132,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     var hasNotificationPermission by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             } else {
                 true
             }
@@ -161,8 +168,22 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
         }
     }
 
-    var fullScreenAlarm by remember { mutableStateOf(prefs.getBoolean(PREF_FULL_SCREEN_ALARM, true)) }
-    var useSliderStyle by remember { mutableStateOf(prefs.getBoolean(PREF_ALARM_STYLE_SLIDER, true)) }
+    var fullScreenAlarm by remember {
+        mutableStateOf(
+            prefs.getBoolean(
+                PREF_FULL_SCREEN_ALARM,
+                true
+            )
+        )
+    }
+    var useSliderStyle by remember {
+        mutableStateOf(
+            prefs.getBoolean(
+                PREF_ALARM_STYLE_SLIDER,
+                true
+            )
+        )
+    }
     var snoozeDuration by remember { mutableIntStateOf(prefs.getInt(PREF_SNOOZE_DURATION, 10)) }
 
     var showSnoozeDialog by remember { mutableStateOf(false) }
@@ -227,7 +248,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
 
             item {
                 Card(
-                    modifier = Modifier.fillMaxWidth().clip(CircleShape).clickable { handleNotificationToggle(!showNotifications) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(CircleShape)
+                        .clickable { handleNotificationToggle(!showNotifications) },
                     shape = CircleShape,
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -305,7 +329,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     containerColor = Color(0xFFa1c9ff),
                     iconColor = Color(0xFF0641a0),
                     shape = RoundedCornerShape(4.dp),
-                    options = listOf(stringResource(R.string.settings_alarm_style_slider), stringResource(R.string.settings_alarm_style_buttons)),
+                    options = listOf(
+                        stringResource(R.string.settings_alarm_style_slider),
+                        stringResource(R.string.settings_alarm_style_buttons)
+                    ),
                     selectedIndex = if (useSliderStyle) 0 else 1,
                     enabled = showNotifications && fullScreenAlarm,
                     onOptionSelected = { index ->
@@ -322,7 +349,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                 SettingsItemCard(
                     icon = Icons.Rounded.Snooze,
                     title = stringResource(R.string.settings_snooze_duration_title),
-                    subtitle = stringResource(R.string.settings_snooze_duration_desc, snoozeDuration),
+                    subtitle = stringResource(
+                        R.string.settings_snooze_duration_desc,
+                        snoozeDuration
+                    ),
                     containerColor = Color(0xFFffb683),
                     iconColor = Color(0xFF753403),
                     shape = RoundedCornerShape(
@@ -369,7 +399,10 @@ fun SettingsSegmentedButtonCard(
 ) {
     val alpha = if (enabled) 1f else 0.38f
     Card(
-        modifier = Modifier.fillMaxWidth().clip(shape).alpha(alpha),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .alpha(alpha),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -485,7 +518,10 @@ fun SettingsItemCard(
 ) {
     val alpha = if (enabled) 1f else 0.38f
     Card(
-        modifier = Modifier.fillMaxWidth().clip(shape).alpha(alpha),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .alpha(alpha),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -550,7 +586,10 @@ fun SettingsSwitchCard(
 ) {
     val alpha = if (enabled) 1f else 0.38f
     Card(
-        modifier = Modifier.fillMaxWidth().clip(shape).alpha(alpha),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .alpha(alpha),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)

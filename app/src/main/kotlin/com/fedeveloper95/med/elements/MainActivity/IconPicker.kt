@@ -60,12 +60,21 @@ fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected:
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = stringResource(R.string.choose_icon), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold) },
+        title = {
+            Text(
+                text = stringResource(R.string.choose_icon),
+                fontFamily = GoogleSansFlex,
+                fontWeight = FontWeight.Bold
+            )
+        },
         text = {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 val rows = displayIcons.chunked(4)
                 rows.forEachIndexed { index, rowItems ->
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         for ((name, icon) in rowItems) {
                             val isSelected = currentIcon == name
 
@@ -93,7 +102,10 @@ fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected:
                                     .padding(4.dp)
                                     .clip(RoundedCornerShape(percent = cornerPercent))
                                     .background(containerColor)
-                                    .clickable(interactionSource = interactionSource, indication = null) { onIconSelected(name) },
+                                    .clickable(
+                                        interactionSource = interactionSource,
+                                        indication = null
+                                    ) { onIconSelected(name) },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -112,7 +124,12 @@ fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected:
             }
         },
         confirmButton = {},
-        dismissButton = { ExpressiveTextButton(onClick = onDismiss, text = stringResource(R.string.cancel_action)) },
+        dismissButton = {
+            ExpressiveTextButton(
+                onClick = onDismiss,
+                text = stringResource(R.string.cancel_action)
+            )
+        },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(32.dp)
     )

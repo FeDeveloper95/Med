@@ -1,4 +1,9 @@
-@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class, ExperimentalAnimationApi::class)
+@file:OptIn(
+    ExperimentalTextApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class,
+    ExperimentalAnimationApi::class
+)
 
 package com.fedeveloper95.med
 
@@ -234,7 +239,12 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp),
-                    shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 28.dp,
+                        topEnd = 28.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
@@ -264,7 +274,10 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                 .background(previewBackgroundColor),
                             contentAlignment = Alignment.Center
                         ) {
-                            AnimatedContent(targetState = iconVector, label = "iconAnim") { targetIcon ->
+                            AnimatedContent(
+                                targetState = iconVector,
+                                label = "iconAnim"
+                            ) { targetIcon ->
                                 Icon(
                                     imageVector = targetIcon,
                                     contentDescription = null,
@@ -291,7 +304,12 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                             value = newName,
                             onValueChange = { newName = it },
                             modifier = Modifier.fillMaxWidth(),
-                            placeholder = { Text(stringResource(R.string.name_hint), fontFamily = GoogleSansFlex) },
+                            placeholder = {
+                                Text(
+                                    stringResource(R.string.name_hint),
+                                    fontFamily = GoogleSansFlex
+                                )
+                            },
                             singleLine = true
                         )
                     }
@@ -323,7 +341,8 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                         val (name, icon) = rowItems[i]
                                         val isSelected = selectedIconName == name
 
-                                        val interactionSource = remember { MutableInteractionSource() }
+                                        val interactionSource =
+                                            remember { MutableInteractionSource() }
                                         val isPressed by interactionSource.collectIsPressedAsState()
 
                                         val cornerPercent by animateIntAsState(
@@ -333,7 +352,8 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                         )
 
                                         val baseColor = MaterialTheme.colorScheme.surfaceVariant
-                                        val selectedColorBg = MaterialTheme.colorScheme.primaryContainer
+                                        val selectedColorBg =
+                                            MaterialTheme.colorScheme.primaryContainer
 
                                         val containerColor by animateColorAsState(if (isSelected) selectedColorBg else baseColor)
                                         val iconTint by animateColorAsState(
@@ -349,7 +369,10 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                                     .size(64.dp)
                                                     .clip(RoundedCornerShape(percent = cornerPercent))
                                                     .background(containerColor)
-                                                    .clickable(interactionSource = interactionSource, indication = null) { selectedIconName = name },
+                                                    .clickable(
+                                                        interactionSource = interactionSource,
+                                                        indication = null
+                                                    ) { selectedIconName = name },
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Icon(
@@ -435,9 +458,20 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                         .size(48.dp)
                                         .clip(RoundedCornerShape(percent = cornerPercent))
                                         .background(backgroundColor)
-                                        .then(if(isDynamic && isSelected) Modifier.background(MaterialTheme.colorScheme.primaryContainer) else Modifier)
-                                        .border(borderWidth, borderColor, RoundedCornerShape(percent = cornerPercent))
-                                        .clickable(interactionSource = interactionSource, indication = null) { selectedColor = colorCode },
+                                        .then(
+                                            if (isDynamic && isSelected) Modifier.background(
+                                                MaterialTheme.colorScheme.primaryContainer
+                                            ) else Modifier
+                                        )
+                                        .border(
+                                            borderWidth,
+                                            borderColor,
+                                            RoundedCornerShape(percent = cornerPercent)
+                                        )
+                                        .clickable(
+                                            interactionSource = interactionSource,
+                                            indication = null
+                                        ) { selectedColor = colorCode },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     if (isDynamic) {
@@ -460,7 +494,12 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 28.dp,
+                        bottomEnd = 28.dp
+                    ),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
@@ -519,8 +558,20 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                         modifier = Modifier.fillMaxWidth(),
                         shape = when {
                             presetsList.size == 1 -> RoundedCornerShape(28.dp)
-                            index == 0 -> RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp, bottomStart = 4.dp, bottomEnd = 4.dp)
-                            index == presetsList.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 28.dp, bottomEnd = 28.dp)
+                            index == 0 -> RoundedCornerShape(
+                                topStart = 28.dp,
+                                topEnd = 28.dp,
+                                bottomStart = 4.dp,
+                                bottomEnd = 4.dp
+                            )
+
+                            index == presetsList.lastIndex -> RoundedCornerShape(
+                                topStart = 4.dp,
+                                topEnd = 4.dp,
+                                bottomStart = 28.dp,
+                                bottomEnd = 28.dp
+                            )
+
                             else -> RoundedCornerShape(4.dp)
                         },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
@@ -564,7 +615,11 @@ fun QuickActionsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                                         }
                                     }
                                     IconButton(onClick = { removePreset(index) }) {
-                                        Icon(Icons.Rounded.Close, null, tint = MaterialTheme.colorScheme.error)
+                                        Icon(
+                                            Icons.Rounded.Close,
+                                            null,
+                                            tint = MaterialTheme.colorScheme.error
+                                        )
                                     }
                                 }
                             },
@@ -614,7 +669,9 @@ fun loadPresets(prefs: android.content.SharedPreferences): List<String> {
                 list.add(jsonArray.getString(i))
             }
             return list
-        } catch (e: Exception) { e.printStackTrace() }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     val oldSet = prefs.getStringSet(PREF_PRESETS, null)
