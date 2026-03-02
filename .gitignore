@@ -38,3 +38,5 @@ out/
 
 ### Kotlin ###
 .kotlin
+/app/release/
+/app

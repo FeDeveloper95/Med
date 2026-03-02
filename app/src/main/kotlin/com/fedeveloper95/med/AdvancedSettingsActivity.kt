@@ -13,6 +13,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,14 +27,7 @@ import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -107,28 +101,26 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     var autoUpdates by remember { mutableStateOf(prefs.getBoolean(PREF_AUTO_UPDATES, true)) }
     var showRestartDialog by remember { mutableStateOf(false) }
 
-    val exportLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-            uri?.let {
-                scope.launch(Dispatchers.IO) {
-                    exportSettings(context, it)
-                }
+    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        uri?.let {
+            scope.launch(Dispatchers.IO) {
+                exportSettings(context, it)
             }
         }
+    }
 
-    val importLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-            uri?.let {
-                scope.launch(Dispatchers.IO) {
-                    val success = importSettings(context, it)
-                    withContext(Dispatchers.Main) {
-                        if (success) {
-                            showRestartDialog = true
-                        }
+    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        uri?.let {
+            scope.launch(Dispatchers.IO) {
+                val success = importSettings(context, it)
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        showRestartDialog = true
                     }
                 }
             }
         }
+    }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -356,20 +348,12 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 it.write(root.toString().toByteArray())
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.export_success),
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, context.getString(R.string.export_success), Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.export_error),
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, context.getString(R.string.export_error), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -419,8 +403,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
 
             if (root.has("med_settings")) {
                 try {
-                    val settings =
-                        context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+                    val settings = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
                     val editor = settings.edit().clear()
                     val json = root.getJSONObject("med_settings")
                     val keys = json.keys()
@@ -452,11 +435,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     val dataArray = root.getJSONArray("med_data_v2")
                     for (i in 0 until dataArray.length()) {
                         try {
-                            importedItems.add(
-                                com.fedeveloper95.med.services.MedData.fromJson(
-                                    dataArray.getJSONObject(i)
-                                )
-                            )
+                            importedItems.add(com.fedeveloper95.med.services.MedData.fromJson(dataArray.getJSONObject(i)))
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -475,7 +454,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     }
                     val fis = context.openFileInput("med_data_temp.dat")
                     val ois = LegacyObjectInputStream(fis)
-                    val oldList = ois.readObject() as? ArrayList<MedItem>
+                    val oldList = ois.readObject() as? ArrayList<com.fedeveloper95.med.MedItem>
                     ois.close()
                     context.deleteFile("med_data_temp.dat")
 
@@ -532,8 +511,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                                 mergedHistory[date] = time
                             }
                         }
-                        mergedItems[existingItemIndex] =
-                            existingItem.copy(takenHistory = mergedHistory)
+                        mergedItems[existingItemIndex] = existingItem.copy(takenHistory = mergedHistory)
                     }
                 }
             }
@@ -549,11 +527,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    context.getString(R.string.import_error),
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, context.getString(R.string.import_error), Toast.LENGTH_SHORT).show()
             }
             false
         }
@@ -564,7 +538,7 @@ class LegacyObjectInputStream(inputStream: InputStream) : ObjectInputStream(inpu
     override fun readClassDescriptor(): ObjectStreamClass {
         var desc = super.readClassDescriptor()
         if (desc.name == "com.fedeveloper95.med.OldDatabase" || desc.name == "com.fedeveloper95.med.MedItem" || desc.name == "com.fedeveloper95.med.MainActivity\$MedItem") {
-            desc = ObjectStreamClass.lookup(MedItem::class.java)
+            desc = ObjectStreamClass.lookup(com.fedeveloper95.med.MedItem::class.java)
         }
         return desc
     }
