@@ -263,5 +263,6 @@
     <string name="see_source_code">See source code</string>
     <string name="check_updates_action">Check for updates</string>
     <string name="update_error_check">Unable to check for updates</string>
+    <string name="nothing_here_yet">Nothing here yet…</string>
 
 </resources>

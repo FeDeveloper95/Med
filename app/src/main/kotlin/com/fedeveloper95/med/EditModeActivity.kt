@@ -134,7 +134,6 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
         }
         DataRepository.saveData(context, updatedAllItems)
 
-        // Forziamo l'ordine personalizzato in modo che l'utente veda subito il risultato!
         val prefs = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
         prefs.edit().putString(PREF_SORT_ORDER, "custom").apply()
 
@@ -183,83 +182,105 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        val listState = rememberLazyListState()
-        var draggingItemIndex by remember { mutableStateOf<Int?>(null) }
-        var draggedItemOffset by remember { mutableStateOf(0f) }
-        val density = LocalDensity.current
-        val itemHeightPx = with(density) { 80.dp.toPx() }
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
-                val topRadius = if (index == 0) 28.dp else 4.dp
-                val bottomRadius = if (index == pageItems.lastIndex) 28.dp else 4.dp
-                val shape = RoundedCornerShape(
-                    topStart = topRadius,
-                    topEnd = topRadius,
-                    bottomStart = bottomRadius,
-                    bottomEnd = bottomRadius
-                )
-
-                val isDragging = index == draggingItemIndex
-                val offset = if (isDragging) draggedItemOffset else 0f
-                val animatedOffset by animateFloatAsState(targetValue = offset, label = "dragOffset")
-
-                Box(
-                    modifier = Modifier
-                        .zIndex(if (isDragging) 1f else 0f)
-                        .graphicsLayer { translationY = animatedOffset }
-                        .animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow))
-                ) {
-                    EditMedDataCard(
-                        item = item,
-                        currentViewDate = selectedDate,
-                        shape = shape,
-                        modifier = Modifier.pointerInput(Unit) {
-                            detectDragGesturesAfterLongPress(
-                                onDragStart = {
-                                    draggingItemIndex = index
-                                    draggedItemOffset = 0f
-                                },
-                                onDrag = { change, dragAmount ->
-                                    change.consume()
-                                    draggedItemOffset += dragAmount.y
-
-                                    val currentDraggingIdx = draggingItemIndex ?: return@detectDragGesturesAfterLongPress
-
-                                    if (draggedItemOffset > itemHeightPx && currentDraggingIdx < pageItems.lastIndex) {
-                                        val newList = pageItems.toMutableList()
-                                        Collections.swap(newList, currentDraggingIdx, currentDraggingIdx + 1)
-                                        pageItems = newList
-                                        draggingItemIndex = currentDraggingIdx + 1
-                                        draggedItemOffset -= itemHeightPx
-                                    } else if (draggedItemOffset < -itemHeightPx && currentDraggingIdx > 0) {
-                                        val newList = pageItems.toMutableList()
-                                        Collections.swap(newList, currentDraggingIdx, currentDraggingIdx - 1)
-                                        pageItems = newList
-                                        draggingItemIndex = currentDraggingIdx - 1
-                                        draggedItemOffset += itemHeightPx
-                                    }
-                                },
-                                onDragEnd = {
-                                    draggingItemIndex = null
-                                    draggedItemOffset = 0f
-                                },
-                                onDragCancel = {
-                                    draggingItemIndex = null
-                                    draggedItemOffset = 0f
-                                }
-                            )
-                        }
+        if (pageItems.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(id = R.drawable.ic_no_cards),
+                        contentDescription = null,
+                        modifier = Modifier.size(128.dp),
+                        tint = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.nothing_here_yet),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
-            item { Spacer(modifier = Modifier.height(100.dp)) }
+        } else {
+            val listState = rememberLazyListState()
+            var draggingItemIndex by remember { mutableStateOf<Int?>(null) }
+            var draggedItemOffset by remember { mutableStateOf(0f) }
+            val density = LocalDensity.current
+            val itemHeightPx = with(density) { 80.dp.toPx() }
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
+                    val topRadius = if (index == 0) 28.dp else 4.dp
+                    val bottomRadius = if (index == pageItems.lastIndex) 28.dp else 4.dp
+                    val shape = RoundedCornerShape(
+                        topStart = topRadius,
+                        topEnd = topRadius,
+                        bottomStart = bottomRadius,
+                        bottomEnd = bottomRadius
+                    )
+
+                    val isDragging = index == draggingItemIndex
+                    val offset = if (isDragging) draggedItemOffset else 0f
+                    val animatedOffset by animateFloatAsState(targetValue = offset, label = "dragOffset")
+
+                    Box(
+                        modifier = Modifier
+                            .zIndex(if (isDragging) 1f else 0f)
+                            .graphicsLayer { translationY = animatedOffset }
+                            .animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                    ) {
+                        EditMedDataCard(
+                            item = item,
+                            currentViewDate = selectedDate,
+                            shape = shape,
+                            modifier = Modifier.pointerInput(Unit) {
+                                detectDragGesturesAfterLongPress(
+                                    onDragStart = {
+                                        draggingItemIndex = index
+                                        draggedItemOffset = 0f
+                                    },
+                                    onDrag = { change, dragAmount ->
+                                        change.consume()
+                                        draggedItemOffset += dragAmount.y
+
+                                        val currentDraggingIdx = draggingItemIndex ?: return@detectDragGesturesAfterLongPress
+
+                                        if (draggedItemOffset > itemHeightPx && currentDraggingIdx < pageItems.lastIndex) {
+                                            val newList = pageItems.toMutableList()
+                                            Collections.swap(newList, currentDraggingIdx, currentDraggingIdx + 1)
+                                            pageItems = newList
+                                            draggingItemIndex = currentDraggingIdx + 1
+                                            draggedItemOffset -= itemHeightPx
+                                        } else if (draggedItemOffset < -itemHeightPx && currentDraggingIdx > 0) {
+                                            val newList = pageItems.toMutableList()
+                                            Collections.swap(newList, currentDraggingIdx, currentDraggingIdx - 1)
+                                            pageItems = newList
+                                            draggingItemIndex = currentDraggingIdx - 1
+                                            draggedItemOffset += itemHeightPx
+                                        }
+                                    },
+                                    onDragEnd = {
+                                        draggingItemIndex = null
+                                        draggedItemOffset = 0f
+                                    },
+                                    onDragCancel = {
+                                        draggingItemIndex = null
+                                        draggedItemOffset = 0f
+                                    }
+                                )
+                            }
+                        )
+                    }
+                }
+                item { Spacer(modifier = Modifier.height(100.dp)) }
+            }
         }
     }
 
@@ -379,13 +400,6 @@ fun EditMedDataCard(
                 ) {
                     Icon(icon, contentDescription = null, tint = iconBoxTintColor, modifier = Modifier.size(24.dp))
                 }
-            },
-            trailingContent = {
-                Icon(
-                    Icons.Rounded.DragHandle,
-                    contentDescription = "Trascina per riordinare",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
             },
             modifier = Modifier.padding(vertical = 4.dp),
             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
