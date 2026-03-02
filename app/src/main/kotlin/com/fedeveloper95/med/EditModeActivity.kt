@@ -16,20 +16,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,25 +25,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.MedicalServices
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -129,16 +106,9 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                     ItemType.Event -> item.creationDate == selectedDate
                     ItemType.Medicine -> {
                         val isAfterStart = !selectedDate.isBefore(item.creationDate)
-                        val isBeforeEnd =
-                            item.endDate == null || !selectedDate.isAfter(item.endDate)
-                        val isCorrectDay =
-                            item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
-                                selectedDate.dayOfWeek
-                            )
-                        val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(
-                            item.creationDate,
-                            selectedDate
-                        ) % item.intervalGap == 0L
+                        val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
+                        val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(selectedDate.dayOfWeek)
+                        val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, selectedDate) % item.intervalGap == 0L
                         isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                     }
                 }
@@ -159,8 +129,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
         pageItems.forEachIndexed { newIndex, item ->
             val globalIndex = updatedAllItems.indexOfFirst { it.id == item.id }
             if (globalIndex != -1) {
-                updatedAllItems[globalIndex] =
-                    updatedAllItems[globalIndex].copy(displayOrder = newIndex)
+                updatedAllItems[globalIndex] = updatedAllItems[globalIndex].copy(displayOrder = newIndex)
             }
         }
         DataRepository.saveData(context, updatedAllItems)
@@ -259,10 +228,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
 
                     val isDragging = index == draggingItemIndex
                     val offset = if (isDragging) draggedItemOffset else 0f
-                    val animatedOffset by animateFloatAsState(
-                        targetValue = offset,
-                        label = "dragOffset"
-                    )
+                    val animatedOffset by animateFloatAsState(targetValue = offset, label = "dragOffset")
 
                     Box(
                         modifier = Modifier
@@ -284,26 +250,17 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                         change.consume()
                                         draggedItemOffset += dragAmount.y
 
-                                        val currentDraggingIdx = draggingItemIndex
-                                            ?: return@detectDragGesturesAfterLongPress
+                                        val currentDraggingIdx = draggingItemIndex ?: return@detectDragGesturesAfterLongPress
 
                                         if (draggedItemOffset > itemHeightPx && currentDraggingIdx < pageItems.lastIndex) {
                                             val newList = pageItems.toMutableList()
-                                            Collections.swap(
-                                                newList,
-                                                currentDraggingIdx,
-                                                currentDraggingIdx + 1
-                                            )
+                                            Collections.swap(newList, currentDraggingIdx, currentDraggingIdx + 1)
                                             pageItems = newList
                                             draggingItemIndex = currentDraggingIdx + 1
                                             draggedItemOffset -= itemHeightPx
                                         } else if (draggedItemOffset < -itemHeightPx && currentDraggingIdx > 0) {
                                             val newList = pageItems.toMutableList()
-                                            Collections.swap(
-                                                newList,
-                                                currentDraggingIdx,
-                                                currentDraggingIdx - 1
-                                            )
+                                            Collections.swap(newList, currentDraggingIdx, currentDraggingIdx - 1)
                                             pageItems = newList
                                             draggingItemIndex = currentDraggingIdx - 1
                                             draggedItemOffset += itemHeightPx
@@ -375,20 +332,15 @@ fun EditMedDataCard(
 
     val cardContainerColor = MaterialTheme.colorScheme.surfaceContainerHigh
     val cardContentColor = MaterialTheme.colorScheme.onSurface
-    val iconBoxColor = customColor
-        ?: if (isMedicine) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer
-    val iconBoxTintColor =
-        if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
+    val iconBoxColor = customColor ?: if (isMedicine) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer
+    val iconBoxTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
 
     Card(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape),
         shape = shape,
-        colors = CardDefaults.cardColors(
-            containerColor = cardContainerColor,
-            contentColor = cardContentColor
-        ),
+        colors = CardDefaults.cardColors(containerColor = cardContainerColor, contentColor = cardContentColor),
         elevation = CardDefaults.cardElevation(if (modifier != Modifier) 4.dp else 0.dp)
     ) {
         ListItem(
@@ -417,8 +369,7 @@ fun EditMedDataCard(
                         )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        val scheduledTime =
-                            item.creationTime.format(DateTimeFormatter.ofPattern("HH:mm"))
+                        val scheduledTime = item.creationTime.format(DateTimeFormatter.ofPattern("HH:mm"))
                         Icon(
                             Icons.Rounded.Schedule,
                             null,
@@ -447,12 +398,7 @@ fun EditMedDataCard(
                         .background(iconBoxColor),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        icon,
-                        contentDescription = null,
-                        tint = iconBoxTintColor,
-                        modifier = Modifier.size(24.dp)
-                    )
+                    Icon(icon, contentDescription = null, tint = iconBoxTintColor, modifier = Modifier.size(24.dp))
                 }
             },
             modifier = Modifier.padding(vertical = 4.dp),

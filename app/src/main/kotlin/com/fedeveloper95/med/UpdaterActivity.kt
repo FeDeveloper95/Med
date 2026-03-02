@@ -1,8 +1,4 @@
-@file:OptIn(
-    ExperimentalTextApi::class,
-    ExperimentalMaterial3Api::class,
-    ExperimentalMaterial3ExpressiveApi::class
-)
+@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package com.fedeveloper95.med
 
@@ -25,46 +21,13 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ContainedLoadingIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -189,8 +152,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                 if (intent.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
                     val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
                     if (id != -1L) {
-                        val downloadManager =
-                            ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                        val downloadManager = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                         val query = DownloadManager.Query().setFilterById(id)
                         val cursor = downloadManager.query(query)
                         if (cursor != null && cursor.moveToFirst()) {
@@ -201,12 +163,8 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     val uri = downloadManager.getUriForDownloadedFile(id)
                                     if (uri != null) {
                                         val installIntent = Intent(Intent.ACTION_VIEW).apply {
-                                            setDataAndType(
-                                                uri,
-                                                "application/vnd.android.package-archive"
-                                            )
-                                            flags =
-                                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                            setDataAndType(uri, "application/vnd.android.package-archive")
+                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
                                         }
                                         try {
                                             ctx.startActivity(installIntent)
@@ -249,12 +207,10 @@ fun UpdaterScreen(onBack: () -> Unit) {
             var isOnline = true
 
             try {
-                val connectivityManager =
-                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 val network = connectivityManager.activeNetwork
                 val capabilities = connectivityManager.getNetworkCapabilities(network)
-                isOnline =
-                    capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                isOnline = capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -279,8 +235,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                 if (elapsed < 3000L) {
                     delay(3000L - elapsed)
                 }
-                status =
-                    if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+                status = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
             } catch (e: Exception) {
                 val elapsed = System.currentTimeMillis() - startTime
                 if (elapsed < 3000L) {
@@ -354,10 +309,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                     AnimatedActionButton(
                         text = stringResource(R.string.see_source_code),
                         onClick = {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://github.com/FeDeveloper95/Med")
-                            )
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/FeDeveloper95/Med"))
                             context.startActivity(intent)
                         },
                         modifier = Modifier.fillMaxWidth(),
@@ -377,7 +329,6 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                 modifier = Modifier.fillMaxWidth()
                             )
                         }
-
                         is UpdateStatus.Available -> {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -394,11 +345,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     text = if (isDownloading) "Downloading..." else stringResource(R.string.update_action),
                                     onClick = {
                                         isDownloading = true
-                                        Updater.startDownload(
-                                            context,
-                                            currentStatus.info.downloadUrl,
-                                            currentStatus.info.version
-                                        )
+                                        Updater.startDownload(context, currentStatus.info.downloadUrl, currentStatus.info.version)
                                     },
                                     modifier = Modifier.weight(1f),
                                     enabled = !isDownloading
@@ -439,7 +386,6 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     modifier = Modifier.size(64.dp)
                                 )
                             }
-
                             is UpdateStatus.NoUpdate -> {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally
@@ -460,7 +406,6 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     )
                                 }
                             }
-
                             is UpdateStatus.Error -> {
                                 Column(
                                     horizontalAlignment = Alignment.CenterHorizontally
@@ -481,16 +426,12 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     )
                                 }
                             }
-
                             is UpdateStatus.Available -> {
                                 Column(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = stringResource(
-                                            R.string.update_available,
-                                            currentStatus.info.version
-                                        ),
+                                        text = stringResource(R.string.update_available, currentStatus.info.version),
                                         fontFamily = GoogleSansFlex,
                                         style = MaterialTheme.typography.headlineSmall,
                                         color = MaterialTheme.colorScheme.primary,
@@ -512,7 +453,6 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     }
                                 }
                             }
-
                             else -> {}
                         }
                     }
