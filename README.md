@@ -2,20 +2,19 @@
 
 **Never miss your medicine ever again.**
 
-![Med banner](https://github.com/user-attachments/assets/3daf851e-922f-4743-b059-bfd933e3e20e)
+![Med banner](https://github.com/user-attachments/assets/9fecb60a-9d5f-4d1a-9931-5cb0acfdf4a2)
 
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=android&logoColor=white) ![Material 3](https://img.shields.io/badge/Material%203-Expressive-purple?style=for-the-badge)
 
 ### :sparkles: Features
 
-Med helps you keep track of your medicines and medical history with ease. You can create fixed custom events via Quick Actions for immediate logging or save specific custom events when needed.
-The scheduling is highly flexible, allowing you to save medicines with recurrence set to daily, specific days of the week, or a fully custom schedule. The setup process is intuitive and fast.
+Med helps you keep track of your medicines and medical history with ease. You can create fixed custom events via Quick Actions for immediate logging or save specific custom events when needed. Notifications aren't enough? Med can also set alarms to remind you it's time to take a medicine. The scheduling is highly flexible, allowing you to save medicines with recurrence set to daily, specific days of the week, or a fully custom schedule. The setup process is intuitive and fast.
 Additionally, Med includes an integrated in-app update system to ensure you are always running the latest version.
 
 ### :art: Design
 
-The UI is built strictly following the latest **Material 3 Expressive** guidelines using Jetpack Compose to keep the app clean, fluid, and modern. While it is designed with **Pixel and AOSP** aesthetics in priority, it functions seamlessly on any Android 8+ device.
+The UI is built strictly following the latest **Material 3 Expressive** guidelines using Jetpack Compose to keep the app clean, fluid, and modern. While it is designed with **Pixel and AOSP** aesthetics in priority, it functions seamlessly on any Android 8+ device. Med works perfectly on every device, whether you use a regular phone, a foldable or a tablet.
 
 ### :light_blue_heart: Loved help
 
@@ -23,7 +22,7 @@ Special thanks to my awesome girlfriend, [Gaia](https://github.com/Gaia-Kapo), w
 
 ### :warning: Feedback
 
-Found a bug or have a feature request? **Create a new issue** or reach me directly via [Telegram](https://t.me/fedeveloper95). 
+Found a bug or have a feature request? **Create a new issue (preferred)** or reach me directly via [Telegram](https://t.me/fedeveloper95). 
 
 
 ### :bangbang: Disclaimer
