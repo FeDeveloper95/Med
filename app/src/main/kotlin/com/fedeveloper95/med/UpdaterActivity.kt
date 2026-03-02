@@ -2,13 +2,20 @@
 
 package com.fedeveloper95.med
 
+import android.annotation.SuppressLint
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
@@ -33,11 +40,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.elements.UpdaterActivity.ErrorSnackbar
 import com.fedeveloper95.med.services.UpdateStatus
 import com.fedeveloper95.med.services.Updater
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import dev.jeziellago.compose.markdowntext.MarkdownText
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class UpdaterActivity : ComponentActivity() {
@@ -118,12 +127,16 @@ fun AnimatedActionButton(
     }
 }
 
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun UpdaterScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var status by remember { mutableStateOf<UpdateStatus>(UpdateStatus.Idle) }
+    var isDownloading by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val errorMessage = stringResource(R.string.update_error_check)
 
     val currentVersionName = remember {
         try {
@@ -133,11 +146,108 @@ fun UpdaterScreen(onBack: () -> Unit) {
         }
     }
 
+    DisposableEffect(context) {
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context, intent: Intent) {
+                if (intent.action == DownloadManager.ACTION_DOWNLOAD_COMPLETE) {
+                    val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
+                    if (id != -1L) {
+                        val downloadManager = ctx.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                        val query = DownloadManager.Query().setFilterById(id)
+                        val cursor = downloadManager.query(query)
+                        if (cursor != null && cursor.moveToFirst()) {
+                            val statusIndex = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
+                            if (statusIndex != -1) {
+                                val downloadStatus = cursor.getInt(statusIndex)
+                                if (downloadStatus == DownloadManager.STATUS_SUCCESSFUL) {
+                                    val uri = downloadManager.getUriForDownloadedFile(id)
+                                    if (uri != null) {
+                                        val installIntent = Intent(Intent.ACTION_VIEW).apply {
+                                            setDataAndType(uri, "application/vnd.android.package-archive")
+                                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                        }
+                                        try {
+                                            ctx.startActivity(installIntent)
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        cursor?.close()
+                        isDownloading = false
+                    }
+                }
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(
+                receiver,
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                Context.RECEIVER_EXPORTED
+            )
+        } else {
+            context.registerReceiver(
+                receiver,
+                IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+            )
+        }
+
+        onDispose {
+            context.unregisterReceiver(receiver)
+        }
+    }
+
     fun checkUpdates() {
         status = UpdateStatus.Checking
         scope.launch {
-            val update = Updater.checkForUpdates(currentVersionName)
-            status = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+            val startTime = System.currentTimeMillis()
+            var isOnline = true
+
+            try {
+                val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val network = connectivityManager.activeNetwork
+                val capabilities = connectivityManager.getNetworkCapabilities(network)
+                isOnline = capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            if (!isOnline) {
+                val elapsed = System.currentTimeMillis() - startTime
+                if (elapsed < 3000L) {
+                    delay(3000L - elapsed)
+                }
+                status = UpdateStatus.Error
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(
+                    message = errorMessage,
+                    withDismissAction = true
+                )
+                return@launch
+            }
+
+            try {
+                val update = Updater.checkForUpdates(currentVersionName)
+                val elapsed = System.currentTimeMillis() - startTime
+                if (elapsed < 3000L) {
+                    delay(3000L - elapsed)
+                }
+                status = if (update != null) UpdateStatus.Available(update) else UpdateStatus.NoUpdate
+            } catch (e: Exception) {
+                val elapsed = System.currentTimeMillis() - startTime
+                if (elapsed < 3000L) {
+                    delay(3000L - elapsed)
+                }
+                status = UpdateStatus.Error
+                snackbarHostState.currentSnackbarData?.dismiss()
+                snackbarHostState.showSnackbar(
+                    message = errorMessage,
+                    withDismissAction = true
+                )
+            }
         }
     }
 
@@ -204,44 +314,42 @@ fun UpdaterScreen(onBack: () -> Unit) {
                         },
                         modifier = Modifier.fillMaxWidth(),
                         isOutlined = true,
-                        buttonHeight = 48.dp
+                        buttonHeight = 48.dp,
+                        enabled = !isDownloading
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    AnimatedContent(
-                        targetState = status,
-                        label = "buttons_anim"
-                    ) { currentStatus ->
-                        when (currentStatus) {
-                            is UpdateStatus.Idle, is UpdateStatus.Checking, is UpdateStatus.NoUpdate, is UpdateStatus.Error -> {
+                    when (val currentStatus = status) {
+                        is UpdateStatus.Idle, is UpdateStatus.Checking, is UpdateStatus.NoUpdate, is UpdateStatus.Error -> {
+                            AnimatedActionButton(
+                                text = stringResource(R.string.check_updates_action),
+                                onClick = { checkUpdates() },
+                                enabled = currentStatus !is UpdateStatus.Checking && !isDownloading,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                        is UpdateStatus.Available -> {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
                                 AnimatedActionButton(
-                                    text = stringResource(R.string.check_updates_action),
-                                    onClick = { checkUpdates() },
-                                    enabled = currentStatus !is UpdateStatus.Checking,
-                                    modifier = Modifier.fillMaxWidth()
+                                    text = stringResource(R.string.later),
+                                    onClick = onBack,
+                                    modifier = Modifier.weight(1f),
+                                    isOutlined = true,
+                                    enabled = !isDownloading
                                 )
-                            }
-                            is UpdateStatus.Available -> {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    AnimatedActionButton(
-                                        text = stringResource(R.string.later),
-                                        onClick = onBack,
-                                        modifier = Modifier.weight(1f),
-                                        isOutlined = true
-                                    )
-                                    AnimatedActionButton(
-                                        text = stringResource(R.string.update_action),
-                                        onClick = {
-                                            Updater.startDownload(context, currentStatus.info.downloadUrl, currentStatus.info.version)
-                                            onBack()
-                                        },
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                }
+                                AnimatedActionButton(
+                                    text = if (isDownloading) "Downloading..." else stringResource(R.string.update_action),
+                                    onClick = {
+                                        isDownloading = true
+                                        Updater.startDownload(context, currentStatus.info.downloadUrl, currentStatus.info.version)
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    enabled = !isDownloading
+                                )
                             }
                         }
                     }
@@ -251,19 +359,18 @@ fun UpdaterScreen(onBack: () -> Unit) {
         containerColor = MaterialTheme.colorScheme.background,
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     ) { padding ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding),
-            contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(padding)
         ) {
-            item {
-                AnimatedContent(
-                    targetState = status,
-                    label = "center_content_anim"
-                ) { currentStatus ->
-                    val boxModifier = if (currentStatus is UpdateStatus.Available) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                item {
+                    val boxModifier = if (status is UpdateStatus.Available) {
                         Modifier.fillMaxWidth()
                     } else {
                         Modifier.fillParentMaxSize()
@@ -273,7 +380,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                         modifier = boxModifier,
                         contentAlignment = Alignment.Center
                     ) {
-                        when (currentStatus) {
+                        when (val currentStatus = status) {
                             is UpdateStatus.Checking -> {
                                 ContainedLoadingIndicator(
                                     modifier = Modifier.size(64.dp)
@@ -304,7 +411,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Icon(
-                                        imageVector = ImageVector.vectorResource(R.drawable.ic_sick),
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_no_updates),
                                         contentDescription = null,
                                         modifier = Modifier.size(120.dp),
                                         tint = MaterialTheme.colorScheme.error
@@ -351,6 +458,15 @@ fun UpdaterScreen(onBack: () -> Unit) {
                     }
                 }
             }
+
+            ErrorSnackbar(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 12.dp)
+            )
         }
     }
 }

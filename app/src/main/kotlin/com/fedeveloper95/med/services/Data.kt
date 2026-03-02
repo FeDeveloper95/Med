@@ -2,7 +2,7 @@ package com.fedeveloper95.med.services
 
 import android.content.Context
 import com.fedeveloper95.med.ItemType
-import com.fedeveloper95.med.services.OldDatabase
+import com.fedeveloper95.med.MedItem
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -148,10 +148,11 @@ object DataRepository {
         try {
             val fis = FileInputStream(oldFile)
             val ois = ObjectInputStream(fis)
-            val oldList = ois.readObject() as? ArrayList<OldDatabase> ?: return emptyList()
+
+            val oldList = ois.readObject() as? ArrayList<MedItem> ?: return emptyList()
             ois.close()
 
-            return oldList.map { old ->
+            val migratedList = oldList.map { old ->
                 MedData(
                     id = old.id,
                     groupId = old.groupId,
@@ -171,6 +172,10 @@ object DataRepository {
                     category = null
                 )
             }
+
+            oldFile.renameTo(File(context.filesDir, "med_data_migrated.dat"))
+
+            return migratedList
         } catch (e: Exception) {
             e.printStackTrace()
         }

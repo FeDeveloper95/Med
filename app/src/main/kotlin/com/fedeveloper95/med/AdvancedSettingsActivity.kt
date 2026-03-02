@@ -454,7 +454,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     }
                     val fis = context.openFileInput("med_data_temp.dat")
                     val ois = LegacyObjectInputStream(fis)
-                    val oldList = ois.readObject() as? ArrayList<com.fedeveloper95.med.services.OldDatabase>
+                    val oldList = ois.readObject() as? ArrayList<com.fedeveloper95.med.MedItem>
                     ois.close()
                     context.deleteFile("med_data_temp.dat")
 
@@ -537,8 +537,8 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
 class LegacyObjectInputStream(inputStream: InputStream) : ObjectInputStream(inputStream) {
     override fun readClassDescriptor(): ObjectStreamClass {
         var desc = super.readClassDescriptor()
-        if (desc.name == "com.fedeveloper95.med.OldDatabase") {
-            desc = ObjectStreamClass.lookup(com.fedeveloper95.med.services.OldDatabase::class.java)
+        if (desc.name == "com.fedeveloper95.med.OldDatabase" || desc.name == "com.fedeveloper95.med.MedItem" || desc.name == "com.fedeveloper95.med.MainActivity\$MedItem") {
+            desc = ObjectStreamClass.lookup(com.fedeveloper95.med.MedItem::class.java)
         }
         return desc
     }

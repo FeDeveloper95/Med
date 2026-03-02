@@ -14,6 +14,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.fedeveloper95.med.AlarmActivity
 import com.fedeveloper95.med.ItemType
+import com.fedeveloper95.med.MainActivity
 import com.fedeveloper95.med.PREF_FULL_SCREEN_ALARM
 import com.fedeveloper95.med.PREF_SNOOZE_DURATION
 import com.fedeveloper95.med.R
@@ -26,7 +27,8 @@ import java.time.temporal.ChronoUnit
 class NotificationReceiver : BroadcastReceiver() {
 
     companion object {
-        const val CHANNEL_ID = "med_alarms_channel_v2"
+        const val ALARM_CHANNEL_ID = "med_alarms_fullscreen_v1"
+        const val SIMPLE_NOTIF_CHANNEL_ID = "med_alarms_simple_v1"
         const val ACTION_SHOW_NOTIFICATION = "ACTION_SHOW_NOTIFICATION"
         const val ACTION_TAKEN = "ACTION_TAKEN"
         const val ACTION_SNOOZE = "ACTION_SNOOZE"
@@ -116,18 +118,24 @@ class NotificationReceiver : BroadcastReceiver() {
                     val items = DataRepository.loadData(context)
                     val item = items.find { it.id == itemId } ?: return
 
-                    createNotificationChannel(context)
+                    createNotificationChannels(context)
 
-                    val alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    val channelId = if (useFullScreen) ALARM_CHANNEL_ID else SIMPLE_NOTIF_CHANNEL_ID
 
-                    val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                        .setSmallIcon(R.drawable.ic_sick)
+                    val soundUri = if (useFullScreen) {
+                        RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    } else {
+                        RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    }
+
+                    val builder = NotificationCompat.Builder(context, channelId)
+                        .setSmallIcon(R.drawable.ic_notification)
                         .setContentTitle(context.getString(R.string.notif_reminder_title, item.title))
                         .setContentText(context.getString(R.string.notif_reminder_desc))
                         .setPriority(NotificationCompat.PRIORITY_MAX)
-                        .setCategory(NotificationCompat.CATEGORY_ALARM)
-                        .setSound(alarmSound)
-                        .setVibrate(longArrayOf(0, 1000, 1000))
+                        .setCategory(if (useFullScreen) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER)
+                        .setSound(soundUri)
+                        .setVibrate(if (useFullScreen) longArrayOf(0, 1000, 1000) else longArrayOf(0, 500, 500))
                         .setAutoCancel(!useFullScreen)
 
                     val takeIntent = Intent(context, NotificationReceiver::class.java).apply {
@@ -152,8 +160,8 @@ class NotificationReceiver : BroadcastReceiver() {
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
 
-                    builder.addAction(R.drawable.ic_sick, context.getString(R.string.notif_action_taken), takePendingIntent)
-                    builder.addAction(R.drawable.ic_sick, context.getString(R.string.notif_action_snooze), snoozePendingIntent)
+                    builder.addAction(R.drawable.ic_notification, context.getString(R.string.notif_action_taken), takePendingIntent)
+                    builder.addAction(R.drawable.ic_notification, context.getString(R.string.notif_action_snooze), snoozePendingIntent)
 
                     if (useFullScreen) {
                         val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
@@ -170,6 +178,17 @@ class NotificationReceiver : BroadcastReceiver() {
                         builder.setFullScreenIntent(fullScreenPendingIntent, true)
                         builder.setContentIntent(fullScreenPendingIntent)
                         builder.setOngoing(true)
+                    } else {
+                        val contentIntent = Intent(context, MainActivity::class.java).apply {
+                            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        }
+                        val contentPendingIntent = PendingIntent.getActivity(
+                            context,
+                            item.id.toInt() + 200000,
+                            contentIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                        )
+                        builder.setContentIntent(contentPendingIntent)
                     }
 
                     val notification = builder.build()
@@ -239,12 +258,14 @@ class NotificationReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun createNotificationChannel(context: Context) {
+    private fun createNotificationChannels(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
             val name = context.getString(R.string.notif_channel_alarms_name)
             val descriptionText = context.getString(R.string.notif_channel_alarms_desc)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
+
+            val alarmChannel = NotificationChannel(ALARM_CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH).apply {
                 description = descriptionText
                 val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 val audioAttributes = AudioAttributes.Builder()
@@ -255,8 +276,21 @@ class NotificationReceiver : BroadcastReceiver() {
                 enableVibration(true)
                 vibrationPattern = longArrayOf(0, 1000, 1000)
             }
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+
+            val simpleNotifChannel = NotificationChannel(SIMPLE_NOTIF_CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH).apply {
+                description = descriptionText
+                val notifUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val audioAttributes = AudioAttributes.Builder()
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .build()
+                setSound(notifUri, audioAttributes)
+                enableVibration(true)
+                vibrationPattern = longArrayOf(0, 500, 500)
+            }
+
+            notificationManager.createNotificationChannel(alarmChannel)
+            notificationManager.createNotificationChannel(simpleNotifChannel)
         }
     }
 }

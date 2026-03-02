@@ -1,13 +1,12 @@
-package com.fedeveloper95.med.services
+package com.fedeveloper95.med
 
-import com.fedeveloper95.med.ItemType
 import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.HashMap
 
-data class OldDatabase(
+data class MedItem(
     val id: Long = System.currentTimeMillis(),
     val groupId: Long? = null,
     val type: ItemType,
