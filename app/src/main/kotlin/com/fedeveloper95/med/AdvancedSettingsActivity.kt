@@ -2,6 +2,7 @@
 
 package com.fedeveloper95.med
 
+import ads_mobile_sdk.j4
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
