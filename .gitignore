@@ -22,7 +22,7 @@ gen/
 .kotlin/
 kotlin-daemon-embeddable-*.jar
 
-/app/release/
+/app/release
 /app/build/
 
 *.log
