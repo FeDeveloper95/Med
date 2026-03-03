@@ -1,9 +1,7 @@
-# Gradle
 .gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 
-# IntelliJ / Android Studio
 .idea/
 *.iml
 *.iws
@@ -13,7 +11,6 @@ capture/
 local.properties
 .navigation/
 
-# Android specifiche
 /captures/
 *.apk
 *.ap_
@@ -22,13 +19,11 @@ local.properties
 bin/
 gen/
 
-# Kotlin
 .kotlin/
 kotlin-daemon-embeddable-*.jar
 
-# Cartelle di release (corretto)
 /app/release/
+/app/build/
 
-# Log e file temporanei
 *.log
 .DS_Store
