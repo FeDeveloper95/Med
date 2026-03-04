@@ -44,9 +44,12 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.MedicalServices
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
@@ -64,10 +67,12 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -97,7 +102,6 @@ import com.fedeveloper95.med.ui.theme.MedTheme
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.Collections
 
 class EditModeActivity : ComponentActivity() {
@@ -132,20 +136,89 @@ class EditModeActivity : ComponentActivity() {
     }
 }
 
-fun cleanEmptyDividers(list: List<MedData>): List<MedData> {
-    var currentList = list
-    var changed = true
-    while (changed) {
-        changed = false
-        val toRemove = currentList.filterIndexed { i, current ->
-            current.iconName == "DIVIDER" && (currentList.getOrNull(i + 1) == null || currentList.getOrNull(i + 1)?.iconName == "DIVIDER")
-        }
-        if (toRemove.isNotEmpty()) {
-            currentList = currentList.filterNot { it in toRemove }
-            changed = true
+sealed class EditItem {
+    abstract val uniqueId: String
+    data class Card(val med: MedData) : EditItem() {
+        override val uniqueId = "card_${med.id}"
+    }
+    data class Group(val divider: MedData, val cards: List<MedData>) : EditItem() {
+        override val uniqueId = "group_${divider.id}"
+    }
+}
+
+fun buildEditItems(flatList: List<MedData>): List<EditItem> {
+    val result = mutableListOf<EditItem>()
+    var currentGroupDivider: MedData? = null
+    val currentGroupCards = mutableListOf<MedData>()
+
+    for (item in flatList) {
+        if (item.iconName == "DIVIDER") {
+            if (currentGroupDivider != null) {
+                result.add(EditItem.Group(currentGroupDivider, currentGroupCards.toList()))
+            } else if (currentGroupCards.isNotEmpty()) {
+                currentGroupCards.forEach { result.add(EditItem.Card(it)) }
+            }
+
+            if (item.title.isNotBlank()) {
+                currentGroupDivider = item
+                currentGroupCards.clear()
+            } else {
+                currentGroupDivider = null
+                currentGroupCards.clear()
+            }
+        } else {
+            if (currentGroupDivider != null) {
+                currentGroupCards.add(item)
+            } else {
+                result.add(EditItem.Card(item))
+            }
         }
     }
-    return currentList
+    if (currentGroupDivider != null) {
+        result.add(EditItem.Group(currentGroupDivider, currentGroupCards.toList()))
+    } else if (currentGroupCards.isNotEmpty()) {
+        currentGroupCards.forEach { result.add(EditItem.Card(it)) }
+    }
+    return result
+}
+
+@Composable
+fun Modifier.draggableItem(
+    id: String,
+    index: Int,
+    maxIndex: Int,
+    draggingId: String?,
+    draggedOffset: Float,
+    itemHeightPx: Float,
+    onDragStart: (String) -> Unit,
+    onDrag: (Float) -> Unit,
+    onDragEnd: () -> Unit,
+    onSwap: (Int, Int) -> Unit
+): Modifier {
+    val currentIndex by rememberUpdatedState(index)
+    val currentMaxIndex by rememberUpdatedState(maxIndex)
+    val currentDraggingId by rememberUpdatedState(draggingId)
+    val currentDraggedOffset by rememberUpdatedState(draggedOffset)
+
+    return this.pointerInput(id) {
+        detectDragGesturesAfterLongPress(
+            onDragStart = { onDragStart(id) },
+            onDrag = { change, dragAmount ->
+                change.consume()
+                onDrag(dragAmount.y)
+
+                if (currentDraggingId == id) {
+                    if (currentDraggedOffset > itemHeightPx && currentIndex < currentMaxIndex) {
+                        onSwap(currentIndex, currentIndex + 1)
+                    } else if (currentDraggedOffset < -itemHeightPx && currentIndex > 0) {
+                        onSwap(currentIndex, currentIndex - 1)
+                    }
+                }
+            },
+            onDragEnd = onDragEnd,
+            onDragCancel = onDragEnd
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
@@ -154,47 +227,112 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
     val context = LocalContext.current
     var allItems by remember { mutableStateOf(DataRepository.loadData(context)) }
 
-    var pageItems by remember {
-        mutableStateOf(
-            cleanEmptyDividers(
-                allItems.filter { item ->
-                    when (item.type) {
-                        ItemType.Event -> item.creationDate == selectedDate
-                        ItemType.Medicine -> {
-                            val isAfterStart = !selectedDate.isBefore(item.creationDate)
-                            val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
-                            val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(selectedDate.dayOfWeek)
-                            val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, selectedDate) % item.intervalGap == 0L
-                            isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
-                        }
-                    }
-                }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
-            )
-        )
+    val initialPageItems = remember {
+        allItems.filter { item ->
+            when (item.type) {
+                ItemType.Event -> item.creationDate == selectedDate
+                ItemType.Medicine -> {
+                    val isAfterStart = !selectedDate.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
+                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(selectedDate.dayOfWeek)
+                    val isCorrectGap = item.intervalGap == null || java.time.temporal.ChronoUnit.DAYS.between(item.creationDate, selectedDate) % item.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
     }
 
-    val initialPageItems = remember { pageItems.toList() }
-    val hasChanges = pageItems != initialPageItems
+    var editItems by remember { mutableStateOf(buildEditItems(initialPageItems)) }
 
     var showSavePopup by remember { mutableStateOf(false) }
     var showGroupNameSheet by remember { mutableStateOf(false) }
     var isDeleteMode by rememberSaveable { mutableStateOf(false) }
     var toolbarExpanded by rememberSaveable { mutableStateOf(true) }
 
+    var topDraggingId by remember { mutableStateOf<String?>(null) }
+    var topDraggedOffset by remember { mutableFloatStateOf(0f) }
+    var innerDraggingId by remember { mutableStateOf<String?>(null) }
+    var innerDraggedOffset by remember { mutableFloatStateOf(0f) }
+
+    val hasChanges = remember(editItems, initialPageItems) {
+        val currentFlatList = mutableListOf<MedData>()
+        var lastWasGroup = false
+        editItems.forEach { item ->
+            when (item) {
+                is EditItem.Card -> {
+                    if (lastWasGroup) {
+                        currentFlatList.add(MedData(
+                            id = 0, groupId = 0, type = ItemType.Event, title = "", iconName = "DIVIDER",
+                            colorCode = "", frequencyLabel = "", creationDate = selectedDate, creationTime = LocalTime.MIN,
+                            takenHistory = hashMapOf(), recurrenceDays = null, endDate = null, notes = null,
+                            displayOrder = 0, category = null, intervalGap = null
+                        ))
+                    }
+                    currentFlatList.add(item.med)
+                    lastWasGroup = false
+                }
+                is EditItem.Group -> {
+                    currentFlatList.add(item.divider)
+                    currentFlatList.addAll(item.cards)
+                    lastWasGroup = true
+                }
+            }
+        }
+
+        val filteredCurrent = currentFlatList.filter { it.title.isNotBlank() || it.iconName != "DIVIDER" }
+        val filteredInitial = initialPageItems.filter { it.title.isNotBlank() || it.iconName != "DIVIDER" }
+
+        filteredCurrent.map { it.id } != filteredInitial.map { it.id }
+    }
+
     BackHandler(enabled = hasChanges) {
         showSavePopup = true
     }
 
     fun saveOrder() {
-        val finalPageItems = cleanEmptyDividers(pageItems)
-        val updatedAllItems = allItems.toMutableList()
+        val flatList = mutableListOf<MedData>()
+        var lastWasGroup = false
 
-        val dividersOnDate = updatedAllItems.filter { it.iconName == "DIVIDER" && it.creationDate == selectedDate }
-        val finalDividerIds = finalPageItems.filter { it.iconName == "DIVIDER" }.map { it.id }
-        val dividersToDelete = dividersOnDate.filter { it.id !in finalDividerIds }
-        updatedAllItems.removeAll(dividersToDelete)
+        for (item in editItems) {
+            when (item) {
+                is EditItem.Card -> {
+                    if (lastWasGroup) {
+                        flatList.add(MedData(
+                            id = System.nanoTime(),
+                            groupId = System.currentTimeMillis(),
+                            type = ItemType.Event,
+                            title = "",
+                            iconName = "DIVIDER",
+                            colorCode = "dynamic",
+                            frequencyLabel = "",
+                            creationDate = selectedDate,
+                            creationTime = LocalTime.MIN,
+                            takenHistory = hashMapOf(),
+                            recurrenceDays = null,
+                            endDate = null,
+                            notes = null,
+                            displayOrder = 0,
+                            intervalGap = null,
+                            category = null
+                        ))
+                    }
+                    flatList.add(item.med)
+                    lastWasGroup = false
+                }
+                is EditItem.Group -> {
+                    flatList.add(item.divider)
+                    flatList.addAll(item.cards)
+                    lastWasGroup = true
+                }
+            }
+        }
 
-        finalPageItems.forEachIndexed { newIndex, item ->
+        val flatListIds = flatList.map { it.id }.toSet()
+        val updatedAllItems = allItems.filter {
+            it.creationDate != selectedDate || it.iconName != "DIVIDER" || flatListIds.contains(it.id)
+        }.toMutableList()
+
+        flatList.forEachIndexed { newIndex, item ->
             val globalIndex = updatedAllItems.indexOfFirst { it.id == item.id }
             if (globalIndex != -1) {
                 updatedAllItems[globalIndex] = updatedAllItems[globalIndex].copy(displayOrder = newIndex)
@@ -245,7 +383,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            if (pageItems.isEmpty()) {
+            if (editItems.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -267,8 +405,6 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                 }
             } else {
                 val listState = rememberLazyListState()
-                var draggingItemIndex by remember { mutableStateOf<Int?>(null) }
-                var draggedItemOffset by remember { mutableFloatStateOf(0f) }
                 val density = LocalDensity.current
                 val itemHeightPx = with(density) { 80.dp.toPx() }
 
@@ -284,114 +420,197 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                         ),
                     verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    itemsIndexed(items = pageItems, key = { _, item -> item.id }) { index, item ->
-                        val isDivider = item.iconName == "DIVIDER"
-                        val isFirstInGroup = index == 0 || pageItems.getOrNull(index - 1)?.iconName == "DIVIDER"
-                        val isLastInGroup = index == pageItems.lastIndex || pageItems.getOrNull(index + 1)?.iconName == "DIVIDER"
+                    itemsIndexed(items = editItems, key = { _, item -> item.uniqueId }) { index, editItem ->
+                        val isTopDragging = topDraggingId == editItem.uniqueId
+                        val topOffset = if (isTopDragging) topDraggedOffset else 0f
+                        val animatedTopOffset by animateFloatAsState(targetValue = topOffset, label = "topDrag")
 
-                        val topRadius = if (isFirstInGroup) 20.dp else 4.dp
-                        val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
-                        val shape = RoundedCornerShape(
-                            topStart = topRadius,
-                            topEnd = topRadius,
-                            bottomStart = bottomRadius,
-                            bottomEnd = bottomRadius
-                        )
-
-                        val isDragging = index == draggingItemIndex
-                        val offset = if (isDragging) draggedItemOffset else 0f
-                        val animatedOffset by animateFloatAsState(targetValue = offset, label = "dragOffset")
-
-                        val dragModifier = if (!isDeleteMode) {
-                            Modifier.pointerInput(Unit) {
-                                detectDragGesturesAfterLongPress(
-                                    onDragStart = {
-                                        draggingItemIndex = index
-                                        draggedItemOffset = 0f
-                                    },
-                                    onDrag = { change, dragAmount ->
-                                        change.consume()
-                                        draggedItemOffset += dragAmount.y
-
-                                        val currentDraggingIdx = draggingItemIndex ?: return@detectDragGesturesAfterLongPress
-
-                                        if (draggedItemOffset > itemHeightPx && currentDraggingIdx < pageItems.lastIndex) {
-                                            val newList = pageItems.toMutableList()
-                                            Collections.swap(newList, currentDraggingIdx, currentDraggingIdx + 1)
-                                            pageItems = newList
-                                            draggingItemIndex = currentDraggingIdx + 1
-                                            draggedItemOffset -= itemHeightPx
-                                        } else if (draggedItemOffset < -itemHeightPx && currentDraggingIdx > 0) {
-                                            val newList = pageItems.toMutableList()
-                                            Collections.swap(newList, currentDraggingIdx, currentDraggingIdx - 1)
-                                            pageItems = newList
-                                            draggingItemIndex = currentDraggingIdx - 1
-                                            draggedItemOffset += itemHeightPx
-                                        }
-                                    },
-                                    onDragEnd = {
-                                        draggingItemIndex = null
-                                        draggedItemOffset = 0f
-                                    },
-                                    onDragCancel = {
-                                        draggingItemIndex = null
-                                        draggedItemOffset = 0f
-                                    }
-                                )
-                            }
+                        val topDragMod = if (!isDeleteMode) {
+                            Modifier.draggableItem(
+                                id = editItem.uniqueId,
+                                index = index,
+                                maxIndex = editItems.lastIndex,
+                                draggingId = topDraggingId,
+                                draggedOffset = topDraggedOffset,
+                                itemHeightPx = itemHeightPx,
+                                onDragStart = { topDraggingId = it; topDraggedOffset = 0f },
+                                onDrag = { topDraggedOffset += it },
+                                onDragEnd = { topDraggingId = null; topDraggedOffset = 0f },
+                                onSwap = { from, to ->
+                                    val newItems = editItems.toMutableList()
+                                    Collections.swap(newItems, from, to)
+                                    editItems = newItems
+                                    topDraggedOffset += if (to > from) -itemHeightPx else itemHeightPx
+                                }
+                            )
                         } else Modifier
+
+                        if (editItem is EditItem.Card && index > 0 && editItems.getOrNull(index - 1) is EditItem.Group) {
+                            Spacer(modifier = Modifier.height(24.dp))
+                        }
 
                         Box(
                             modifier = Modifier
-                                .zIndex(if (isDragging) 1f else 0f)
-                                .graphicsLayer { translationY = animatedOffset }
+                                .zIndex(if (isTopDragging) 1f else 0f)
+                                .graphicsLayer { translationY = animatedTopOffset }
                                 .animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow))
-                                .then(dragModifier)
+                                .then(if (editItem is EditItem.Card) topDragMod else Modifier)
                         ) {
-                            if (isDivider) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(start = 16.dp, top = 24.dp, bottom = 8.dp, end = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = item.title,
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontFamily = GoogleSansFlex,
-                                            fontWeight = FontWeight.Normal
-                                        ),
-                                        color = MaterialTheme.colorScheme.primary
+                            when (editItem) {
+                                is EditItem.Card -> {
+                                    val isFirst = index == 0 || editItems.getOrNull(index - 1) is EditItem.Group
+                                    val isLast = index == editItems.lastIndex || editItems.getOrNull(index + 1) is EditItem.Group
+                                    val shape = RoundedCornerShape(
+                                        topStart = if (isFirst) 20.dp else 4.dp,
+                                        topEnd = if (isFirst) 20.dp else 4.dp,
+                                        bottomStart = if (isLast) 20.dp else 4.dp,
+                                        bottomEnd = if (isLast) 20.dp else 4.dp
                                     )
-                                    if (isDeleteMode) {
-                                        IconButton(onClick = {
-                                            pageItems = cleanEmptyDividers(pageItems.filter { it.id != item.id })
-                                        }) {
-                                            Icon(
-                                                imageVector = Icons.Rounded.Delete,
-                                                contentDescription = stringResource(R.string.delete_mode_action),
-                                                tint = MaterialTheme.colorScheme.error
-                                            )
+
+                                    EditMedDataCard(
+                                        item = editItem.med,
+                                        shape = shape,
+                                        isDeleteMode = isDeleteMode,
+                                        availableGroups = editItems.filterIsInstance<EditItem.Group>(),
+                                        currentGroupId = null,
+                                        currentGroupTitle = null,
+                                        onDeleteClick = { editItems = editItems.filter { it.uniqueId != editItem.uniqueId } },
+                                        onRemoveFromGroup = null,
+                                        onAddToGroup = { targetGroupId ->
+                                            val newItems = editItems.toMutableList()
+                                            newItems.remove(editItem)
+                                            val gIdx = newItems.indexOfFirst { it is EditItem.Group && it.divider.id == targetGroupId }
+                                            if (gIdx != -1) {
+                                                val group = newItems[gIdx] as EditItem.Group
+                                                newItems[gIdx] = group.copy(cards = group.cards + editItem.med)
+                                            }
+                                            editItems = newItems
                                         }
-                                    } else {
-                                        Icon(
-                                            imageVector = Icons.Rounded.DragHandle,
-                                            contentDescription = null,
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                                        )
+                                    )
+                                }
+                                is EditItem.Group -> {
+                                    Column {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(start = 16.dp, top = if (index == 0) 0.dp else 16.dp, bottom = 16.dp, end = 16.dp)
+                                                .then(topDragMod),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = editItem.divider.title,
+                                                style = MaterialTheme.typography.titleMedium.copy(
+                                                    fontFamily = GoogleSansFlex,
+                                                    fontWeight = FontWeight.Normal
+                                                ),
+                                                color = if (isDeleteMode) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.primary
+                                            )
+                                            if (isDeleteMode) {
+                                                IconButton(onClick = {
+                                                    val newItems = editItems.toMutableList()
+                                                    val gIdx = newItems.indexOf(editItem)
+                                                    newItems.removeAt(gIdx)
+                                                    newItems.addAll(gIdx, editItem.cards.map { EditItem.Card(it) })
+                                                    editItems = newItems
+                                                }) {
+                                                    Icon(
+                                                        Icons.Rounded.Delete,
+                                                        contentDescription = stringResource(R.string.delete_mode_action),
+                                                        tint = MaterialTheme.colorScheme.error
+                                                    )
+                                                }
+                                            } else {
+                                                Icon(
+                                                    Icons.Rounded.DragHandle,
+                                                    contentDescription = null,
+                                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                                )
+                                            }
+                                        }
+
+                                        editItem.cards.forEachIndexed { cIdx, card ->
+                                            val isInnerDragging = innerDraggingId == card.id.toString()
+                                            val innerOffset = if (isInnerDragging) innerDraggedOffset else 0f
+                                            val innerAnimOffset by animateFloatAsState(targetValue = innerOffset, label = "innerDrag")
+
+                                            val innerDragMod = if (!isDeleteMode) {
+                                                Modifier.draggableItem(
+                                                    id = card.id.toString(),
+                                                    index = cIdx,
+                                                    maxIndex = editItem.cards.lastIndex,
+                                                    draggingId = innerDraggingId,
+                                                    draggedOffset = innerDraggedOffset,
+                                                    itemHeightPx = itemHeightPx,
+                                                    onDragStart = { innerDraggingId = it; innerDraggedOffset = 0f },
+                                                    onDrag = { innerDraggedOffset += it },
+                                                    onDragEnd = { innerDraggingId = null; innerDraggedOffset = 0f },
+                                                    onSwap = { from, to ->
+                                                        val gIdx = editItems.indexOf(editItem)
+                                                        if (gIdx != -1) {
+                                                            val group = editItems[gIdx] as EditItem.Group
+                                                            val newCards = group.cards.toMutableList()
+                                                            Collections.swap(newCards, from, to)
+                                                            val newItems = editItems.toMutableList()
+                                                            newItems[gIdx] = group.copy(cards = newCards)
+                                                            editItems = newItems
+                                                            innerDraggedOffset += if (to > from) -itemHeightPx else itemHeightPx
+                                                        }
+                                                    }
+                                                )
+                                            } else Modifier
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(bottom = 2.dp)
+                                                    .zIndex(if (isInnerDragging) 1f else 0f)
+                                                    .graphicsLayer { translationY = innerAnimOffset }
+                                                    .then(innerDragMod)
+                                            ) {
+                                                val shape = RoundedCornerShape(
+                                                    topStart = if (cIdx == 0) 20.dp else 4.dp,
+                                                    topEnd = if (cIdx == 0) 20.dp else 4.dp,
+                                                    bottomStart = if (cIdx == editItem.cards.lastIndex) 20.dp else 4.dp,
+                                                    bottomEnd = if (cIdx == editItem.cards.lastIndex) 20.dp else 4.dp
+                                                )
+                                                EditMedDataCard(
+                                                    item = card,
+                                                    shape = shape,
+                                                    isDeleteMode = isDeleteMode,
+                                                    availableGroups = emptyList(),
+                                                    currentGroupId = editItem.divider.id,
+                                                    currentGroupTitle = editItem.divider.title,
+                                                    onDeleteClick = {
+                                                        val newItems = editItems.toMutableList()
+                                                        val gIdx = newItems.indexOf(editItem)
+                                                        if (gIdx != -1) {
+                                                            val newCards = editItem.cards.filter { it.id != card.id }
+                                                            if (newCards.isEmpty()) newItems.removeAt(gIdx)
+                                                            else newItems[gIdx] = editItem.copy(cards = newCards)
+                                                            editItems = newItems
+                                                        }
+                                                    },
+                                                    onRemoveFromGroup = {
+                                                        val newItems = editItems.toMutableList()
+                                                        val gIdx = newItems.indexOf(editItem)
+                                                        if (gIdx != -1) {
+                                                            val newCards = editItem.cards.filter { it.id != card.id }
+                                                            if (newCards.isEmpty()) {
+                                                                newItems.removeAt(gIdx)
+                                                                newItems.add(gIdx, EditItem.Card(card))
+                                                            } else {
+                                                                newItems[gIdx] = editItem.copy(cards = newCards)
+                                                                newItems.add(gIdx + 1, EditItem.Card(card))
+                                                            }
+                                                            editItems = newItems
+                                                        }
+                                                    },
+                                                    onAddToGroup = null
+                                                )
+                                            }
+                                        }
                                     }
                                 }
-                            } else {
-                                EditMedDataCard(
-                                    item = item,
-                                    currentViewDate = selectedDate,
-                                    shape = shape,
-                                    isDeleteMode = isDeleteMode,
-                                    onDeleteClick = {
-                                        pageItems = cleanEmptyDividers(pageItems.filter { it.id != item.id })
-                                    }
-                                )
                             }
                         }
                     }
@@ -400,7 +619,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
             }
         }
 
-        if (pageItems.isNotEmpty()) {
+        if (editItems.isNotEmpty()) {
             HorizontalFloatingToolbar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -424,7 +643,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                         modifier = Modifier.width(64.dp),
                         onClick = { showGroupNameSheet = true }
                     ) {
-                        Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.add_divider))
+                        Icon(Icons.Rounded.Add, contentDescription = null)
                     }
                 }
             )
@@ -450,11 +669,11 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                     recurrenceDays = null,
                     endDate = null,
                     notes = null,
-                    displayOrder = pageItems.size,
+                    displayOrder = 0,
                     intervalGap = null,
                     category = null
                 )
-                pageItems = pageItems + newDivider
+                editItems = editItems + EditItem.Group(newDivider, emptyList())
             }
         )
     }
@@ -477,14 +696,17 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
 @Composable
 fun EditMedDataCard(
     item: MedData,
-    currentViewDate: LocalDate,
     shape: Shape,
     isDeleteMode: Boolean,
+    availableGroups: List<EditItem.Group>,
+    currentGroupId: Long?,
+    currentGroupTitle: String?,
     onDeleteClick: () -> Unit = {},
+    onRemoveFromGroup: (() -> Unit)? = null,
+    onAddToGroup: ((Long) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val isMedicine = item.type == ItemType.Medicine
-    LocalDate.now() == currentViewDate
 
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
     val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
@@ -511,6 +733,9 @@ fun EditMedDataCard(
     val cardContentColor = MaterialTheme.colorScheme.onSurface
     val iconBoxColor = customColor ?: if (isMedicine) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer
     val iconBoxTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
+
+    var menuExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Card(
         modifier = modifier
@@ -589,14 +814,70 @@ fun EditMedDataCard(
                         )
                     }
                 } else {
-                    Icon(
-                        imageVector = Icons.Rounded.DragHandle,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Rounded.DragHandle,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                        Box {
+                            IconButton(onClick = { menuExpanded = true }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.MoreVert,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = menuExpanded,
+                                onDismissRequest = { menuExpanded = false },
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            ) {
+                                if (currentGroupId != null) {
+                                    DropdownMenuItem(
+                                        text = {
+                                            currentGroupTitle?.let {
+                                                Text(
+                                                    text = stringResource(R.string.remove_from_group, it),
+                                                    fontFamily = GoogleSansFlex
+                                                )
+                                            }
+                                        },
+                                        onClick = {
+                                            onRemoveFromGroup?.invoke()
+                                            menuExpanded = false
+                                        }
+                                    )
+                                } else {
+                                    if (availableGroups.isEmpty()) {
+                                        DropdownMenuItem(
+                                            text = { Text("No groups available", fontFamily = GoogleSansFlex) },
+                                            onClick = { menuExpanded = false },
+                                            enabled = false
+                                        )
+                                    } else {
+                                        availableGroups.forEach { group ->
+                                            DropdownMenuItem(
+                                                text = {
+                                                    Text(
+                                                        text = stringResource(R.string.add_to_group, group.divider.title),
+                                                        fontFamily = GoogleSansFlex
+                                                    )
+                                                },
+                                                onClick = {
+                                                    onAddToGroup?.invoke(group.divider.id)
+                                                    menuExpanded = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             },
-            modifier = Modifier.padding(vertical = 4.dp),
+            modifier = Modifier,
             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )
     }

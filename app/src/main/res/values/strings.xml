@@ -209,7 +209,7 @@
     <string name="see_source_code">See source code</string>
     <string name="check_updates_action">Check for updates</string>
     <string name="update_error_check">Unable to check for updates</string>
-    <string name="nothing_here_yet">Nothing here yet…</string>
+    <string name="nothing_here_yet">Nothing here to modify yet…</string>
     <string name="settings_testing_header">Testing</string>
     <string name="settings_test_alarm_title">Test alarm/notification</string>
     <string name="settings_test_alarm_desc">Triggers the alarm for the nearest medicine</string>
@@ -225,5 +225,7 @@
     <string name="group_name_label">Group name</string>
     <string name="add_divider">Add divider</string>
     <string name="delete_mode_action">Delete mode</string>
-
+    <string name="add_to_group">Add to %1$s</string>
+    <string name="remove_from_group">Remove from %1$s</string>
+    
 </resources>

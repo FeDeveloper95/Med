@@ -244,7 +244,48 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         val baseDate = selectedDate
         val context = getApplication<Application>()
 
-        val newOrder = (_items.minOfOrNull { it.displayOrder } ?: 0) - 1
+        var currentOrder = (_items.maxOfOrNull { it.displayOrder } ?: 0) + 1
+
+        val itemsOnDate = _items.filter { item ->
+            when (item.type) {
+                ItemType.Event -> item.creationDate == selectedDate
+                ItemType.Medicine -> {
+                    val isAfterStart = !selectedDate.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
+                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(selectedDate.dayOfWeek)
+                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, selectedDate) % item.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedBy { it.displayOrder }
+
+        var inGroup = false
+        for (item in itemsOnDate) {
+            if (item.iconName == "DIVIDER") {
+                inGroup = item.title.isNotBlank()
+            }
+        }
+        if (inGroup) {
+            val emptyDivider = MedData(
+                id = System.nanoTime(),
+                groupId = System.currentTimeMillis(),
+                type = ItemType.Event,
+                title = "",
+                iconName = "DIVIDER",
+                colorCode = "dynamic",
+                frequencyLabel = "",
+                creationDate = selectedDate,
+                creationTime = LocalTime.MIN,
+                takenHistory = hashMapOf(),
+                recurrenceDays = null,
+                endDate = null,
+                notes = null,
+                displayOrder = currentOrder++,
+                category = null,
+                intervalGap = null
+            )
+            _items.add(emptyDivider)
+        }
 
         times.forEach { time ->
             val newItem = MedData(
@@ -266,7 +307,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 recurrenceDays = days,
                 endDate = null,
                 notes = notes,
-                displayOrder = newOrder,
+                displayOrder = currentOrder++,
                 category = category,
                 intervalGap = intervalGap
             )
@@ -336,7 +377,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             _items[index] = updatedItem
         }
 
-        val itemsOnDate = _items.filter {
+        val itemsOnDate = _items.filter { it ->
             when (it.type) {
                 ItemType.Event -> it.creationDate == deleteDate
                 ItemType.Medicine -> {
@@ -355,7 +396,10 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         while(changed) {
             changed = false
             val toRemove = currentList.filterIndexed { i, current ->
-                current.iconName == "DIVIDER" && (currentList.getOrNull(i + 1) == null || currentList.getOrNull(i + 1)?.iconName == "DIVIDER")
+                if (current.iconName == "DIVIDER") {
+                    val next = currentList.getOrNull(i + 1)
+                    next == null || next.iconName == "DIVIDER"
+                } else false
             }
             if (toRemove.isNotEmpty()) {
                 dividersToRemove.addAll(toRemove.map { it.id })
@@ -918,7 +962,10 @@ fun MedApp(
                                 while(changed) {
                                     changed = false
                                     val toRemove = currentList.filterIndexed { i, current ->
-                                        current.iconName == "DIVIDER" && (currentList.getOrNull(i + 1) == null || currentList.getOrNull(i + 1)?.iconName == "DIVIDER")
+                                        if (current.iconName == "DIVIDER") {
+                                            val next = currentList.getOrNull(i + 1)
+                                            next == null || next.iconName == "DIVIDER"
+                                        } else false
                                     }
                                     if (toRemove.isNotEmpty()) {
                                         currentList = currentList.filterNot { it in toRemove }
@@ -1005,20 +1052,24 @@ fun MedApp(
                                                 )
                                             ) {
                                                 if (isDivider) {
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(start = 8.dp, top = 16.dp, bottom = 0.dp, end = 8.dp),
-                                                        verticalAlignment = Alignment.CenterVertically
-                                                    ) {
-                                                        Text(
-                                                            text = item.title,
-                                                            style = MaterialTheme.typography.titleMedium.copy(
-                                                                fontFamily = GoogleSansFlex,
-                                                                fontWeight = FontWeight.Normal
-                                                            ),
-                                                            color = MaterialTheme.colorScheme.primary
-                                                        )
+                                                    if (item.title.isNotBlank()) {
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(start = 8.dp, top = if (idx == 0) 0.dp else 16.dp, bottom = 16.dp, end = 8.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                text = item.title,
+                                                                style = MaterialTheme.typography.titleMedium.copy(
+                                                                    fontFamily = GoogleSansFlex,
+                                                                    fontWeight = FontWeight.Normal
+                                                                ),
+                                                                color = MaterialTheme.colorScheme.primary
+                                                            )
+                                                        }
+                                                    } else {
+                                                        Spacer(modifier = Modifier.height(if (idx == 0) 0.dp else 24.dp))
                                                     }
                                                 } else {
                                                     val shape = RoundedCornerShape(24.dp)
@@ -1120,20 +1171,24 @@ fun MedApp(
                                                 )
                                             ) {
                                                 if (isDivider) {
-                                                    Row(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .padding(start = 16.dp, top = 24.dp, bottom = 8.dp, end = 16.dp),
-                                                        verticalAlignment = Alignment.CenterVertically
-                                                    ) {
-                                                        Text(
-                                                            text = item.title,
-                                                            style = MaterialTheme.typography.titleMedium.copy(
-                                                                fontFamily = GoogleSansFlex,
-                                                                fontWeight = FontWeight.Normal
-                                                            ),
-                                                            color = MaterialTheme.colorScheme.primary
-                                                        )
+                                                    if (item.title.isNotBlank()) {
+                                                        Row(
+                                                            modifier = Modifier
+                                                                .fillMaxWidth()
+                                                                .padding(start = 16.dp, top = if (index == 0) 0.dp else 16.dp, bottom = 16.dp, end = 16.dp),
+                                                            verticalAlignment = Alignment.CenterVertically
+                                                        ) {
+                                                            Text(
+                                                                text = item.title,
+                                                                style = MaterialTheme.typography.titleMedium.copy(
+                                                                    fontFamily = GoogleSansFlex,
+                                                                    fontWeight = FontWeight.Normal
+                                                                ),
+                                                                color = MaterialTheme.colorScheme.primary
+                                                            )
+                                                        }
+                                                    } else {
+                                                        Spacer(modifier = Modifier.height(if (index == 0) 0.dp else 24.dp))
                                                     }
                                                 } else {
                                                     SwipeableSquishItem(
