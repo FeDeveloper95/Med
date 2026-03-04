@@ -244,6 +244,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         val baseDate = selectedDate
         val context = getApplication<Application>()
 
+        val newOrder = (_items.minOfOrNull { it.displayOrder } ?: 0) - 1
+
         times.forEach { time ->
             val newItem = MedData(
                 id = System.nanoTime(),
@@ -264,7 +266,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 recurrenceDays = days,
                 endDate = null,
                 notes = notes,
-                displayOrder = _items.size,
+                displayOrder = newOrder,
                 category = category,
                 intervalGap = intervalGap
             )
@@ -333,6 +335,39 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             val updatedItem = item.copy(endDate = deleteDate.minusDays(1))
             _items[index] = updatedItem
         }
+
+        val itemsOnDate = _items.filter {
+            when (it.type) {
+                ItemType.Event -> it.creationDate == deleteDate
+                ItemType.Medicine -> {
+                    val isAfterStart = !deleteDate.isBefore(it.creationDate)
+                    val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
+                    val isCorrectDay = it.recurrenceDays.isNullOrEmpty() || it.recurrenceDays.contains(deleteDate.dayOfWeek)
+                    val isCorrectGap = it.intervalGap == null || ChronoUnit.DAYS.between(it.creationDate, deleteDate) % it.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+
+        var changed = true
+        var currentList = itemsOnDate
+        val dividersToRemove = mutableSetOf<Long>()
+        while(changed) {
+            changed = false
+            val toRemove = currentList.filterIndexed { i, current ->
+                current.iconName == "DIVIDER" && (currentList.getOrNull(i + 1) == null || currentList.getOrNull(i + 1)?.iconName == "DIVIDER")
+            }
+            if (toRemove.isNotEmpty()) {
+                dividersToRemove.addAll(toRemove.map { it.id })
+                currentList = currentList.filterNot { it in toRemove }
+                changed = true
+            }
+        }
+
+        if (dividersToRemove.isNotEmpty()) {
+            _items.removeAll { it.id in dividersToRemove }
+        }
+
         saveData()
     }
 
@@ -875,10 +910,22 @@ fun MedApp(
                                 }
                             }
                         }.let { list ->
-                            if (sortOrder == "custom") {
-                                list.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+                            if (sortOrder == "time") {
+                                list.filter { it.iconName != "DIVIDER" }.sortedWith(compareBy { it.creationTime })
                             } else {
-                                list.sortedWith(compareBy { it.creationTime })
+                                var currentList = list.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+                                var changed = true
+                                while(changed) {
+                                    changed = false
+                                    val toRemove = currentList.filterIndexed { i, current ->
+                                        current.iconName == "DIVIDER" && (currentList.getOrNull(i + 1) == null || currentList.getOrNull(i + 1)?.iconName == "DIVIDER")
+                                    }
+                                    if (toRemove.isNotEmpty()) {
+                                        currentList = currentList.filterNot { it in toRemove }
+                                        changed = true
+                                    }
+                                }
+                                currentList
                             }
                         }
 
@@ -937,9 +984,16 @@ fun MedApp(
                                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                                         verticalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
-                                        items(pageItems.size, key = { pageItems[it].id }) { idx ->
+                                        items(
+                                            count = pageItems.size,
+                                            key = { pageItems[it].id },
+                                            span = { idx ->
+                                                if (pageItems[idx].iconName == "DIVIDER") GridItemSpan(maxLineSpan) else GridItemSpan(1)
+                                            }
+                                        ) { idx ->
                                             val item = pageItems[idx]
-                                            val shape = RoundedCornerShape(24.dp)
+                                            val isDivider = item.iconName == "DIVIDER"
+
                                             Box(
                                                 modifier = Modifier.animateItem(
                                                     placementSpec = spring(
@@ -950,57 +1004,76 @@ fun MedApp(
                                                     fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
                                                 )
                                             ) {
-                                                SwipeableSquishItem(
-                                                    item = item,
-                                                    shape = shape,
-                                                    onDeleteThresholdReached = { resetAnimation ->
-                                                        val itemToRestore = item
-                                                        viewModel.deleteItem(item, pageDate)
-                                                        val deletedMsg = context.getString(
-                                                            R.string.item_deleted,
-                                                            item.title
+                                                if (isDivider) {
+                                                    Row(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(start = 8.dp, top = 16.dp, bottom = 0.dp, end = 8.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Text(
+                                                            text = item.title,
+                                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                                fontFamily = GoogleSansFlex,
+                                                                fontWeight = FontWeight.Normal
+                                                            ),
+                                                            color = MaterialTheme.colorScheme.primary
                                                         )
-                                                        val undoMsg =
-                                                            context.getString(R.string.undo_action)
-                                                        scope.launch {
-                                                            snackbarHostState.currentSnackbarData?.dismiss()
-                                                            val dismissJob =
-                                                                launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                            val result =
-                                                                snackbarHostState.showSnackbar(
-                                                                    message = deletedMsg,
-                                                                    actionLabel = undoMsg,
-                                                                    withDismissAction = true,
-                                                                    duration = SnackbarDuration.Indefinite
-                                                                )
-                                                            dismissJob.cancel()
-                                                            if (result == SnackbarResult.ActionPerformed) {
-                                                                viewModel.restoreItem(itemToRestore)
-                                                                resetAnimation()
-                                                            }
-                                                        }
-                                                    },
-                                                    onSwipeStart = {
-                                                        activeSwipingItemId = item.id
-                                                    },
-                                                    onSwipeCancel = { activeSwipingItemId = null }
-                                                ) {
-                                                    MedDataCard(
+                                                    }
+                                                } else {
+                                                    val shape = RoundedCornerShape(24.dp)
+                                                    SwipeableSquishItem(
                                                         item = item,
-                                                        currentViewDate = pageDate,
                                                         shape = shape,
-                                                        onToggle = {
-                                                            viewModel.toggleMedicine(
-                                                                item,
-                                                                pageDate
+                                                        onDeleteThresholdReached = { resetAnimation ->
+                                                            val itemToRestore = item
+                                                            viewModel.deleteItem(item, pageDate)
+                                                            val deletedMsg = context.getString(
+                                                                R.string.item_deleted,
+                                                                item.title
                                                             )
+                                                            val undoMsg =
+                                                                context.getString(R.string.undo_action)
+                                                            scope.launch {
+                                                                snackbarHostState.currentSnackbarData?.dismiss()
+                                                                val dismissJob =
+                                                                    launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                                val result =
+                                                                    snackbarHostState.showSnackbar(
+                                                                        message = deletedMsg,
+                                                                        actionLabel = undoMsg,
+                                                                        withDismissAction = true,
+                                                                        duration = SnackbarDuration.Indefinite
+                                                                    )
+                                                                dismissJob.cancel()
+                                                                if (result == SnackbarResult.ActionPerformed) {
+                                                                    viewModel.restoreItem(itemToRestore)
+                                                                    resetAnimation()
+                                                                }
+                                                            }
                                                         },
-                                                        onClick = {
-                                                            if (!item.notes.isNullOrBlank()) noteToShow =
-                                                                item.notes
+                                                        onSwipeStart = {
+                                                            activeSwipingItemId = item.id
                                                         },
-                                                        onLongClick = { editingItem = item }
-                                                    )
+                                                        onSwipeCancel = { activeSwipingItemId = null }
+                                                    ) {
+                                                        MedDataCard(
+                                                            item = item,
+                                                            currentViewDate = pageDate,
+                                                            shape = shape,
+                                                            onToggle = {
+                                                                viewModel.toggleMedicine(
+                                                                    item,
+                                                                    pageDate
+                                                                )
+                                                            },
+                                                            onClick = {
+                                                                if (!item.notes.isNullOrBlank()) noteToShow =
+                                                                    item.notes
+                                                            },
+                                                            onLongClick = { editingItem = item }
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }
@@ -1022,9 +1095,13 @@ fun MedApp(
                                         itemsIndexed(
                                             items = pageItems,
                                             key = { _, item -> item.id }) { index, item ->
-                                            val topRadius = if (index == 0) 20.dp else 4.dp
-                                            val bottomRadius =
-                                                if (index == pageItems.lastIndex) 20.dp else 4.dp
+
+                                            val isDivider = item.iconName == "DIVIDER"
+                                            val isFirstInGroup = index == 0 || pageItems.getOrNull(index - 1)?.iconName == "DIVIDER"
+                                            val isLastInGroup = index == pageItems.lastIndex || pageItems.getOrNull(index + 1)?.iconName == "DIVIDER"
+
+                                            val topRadius = if (isFirstInGroup) 20.dp else 4.dp
+                                            val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
                                             val shape = RoundedCornerShape(
                                                 topStart = topRadius,
                                                 topEnd = topRadius,
@@ -1042,59 +1119,77 @@ fun MedApp(
                                                     fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
                                                 )
                                             ) {
-                                                SwipeableSquishItem(
-                                                    item = item,
-                                                    shape = shape,
-                                                    onDeleteThresholdReached = { resetAnimation ->
-                                                        val itemToRestore = item
-                                                        viewModel.deleteItem(item, pageDate)
-
-                                                        val deletedMsg = context.getString(
-                                                            R.string.item_deleted,
-                                                            item.title
+                                                if (isDivider) {
+                                                    Row(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(start = 16.dp, top = 24.dp, bottom = 8.dp, end = 16.dp),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Text(
+                                                            text = item.title,
+                                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                                fontFamily = GoogleSansFlex,
+                                                                fontWeight = FontWeight.Normal
+                                                            ),
+                                                            color = MaterialTheme.colorScheme.primary
                                                         )
-                                                        val undoMsg =
-                                                            context.getString(R.string.undo_action)
-
-                                                        scope.launch {
-                                                            snackbarHostState.currentSnackbarData?.dismiss()
-                                                            val dismissJob =
-                                                                launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                            val result =
-                                                                snackbarHostState.showSnackbar(
-                                                                    message = deletedMsg,
-                                                                    actionLabel = undoMsg,
-                                                                    withDismissAction = true,
-                                                                    duration = SnackbarDuration.Indefinite
-                                                                )
-                                                            dismissJob.cancel()
-                                                            if (result == SnackbarResult.ActionPerformed) {
-                                                                viewModel.restoreItem(itemToRestore)
-                                                                resetAnimation()
-                                                            }
-                                                        }
-                                                    },
-                                                    onSwipeStart = {
-                                                        activeSwipingItemId = item.id
-                                                    },
-                                                    onSwipeCancel = { activeSwipingItemId = null }
-                                                ) {
-                                                    MedDataCard(
+                                                    }
+                                                } else {
+                                                    SwipeableSquishItem(
                                                         item = item,
-                                                        currentViewDate = pageDate,
                                                         shape = shape,
-                                                        onToggle = {
-                                                            viewModel.toggleMedicine(
-                                                                item,
-                                                                pageDate
+                                                        onDeleteThresholdReached = { resetAnimation ->
+                                                            val itemToRestore = item
+                                                            viewModel.deleteItem(item, pageDate)
+
+                                                            val deletedMsg = context.getString(
+                                                                R.string.item_deleted,
+                                                                item.title
                                                             )
+                                                            val undoMsg =
+                                                                context.getString(R.string.undo_action)
+
+                                                            scope.launch {
+                                                                snackbarHostState.currentSnackbarData?.dismiss()
+                                                                val dismissJob =
+                                                                    launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                                val result =
+                                                                    snackbarHostState.showSnackbar(
+                                                                        message = deletedMsg,
+                                                                        actionLabel = undoMsg,
+                                                                        withDismissAction = true,
+                                                                        duration = SnackbarDuration.Indefinite
+                                                                    )
+                                                                dismissJob.cancel()
+                                                                if (result == SnackbarResult.ActionPerformed) {
+                                                                    viewModel.restoreItem(itemToRestore)
+                                                                    resetAnimation()
+                                                                }
+                                                            }
                                                         },
-                                                        onClick = {
-                                                            if (!item.notes.isNullOrBlank()) noteToShow =
-                                                                item.notes
+                                                        onSwipeStart = {
+                                                            activeSwipingItemId = item.id
                                                         },
-                                                        onLongClick = { editingItem = item }
-                                                    )
+                                                        onSwipeCancel = { activeSwipingItemId = null }
+                                                    ) {
+                                                        MedDataCard(
+                                                            item = item,
+                                                            currentViewDate = pageDate,
+                                                            shape = shape,
+                                                            onToggle = {
+                                                                viewModel.toggleMedicine(
+                                                                    item,
+                                                                    pageDate
+                                                                )
+                                                            },
+                                                            onClick = {
+                                                                if (!item.notes.isNullOrBlank()) noteToShow =
+                                                                    item.notes
+                                                            },
+                                                            onLongClick = { editingItem = item }
+                                                        )
+                                                    }
                                                 }
                                             }
                                         }

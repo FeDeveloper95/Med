@@ -351,8 +351,8 @@ fun SettingsScreen(
                     icon = Icons.Rounded.ViewStream,
                     title = stringResource(R.string.settings_bottom_sheet_title),
                     subtitle = stringResource(R.string.settings_bottom_sheet_desc),
-                    containerColor = Color(0xFFB39DDB),
-                    iconColor = Color(0xFF4527A0),
+                    containerColor = Color(0xFFA1C9FF),
+                    iconColor = Color(0xFF04409F),
                     shape = RoundedCornerShape(4.dp),
                     checked = experimentalBottomSheet,
                     onCheckedChange = {
@@ -368,8 +368,8 @@ fun SettingsScreen(
                     icon = Icons.Rounded.Tune,
                     title = stringResource(R.string.settings_advanced_title),
                     subtitle = stringResource(R.string.settings_advanced_desc),
-                    containerColor = Color(0xFFC5C0FF),
-                    iconColor = Color(0xFF2D237A),
+                    containerColor = Color(0xFFC7C7C7),
+                    iconColor = Color(0xFF2C2C2C),
                     shape = RoundedCornerShape(
                         topStart = 4.dp,
                         topEnd = 4.dp,
@@ -402,8 +402,8 @@ fun SettingsScreen(
                         icon = Icons.Rounded.Language,
                         title = stringResource(R.string.settings_language_title),
                         subtitle = stringResource(R.string.settings_language_desc),
-                        containerColor = Color(0xFFffb3ae),
-                        iconColor = Color(0xFF8a1a16),
+                        containerColor = Color(0xFFD9BAFD),
+                        iconColor = Color(0xFF5629A4),
                         shape = RoundedCornerShape(20.dp),
                         onClick = {
                             try {

@@ -222,5 +222,8 @@
     <string name="settings_reset_desc">Permanently delete all data and settings</string>
     <string name="settings_reset_confirmation_desc">Are you sure you want to delete all your medicines, events, and settings? This action cannot be undone.</string>
     <string name="settings_reset_action">Reset</string>
+    <string name="group_name_label">Group name</string>
+    <string name="add_divider">Add divider</string>
+    <string name="delete_mode_action">Delete mode</string>
 
 </resources>

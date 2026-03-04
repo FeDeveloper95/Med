@@ -229,7 +229,7 @@ fun AlarmScreen(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.shape_1),
+                painter = painterResource(id = R.drawable.ic_twelve_sided_cookie),
                 contentDescription = null,
                 tint = containerColor,
                 modifier = Modifier
