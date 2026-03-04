@@ -3,6 +3,7 @@
 package com.fedeveloper95.med
 
 import ads_mobile_sdk.j4
+import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -24,9 +25,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
+import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Group
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
@@ -47,7 +52,11 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.elements.AdvancedSettingsActivity.ResetPopup
 import com.fedeveloper95.med.elements.AdvancedSettingsActivity.RestorePopup
+import com.fedeveloper95.med.elements.MainActivity.CommunityBottomSheet
+import com.fedeveloper95.med.services.DataRepository
+import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.Dispatchers
@@ -56,11 +65,14 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.ObjectInputStream
 import java.io.ObjectStreamClass
+import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 class AdvancedSettingsActivity : ComponentActivity() {
@@ -100,7 +112,10 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     var autoUpdates by remember { mutableStateOf(prefs.getBoolean(PREF_AUTO_UPDATES, true)) }
+
     var showRestartDialog by remember { mutableStateOf(false) }
+    var showCommunitySheet by remember { mutableStateOf(false) }
+    var showResetPopup by remember { mutableStateOf(false) }
 
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         uri?.let {
@@ -281,8 +296,141 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                 )
             }
 
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+            item {
+                Text(
+                    text = stringResource(R.string.settings_testing_header),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
+
+            item {
+                SettingsItemCard(
+                    icon = Icons.Rounded.Notifications,
+                    title = stringResource(R.string.settings_test_alarm_title),
+                    subtitle = stringResource(R.string.settings_test_alarm_desc),
+                    containerColor = Color(0xFFa0d57b),
+                    iconColor = Color(0xFF1c4a00),
+                    shape = RoundedCornerShape(
+                        topStart = 20.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onClick = {
+                        val now = LocalTime.now()
+                        val items = DataRepository.loadData(context)
+                        val closest = items.filter { it.type == ItemType.Medicine }.minByOrNull {
+                            val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
+                            if (diff >= 0) diff else diff + 24 * 60
+                        }
+
+                        if (closest != null) {
+                            val intent = Intent(context, AlarmActivity::class.java).apply {
+                                putExtra("ITEM_TITLE", closest.title)
+                                putExtra("ITEM_ID", closest.id)
+                            }
+                            context.startActivity(intent)
+                        }
+                    }
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(2.dp)) }
+
+            item {
+                SettingsItemCard(
+                    icon = Icons.Rounded.Group,
+                    title = stringResource(R.string.settings_test_telegram_title),
+                    subtitle = stringResource(R.string.settings_test_telegram_desc),
+                    containerColor = Color(0xFF97cbff),
+                    iconColor = Color(0xFF003355),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 4.dp,
+                        bottomEnd = 4.dp
+                    ),
+                    onClick = {
+                        showCommunitySheet = true
+                    }
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(2.dp)) }
+
+            item {
+                SettingsItemCard(
+                    icon = Icons.Rounded.BugReport,
+                    title = stringResource(R.string.settings_test_crash_title),
+                    subtitle = stringResource(R.string.settings_test_crash_desc),
+                    containerColor = Color(0xFFffb869),
+                    iconColor = Color(0xFF5c3000),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 4.dp,
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
+                    ),
+                    onClick = {
+                        throw RuntimeException("Test Crash Triggered")
+                    }
+                )
+            }
+
+            item { Spacer(modifier = Modifier.height(32.dp)) }
+
+            item {
+                Text(
+                    text = stringResource(R.string.settings_danger_zone_header),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal
+                    ),
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                )
+            }
+
+            item {
+                SettingsItemCard(
+                    icon = Icons.Rounded.DeleteForever,
+                    title = stringResource(R.string.settings_reset_title),
+                    subtitle = stringResource(R.string.settings_reset_desc),
+                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                    iconColor = MaterialTheme.colorScheme.onErrorContainer,
+                    shape = RoundedCornerShape(20.dp),
+                    onClick = {
+                        showResetPopup = true
+                    }
+                )
+            }
+
             item { Spacer(modifier = Modifier.height(48.dp)) }
         }
+    }
+
+    if (showCommunitySheet) {
+        CommunityBottomSheet(
+            onDismiss = { showCommunitySheet = false }
+        )
+    }
+
+    if (showResetPopup) {
+        ResetPopup(
+            onDismiss = { showResetPopup = false },
+            onConfirm = {
+                showResetPopup = false
+                val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                activityManager.clearApplicationUserData()
+            }
+        )
     }
 
     if (showRestartDialog) {
@@ -326,7 +474,7 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
             root.put("med_settings", settingsJson)
 
             try {
-                val allItems = com.fedeveloper95.med.services.DataRepository.loadData(context)
+                val allItems = DataRepository.loadData(context)
                 val dataArray = JSONArray()
                 allItems.forEach { dataArray.put(it.toJson()) }
                 root.put("med_data_v2", dataArray)
@@ -429,14 +577,14 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                 }
             }
 
-            val importedItems = mutableListOf<com.fedeveloper95.med.services.MedData>()
+            val importedItems = mutableListOf<MedData>()
 
             if (root.has("med_data_v2")) {
                 try {
                     val dataArray = root.getJSONArray("med_data_v2")
                     for (i in 0 until dataArray.length()) {
                         try {
-                            importedItems.add(com.fedeveloper95.med.services.MedData.fromJson(dataArray.getJSONObject(i)))
+                            importedItems.add(MedData.fromJson(dataArray.getJSONObject(i)))
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -463,11 +611,11 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                         if (old is j4.p1) {
                             try {
                                 val migratedType = when(old.f.name) {
-                                    "Medicine", "b" -> com.fedeveloper95.med.ItemType.Medicine
-                                    else -> com.fedeveloper95.med.ItemType.Event
+                                    "Medicine", "b" -> ItemType.Medicine
+                                    else -> ItemType.Event
                                 }
                                 importedItems.add(
-                                    com.fedeveloper95.med.services.MedData(
+                                    MedData(
                                         id = old.d,
                                         groupId = old.e,
                                         type = migratedType,
@@ -497,7 +645,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
             }
 
             val currentItems = try {
-                com.fedeveloper95.med.services.DataRepository.loadData(context)
+                DataRepository.loadData(context)
             } catch (e: Exception) {
                 emptyList()
             }
@@ -524,7 +672,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
             }
 
             try {
-                com.fedeveloper95.med.services.DataRepository.saveData(context, mergedItems)
+                DataRepository.saveData(context, mergedItems)
                 context.deleteFile("med_data.dat")
             } catch (e: Exception) {
                 e.printStackTrace()

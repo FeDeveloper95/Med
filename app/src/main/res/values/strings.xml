@@ -210,5 +210,17 @@
     <string name="check_updates_action">Check for updates</string>
     <string name="update_error_check">Unable to check for updates</string>
     <string name="nothing_here_yet">Nothing here yet…</string>
+    <string name="settings_testing_header">Testing</string>
+    <string name="settings_test_alarm_title">Test alarm/notification</string>
+    <string name="settings_test_alarm_desc">Triggers the alarm for the nearest medicine</string>
+    <string name="settings_test_telegram_title">Show telegram popup</string>
+    <string name="settings_test_telegram_desc">Displays the community popup</string>
+    <string name="settings_test_crash_title">Crash the app</string>
+    <string name="settings_test_crash_desc">Forces a fatal exception to test crash reporting</string>
+    <string name="settings_danger_zone_header">Danger zone</string>
+    <string name="settings_reset_title">Reset app data</string>
+    <string name="settings_reset_desc">Permanently delete all data and settings</string>
+    <string name="settings_reset_confirmation_desc">Are you sure you want to delete all your medicines, events, and settings? This action cannot be undone.</string>
+    <string name="settings_reset_action">Reset</string>
 
 </resources>

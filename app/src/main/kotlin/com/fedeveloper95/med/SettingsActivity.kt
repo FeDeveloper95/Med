@@ -12,8 +12,14 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,7 +72,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -76,6 +84,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.elements.NotificationsSettingsActivity.SortOrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
@@ -557,11 +567,45 @@ fun SettingsItemCard(
     shape: Shape,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressProgress by animateFloatAsState(
+        targetValue = if (isPressed) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "anim_shape"
+    )
+
+    val animatedShape = remember(shape, pressProgress) {
+        if (shape is RoundedCornerShape) {
+            object : Shape {
+                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                    val targetPx = with(density) { 20.dp.toPx() }
+                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+
+                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
+                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
+                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
+                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
+                }
+            }
+        } else shape
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape),
-        shape = shape,
+            .clip(animatedShape),
+        shape = animatedShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -602,7 +646,11 @@ fun SettingsItemCard(
                 }
             },
             modifier = Modifier
-                .clickable(onClick = onClick)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
+                    onClick = onClick
+                )
                 .padding(vertical = 4.dp),
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent
@@ -622,11 +670,45 @@ fun SettingsSwitchCard(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressProgress by animateFloatAsState(
+        targetValue = if (isPressed) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "anim_shape"
+    )
+
+    val animatedShape = remember(shape, pressProgress) {
+        if (shape is RoundedCornerShape) {
+            object : Shape {
+                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                    val targetPx = with(density) { 20.dp.toPx() }
+                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+
+                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
+                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
+                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
+                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
+                }
+            }
+        } else shape
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape),
-        shape = shape,
+            .clip(animatedShape),
+        shape = animatedShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -688,7 +770,11 @@ fun SettingsSwitchCard(
                 )
             },
             modifier = Modifier
-                .clickable { onCheckedChange(!checked) }
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
+                    onClick = { onCheckedChange(!checked) }
+                )
                 .padding(vertical = 4.dp),
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent

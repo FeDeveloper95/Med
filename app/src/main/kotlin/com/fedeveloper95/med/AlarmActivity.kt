@@ -14,8 +14,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -33,10 +39,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.MedicalServices
 import androidx.compose.material.icons.rounded.Snooze
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,15 +61,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.services.DataRepository
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
@@ -101,14 +113,19 @@ class AlarmActivity : ComponentActivity() {
             registerReceiver(closeReceiver, filter)
         }
 
-        val itemTitle =
-            intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
+        val itemTitle = intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
         val itemId = intent.getLongExtra("ITEM_ID", -1L)
 
         val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
         val currentTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
         val snoozeDuration = prefs.getInt(PREF_SNOOZE_DURATION, 10)
         val useSlider = prefs.getBoolean("pref_alarm_style_slider", true)
+
+        val items = DataRepository.loadData(this)
+        val currentItem = items.find { it.id == itemId }
+
+        val iconName = currentItem?.iconName
+        val colorCodeStr = currentItem?.colorCode
 
         setContent {
             MedTheme(themeOverride = currentTheme) {
@@ -120,6 +137,8 @@ class AlarmActivity : ComponentActivity() {
                         title = itemTitle,
                         snoozeDuration = snoozeDuration,
                         useSlider = useSlider,
+                        iconName = iconName,
+                        colorCode = colorCodeStr,
                         onTake = {
                             val actionIntent = Intent(
                                 this@AlarmActivity,
@@ -159,9 +178,45 @@ fun AlarmScreen(
     title: String,
     snoozeDuration: Int,
     useSlider: Boolean,
+    iconName: String?,
+    colorCode: String?,
     onTake: () -> Unit,
     onSnooze: () -> Unit
 ) {
+    val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
+    val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
+    val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
+
+    val icon = when (iconName) {
+        "MixtureMed" -> icSick
+        "Bed" -> icMind
+        "Mood" -> icMixture
+        else -> if (iconName != null && AVAILABLE_ICONS.containsKey(iconName)) AVAILABLE_ICONS[iconName]!!
+        else Icons.Rounded.MedicalServices
+    }
+
+    val customColor = remember(colorCode) {
+        if (colorCode != null && colorCode != "dynamic") try {
+            Color(android.graphics.Color.parseColor(colorCode))
+        } catch (e: Exception) {
+            null
+        } else null
+    }
+
+    val containerColor = customColor ?: MaterialTheme.colorScheme.tertiaryContainer
+    val onContainerColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onTertiaryContainer
+
+    val infiniteTransition = rememberInfiniteTransition(label = "rotation")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(20000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "rotation"
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -170,17 +225,23 @@ fun AlarmScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Box(
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
+            modifier = Modifier.size(160.dp),
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                imageVector = Icons.Rounded.Alarm,
+                painter = painterResource(id = R.drawable.shape_1),
+                contentDescription = null,
+                tint = containerColor,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .rotate(rotation)
+            )
+
+            Icon(
+                imageVector = icon,
                 contentDescription = null,
                 modifier = Modifier.size(64.dp),
-                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                tint = onContainerColor
             )
         }
 

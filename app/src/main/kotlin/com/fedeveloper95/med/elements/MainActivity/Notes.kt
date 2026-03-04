@@ -24,6 +24,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
+import kotlinx.coroutines.launch
 
 @Composable
 fun NotesBottomSheet(
@@ -40,6 +42,7 @@ fun NotesBottomSheet(
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -70,11 +73,19 @@ fun NotesBottomSheet(
             val cornerPercent by animateIntAsState(
                 targetValue = if (isPressed) 15 else 50,
                 animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                label = "corner"
+                label = ""
             )
 
             Button(
-                onClick = onDismiss,
+                onClick = {
+                    scope.launch {
+                        sheetState.hide()
+                    }.invokeOnCompletion {
+                        if (!sheetState.isVisible) {
+                            onDismiss()
+                        }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
                     .height(50.dp),

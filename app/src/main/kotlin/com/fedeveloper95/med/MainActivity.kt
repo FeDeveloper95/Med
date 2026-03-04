@@ -24,9 +24,11 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -121,7 +123,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
@@ -135,6 +139,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntRect
 import androidx.compose.ui.unit.IntSize
@@ -1368,6 +1373,40 @@ fun MedDataCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressProgress by animateFloatAsState(
+        targetValue = if (isPressed) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "anim_shape"
+    )
+
+    val animatedShape = remember(shape, pressProgress) {
+        if (shape is RoundedCornerShape) {
+            object : Shape {
+                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                    val targetPx = with(density) { 20.dp.toPx() }
+                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+
+                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
+                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
+                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
+                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
+                }
+            }
+        } else shape
+    }
+
     val isMedicine = item.type == ItemType.Medicine
     val isTakenToday = if (isMedicine) item.takenHistory.containsKey(currentViewDate) else false
     val timestamp = if (isMedicine) item.takenHistory[currentViewDate] else item.creationTime
@@ -1406,12 +1445,14 @@ fun MedDataCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape)
+            .clip(animatedShape)
             .combinedClickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
                 onClick = onClick,
                 onLongClick = onLongClick
             ),
-        shape = shape,
+        shape = animatedShape,
         colors = CardDefaults.cardColors(
             containerColor = cardContainerColor,
             contentColor = cardContentColor
