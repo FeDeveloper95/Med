@@ -2,7 +2,6 @@
 
 package com.fedeveloper95.med
 
-import ads_mobile_sdk.j4
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
@@ -15,7 +14,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +31,14 @@ import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.*
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -65,7 +70,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.BufferedReader
-import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -117,26 +121,28 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
     var showCommunitySheet by remember { mutableStateOf(false) }
     var showResetPopup by remember { mutableStateOf(false) }
 
-    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
-        uri?.let {
-            scope.launch(Dispatchers.IO) {
-                exportSettings(context, it)
+    val exportLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+            uri?.let {
+                scope.launch(Dispatchers.IO) {
+                    exportSettings(context, it)
+                }
             }
         }
-    }
 
-    val importLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        uri?.let {
-            scope.launch(Dispatchers.IO) {
-                val success = importSettings(context, it)
-                withContext(Dispatchers.Main) {
-                    if (success) {
-                        showRestartDialog = true
+    val importLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            uri?.let {
+                scope.launch(Dispatchers.IO) {
+                    val success = importSettings(context, it)
+                    withContext(Dispatchers.Main) {
+                        if (success) {
+                            showRestartDialog = true
+                        }
                     }
                 }
             }
         }
-    }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -427,7 +433,8 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
             onDismiss = { showResetPopup = false },
             onConfirm = {
                 showResetPopup = false
-                val activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+                val activityManager =
+                    context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
                 activityManager.clearApplicationUserData()
             }
         )
@@ -497,12 +504,20 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 it.write(root.toString().toByteArray())
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.export_success), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.export_success),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.export_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.export_error),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -552,7 +567,8 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
 
             if (root.has("med_settings")) {
                 try {
-                    val settings = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+                    val settings =
+                        context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
                     val editor = settings.edit().clear()
                     val json = root.getJSONObject("med_settings")
                     val keys = json.keys()
@@ -610,7 +626,7 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     oldList?.forEach { old ->
                         if (old is j4.p1) {
                             try {
-                                val migratedType = when(old.f.name) {
+                                val migratedType = when (old.f.name) {
                                     "Medicine", "b" -> ItemType.Medicine
                                     else -> ItemType.Event
                                 }
@@ -666,7 +682,8 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                                 mergedHistory[date] = time
                             }
                         }
-                        mergedItems[existingItemIndex] = existingItem.copy(takenHistory = mergedHistory)
+                        mergedItems[existingItemIndex] =
+                            existingItem.copy(takenHistory = mergedHistory)
                     }
                 }
             }
@@ -682,7 +699,11 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
         } catch (e: Exception) {
             e.printStackTrace()
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, context.getString(R.string.import_error), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.import_error),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             false
         }

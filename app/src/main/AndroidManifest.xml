@@ -24,7 +24,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Med"
-        tools:targetApi="31">
+        tools:targetApi="36">
 
         <activity
             android:name=".WelcomeActivity"
@@ -79,6 +79,11 @@
             android:showWhenLocked="true"
             android:theme="@style/Theme.Med"
             android:turnScreenOn="true" />
+
+        <activity
+            android:name=".services.LockActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Med" />
 
         <receiver
             android:name=".services.NotificationReceiver"

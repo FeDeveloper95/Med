@@ -14,7 +14,6 @@ import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.HashMap
 
 @Keep
 data class MedData(
@@ -169,7 +168,7 @@ object DataRepository {
 
             val migratedList = oldList.mapNotNull { obj ->
                 if (obj is j4.p1) {
-                    val migratedType = when(obj.f.name) {
+                    val migratedType = when (obj.f.name) {
                         "Medicine", "b" -> ItemType.Medicine
                         else -> ItemType.Event
                     }

@@ -39,6 +39,7 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Sort
@@ -90,6 +91,7 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.elements.NotificationsSettingsActivity.SortOrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
 import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
+import com.fedeveloper95.med.services.AppLockManager
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 
@@ -97,6 +99,7 @@ class SettingsActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppLockManager.init(application)
         enableEdgeToEdge()
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)
@@ -149,6 +152,11 @@ fun SettingsScreen(
                 "pref_experimental_bottom_sheet",
                 true
             )
+        )
+    }
+    var appLockEnabled by remember {
+        mutableStateOf(
+            prefs.getBoolean("pref_app_lock", false)
         )
     }
 
@@ -225,7 +233,7 @@ fun SettingsScreen(
                 .padding(horizontal = 16.dp)
         ) {
             item {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(20.dp))
             }
 
             item {
@@ -358,6 +366,34 @@ fun SettingsScreen(
                     onCheckedChange = {
                         experimentalBottomSheet = it
                         prefs.edit().putBoolean("pref_experimental_bottom_sheet", it).apply()
+                    }
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
+
+            item {
+                val activity = LocalContext.current as ComponentActivity
+                SettingsSwitchCard(
+                    icon = Icons.Rounded.Lock,
+                    title = stringResource(R.string.settings_app_lock_title),
+                    subtitle = stringResource(R.string.settings_app_lock_desc),
+                    containerColor = Color(0xFFFCBD00),
+                    iconColor = Color(0xFF6D3A01),
+                    shape = RoundedCornerShape(4.dp),
+                    checked = appLockEnabled,
+                    onCheckedChange = { isChecked ->
+                        if (isChecked) {
+                            AppLockManager.authenticate(
+                                activity,
+                                activity.getString(R.string.unlock_to_enable)
+                            ) {
+                                appLockEnabled = true
+                                prefs.edit().putBoolean("pref_app_lock", true).apply()
+                            }
+                        } else {
+                            appLockEnabled = false
+                            prefs.edit().putBoolean("pref_app_lock", false).apply()
+                        }
                     }
                 )
                 Spacer(modifier = Modifier.height(2.dp))
@@ -578,9 +614,14 @@ fun SettingsItemCard(
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
 
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
@@ -589,7 +630,12 @@ fun SettingsItemCard(
 
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
                             topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                             topRight = androidx.compose.ui.geometry.CornerRadius(te),
                             bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
@@ -681,9 +727,14 @@ fun SettingsSwitchCard(
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
 
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
@@ -692,7 +743,12 @@ fun SettingsSwitchCard(
 
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
                             topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                             topRight = androidx.compose.ui.geometry.CornerRadius(te),
                             bottomRight = androidx.compose.ui.geometry.CornerRadius(be),

@@ -108,6 +108,7 @@ fun MedicineBottomSheet(
 
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
+    var nameError by remember { mutableStateOf(false) }
 
     var frequencyUnit by remember {
         mutableStateOf(
@@ -301,7 +302,7 @@ fun MedicineBottomSheet(
                 item {
                     OutlinedTextField(
                         value = text,
-                        onValueChange = { text = it },
+                        onValueChange = { text = it; nameError = false },
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
@@ -311,7 +312,8 @@ fun MedicineBottomSheet(
                                 fontFamily = GoogleSansFlex
                             )
                         },
-                        singleLine = true
+                        singleLine = true,
+                        isError = nameError
                     )
                 }
 
@@ -629,18 +631,24 @@ fun MedicineBottomSheet(
                         Button(
                             onClick = {
                                 if (text.isNotBlank()) {
-                                    val days =
-                                        if (frequencyUnit == "Week") selectedDays.toList() else null
-                                    val gap = if (frequencyUnit == "BiWeek") 14 else null
-                                    onConfirm(
-                                        text,
-                                        selectedIconName,
-                                        selectedColor,
-                                        selectedTimes,
-                                        days,
-                                        notes.takeIf { it.isNotBlank() },
-                                        gap
-                                    )
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            val days =
+                                                if (frequencyUnit == "Week") selectedDays.toList() else null
+                                            val gap = if (frequencyUnit == "BiWeek") 14 else null
+                                            onConfirm(
+                                                text,
+                                                selectedIconName,
+                                                selectedColor,
+                                                selectedTimes,
+                                                days,
+                                                notes.takeIf { it.isNotBlank() },
+                                                gap
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    nameError = true
                                 }
                             },
                             modifier = Modifier

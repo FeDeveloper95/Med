@@ -268,18 +268,44 @@ fun NotificationsSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
                 val animatedShape = remember(baseShape, pressProgress) {
                     if (baseShape is RoundedCornerShape) {
                         object : Shape {
-                            override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                            override fun createOutline(
+                                size: Size,
+                                layoutDirection: LayoutDirection,
+                                density: Density
+                            ): Outline {
                                 val targetPx = with(density) { 20.dp.toPx() }
-                                fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                                fun lerp(start: Float, stop: Float, fraction: Float) =
+                                    (1 - fraction) * start + fraction * stop
 
-                                val ts = lerp(baseShape.topStart.toPx(size, density), targetPx, pressProgress)
-                                val te = lerp(baseShape.topEnd.toPx(size, density), targetPx, pressProgress)
-                                val bs = lerp(baseShape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                                val be = lerp(baseShape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+                                val ts = lerp(
+                                    baseShape.topStart.toPx(size, density),
+                                    targetPx,
+                                    pressProgress
+                                )
+                                val te = lerp(
+                                    baseShape.topEnd.toPx(size, density),
+                                    targetPx,
+                                    pressProgress
+                                )
+                                val bs = lerp(
+                                    baseShape.bottomStart.toPx(size, density),
+                                    targetPx,
+                                    pressProgress
+                                )
+                                val be = lerp(
+                                    baseShape.bottomEnd.toPx(size, density),
+                                    targetPx,
+                                    pressProgress
+                                )
 
                                 return Outline.Rounded(
                                     androidx.compose.ui.geometry.RoundRect(
-                                        rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                                        rect = androidx.compose.ui.geometry.Rect(
+                                            0f,
+                                            0f,
+                                            size.width,
+                                            size.height
+                                        ),
                                         topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                                         topRight = androidx.compose.ui.geometry.CornerRadius(te),
                                         bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
@@ -455,9 +481,14 @@ fun SettingsSegmentedButtonCard(
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
 
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
@@ -466,7 +497,12 @@ fun SettingsSegmentedButtonCard(
 
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
                             topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                             topRight = androidx.compose.ui.geometry.CornerRadius(te),
                             bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
@@ -533,7 +569,7 @@ fun SettingsSegmentedButtonCard(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             SingleSelectConnectedButtonGroupWithFlowLayout(
                 options = options,
@@ -613,9 +649,14 @@ fun SettingsItemCard(
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
 
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
@@ -624,7 +665,12 @@ fun SettingsItemCard(
 
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
                             topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                             topRight = androidx.compose.ui.geometry.CornerRadius(te),
                             bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
@@ -720,9 +766,14 @@ fun SettingsSwitchCard(
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
 
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
@@ -731,7 +782,12 @@ fun SettingsSwitchCard(
 
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
                             topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                             topRight = androidx.compose.ui.geometry.CornerRadius(te),
                             bottomRight = androidx.compose.ui.geometry.CornerRadius(be),

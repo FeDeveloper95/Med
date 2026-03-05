@@ -113,7 +113,8 @@ class AlarmActivity : ComponentActivity() {
             registerReceiver(closeReceiver, filter)
         }
 
-        val itemTitle = intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
+        val itemTitle =
+            intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
         val itemId = intent.getLongExtra("ITEM_ID", -1L)
 
         val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
@@ -204,7 +205,8 @@ fun AlarmScreen(
     }
 
     val containerColor = customColor ?: MaterialTheme.colorScheme.tertiaryContainer
-    val onContainerColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onTertiaryContainer
+    val onContainerColor =
+        if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onTertiaryContainer
 
     val infiniteTransition = rememberInfiniteTransition(label = "rotation")
     val rotation by infiniteTransition.animateFloat(

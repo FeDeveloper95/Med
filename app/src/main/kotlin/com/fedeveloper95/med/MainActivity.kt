@@ -161,6 +161,7 @@ import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
 import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.MedicinePopup
 import com.fedeveloper95.med.elements.MainActivity.NotesBottomSheet
+import com.fedeveloper95.med.services.AppLockManager
 import com.fedeveloper95.med.services.DataRepository
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.services.NotificationReceiver
@@ -252,8 +253,14 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 ItemType.Medicine -> {
                     val isAfterStart = !selectedDate.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
-                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(selectedDate.dayOfWeek)
-                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, selectedDate) % item.intervalGap == 0L
+                    val isCorrectDay =
+                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
+                            selectedDate.dayOfWeek
+                        )
+                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(
+                        item.creationDate,
+                        selectedDate
+                    ) % item.intervalGap == 0L
                     isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                 }
             }
@@ -377,14 +384,18 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             _items[index] = updatedItem
         }
 
-        val itemsOnDate = _items.filter { it ->
+        val itemsOnDate = _items.filter {
             when (it.type) {
                 ItemType.Event -> it.creationDate == deleteDate
                 ItemType.Medicine -> {
                     val isAfterStart = !deleteDate.isBefore(it.creationDate)
                     val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
-                    val isCorrectDay = it.recurrenceDays.isNullOrEmpty() || it.recurrenceDays.contains(deleteDate.dayOfWeek)
-                    val isCorrectGap = it.intervalGap == null || ChronoUnit.DAYS.between(it.creationDate, deleteDate) % it.intervalGap == 0L
+                    val isCorrectDay =
+                        it.recurrenceDays.isNullOrEmpty() || it.recurrenceDays.contains(deleteDate.dayOfWeek)
+                    val isCorrectGap = it.intervalGap == null || ChronoUnit.DAYS.between(
+                        it.creationDate,
+                        deleteDate
+                    ) % it.intervalGap == 0L
                     isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                 }
             }
@@ -393,7 +404,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         var changed = true
         var currentList = itemsOnDate
         val dividersToRemove = mutableSetOf<Long>()
-        while(changed) {
+        while (changed) {
             changed = false
             val toRemove = currentList.filterIndexed { i, current ->
                 if (current.iconName == "DIVIDER") {
@@ -459,6 +470,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+        AppLockManager.init(application)
         enableEdgeToEdge()
 
         setContent {
@@ -821,9 +833,11 @@ fun MedApp(
                 )
             }
         ) { padding ->
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(top = padding.calculateTopPadding())) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = padding.calculateTopPadding())
+            ) {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -955,11 +969,16 @@ fun MedApp(
                             }
                         }.let { list ->
                             if (sortOrder == "time") {
-                                list.filter { it.iconName != "DIVIDER" }.sortedWith(compareBy { it.creationTime })
+                                list.filter { it.iconName != "DIVIDER" }
+                                    .sortedWith(compareBy { it.creationTime })
                             } else {
-                                var currentList = list.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+                                var currentList = list.sortedWith(
+                                    compareBy(
+                                        { it.displayOrder },
+                                        { it.creationTime })
+                                )
                                 var changed = true
-                                while(changed) {
+                                while (changed) {
                                     changed = false
                                     val toRemove = currentList.filterIndexed { i, current ->
                                         if (current.iconName == "DIVIDER") {
@@ -1035,7 +1054,9 @@ fun MedApp(
                                             count = pageItems.size,
                                             key = { pageItems[it].id },
                                             span = { idx ->
-                                                if (pageItems[idx].iconName == "DIVIDER") GridItemSpan(maxLineSpan) else GridItemSpan(1)
+                                                if (pageItems[idx].iconName == "DIVIDER") GridItemSpan(
+                                                    maxLineSpan
+                                                ) else GridItemSpan(1)
                                             }
                                         ) { idx ->
                                             val item = pageItems[idx]
@@ -1056,7 +1077,12 @@ fun MedApp(
                                                         Row(
                                                             modifier = Modifier
                                                                 .fillMaxWidth()
-                                                                .padding(start = 8.dp, top = if (idx == 0) 0.dp else 16.dp, bottom = 16.dp, end = 8.dp),
+                                                                .padding(
+                                                                    start = 8.dp,
+                                                                    top = if (idx == 0) 0.dp else 16.dp,
+                                                                    bottom = 16.dp,
+                                                                    end = 8.dp
+                                                                ),
                                                             verticalAlignment = Alignment.CenterVertically
                                                         ) {
                                                             Text(
@@ -1098,7 +1124,9 @@ fun MedApp(
                                                                     )
                                                                 dismissJob.cancel()
                                                                 if (result == SnackbarResult.ActionPerformed) {
-                                                                    viewModel.restoreItem(itemToRestore)
+                                                                    viewModel.restoreItem(
+                                                                        itemToRestore
+                                                                    )
                                                                     resetAnimation()
                                                                 }
                                                             }
@@ -1106,7 +1134,9 @@ fun MedApp(
                                                         onSwipeStart = {
                                                             activeSwipingItemId = item.id
                                                         },
-                                                        onSwipeCancel = { activeSwipingItemId = null }
+                                                        onSwipeCancel = {
+                                                            activeSwipingItemId = null
+                                                        }
                                                     ) {
                                                         MedDataCard(
                                                             item = item,
@@ -1148,8 +1178,12 @@ fun MedApp(
                                             key = { _, item -> item.id }) { index, item ->
 
                                             val isDivider = item.iconName == "DIVIDER"
-                                            val isFirstInGroup = index == 0 || pageItems.getOrNull(index - 1)?.iconName == "DIVIDER"
-                                            val isLastInGroup = index == pageItems.lastIndex || pageItems.getOrNull(index + 1)?.iconName == "DIVIDER"
+                                            val isFirstInGroup =
+                                                index == 0 || pageItems.getOrNull(index - 1)?.iconName == "DIVIDER"
+                                            val isLastInGroup =
+                                                index == pageItems.lastIndex || pageItems.getOrNull(
+                                                    index + 1
+                                                )?.iconName == "DIVIDER"
 
                                             val topRadius = if (isFirstInGroup) 20.dp else 4.dp
                                             val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
@@ -1175,7 +1209,12 @@ fun MedApp(
                                                         Row(
                                                             modifier = Modifier
                                                                 .fillMaxWidth()
-                                                                .padding(start = 16.dp, top = if (index == 0) 0.dp else 16.dp, bottom = 16.dp, end = 16.dp),
+                                                                .padding(
+                                                                    start = 16.dp,
+                                                                    top = if (index == 0) 0.dp else 16.dp,
+                                                                    bottom = 16.dp,
+                                                                    end = 16.dp
+                                                                ),
                                                             verticalAlignment = Alignment.CenterVertically
                                                         ) {
                                                             Text(
@@ -1218,7 +1257,9 @@ fun MedApp(
                                                                     )
                                                                 dismissJob.cancel()
                                                                 if (result == SnackbarResult.ActionPerformed) {
-                                                                    viewModel.restoreItem(itemToRestore)
+                                                                    viewModel.restoreItem(
+                                                                        itemToRestore
+                                                                    )
                                                                     resetAnimation()
                                                                 }
                                                             }
@@ -1226,7 +1267,9 @@ fun MedApp(
                                                         onSwipeStart = {
                                                             activeSwipingItemId = item.id
                                                         },
-                                                        onSwipeCancel = { activeSwipingItemId = null }
+                                                        onSwipeCancel = {
+                                                            activeSwipingItemId = null
+                                                        }
                                                     ) {
                                                         MedDataCard(
                                                             item = item,
@@ -1534,9 +1577,14 @@ fun MedDataCard(
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
 
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
@@ -1545,7 +1593,12 @@ fun MedDataCard(
 
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height),
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
                             topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
                             topRight = androidx.compose.ui.geometry.CornerRadius(te),
                             bottomRight = androidx.compose.ui.geometry.CornerRadius(be),

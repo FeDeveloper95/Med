@@ -70,4 +70,5 @@ dependencies {
     implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.graphics.shapes)
     implementation("com.github.jeziellago:compose-markdown:0.5.4")
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
 }

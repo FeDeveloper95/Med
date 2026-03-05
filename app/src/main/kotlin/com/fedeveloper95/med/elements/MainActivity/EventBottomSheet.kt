@@ -91,6 +91,8 @@ fun EventBottomSheet(
 
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
+    var nameError by remember { mutableStateOf(false) }
+
     var selectedTimes by remember {
         mutableStateOf(
             if (initialItem != null) listOf(initialItem.creationTime) else listOf(
@@ -241,7 +243,7 @@ fun EventBottomSheet(
                 item {
                     OutlinedTextField(
                         value = text,
-                        onValueChange = { text = it },
+                        onValueChange = { text = it; nameError = false },
                         modifier = Modifier
                             .fillMaxWidth()
                             .focusRequester(focusRequester),
@@ -251,7 +253,8 @@ fun EventBottomSheet(
                                 fontFamily = GoogleSansFlex
                             )
                         },
-                        singleLine = true
+                        singleLine = true,
+                        isError = nameError
                     )
                 }
 
@@ -404,15 +407,21 @@ fun EventBottomSheet(
                         Button(
                             onClick = {
                                 if (text.isNotBlank()) {
-                                    onConfirm(
-                                        text,
-                                        selectedIconName,
-                                        selectedColor,
-                                        selectedTimes,
-                                        null,
-                                        notes.takeIf { it.isNotBlank() },
-                                        null
-                                    )
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            onConfirm(
+                                                text,
+                                                selectedIconName,
+                                                selectedColor,
+                                                selectedTimes,
+                                                null,
+                                                notes.takeIf { it.isNotBlank() },
+                                                null
+                                            )
+                                        }
+                                    }
+                                } else {
+                                    nameError = true
                                 }
                             },
                             modifier = Modifier
