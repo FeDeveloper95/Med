@@ -238,7 +238,15 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
 
     val notificationLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
-        onResult = { isGranted -> hasNotificationPermission = isGranted }
+        onResult = { isGranted ->
+            hasNotificationPermission = isGranted
+            if (isGranted && Build.VERSION.SDK_INT >= 34) {
+                val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                    data = Uri.parse("package:${context.packageName}")
+                }
+                context.startActivity(intent)
+            }
+        }
     )
 
     val installParamsLauncher = rememberLauncherForActivityResult(

@@ -128,10 +128,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -1566,6 +1568,7 @@ fun MedDataCard(
     onClick: () -> Unit,
     onLongClick: () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
@@ -1778,7 +1781,10 @@ fun MedDataCard(
                 {
                     RadioButton(
                         selected = isTakenToday,
-                        onClick = { onToggle() },
+                        onClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            onToggle()
+                        },
                         enabled = toggleEnabled
                     )
                 }
@@ -1798,6 +1804,7 @@ fun SwipeableSquishItem(
     onSwipeCancel: () -> Unit,
     content: @Composable () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     val offsetX = remember { Animatable(0f) }
     var itemWidth by remember { mutableStateOf(0f) }
     val scope = rememberCoroutineScope()
@@ -1823,6 +1830,7 @@ fun SwipeableSquishItem(
                 onDragStopped = {
                     val threshold = itemWidth * 0.5f
                     if (offsetX.value > threshold) {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         scope.launch {
                             offsetX.animateTo(itemWidth, spring(stiffness = Spring.StiffnessMedium))
                             val resetAnim = { scope.launch { offsetX.snapTo(0f) } }

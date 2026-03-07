@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -60,6 +61,7 @@ fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected:
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        modifier = Modifier.widthIn(max = 400.dp),
         title = {
             Text(
                 text = stringResource(R.string.choose_icon),
@@ -114,6 +116,12 @@ fun IconPickerDialog(currentIcon: String, onDismiss: () -> Unit, onIconSelected:
                                     tint = iconTint,
                                     modifier = Modifier.size(28.dp)
                                 )
+                            }
+                        }
+                        val remaining = 4 - rowItems.size
+                        if (remaining > 0) {
+                            repeat(remaining) {
+                                Spacer(modifier = Modifier.weight(1f).aspectRatio(1f))
                             }
                         }
                     }
