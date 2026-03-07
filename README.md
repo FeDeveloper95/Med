@@ -33,7 +33,9 @@ No fork of this project will recieve support, if you use a fork, ask the forker 
 <details>
   <summary><b>Click to expand screenshots</b></summary>
   <br>
-<img width="260" alt="Screenshot_20260203-160232" src="https://github.com/user-attachments/assets/d13fdf16-e53b-438a-8ebb-9c08d2eaeeaa" />
-<img width="260" alt="Screenshot_20260203-160254" src="https://github.com/user-attachments/assets/254e3a3b-7628-4028-997f-00d617023adf" />
+<img width="240" alt="Main" src="https://github.com/user-attachments/assets/516f0784-fcdd-495a-a60c-001b88a46a07" />
+<img width="240" alt="New Medicine" src="https://github.com/user-attachments/assets/b83b065f-0595-45b2-8b1b-8b7b6538ec45" />
+<img width="240" alt="Settings" src="https://github.com/user-attachments/assets/d31ea75b-a534-4915-b5df-d556daaa7a2e" />
+<img width="240" alt="Edit Mode" src="https://github.com/user-attachments/assets/613c1df2-f715-4b55-94f2-5af84e0d38a0" />
 
 </details>
