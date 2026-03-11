@@ -65,7 +65,6 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation("androidx.compose.material3:material3-window-size-class:1.5.0-alpha15")
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.ads.mobile.sdk)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.graphics.shapes)

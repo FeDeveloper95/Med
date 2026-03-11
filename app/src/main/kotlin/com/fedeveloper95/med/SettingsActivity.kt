@@ -12,9 +12,8 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -607,7 +606,7 @@ fun SettingsItemCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "anim_shape"
     )
 
@@ -720,7 +719,7 @@ fun SettingsSwitchCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "anim_shape"
     )
 

@@ -1,16 +1,14 @@
 [versions]
 agp = "8.13.2"
-kotlin = "2.1.0"
-coreKtx = "1.15.0"
-lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.9.3"
+kotlin = "2.3.10"
+coreKtx = "1.17.0"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.12.4"
 composeBom = "2026.02.01"
 material3 = "1.5.0-alpha15"
-coreSplashscreen = "1.0.1"
+coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
 palette = "1.0.0"
-adsMobileSdk = "0.24.0-beta01"
-glanceAppwidget = "1.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,8 +25,6 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material3" }
 androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphicsShapes" }
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
-ads-mobile-sdk = { group = "com.google.android.libraries.ads.mobile.sdk", name = "ads-mobile-sdk", version.ref = "adsMobileSdk" }
-androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glanceAppwidget" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

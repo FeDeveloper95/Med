@@ -15,9 +15,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
@@ -496,7 +495,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                             modifier = Modifier
                                 .zIndex(if (isTopDragging) 1f else 0f)
                                 .graphicsLayer { translationY = animatedTopOffset }
-                                .animateItem(placementSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                                .animateItem(placementSpec = tween(durationMillis = 200))
                                 .then(if (editItem is EditItem.Card) topDragMod else Modifier)
                         ) {
                             when (editItem) {

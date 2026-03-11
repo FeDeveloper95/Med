@@ -27,6 +27,7 @@ import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -652,7 +653,7 @@ fun ExpressiveIconButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 20 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "corner"
     )
 
@@ -682,7 +683,7 @@ fun ExpressiveButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "corner"
     )
 
@@ -710,7 +711,7 @@ fun ExpressiveTextButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "corner"
     )
 
@@ -1573,7 +1574,7 @@ fun MedDataCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "anim_shape"
     )
 
@@ -1966,7 +1967,7 @@ fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
     )
     val cornerRadius by animateIntAsState(
         targetValue = if (isPressed) 12 else 32,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "corner"
     )
 

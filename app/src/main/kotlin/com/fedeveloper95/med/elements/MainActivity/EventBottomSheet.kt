@@ -7,9 +7,8 @@
 package com.fedeveloper95.med.elements.MainActivity
 
 import android.graphics.Color.parseColor
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
@@ -143,12 +142,12 @@ fun EventBottomSheet(
 
     val cancelCorner by animateIntAsState(
         targetValue = if (isCancelPressed) 15 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "cancelCorner"
     )
     val saveCorner by animateIntAsState(
         targetValue = if (isSavePressed) 15 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = tween(durationMillis = 200),
         label = "saveCorner"
     )
 
@@ -319,7 +318,7 @@ fun EventBottomSheet(
 
                                 val cornerPercent by animateIntAsState(
                                     targetValue = targetCorner,
-                                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                    animationSpec = tween(durationMillis = 200),
                                     label = "colorCorner"
                                 )
 

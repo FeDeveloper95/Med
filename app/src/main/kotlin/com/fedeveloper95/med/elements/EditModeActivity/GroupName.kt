@@ -1,16 +1,23 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalTextApi::class)
+@file:OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalTextApi::class,
+    ExperimentalLayoutApi::class
+)
 
 package com.fedeveloper95.med.elements.EditModeActivity
 
-import androidx.compose.animation.core.Spring
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetDefaults
@@ -33,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +70,13 @@ fun GroupNameBottomSheet(
         dragHandle = { BottomSheetDefaults.DragHandle() },
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
+        val isImeVisible = WindowInsets.isImeVisible
+        val focusManager = LocalFocusManager.current
+
+        BackHandler(enabled = isImeVisible) {
+            focusManager.clearFocus()
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -89,7 +104,7 @@ fun GroupNameBottomSheet(
             val isPressed by interactionSource.collectIsPressedAsState()
             val cornerPercent by animateIntAsState(
                 targetValue = if (isPressed) 15 else 50,
-                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                animationSpec = tween(durationMillis = 200),
                 label = ""
             )
 
