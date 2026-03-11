@@ -32,8 +32,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -74,6 +74,7 @@ import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -90,11 +91,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.drawscope.rotate
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
@@ -106,6 +107,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -115,9 +118,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 
 data class OnboardingPageInfo(
     val content: @Composable (onUpdateScrollState: (Boolean) -> Unit) -> Unit
@@ -163,7 +163,7 @@ class WelcomeActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalTextApi::class)
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun WelcomePagerScreen(onFinished: () -> Unit) {
     val context = LocalContext.current
@@ -636,9 +636,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             }
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    containerColor = Color.Transparent,
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    isOutlined = true
                 )
             }
 
@@ -701,47 +702,19 @@ fun RotatingShapeContainer(modifier: Modifier = Modifier) {
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            rotate(rotation) {
-                val cx = size.width / 2
-                val cy = size.height / 2
-                val radius = size.minDimension / 2f
-                val outerRadius = radius * 0.95f
-                val innerRadius = radius * 0.75f
-                val numPoints = 12
-
-                val steps = 360
-                val angleStep = (2 * PI / steps).toFloat()
-
-                val path = Path()
-                for (i in 0 until steps) {
-                    val theta = i * angleStep
-                    val r = (outerRadius + innerRadius) / 2 + (outerRadius - innerRadius) / 2 * cos(
-                        numPoints * theta
-                    ).toFloat()
-
-                    val x = cx + r * cos(theta).toFloat()
-                    val y = cy + r * sin(theta).toFloat()
-
-                    if (i == 0) {
-                        path.moveTo(x, y)
-                    } else {
-                        path.lineTo(x, y)
-                    }
-                }
-                path.close()
-
-                drawPath(
-                    path = path,
-                    color = primaryColor
-                )
-            }
-        }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_ten_sided_cookie),
+            contentDescription = null,
+            tint = primaryColor,
+            modifier = Modifier
+                .fillMaxSize()
+                .rotate(rotation)
+        )
 
         Icon(
             painter = painterResource(R.drawable.ic_launcher_monochrome),
             contentDescription = null,
-            modifier = Modifier.size(190.dp),
+            modifier = Modifier.size(250.dp),
             tint = backgroundColor
         )
     }
@@ -749,7 +722,7 @@ fun RotatingShapeContainer(modifier: Modifier = Modifier) {
 
 @Composable
 fun PermissionCard(
-    icon: ImageVector,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     iconColor: Color,
     iconTint: Color,
     title: String,
@@ -758,9 +731,55 @@ fun PermissionCard(
     control: @Composable () -> Unit,
     onClick: () -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressProgress by animateFloatAsState(
+        targetValue = if (isPressed) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "anim_shape"
+    )
+
+    val animatedShape = remember(shape, pressProgress) {
+        if (shape is RoundedCornerShape) {
+            object : Shape {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
+                    val targetPx = with(density) { 20.dp.toPx() }
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
+
+                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
+                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
+                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
+                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
+                }
+            }
+        } else shape
+    }
+
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = shape,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(animatedShape),
+        shape = animatedShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -800,7 +819,11 @@ fun PermissionCard(
             },
             trailingContent = control,
             modifier = Modifier
-                .clickable(onClick = onClick)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
+                    onClick = onClick
+                )
                 .padding(vertical = 4.dp),
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent
@@ -811,7 +834,7 @@ fun PermissionCard(
 
 @Composable
 fun FeatureCard(
-    icon: ImageVector,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     iconColor: Color,
     iconTint: Color,
     title: String,
@@ -880,7 +903,8 @@ private fun WelcomeExpressiveButton(
     onClick: () -> Unit,
     containerColor: Color,
     contentColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isOutlined: Boolean = false
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -891,28 +915,55 @@ private fun WelcomeExpressiveButton(
         label = "btnMorph"
     )
 
-    Button(
-        onClick = onClick,
-        modifier = modifier,
-        shape = RoundedCornerShape(cornerPercent),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        interactionSource = interactionSource,
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+    if (isOutlined) {
+        OutlinedButton(
+            onClick = onClick,
+            modifier = modifier,
+            shape = RoundedCornerShape(cornerPercent),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = contentColor
+            ),
+            border = BorderStroke(1.dp, contentColor.copy(alpha = 0.5f)),
+            interactionSource = interactionSource,
+            contentPadding = PaddingValues(0.dp)
         ) {
-            Text(
-                text = text,
-                fontFamily = GoogleSansFlex,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 1
-            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = text,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1
+                )
+            }
+        }
+    } else {
+        Button(
+            onClick = onClick,
+            modifier = modifier,
+            shape = RoundedCornerShape(cornerPercent),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = containerColor,
+                contentColor = contentColor
+            ),
+            interactionSource = interactionSource,
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = text,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
