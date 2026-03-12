@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -262,7 +263,8 @@ fun AlarmScreen(
         if (useSlider) {
             AlarmSlider(
                 onTake = onTake,
-                onSnooze = onSnooze
+                onSnooze = onSnooze,
+                modifier = Modifier.widthIn(max = 400.dp)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -275,7 +277,9 @@ fun AlarmScreen(
             )
         } else {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .widthIn(max = 400.dp)
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(

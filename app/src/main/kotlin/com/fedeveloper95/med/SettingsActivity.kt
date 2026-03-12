@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -60,9 +61,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -95,15 +93,11 @@ import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 
 class SettingsActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         AppLockManager.init(application)
         enableEdgeToEdge()
         setContent {
-            val windowSizeClass = calculateWindowSizeClass(this)
-            val isExpandedScreen = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
-
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
@@ -117,8 +111,7 @@ class SettingsActivity : ComponentActivity() {
                     SettingsScreen(
                         onBack = { finish() },
                         currentTheme = currentThemeOverride,
-                        onThemeChanged = { newTheme -> currentThemeOverride = newTheme },
-                        isExpandedScreen = isExpandedScreen
+                        onThemeChanged = { newTheme -> currentThemeOverride = newTheme }
                     )
                 }
             }
@@ -126,14 +119,13 @@ class SettingsActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("LocalContextGetResourceValueCall")
+@SuppressLint("LocalContextGetResourceValueCall", "ContextCastToActivity")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
     currentTheme: Int,
-    onThemeChanged: (Int) -> Unit,
-    isExpandedScreen: Boolean
+    onThemeChanged: (Int) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -188,241 +180,60 @@ fun SettingsScreen(
         )
     )
 
-    Scaffold(
-        topBar = {
-            MaterialTheme(typography = appBarTypography) {
-                LargeTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.settings_title),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    navigationIcon = {
-                        Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                            ExpressiveIconButton(
-                                onClick = onBack,
-                                icon = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.discard),
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurface
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Scaffold(
+            topBar = {
+                MaterialTheme(typography = appBarTypography) {
+                    LargeTopAppBar(
+                        title = {
+                            Text(
+                                text = stringResource(R.string.settings_title),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                        }
-                    },
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        scrolledContainerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground
-                    )
-                )
-            }
-        },
-        containerColor = Color.Transparent,
-        modifier = Modifier
-            .fillMaxSize()
-            .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) { padding ->
-        LazyColumn(
-            contentPadding = padding,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-            item {
-                Text(
-                    text = stringResource(R.string.settings_header_customization),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Palette,
-                    title = stringResource(R.string.settings_theme_title),
-                    subtitle = when (currentTheme) {
-                        THEME_LIGHT -> stringResource(R.string.settings_theme_light)
-                        THEME_DARK -> stringResource(R.string.settings_theme_dark)
-                        else -> stringResource(R.string.settings_theme_system)
-                    },
-                    containerColor = Color(0xFFfcbd00),
-                    iconColor = Color(0xFF6d3a01),
-                    shape = RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    onClick = { showThemeDialog = true }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Event,
-                    title = stringResource(R.string.settings_week_start_title),
-                    subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(
-                        R.string.monday
-                    ),
-                    containerColor = Color(0xFFffb683),
-                    iconColor = Color(0xFF753403),
-                    shape = RoundedCornerShape(4.dp),
-                    onClick = { showWeekStartDialog = true }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Sort,
-                    title = stringResource(R.string.settings_sort_order_title),
-                    subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(
-                        R.string.settings_sort_order_custom
-                    ),
-                    containerColor = Color(0xFF40C4FF),
-                    iconColor = Color(0xFF003B5C),
-                    shape = RoundedCornerShape(4.dp),
-                    onClick = { showSortDialog = true }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
-                    title = stringResource(R.string.settings_presets_title),
-                    subtitle = stringResource(R.string.settings_presets_desc),
-                    containerColor = Color(0xFF80da88),
-                    iconColor = Color(0xFF00522c),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    ),
-                    onClick = {
-                        val intent = Intent(context, QuickActionsSettingsActivity::class.java)
-                        context.startActivity(intent)
-                    }
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-            }
-
-            item {
-                Text(
-                    text = stringResource(R.string.settings_header_preferences),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.NotificationsActive,
-                    title = stringResource(R.string.settings_notifications_title),
-                    subtitle = stringResource(R.string.settings_notifications_desc),
-                    containerColor = Color(0xFFffb4ab),
-                    iconColor = Color(0xFF690005),
-                    shape = RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    onClick = {
-                        val intent = Intent(context, NotificationsSettingsActivity::class.java)
-                        context.startActivity(intent)
-                    }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            item {
-                SettingsSwitchCard(
-                    icon = Icons.Rounded.ViewStream,
-                    title = stringResource(R.string.settings_bottom_sheet_title),
-                    subtitle = stringResource(R.string.settings_bottom_sheet_desc),
-                    containerColor = Color(0xFFA1C9FF),
-                    iconColor = Color(0xFF04409F),
-                    shape = RoundedCornerShape(4.dp),
-                    checked = experimentalBottomSheet,
-                    onCheckedChange = {
-                        experimentalBottomSheet = it
-                        prefs.edit().putBoolean("pref_experimental_bottom_sheet", it).apply()
-                    }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            item {
-                val activity = LocalContext.current as ComponentActivity
-                SettingsSwitchCard(
-                    icon = Icons.Rounded.Lock,
-                    title = stringResource(R.string.settings_app_lock_title),
-                    subtitle = stringResource(R.string.settings_app_lock_desc),
-                    containerColor = Color(0xFFFCBD00),
-                    iconColor = Color(0xFF6D3A01),
-                    shape = RoundedCornerShape(4.dp),
-                    checked = appLockEnabled,
-                    onCheckedChange = { isChecked ->
-                        if (isChecked) {
-                            AppLockManager.authenticate(
-                                activity,
-                                activity.getString(R.string.unlock_to_enable)
-                            ) {
-                                appLockEnabled = true
-                                prefs.edit().putBoolean("pref_app_lock", true).apply()
+                        },
+                        navigationIcon = {
+                            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                                ExpressiveIconButton(
+                                    onClick = onBack,
+                                    icon = Icons.AutoMirrored.Rounded.ArrowBack,
+                                    contentDescription = stringResource(R.string.discard),
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
                             }
-                        } else {
-                            appLockEnabled = false
-                            prefs.edit().putBoolean("pref_app_lock", false).apply()
-                        }
-                    }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
+                        },
+                        scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.largeTopAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            scrolledContainerColor = MaterialTheme.colorScheme.background,
+                            titleContentColor = MaterialTheme.colorScheme.onBackground
+                        )
+                    )
+                }
+            },
+            containerColor = Color.Transparent,
+            modifier = Modifier
+                .widthIn(max = 700.dp)
+                .fillMaxSize()
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) { padding ->
+            LazyColumn(
+                contentPadding = padding,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
 
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Tune,
-                    title = stringResource(R.string.settings_advanced_title),
-                    subtitle = stringResource(R.string.settings_advanced_desc),
-                    containerColor = Color(0xFFC7C7C7),
-                    iconColor = Color(0xFF2C2C2C),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    ),
-                    onClick = {
-                        val intent = Intent(context, AdvancedSettingsActivity::class.java)
-                        context.startActivity(intent)
-                    }
-                )
-                Spacer(modifier = Modifier.height(32.dp))
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 item {
                     Text(
-                        text = stringResource(R.string.settings_header_language),
+                        text = stringResource(R.string.settings_header_customization),
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontFamily = GoogleSansFlex,
                             fontWeight = FontWeight.Normal
@@ -434,123 +245,309 @@ fun SettingsScreen(
 
                 item {
                     SettingsItemCard(
-                        icon = Icons.Rounded.Language,
-                        title = stringResource(R.string.settings_language_title),
-                        subtitle = stringResource(R.string.settings_language_desc),
-                        containerColor = Color(0xFFD9BAFD),
-                        iconColor = Color(0xFF5629A4),
-                        shape = RoundedCornerShape(20.dp),
+                        icon = Icons.Rounded.Palette,
+                        title = stringResource(R.string.settings_theme_title),
+                        subtitle = when (currentTheme) {
+                            THEME_LIGHT -> stringResource(R.string.settings_theme_light)
+                            THEME_DARK -> stringResource(R.string.settings_theme_dark)
+                            else -> stringResource(R.string.settings_theme_system)
+                        },
+                        containerColor = Color(0xFFfcbd00),
+                        iconColor = Color(0xFF6d3a01),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        onClick = { showThemeDialog = true }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Event,
+                        title = stringResource(R.string.settings_week_start_title),
+                        subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(
+                            R.string.monday
+                        ),
+                        containerColor = Color(0xFFffb683),
+                        iconColor = Color(0xFF753403),
+                        shape = RoundedCornerShape(4.dp),
+                        onClick = { showWeekStartDialog = true }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Sort,
+                        title = stringResource(R.string.settings_sort_order_title),
+                        subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(
+                            R.string.settings_sort_order_custom
+                        ),
+                        containerColor = Color(0xFF40C4FF),
+                        iconColor = Color(0xFF003B5C),
+                        shape = RoundedCornerShape(4.dp),
+                        onClick = { showSortDialog = true }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
+                        title = stringResource(R.string.settings_presets_title),
+                        subtitle = stringResource(R.string.settings_presets_desc),
+                        containerColor = Color(0xFF80da88),
+                        iconColor = Color(0xFF00522c),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ),
+                        onClick = {
+                            val intent = Intent(context, QuickActionsSettingsActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_header_preferences),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.NotificationsActive,
+                        title = stringResource(R.string.settings_notifications_title),
+                        subtitle = stringResource(R.string.settings_notifications_desc),
+                        containerColor = Color(0xFFffb4ab),
+                        iconColor = Color(0xFF690005),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        onClick = {
+                            val intent = Intent(context, NotificationsSettingsActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                item {
+                    SettingsSwitchCard(
+                        icon = Icons.Rounded.ViewStream,
+                        title = stringResource(R.string.settings_bottom_sheet_title),
+                        subtitle = stringResource(R.string.settings_bottom_sheet_desc),
+                        containerColor = Color(0xFFA1C9FF),
+                        iconColor = Color(0xFF04409F),
+                        shape = RoundedCornerShape(4.dp),
+                        checked = experimentalBottomSheet,
+                        onCheckedChange = {
+                            experimentalBottomSheet = it
+                            prefs.edit().putBoolean("pref_experimental_bottom_sheet", it).apply()
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                item {
+                    val activity = LocalContext.current as ComponentActivity
+                    SettingsSwitchCard(
+                        icon = Icons.Rounded.Lock,
+                        title = stringResource(R.string.settings_app_lock_title),
+                        subtitle = stringResource(R.string.settings_app_lock_desc),
+                        containerColor = Color(0xFFFCBD00),
+                        iconColor = Color(0xFF6D3A01),
+                        shape = RoundedCornerShape(4.dp),
+                        checked = appLockEnabled,
+                        onCheckedChange = { isChecked ->
+                            if (isChecked) {
+                                AppLockManager.authenticate(
+                                    activity,
+                                    activity.getString(R.string.unlock_to_enable)
+                                ) {
+                                    appLockEnabled = true
+                                    prefs.edit().putBoolean("pref_app_lock", true).apply()
+                                }
+                            } else {
+                                appLockEnabled = false
+                                prefs.edit().putBoolean("pref_app_lock", false).apply()
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Tune,
+                        title = stringResource(R.string.settings_advanced_title),
+                        subtitle = stringResource(R.string.settings_advanced_desc),
+                        containerColor = Color(0xFFC7C7C7),
+                        iconColor = Color(0xFF2C2C2C),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ),
+                        onClick = {
+                            val intent = Intent(context, AdvancedSettingsActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    item {
+                        Text(
+                            text = stringResource(R.string.settings_header_language),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontFamily = GoogleSansFlex,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                        )
+                    }
+
+                    item {
+                        SettingsItemCard(
+                            icon = Icons.Rounded.Language,
+                            title = stringResource(R.string.settings_language_title),
+                            subtitle = stringResource(R.string.settings_language_desc),
+                            containerColor = Color(0xFFD9BAFD),
+                            iconColor = Color(0xFF5629A4),
+                            shape = RoundedCornerShape(20.dp),
+                            onClick = {
+                                try {
+                                    val intent = Intent(
+                                        Settings.ACTION_APP_LOCALE_SETTINGS,
+                                        Uri.fromParts("package", context.packageName, null)
+                                    )
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
+                }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_header_info),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Info,
+                        title = stringResource(R.string.settings_version_title),
+                        subtitle = appInfo,
+                        containerColor = Color(0xFFa1c9ff),
+                        iconColor = Color(0xFF0641a0),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
                         onClick = {
                             try {
                                 val intent = Intent(
-                                    Settings.ACTION_APP_LOCALE_SETTINGS,
-                                    Uri.fromParts("package", context.packageName, null)
-                                )
+                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                ).apply {
+                                    data = Uri.fromParts("package", context.packageName, null)
+                                }
                                 context.startActivity(intent)
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }
                         }
                     )
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(2.dp))
                 }
-            }
 
-            item {
-                Text(
-                    text = stringResource(R.string.settings_header_info),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Info,
-                    title = stringResource(R.string.settings_version_title),
-                    subtitle = appInfo,
-                    containerColor = Color(0xFFa1c9ff),
-                    iconColor = Color(0xFF0641a0),
-                    shape = RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    onClick = {
-                        try {
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Code,
+                        title = stringResource(R.string.settings_developer_title),
+                        subtitle = stringResource(R.string.settings_developer_name),
+                        containerColor = Color(0xFFc7c7c7),
+                        iconColor = Color(0xFF474747),
+                        shape = RoundedCornerShape(4.dp),
+                        onClick = {
                             val intent = Intent(
-                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            ).apply {
-                                data = Uri.fromParts("package", context.packageName, null)
-                            }
+                                Intent.ACTION_VIEW,
+                                Uri.parse("https://github.com/FeDeveloper95")
+                            )
                             context.startActivity(intent)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
-                    }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
 
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Code,
-                    title = stringResource(R.string.settings_developer_title),
-                    subtitle = stringResource(R.string.settings_developer_name),
-                    containerColor = Color(0xFFc7c7c7),
-                    iconColor = Color(0xFF474747),
-                    shape = RoundedCornerShape(4.dp),
-                    onClick = {
-                        val intent = Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://github.com/FeDeveloper95")
-                        )
-                        context.startActivity(intent)
-                    }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.BugReport,
+                        title = stringResource(R.string.settings_report_title),
+                        subtitle = stringResource(R.string.settings_report_desc),
+                        containerColor = Color(0xFFffb3ae),
+                        iconColor = Color(0xFF8a1a16),
+                        shape = RoundedCornerShape(4.dp),
+                        onClick = {
+                            val intent =
+                                Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fedeveloper95"))
+                            context.startActivity(intent)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
 
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.BugReport,
-                    title = stringResource(R.string.settings_report_title),
-                    subtitle = stringResource(R.string.settings_report_desc),
-                    containerColor = Color(0xFFffb3ae),
-                    iconColor = Color(0xFF8a1a16),
-                    shape = RoundedCornerShape(4.dp),
-                    onClick = {
-                        val intent =
-                            Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fedeveloper95"))
-                        context.startActivity(intent)
-                    }
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.SystemUpdate,
-                    title = stringResource(R.string.settings_check_updates_title),
-                    subtitle = stringResource(R.string.settings_check_updates_desc),
-                    containerColor = Color(0xFF67d4ff),
-                    iconColor = Color(0xFF004e5d),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    ),
-                    onClick = {
-                        context.startActivity(Intent(context, UpdaterActivity::class.java))
-                    }
-                )
-                Spacer(modifier = Modifier.height(48.dp))
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.SystemUpdate,
+                        title = stringResource(R.string.settings_check_updates_title),
+                        subtitle = stringResource(R.string.settings_check_updates_desc),
+                        containerColor = Color(0xFF67d4ff),
+                        iconColor = Color(0xFF004e5d),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ),
+                        onClick = {
+                            context.startActivity(Intent(context, UpdaterActivity::class.java))
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(48.dp))
+                }
             }
         }
     }

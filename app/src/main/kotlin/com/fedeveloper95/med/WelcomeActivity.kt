@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -569,114 +570,120 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        HorizontalPager(
-            state = pagerState,
-            userScrollEnabled = false,
+        Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) { index ->
-            OnboardingPageItem(
-                page = pages[index],
-                onUpdateScroll = { scrolledToEnd ->
-                    if (index == pages.size - 1) {
-                        isLastPageScrolledToEnd = scrolledToEnd
-                    }
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        val backButtonWeight by animateFloatAsState(
-            targetValue = if (isFirstPage) 0.0001f else 1f,
-            animationSpec = commonAnimSpec,
-            label = "backWeight"
-        )
-
-        val spacerWeight by animateFloatAsState(
-            targetValue = if (isFirstPage) 0.0001f else 0.05f,
-            animationSpec = commonAnimSpec,
-            label = "spacerWeight"
-        )
-
-        val alphaBack by animateFloatAsState(
-            targetValue = if (isFirstPage) 0f else 1f,
-            animationSpec = commonAnimSpec,
-            label = "backAlpha"
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-                .height(64.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .widthIn(max = 700.dp)
+                .fillMaxSize()
+                .padding(24.dp)
         ) {
-            Box(
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
                 modifier = Modifier
-                    .weight(backButtonWeight)
-                    .fillMaxHeight()
-                    .alpha(alphaBack)
-            ) {
-                WelcomeExpressiveButton(
-                    text = stringResource(R.string.back),
-                    onClick = {
-                        if (!isFirstPage) {
-                            scope.launch {
-                                pagerState.animateScrollToPage(
-                                    pagerState.currentPage - 1,
-                                    animationSpec = commonAnimSpec
-                                )
-                            }
+                    .weight(1f)
+                    .fillMaxWidth()
+            ) { index ->
+                OnboardingPageItem(
+                    page = pages[index],
+                    onUpdateScroll = { scrolledToEnd ->
+                        if (index == pages.size - 1) {
+                            isLastPageScrolledToEnd = scrolledToEnd
                         }
-                    },
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxSize(),
-                    isOutlined = true
+                    }
                 )
             }
 
-            Spacer(modifier = Modifier.weight(spacerWeight))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            Box(
+            val backButtonWeight by animateFloatAsState(
+                targetValue = if (isFirstPage) 0.0001f else 1f,
+                animationSpec = commonAnimSpec,
+                label = "backWeight"
+            )
+
+            val spacerWeight by animateFloatAsState(
+                targetValue = if (isFirstPage) 0.0001f else 0.05f,
+                animationSpec = commonAnimSpec,
+                label = "spacerWeight"
+            )
+
+            val alphaBack by animateFloatAsState(
+                targetValue = if (isFirstPage) 0f else 1f,
+                animationSpec = commonAnimSpec,
+                label = "backAlpha"
+            )
+
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp)
+                    .height(64.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                val isNextEnabled = !isLastPage || isLastPageScrolledToEnd
-
-                val alphaNext by animateFloatAsState(
-                    targetValue = if (isNextEnabled) 1f else 0.5f,
-                    label = "nextAlpha"
-                )
-
-                WelcomeExpressiveButton(
-                    text = if (isLastPage) stringResource(R.string.get_started) else stringResource(
-                        R.string.next
-                    ),
-                    onClick = {
-                        if (isLastPage) {
-                            if (isLastPageScrolledToEnd) onFinished()
-                        } else {
-                            scope.launch {
-                                pagerState.animateScrollToPage(
-                                    pagerState.currentPage + 1,
-                                    animationSpec = commonAnimSpec
-                                )
+                Box(
+                    modifier = Modifier
+                        .weight(backButtonWeight)
+                        .fillMaxHeight()
+                        .alpha(alphaBack)
+                ) {
+                    WelcomeExpressiveButton(
+                        text = stringResource(R.string.back),
+                        onClick = {
+                            if (!isFirstPage) {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(
+                                        pagerState.currentPage - 1,
+                                        animationSpec = commonAnimSpec
+                                    )
+                                }
                             }
-                        }
-                    },
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = alphaNext),
-                    contentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = alphaNext),
-                    modifier = Modifier.fillMaxSize()
-                )
+                        },
+                        containerColor = Color.Transparent,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxSize(),
+                        isOutlined = true
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(spacerWeight))
+
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                ) {
+                    val isNextEnabled = !isLastPage || isLastPageScrolledToEnd
+
+                    val alphaNext by animateFloatAsState(
+                        targetValue = if (isNextEnabled) 1f else 0.5f,
+                        label = "nextAlpha"
+                    )
+
+                    WelcomeExpressiveButton(
+                        text = if (isLastPage) stringResource(R.string.get_started) else stringResource(
+                            R.string.next
+                        ),
+                        onClick = {
+                            if (isLastPage) {
+                                if (isLastPageScrolledToEnd) onFinished()
+                            } else {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(
+                                        pagerState.currentPage + 1,
+                                        animationSpec = commonAnimSpec
+                                    )
+                                }
+                            }
+                        },
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = alphaNext),
+                        contentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = alphaNext),
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
     }

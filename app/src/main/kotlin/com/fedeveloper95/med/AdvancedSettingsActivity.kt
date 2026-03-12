@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,15 +40,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -80,14 +79,10 @@ import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
 class AdvancedSettingsActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val windowSizeClass = calculateWindowSizeClass(this)
-            val isExpandedScreen = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
-
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
@@ -98,8 +93,7 @@ class AdvancedSettingsActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AdvancedSettingsScreen(
-                        onBack = { finish() },
-                        isExpandedScreen = isExpandedScreen
+                        onBack = { finish() }
                     )
                 }
             }
@@ -111,7 +105,7 @@ const val PREF_AUTO_UPDATES = "pref_auto_updates"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
+fun AdvancedSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
@@ -157,268 +151,273 @@ fun AdvancedSettingsScreen(onBack: () -> Unit, isExpandedScreen: Boolean) {
         )
     )
 
-    Scaffold(
-        topBar = {
-            MaterialTheme(typography = appBarTypography) {
-                LargeTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(R.string.settings_advanced_title),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    navigationIcon = {
-                        Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                            ExpressiveIconButton(
-                                onClick = onBack,
-                                icon = Icons.AutoMirrored.Rounded.ArrowBack,
-                                contentDescription = stringResource(R.string.back),
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurface
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        Scaffold(
+            topBar = {
+                MaterialTheme(typography = appBarTypography) {
+                    LargeTopAppBar(
+                        title = {
+                            Text(
+                                text = stringResource(R.string.settings_advanced_title),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
-                        }
-                    },
-                    scrollBehavior = scrollBehavior,
-                    colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        scrolledContainerColor = MaterialTheme.colorScheme.background,
-                        titleContentColor = MaterialTheme.colorScheme.onBackground
+                        },
+                        navigationIcon = {
+                            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                                ExpressiveIconButton(
+                                    onClick = onBack,
+                                    icon = Icons.AutoMirrored.Rounded.ArrowBack,
+                                    contentDescription = stringResource(R.string.back),
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        },
+                        scrollBehavior = scrollBehavior,
+                        colors = TopAppBarDefaults.largeTopAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            scrolledContainerColor = MaterialTheme.colorScheme.background,
+                            titleContentColor = MaterialTheme.colorScheme.onBackground
+                        )
                     )
-                )
-            }
-        },
-        containerColor = Color.Transparent,
-        modifier = Modifier
-            .fillMaxSize()
-            .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) { padding ->
-        LazyColumn(
-            contentPadding = padding,
+                }
+            },
+            containerColor = Color.Transparent,
             modifier = Modifier
+                .widthIn(max = 700.dp)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
-        ) {
-            item { Spacer(modifier = Modifier.height(8.dp)) }
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) { padding ->
+            LazyColumn(
+                contentPadding = padding,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+            ) {
+                item { Spacer(modifier = Modifier.height(8.dp)) }
 
-            item {
-                SettingsSwitchCard(
-                    icon = Icons.Rounded.Settings,
-                    title = stringResource(R.string.settings_auto_updates_title),
-                    subtitle = stringResource(R.string.settings_auto_updates_desc),
-                    containerColor = Color(0xFFfcbd00),
-                    iconColor = Color(0xFF6d3a01),
-                    shape = RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    checked = autoUpdates,
-                    onCheckedChange = {
-                        autoUpdates = it
-                        prefs.edit().putBoolean(PREF_AUTO_UPDATES, it).apply()
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(2.dp)) }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Flag,
-                    title = stringResource(R.string.settings_setup_title),
-                    subtitle = stringResource(R.string.settings_setup_desc),
-                    containerColor = Color(0xFFffaee4),
-                    iconColor = Color(0xFF8d0053),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    ),
-                    onClick = {
-                        val intent = Intent(context, WelcomeActivity::class.java).apply {
-                            putExtra("FORCE_SHOW", true)
+                item {
+                    SettingsSwitchCard(
+                        icon = Icons.Rounded.Settings,
+                        title = stringResource(R.string.settings_auto_updates_title),
+                        subtitle = stringResource(R.string.settings_auto_updates_desc),
+                        containerColor = Color(0xFFfcbd00),
+                        iconColor = Color(0xFF6d3a01),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        checked = autoUpdates,
+                        onCheckedChange = {
+                            autoUpdates = it
+                            prefs.edit().putBoolean(PREF_AUTO_UPDATES, it).apply()
                         }
-                        context.startActivity(intent)
-                    }
-                )
-            }
+                    )
+                }
 
-            item { Spacer(modifier = Modifier.height(32.dp)) }
+                item { Spacer(modifier = Modifier.height(2.dp)) }
 
-            item {
-                Text(
-                    text = stringResource(R.string.settings_backup_header),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.CloudUpload,
-                    title = stringResource(R.string.settings_export_title),
-                    subtitle = stringResource(R.string.settings_export_desc),
-                    containerColor = Color(0xFF80da88),
-                    iconColor = Color(0xFF00522c),
-                    shape = RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    onClick = {
-                        val timestamp = Calendar.getInstance().timeInMillis
-                        exportLauncher.launch("med_backup_$timestamp.json")
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(2.dp)) }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.CloudDownload,
-                    title = stringResource(R.string.settings_import_title),
-                    subtitle = stringResource(R.string.settings_import_desc),
-                    containerColor = Color(0xFF67d4ff),
-                    iconColor = Color(0xFF004e5d),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    ),
-                    onClick = {
-                        importLauncher.launch(arrayOf("application/json"))
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(32.dp)) }
-
-            item {
-                Text(
-                    text = stringResource(R.string.settings_testing_header),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Notifications,
-                    title = stringResource(R.string.settings_test_alarm_title),
-                    subtitle = stringResource(R.string.settings_test_alarm_desc),
-                    containerColor = Color(0xFFa0d57b),
-                    iconColor = Color(0xFF1c4a00),
-                    shape = RoundedCornerShape(
-                        topStart = 20.dp,
-                        topEnd = 20.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    onClick = {
-                        val now = LocalTime.now()
-                        val items = DataRepository.loadData(context)
-                        val closest = items.filter { it.type == ItemType.Medicine }.minByOrNull {
-                            val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
-                            if (diff >= 0) diff else diff + 24 * 60
-                        }
-
-                        if (closest != null) {
-                            val intent = Intent(context, AlarmActivity::class.java).apply {
-                                putExtra("ITEM_TITLE", closest.title)
-                                putExtra("ITEM_ID", closest.id)
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Flag,
+                        title = stringResource(R.string.settings_setup_title),
+                        subtitle = stringResource(R.string.settings_setup_desc),
+                        containerColor = Color(0xFFffaee4),
+                        iconColor = Color(0xFF8d0053),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ),
+                        onClick = {
+                            val intent = Intent(context, WelcomeActivity::class.java).apply {
+                                putExtra("FORCE_SHOW", true)
                             }
                             context.startActivity(intent)
                         }
-                    }
-                )
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(32.dp)) }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_backup_header),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.CloudUpload,
+                        title = stringResource(R.string.settings_export_title),
+                        subtitle = stringResource(R.string.settings_export_desc),
+                        containerColor = Color(0xFF80da88),
+                        iconColor = Color(0xFF00522c),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        onClick = {
+                            val timestamp = Calendar.getInstance().timeInMillis
+                            exportLauncher.launch("med_backup_$timestamp.json")
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(2.dp)) }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.CloudDownload,
+                        title = stringResource(R.string.settings_import_title),
+                        subtitle = stringResource(R.string.settings_import_desc),
+                        containerColor = Color(0xFF67d4ff),
+                        iconColor = Color(0xFF004e5d),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ),
+                        onClick = {
+                            importLauncher.launch(arrayOf("application/json"))
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(32.dp)) }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_testing_header),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Notifications,
+                        title = stringResource(R.string.settings_test_alarm_title),
+                        subtitle = stringResource(R.string.settings_test_alarm_desc),
+                        containerColor = Color(0xFFa0d57b),
+                        iconColor = Color(0xFF1c4a00),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        onClick = {
+                            val now = LocalTime.now()
+                            val items = DataRepository.loadData(context)
+                            val closest = items.filter { it.type == ItemType.Medicine }.minByOrNull {
+                                val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
+                                if (diff >= 0) diff else diff + 24 * 60
+                            }
+
+                            if (closest != null) {
+                                val intent = Intent(context, AlarmActivity::class.java).apply {
+                                    putExtra("ITEM_TITLE", closest.title)
+                                    putExtra("ITEM_ID", closest.id)
+                                }
+                                context.startActivity(intent)
+                            }
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(2.dp)) }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Group,
+                        title = stringResource(R.string.settings_test_telegram_title),
+                        subtitle = stringResource(R.string.settings_test_telegram_desc),
+                        containerColor = Color(0xFF97cbff),
+                        iconColor = Color(0xFF003355),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        onClick = {
+                            showCommunitySheet = true
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(2.dp)) }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.BugReport,
+                        title = stringResource(R.string.settings_test_crash_title),
+                        subtitle = stringResource(R.string.settings_test_crash_desc),
+                        containerColor = Color(0xFFffb869),
+                        iconColor = Color(0xFF5c3000),
+                        shape = RoundedCornerShape(
+                            topStart = 4.dp,
+                            topEnd = 4.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp
+                        ),
+                        onClick = {
+                            throw RuntimeException("Test Crash Triggered")
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(32.dp)) }
+
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_danger_zone_header),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.DeleteForever,
+                        title = stringResource(R.string.settings_reset_title),
+                        subtitle = stringResource(R.string.settings_reset_desc),
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        iconColor = MaterialTheme.colorScheme.onErrorContainer,
+                        shape = RoundedCornerShape(20.dp),
+                        onClick = {
+                            showResetPopup = true
+                        }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(48.dp)) }
             }
-
-            item { Spacer(modifier = Modifier.height(2.dp)) }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.Group,
-                    title = stringResource(R.string.settings_test_telegram_title),
-                    subtitle = stringResource(R.string.settings_test_telegram_desc),
-                    containerColor = Color(0xFF97cbff),
-                    iconColor = Color(0xFF003355),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 4.dp,
-                        bottomEnd = 4.dp
-                    ),
-                    onClick = {
-                        showCommunitySheet = true
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(2.dp)) }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.BugReport,
-                    title = stringResource(R.string.settings_test_crash_title),
-                    subtitle = stringResource(R.string.settings_test_crash_desc),
-                    containerColor = Color(0xFFffb869),
-                    iconColor = Color(0xFF5c3000),
-                    shape = RoundedCornerShape(
-                        topStart = 4.dp,
-                        topEnd = 4.dp,
-                        bottomStart = 20.dp,
-                        bottomEnd = 20.dp
-                    ),
-                    onClick = {
-                        throw RuntimeException("Test Crash Triggered")
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(32.dp)) }
-
-            item {
-                Text(
-                    text = stringResource(R.string.settings_danger_zone_header),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal
-                    ),
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                )
-            }
-
-            item {
-                SettingsItemCard(
-                    icon = Icons.Rounded.DeleteForever,
-                    title = stringResource(R.string.settings_reset_title),
-                    subtitle = stringResource(R.string.settings_reset_desc),
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    iconColor = MaterialTheme.colorScheme.onErrorContainer,
-                    shape = RoundedCornerShape(20.dp),
-                    onClick = {
-                        showResetPopup = true
-                    }
-                )
-            }
-
-            item { Spacer(modifier = Modifier.height(48.dp)) }
         }
     }
 
@@ -486,7 +485,6 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 allItems.forEach { dataArray.put(it.toJson()) }
                 root.put("med_data_v2", dataArray)
             } catch (e: Exception) {
-                e.printStackTrace()
             }
 
             try {
@@ -497,7 +495,6 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 root.put("med_data_file", base64Data)
             } catch (e: FileNotFoundException) {
             } catch (e: Exception) {
-                e.printStackTrace()
             }
 
             context.contentResolver.openOutputStream(uri)?.use {
@@ -511,7 +508,6 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
                 ).show()
             }
         } catch (e: Exception) {
-            e.printStackTrace()
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
@@ -561,7 +557,6 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     }
                     editor.apply()
                 } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
 
@@ -589,7 +584,6 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                     }
                     editor.apply()
                 } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
 
@@ -602,11 +596,9 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                         try {
                             importedItems.add(MedData.fromJson(dataArray.getJSONObject(i)))
                         } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
 
@@ -651,12 +643,10 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                                     )
                                 )
                             } catch (e: Exception) {
-                                e.printStackTrace()
                             }
                         }
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
 
@@ -692,12 +682,10 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                 DataRepository.saveData(context, mergedItems)
                 context.deleteFile("med_data.dat")
             } catch (e: Exception) {
-                e.printStackTrace()
             }
 
             true
         } catch (e: Exception) {
-            e.printStackTrace()
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
