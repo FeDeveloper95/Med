@@ -311,8 +311,7 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(currentVersionName) {
                 val lastVersion = prefs.getString("last_version", null)
-                val communityShown = prefs.getBoolean("pref_community_shown", false)
-                if (!communityShown || (lastVersion != null && lastVersion != currentVersionName)) {
+                if (lastVersion != currentVersionName) {
                     showCommunitySheet = true
                 }
             }
@@ -360,7 +359,6 @@ class MainActivity : ComponentActivity() {
                     onCommunitySheetDismiss = {
                         showCommunitySheet = false
                         prefs.edit()
-                            .putBoolean("pref_community_shown", true)
                             .putString("last_version", currentVersionName)
                             .apply()
                         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

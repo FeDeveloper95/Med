@@ -250,7 +250,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
-                
+
                 item {
                     Text(
                         text = stringResource(R.string.settings_backup_header),
