@@ -1,8 +1,15 @@
 package com.fedeveloper95.med.services
 
+import android.app.Application
 import android.content.Context
 import androidx.annotation.Keep
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.AndroidViewModel
 import com.fedeveloper95.med.ItemType
+import com.fedeveloper95.med.R
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -14,6 +21,7 @@ import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 
 @Keep
 data class MedData(
@@ -200,5 +208,249 @@ object DataRepository {
             e.printStackTrace()
         }
         return emptyList()
+    }
+}
+
+class MedViewModel(application: Application) : AndroidViewModel(application) {
+    private val _items = mutableStateListOf<MedData>()
+    val items: List<MedData> get() = _items
+
+    var selectedDate by mutableStateOf(LocalDate.now())
+
+    init {
+        loadData()
+    }
+
+    fun addItem(
+        type: ItemType,
+        title: String,
+        iconName: String? = null,
+        colorCode: String? = null,
+        times: List<LocalTime>,
+        days: List<DayOfWeek>?,
+        notes: String? = null,
+        category: String? = null,
+        intervalGap: Int? = null
+    ) {
+        val groupId = System.currentTimeMillis()
+        val baseDate = selectedDate
+        val context = getApplication<Application>()
+
+        var currentOrder = (_items.maxOfOrNull { it.displayOrder } ?: 0) + 1
+
+        val itemsOnDate = _items.filter { item ->
+            when (item.type) {
+                ItemType.Event -> item.creationDate == selectedDate
+                ItemType.Medicine -> {
+                    val isAfterStart = !selectedDate.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
+                    val isCorrectDay =
+                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
+                            selectedDate.dayOfWeek
+                        )
+                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(
+                        item.creationDate,
+                        selectedDate
+                    ) % item.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedBy { it.displayOrder }
+
+        var inGroup = false
+        for (item in itemsOnDate) {
+            if (item.iconName == "DIVIDER") {
+                inGroup = item.title.isNotBlank()
+            }
+        }
+        if (inGroup) {
+            val emptyDivider = MedData(
+                id = System.nanoTime(),
+                groupId = System.currentTimeMillis(),
+                type = ItemType.Event,
+                title = "",
+                iconName = "DIVIDER",
+                colorCode = "dynamic",
+                frequencyLabel = "",
+                creationDate = selectedDate,
+                creationTime = LocalTime.MIN,
+                takenHistory = hashMapOf(),
+                recurrenceDays = null,
+                endDate = null,
+                notes = null,
+                displayOrder = currentOrder++,
+                category = null,
+                intervalGap = null
+            )
+            _items.add(emptyDivider)
+        }
+
+        times.forEach { time ->
+            val newItem = MedData(
+                id = System.nanoTime(),
+                groupId = groupId,
+                type = type,
+                title = title,
+                iconName = iconName,
+                colorCode = colorCode,
+                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
+                else if (days != null) context.getString(R.string.frequency_specific_days)
+                else if (times.size > 1) context.getString(
+                    R.string.frequency_daily_multiple,
+                    times.size
+                )
+                else context.getString(R.string.frequency_daily),
+                creationDate = baseDate,
+                creationTime = time,
+                recurrenceDays = days,
+                endDate = null,
+                notes = notes,
+                displayOrder = currentOrder++,
+                category = category,
+                intervalGap = intervalGap
+            )
+            _items.add(newItem)
+            if (type == ItemType.Medicine) {
+                NotificationReceiver.scheduleNotification(getApplication(), newItem)
+            }
+        }
+        saveData()
+    }
+
+    fun updateItem(
+        originalItem: MedData,
+        title: String,
+        iconName: String?,
+        colorCode: String?,
+        times: List<LocalTime>,
+        days: List<DayOfWeek>?,
+        notes: String?,
+        intervalGap: Int?
+    ) {
+        val index = _items.indexOfFirst { it.id == originalItem.id }
+        if (index != -1) {
+            val context = getApplication<Application>()
+            _items[index] = originalItem.copy(
+                title = title,
+                iconName = iconName,
+                colorCode = colorCode,
+                creationTime = times.firstOrNull() ?: originalItem.creationTime,
+                recurrenceDays = days,
+                notes = notes,
+                intervalGap = intervalGap,
+                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
+                else if (days != null) context.getString(R.string.frequency_specific_days)
+                else if (times.size > 1) context.getString(
+                    R.string.frequency_daily_multiple,
+                    times.size
+                )
+                else context.getString(R.string.frequency_daily)
+            )
+
+            if (times.size > 1) {
+                for (i in 1 until times.size) {
+                    val newItem = _items[index].copy(
+                        id = System.nanoTime() + i,
+                        creationTime = times[i],
+                        takenHistory = HashMap()
+                    )
+                    _items.add(newItem)
+                }
+            }
+            saveData()
+            if (originalItem.type == ItemType.Medicine) {
+                NotificationReceiver.scheduleNotification(getApplication(), _items[index])
+            }
+        }
+    }
+
+    fun deleteItem(item: MedData, deleteDate: LocalDate) {
+        val index = _items.indexOfFirst { it.id == item.id }
+        if (index == -1) return
+
+        if (!deleteDate.isAfter(item.creationDate)) {
+            _items.removeAt(index)
+        } else {
+            val updatedItem = item.copy(endDate = deleteDate.minusDays(1))
+            _items[index] = updatedItem
+        }
+
+        val itemsOnDate = _items.filter {
+            when (it.type) {
+                ItemType.Event -> it.creationDate == deleteDate
+                ItemType.Medicine -> {
+                    val isAfterStart = !deleteDate.isBefore(it.creationDate)
+                    val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
+                    val isCorrectDay =
+                        it.recurrenceDays.isNullOrEmpty() || it.recurrenceDays.contains(deleteDate.dayOfWeek)
+                    val isCorrectGap = it.intervalGap == null || ChronoUnit.DAYS.between(
+                        it.creationDate,
+                        deleteDate
+                    ) % it.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+
+        var changed = true
+        var currentList = itemsOnDate
+        val dividersToRemove = mutableSetOf<Long>()
+        while (changed) {
+            changed = false
+            val toRemove = currentList.filterIndexed { i, current ->
+                if (current.iconName == "DIVIDER") {
+                    val next = currentList.getOrNull(i + 1)
+                    next == null || next.iconName == "DIVIDER"
+                } else false
+            }
+            if (toRemove.isNotEmpty()) {
+                dividersToRemove.addAll(toRemove.map { it.id })
+                currentList = currentList.filterNot { it in toRemove }
+                changed = true
+            }
+        }
+
+        if (dividersToRemove.isNotEmpty()) {
+            _items.removeAll { it.id in dividersToRemove }
+        }
+
+        saveData()
+    }
+
+    fun restoreItem(item: MedData) {
+        val index = _items.indexOfFirst { it.id == item.id }
+        if (index != -1) {
+            _items[index] = item
+        } else {
+            _items.add(item)
+        }
+        saveData()
+    }
+
+    fun toggleMedicine(item: MedData, date: LocalDate) {
+        if (item.type != ItemType.Medicine) return
+        if (date.isAfter(LocalDate.now())) return
+
+        val newHistory = HashMap(item.takenHistory)
+        if (newHistory.containsKey(date)) newHistory.remove(date) else newHistory[date] =
+            LocalTime.now()
+
+        val index = _items.indexOfFirst { it.id == item.id }
+        if (index != -1) _items[index] = item.copy(takenHistory = newHistory)
+        saveData()
+    }
+
+    fun reloadData() {
+        loadData()
+    }
+
+    private fun saveData() {
+        DataRepository.saveData(getApplication(), _items)
+    }
+
+    private fun loadData() {
+        val list = DataRepository.loadData(getApplication())
+        _items.clear()
+        _items.addAll(list)
     }
 }

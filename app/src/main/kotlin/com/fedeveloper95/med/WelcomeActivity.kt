@@ -4,6 +4,7 @@ package com.fedeveloper95.med
 
 import android.Manifest
 import android.app.AppOpsManager
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -239,11 +240,14 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { isGranted ->
             hasNotificationPermission = isGranted
-            if (isGranted && Build.VERSION.SDK_INT >= 34) {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
-                    data = Uri.parse("package:${context.packageName}")
+            if (isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                if (!notificationManager.canUseFullScreenIntent()) {
+                    val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                    }
+                    context.startActivity(intent)
                 }
-                context.startActivity(intent)
             }
         }
     )

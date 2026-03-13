@@ -31,7 +31,9 @@ import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.Notifications
+import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ViewDay
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LargeTopAppBar
@@ -102,6 +104,7 @@ class AdvancedSettingsActivity : ComponentActivity() {
 }
 
 const val PREF_AUTO_UPDATES = "pref_auto_updates"
+const val PREF_EXPERIMENTAL_NAV_BAR = "ExperimentalNavBar"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -110,6 +113,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     var autoUpdates by remember { mutableStateOf(prefs.getBoolean(PREF_AUTO_UPDATES, true)) }
+    var experimentalNavBar by remember { mutableStateOf(prefs.getBoolean(PREF_EXPERIMENTAL_NAV_BAR, false)) }
 
     var showRestartDialog by remember { mutableStateOf(false) }
     var showCommunitySheet by remember { mutableStateOf(false) }
@@ -246,7 +250,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
-
+                
                 item {
                     Text(
                         text = stringResource(R.string.settings_backup_header),
