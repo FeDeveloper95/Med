@@ -43,9 +43,9 @@ import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Sort
-import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.ViewStream
+import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,6 +62,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -91,6 +92,7 @@ import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
 import com.fedeveloper95.med.services.AppLockManager
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
+import kotlinx.coroutines.delay
 
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -415,19 +417,19 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.height(32.dp))
                 }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.settings_header_language),
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontFamily = GoogleSansFlex,
-                                fontWeight = FontWeight.Normal
-                            ),
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                        )
-                    }
+                item {
+                    Text(
+                        text = stringResource(R.string.settings_header_more),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal
+                        ),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    )
+                }
 
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     item {
                         SettingsItemCard(
                             icon = Icons.Rounded.Language,
@@ -435,7 +437,12 @@ fun SettingsScreen(
                             subtitle = stringResource(R.string.settings_language_desc),
                             containerColor = Color(0xFFD9BAFD),
                             iconColor = Color(0xFF5629A4),
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(
+                                topStart = 20.dp,
+                                topEnd = 20.dp,
+                                bottomStart = 4.dp,
+                                bottomEnd = 4.dp
+                            ),
                             onClick = {
                                 try {
                                     val intent = Intent(
@@ -448,8 +455,33 @@ fun SettingsScreen(
                                 }
                             }
                         )
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(2.dp))
                     }
+                }
+
+                item {
+                    SettingsItemCard(
+                        icon = Icons.Rounded.Watch,
+                        title = stringResource(R.string.settings_wearos_title),
+                        subtitle = stringResource(R.string.settings_wearos_desc),
+                        containerColor = Color(0xFF67D4FF),
+                        iconColor = Color(0xFF004E5D),
+                        shape = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            RoundedCornerShape(
+                                topStart = 4.dp,
+                                topEnd = 4.dp,
+                                bottomStart = 20.dp,
+                                bottomEnd = 20.dp
+                            )
+                        } else {
+                            RoundedCornerShape(20.dp)
+                        },
+                        onClick = {
+                            val intent = Intent(context, WearSettingsActivity::class.java)
+                            context.startActivity(intent)
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(32.dp))
                 }
 
                 item {
@@ -531,7 +563,7 @@ fun SettingsScreen(
 
                 item {
                     SettingsItemCard(
-                        icon = Icons.Rounded.SystemUpdate,
+                        icon = ImageVector.vectorResource(R.drawable.ic_phone_update),
                         title = stringResource(R.string.settings_check_updates_title),
                         subtitle = stringResource(R.string.settings_check_updates_desc),
                         containerColor = Color(0xFF67d4ff),
@@ -600,7 +632,18 @@ fun SettingsItemCard(
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isRealPressed by interactionSource.collectIsPressedAsState()
+    var isPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRealPressed) {
+        if (isRealPressed) {
+            isPressed = true
+        } else {
+            delay(200)
+            isPressed = false
+        }
+    }
+
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
         animationSpec = tween(durationMillis = 200),
@@ -713,7 +756,18 @@ fun SettingsSwitchCard(
     onCheckedChange: (Boolean) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isRealPressed by interactionSource.collectIsPressedAsState()
+    var isPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRealPressed) {
+        if (isRealPressed) {
+            isPressed = true
+        } else {
+            delay(200)
+            isPressed = false
+        }
+    }
+
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
         animationSpec = tween(durationMillis = 200),

@@ -16,6 +16,7 @@ import com.fedeveloper95.med.AlarmActivity
 import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.MainActivity
 import com.fedeveloper95.med.PREF_FULL_SCREEN_ALARM
+import com.fedeveloper95.med.PREF_SHOW_NOTIFICATIONS
 import com.fedeveloper95.med.PREF_SNOOZE_DURATION
 import com.fedeveloper95.med.R
 import java.time.LocalDate
@@ -32,9 +33,24 @@ class NotificationReceiver : BroadcastReceiver() {
         const val ACTION_SHOW_NOTIFICATION = "ACTION_SHOW_NOTIFICATION"
         const val ACTION_TAKEN = "ACTION_TAKEN"
         const val ACTION_SNOOZE = "ACTION_SNOOZE"
+        const val ACTION_RESCHEDULE_ALL = "ACTION_RESCHEDULE_ALL"
 
         fun scheduleNotification(context: Context, item: MedData) {
             if (item.type != ItemType.Medicine) return
+
+            val prefs = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+            val globalShowNotif = prefs.getBoolean(PREF_SHOW_NOTIFICATIONS, true)
+            val globalUseFullScreen = prefs.getBoolean(PREF_FULL_SCREEN_ALARM, true)
+
+            val effectiveType = when (item.notificationType) {
+                1 -> "NONE"
+                2 -> "NORMAL"
+                3 -> "ALARM"
+                else -> {
+                    if (!globalShowNotif) "NONE"
+                    else if (globalUseFullScreen) "ALARM" else "NORMAL"
+                }
+            }
 
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, NotificationReceiver::class.java).apply {
@@ -47,6 +63,11 @@ class NotificationReceiver : BroadcastReceiver() {
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
+
+            if (effectiveType == "NONE") {
+                alarmManager.cancel(pendingIntent)
+                return
+            }
 
             val nextDateTime = getNextOccurrence(item)
 
@@ -105,11 +126,9 @@ class NotificationReceiver : BroadcastReceiver() {
         val itemId = intent.getLongExtra("ITEM_ID", -1L)
 
         val prefs = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
-        val useFullScreen = prefs.getBoolean(PREF_FULL_SCREEN_ALARM, true)
-        val snoozeDuration = prefs.getInt(PREF_SNOOZE_DURATION, 10)
 
         when (action) {
-            Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_MY_PACKAGE_REPLACED -> {
+            Intent.ACTION_BOOT_COMPLETED, Intent.ACTION_MY_PACKAGE_REPLACED, ACTION_RESCHEDULE_ALL -> {
                 val items = DataRepository.loadData(context)
                 items.forEach { item ->
                     if (item.type == ItemType.Medicine) {
@@ -122,6 +141,23 @@ class NotificationReceiver : BroadcastReceiver() {
                 if (itemId != -1L) {
                     val items = DataRepository.loadData(context)
                     val item = items.find { it.id == itemId } ?: return
+
+                    val globalShowNotif = prefs.getBoolean(PREF_SHOW_NOTIFICATIONS, true)
+                    val globalUseFullScreen = prefs.getBoolean(PREF_FULL_SCREEN_ALARM, true)
+
+                    val effectiveType = when (item.notificationType) {
+                        1 -> "NONE"
+                        2 -> "NORMAL"
+                        3 -> "ALARM"
+                        else -> {
+                            if (!globalShowNotif) "NONE"
+                            else if (globalUseFullScreen) "ALARM" else "NORMAL"
+                        }
+                    }
+
+                    if (effectiveType == "NONE") return
+
+                    val useFullScreen = effectiveType == "ALARM"
 
                     createNotificationChannels(context)
 
@@ -258,6 +294,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
             ACTION_SNOOZE -> {
                 if (itemId != -1L) {
+                    val snoozeDuration = prefs.getInt(PREF_SNOOZE_DURATION, 10)
                     val alarmManager =
                         context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 

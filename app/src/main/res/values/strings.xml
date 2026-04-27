@@ -163,7 +163,6 @@
 
     <string name="settings_bottom_sheet_title">Use Bottom Card design</string>
     <string name="settings_bottom_sheet_desc">Use bottom cards instead of popups</string>
-    <string name="settings_header_language">Language</string>
     <string name="settings_language_title">App Language</string>
     <string name="settings_language_desc">Change language in system settings</string>
 
@@ -232,5 +231,56 @@
     <string name="unlock_to_enable">Authenticate to enable lock</string>
     <string name="unlock_app">Unlock Med</string>
     <string name="unlock_action">Unlock</string>
+
+    <string name="you_tab_title">You</string>
+    <string name="medical_info_header">Medical Information</string>
+    <string name="not_set">Not set</string>
+    <string name="dob_title">Date of Birth</string>
+    <string name="blood_type_title">Blood Type</string>
+    <string name="height_title">Height</string>
+    <string name="weight_title">Weight</string>
+    <string name="allergies_title">Allergies</string>
+    <string name="gender_title">Gender</string>
+    <string name="emergency_contact_title">Emergency Contact</string>
+    <string name="home_tab_title">Home</string>
+    <string name="stats_tab_title">Stats</string>
+    <string name="remove_photo">Remove photo</string>
+    <string name="choose_another_photo">Choose another photo</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">0+</string>
+    <string name="blood_type_o_neg">0-</string>
+    <string name="dob_hint">DD/MM/YYYY</string>
+    <string name="clear_action">Clear</string>
+    <string name="height_hint">Enter your height</string>
+    <string name="weight_hint">Enter your weight</string>
+    <string name="privacy_info">Your medical data is stored locally and never sent to anyone.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">Enter your allergies</string>
+    <string name="stats_streak_label">Streak</string>
+    <string name="stats_on_time_label">On time</string>
+    <string name="stats_missed_label">Missed/wk</string>
+    <string name="notification_type_label">Notification type</string>
+    <string name="notification_type_none">None</string>
+    <string name="notification_type_normal">Notification</string>
+    <string name="notification_type_alarm">Alarm</string>
+    <string name="notification_type_default">Default</string>
+    <string name="settings_header_more">More</string>
+    <string name="settings_wearos_title">Med for WearOS</string>
+    <string name="settings_wearos_desc">Manage the WearOS companion app</string>
+    <string name="wearos_settings_title">WearOS Settings</string>
+    <string name="wearos_ring_alarms_title">Ring on watch</string>
+    <string name="wearos_ring_alarms_desc">Alarms will ring on your connected WearOS device</string>
+    <string name="wearos_alarms_disabled_desc">Alarms are currently disabled or replaced by notifications</string>
+    <string name="wearos_quick_actions_header">Watch Quick Actions</string>
+    <string name="wearos_quick_actions_desc">Select which Quick Actions can be shown on your watch.</string>
+    <string name="wearos_master_toggle_title">Use Med on WearOS</string>
 
 </resources>

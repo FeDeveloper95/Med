@@ -50,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -78,6 +79,7 @@ import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -426,6 +428,27 @@ fun WeeklyCalendarPager(
             else -> R.string.unknown
         }
 
+        val interactionSources = remember { List(7) { MutableInteractionSource() } }
+        val interactionPressedIndex = interactionSources.indexOfFirst { it.collectIsPressedAsState().value }
+
+        var simulatedPressIndex by remember { mutableIntStateOf(-1) }
+        var isInitialLoad by remember { mutableStateOf(true) }
+
+        LaunchedEffect(selectedDate) {
+            if (isInitialLoad) {
+                isInitialLoad = false
+            } else {
+                val offset = ChronoUnit.DAYS.between(weekStart, selectedDate).toInt()
+                if (offset in 0..6) {
+                    simulatedPressIndex = offset
+                    delay(200)
+                    simulatedPressIndex = -1
+                }
+            }
+        }
+
+        val activeIndex = if (interactionPressedIndex != -1) interactionPressedIndex else simulatedPressIndex
+
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(monthName),
@@ -439,11 +462,30 @@ fun WeeklyCalendarPager(
             ) {
                 for (dayOffset in 0..6) {
                     val date = weekStart.plusDays(dayOffset.toLong())
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+
+                    val targetWeight = when {
+                        activeIndex == -1 -> 1f
+                        activeIndex == dayOffset -> 1.25f
+                        activeIndex == 0 && dayOffset == 1 -> 0.75f
+                        activeIndex == 6 && dayOffset == 5 -> 0.75f
+                        activeIndex == dayOffset - 1 || activeIndex == dayOffset + 1 -> 0.875f
+                        else -> 1f
+                    }
+
+                    val animatedWeight by animateFloatAsState(
+                        targetValue = targetWeight,
+                        animationSpec = tween(durationMillis = 200),
+                        label = "weightAnim"
+                    )
+
+                    Box(modifier = Modifier.weight(animatedWeight), contentAlignment = Alignment.Center) {
                         CalendarDayItem(
                             date = date,
                             isSelected = date == selectedDate,
-                            onClick = { onDateSelected(date) })
+                            isSimulatedPress = simulatedPressIndex == dayOffset,
+                            interactionSource = interactionSources[dayOffset],
+                            onClick = { onDateSelected(date) }
+                        )
                     }
                 }
             }
@@ -452,9 +494,16 @@ fun WeeklyCalendarPager(
 }
 
 @Composable
-fun CalendarDayItem(date: LocalDate, isSelected: Boolean, onClick: () -> Unit) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+fun CalendarDayItem(
+    date: LocalDate,
+    isSelected: Boolean,
+    isSimulatedPress: Boolean = false,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    onClick: () -> Unit
+) {
+    val isInteractionPressed by interactionSource.collectIsPressedAsState()
+    val isPressed = isInteractionPressed || isSimulatedPress
+
     val backgroundColor by animateColorAsState(
         if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainerHigh,
         label = "bgColor"

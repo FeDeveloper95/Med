@@ -32,7 +32,7 @@ import com.fedeveloper95.med.THEME_SYSTEM
 @androidx.compose.ui.text.ExperimentalTextApi
 val GoogleSansFlex = FontFamily(
     Font(
-        resId = R.font.google_sans_flex,
+        resId = R.font.sans_flex,
         weight = FontWeight.Normal,
         style = FontStyle.Normal,
         variationSettings = FontVariation.Settings(

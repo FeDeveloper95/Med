@@ -23,7 +23,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Med"
-        tools:targetApi="36">
+        tools:targetApi="37">
 
         <activity
             android:name=".WelcomeActivity"
@@ -43,26 +43,37 @@
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
+            android:theme="@style/Theme.Med" />
+
+        <activity
+            android:name=".WearSettingsActivity"
+            android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
 
         <activity
             android:name=".QuickActionsSettingsActivity"
             android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
 
         <activity
             android:name=".AdvancedSettingsActivity"
             android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
 
         <activity
             android:name=".UpdaterActivity"
             android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
 
         <activity
             android:name=".NotificationsSettingsActivity"
             android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
 
         <activity
@@ -82,7 +93,20 @@
         <activity
             android:name=".services.LockActivity"
             android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
+
+        <service
+            android:name=".services.AppWearListenerService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/"
+                    android:scheme="wear" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name=".services.NotificationReceiver"

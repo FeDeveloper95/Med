@@ -23,3 +23,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Med"
 include(":app")
+include(":wear")

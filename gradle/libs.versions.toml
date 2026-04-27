@@ -1,16 +1,20 @@
 [versions]
-agp = "8.13.2"
-kotlin = "2.3.10"
-coreKtx = "1.17.0"
+agp = "9.1.1"
+composeMaterial = "1.6.1"
+kotlin = "2.3.21"
+coreKtx = "1.18.0"
 lifecycleRuntimeKtx = "2.10.0"
-activityCompose = "1.12.4"
-composeBom = "2026.02.01"
-material3 = "1.5.0-alpha15"
+activityCompose = "1.13.0"
+composeBom = "2026.04.01"
+material3 = "1.5.0-alpha18"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
 palette = "1.0.0"
+androidBuiltInKotlin = "9.2.0"
+playServicesWearable = "19.0.0"
 
 [libraries]
+androidx-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeMaterial" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -25,8 +29,10 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material3" }
 androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphicsShapes" }
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
+play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+android-built-in1-kotlin = { id = "com.android.built-in-kotlin", version.ref = "androidBuiltInKotlin" }

@@ -8,9 +8,11 @@ package com.fedeveloper95.med
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -67,6 +69,7 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -83,6 +86,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -93,7 +97,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.fedeveloper95.med.elements.NotificationsSettingsActivity.SnoozeDurationPopup
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
@@ -129,23 +136,44 @@ class NotificationsSettingsActivity : ComponentActivity() {
 @Composable
 fun NotificationsSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as ComponentActivity
+    val lifecycleOwner = LocalLifecycleOwner.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
     var hasNotificationPermission by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
             } else {
-                true
+                NotificationManagerCompat.from(context).areNotificationsEnabled()
             }
         )
     }
 
     var showNotifications by remember {
         mutableStateOf(hasNotificationPermission && prefs.getBoolean(PREF_SHOW_NOTIFICATIONS, true))
+    }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val hasPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                } else {
+                    NotificationManagerCompat.from(context).areNotificationsEnabled()
+                }
+                hasNotificationPermission = hasPerm
+
+                if (!hasPerm && showNotifications) {
+                    showNotifications = false
+                    prefs.edit().putBoolean(PREF_SHOW_NOTIFICATIONS, false).apply()
+                } else if (hasPerm && prefs.getBoolean(PREF_SHOW_NOTIFICATIONS, false)) {
+                    showNotifications = true
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -158,11 +186,43 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
 
     val handleNotificationToggle: (Boolean) -> Unit = { checked ->
         if (checked) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !hasNotificationPermission) {
-                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            val hasPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
             } else {
+                NotificationManagerCompat.from(context).areNotificationsEnabled()
+            }
+
+            if (hasPerm) {
                 showNotifications = true
                 prefs.edit().putBoolean(PREF_SHOW_NOTIFICATIONS, true).apply()
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    val hasRequested = prefs.getBoolean("has_requested_notification_permission", false)
+                    val rationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+
+                    if (!hasRequested || rationale) {
+                        prefs.edit().putBoolean("has_requested_notification_permission", true).apply()
+                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    } else {
+                        val intent = Intent().apply {
+                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        }
+                        context.startActivity(intent)
+                    }
+                } else {
+                    val intent = Intent().apply {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            action = Settings.ACTION_APP_NOTIFICATION_SETTINGS
+                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                        } else {
+                            action = "android.settings.APP_NOTIFICATION_SETTINGS"
+                            putExtra("app_package", context.packageName)
+                            putExtra("app_uid", context.applicationInfo.uid)
+                        }
+                    }
+                    context.startActivity(intent)
+                }
             }
         } else {
             showNotifications = false
@@ -254,74 +314,17 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
 
                 item {
                     val interactionSource = remember { MutableInteractionSource() }
-                    val isPressed by interactionSource.collectIsPressedAsState()
-                    val pressProgress by animateFloatAsState(
-                        targetValue = if (isPressed) 1f else 0f,
-                        animationSpec = tween(durationMillis = 200),
-                        label = "anim_shape"
-                    )
-                    val baseShape = CircleShape
-                    val animatedShape = remember(baseShape, pressProgress) {
-                        if (baseShape is RoundedCornerShape) {
-                            object : Shape {
-                                override fun createOutline(
-                                    size: Size,
-                                    layoutDirection: LayoutDirection,
-                                    density: Density
-                                ): Outline {
-                                    val targetPx = with(density) { 20.dp.toPx() }
-                                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                                        (1 - fraction) * start + fraction * stop
-
-                                    val ts = lerp(
-                                        baseShape.topStart.toPx(size, density),
-                                        targetPx,
-                                        pressProgress
-                                    )
-                                    val te = lerp(
-                                        baseShape.topEnd.toPx(size, density),
-                                        targetPx,
-                                        pressProgress
-                                    )
-                                    val bs = lerp(
-                                        baseShape.bottomStart.toPx(size, density),
-                                        targetPx,
-                                        pressProgress
-                                    )
-                                    val be = lerp(
-                                        baseShape.bottomEnd.toPx(size, density),
-                                        targetPx,
-                                        pressProgress
-                                    )
-
-                                    return Outline.Rounded(
-                                        androidx.compose.ui.geometry.RoundRect(
-                                            rect = androidx.compose.ui.geometry.Rect(
-                                                0f,
-                                                0f,
-                                                size.width,
-                                                size.height
-                                            ),
-                                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                                        )
-                                    )
-                                }
-                            }
-                        } else baseShape
-                    }
+                    val shape = RoundedCornerShape(64.dp)
 
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(animatedShape)
+                            .clip(shape)
                             .clickable(
                                 interactionSource = interactionSource,
                                 indication = LocalIndication.current
                             ) { handleNotificationToggle(!showNotifications) },
-                        shape = animatedShape,
+                        shape = shape,
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,
                             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
@@ -329,6 +332,7 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         ListItem(
+                            modifier = Modifier.padding(vertical = 4.dp),
                             headlineContent = {
                                 Text(
                                     text = stringResource(R.string.settings_show_notifications_title),

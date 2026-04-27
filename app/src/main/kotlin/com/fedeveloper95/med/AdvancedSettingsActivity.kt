@@ -113,7 +113,6 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
     val scope = rememberCoroutineScope()
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     var autoUpdates by remember { mutableStateOf(prefs.getBoolean(PREF_AUTO_UPDATES, true)) }
-    var experimentalNavBar by remember { mutableStateOf(prefs.getBoolean(PREF_EXPERIMENTAL_NAV_BAR, false)) }
 
     var showRestartDialog by remember { mutableStateOf(false) }
     var showCommunitySheet by remember { mutableStateOf(false) }

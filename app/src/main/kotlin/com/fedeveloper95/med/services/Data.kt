@@ -1,7 +1,11 @@
 package com.fedeveloper95.med.services
 
 import android.app.Application
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import androidx.annotation.Keep
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -21,6 +25,7 @@ import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @Keep
@@ -40,7 +45,8 @@ data class MedData(
     val notes: String? = null,
     val displayOrder: Int = 0,
     val intervalGap: Int? = null,
-    val category: String? = null
+    val category: String? = null,
+    val notificationType: Int = 0
 ) : Serializable {
 
     fun toJson(): JSONObject {
@@ -70,6 +76,7 @@ data class MedData(
         json.put("displayOrder", displayOrder)
         json.put("intervalGap", intervalGap ?: JSONObject.NULL)
         json.put("category", category ?: JSONObject.NULL)
+        json.put("notificationType", notificationType)
         return json
     }
 
@@ -108,7 +115,8 @@ data class MedData(
                 notes = if (json.isNull("notes")) null else json.getString("notes"),
                 displayOrder = json.optInt("displayOrder", 0),
                 intervalGap = if (json.isNull("intervalGap")) null else json.getInt("intervalGap"),
-                category = if (json.isNull("category")) null else json.getString("category")
+                category = if (json.isNull("category")) null else json.getString("category"),
+                notificationType = json.optInt("notificationType", 0)
             )
         }
     }
@@ -197,7 +205,8 @@ object DataRepository {
                         notes = null,
                         displayOrder = 0,
                         intervalGap = null,
-                        category = null
+                        category = null,
+                        notificationType = 0
                     )
                 } else null
             }
@@ -217,8 +226,33 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
     var selectedDate by mutableStateOf(LocalDate.now())
 
+    private val updateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == "com.fedeveloper95.med.RELOAD_DATA") {
+                reloadData()
+            }
+        }
+    }
+
     init {
         loadData()
+        syncToWear()
+
+        val filter = IntentFilter("com.fedeveloper95.med.RELOAD_DATA")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            application.registerReceiver(updateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            application.registerReceiver(updateReceiver, filter)
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        try {
+            getApplication<Application>().unregisterReceiver(updateReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     fun addItem(
@@ -230,7 +264,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         days: List<DayOfWeek>?,
         notes: String? = null,
         category: String? = null,
-        intervalGap: Int? = null
+        intervalGap: Int? = null,
+        notificationType: Int = 0
     ) {
         val groupId = System.currentTimeMillis()
         val baseDate = selectedDate
@@ -280,7 +315,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 notes = null,
                 displayOrder = currentOrder++,
                 category = null,
-                intervalGap = null
+                intervalGap = null,
+                notificationType = 0
             )
             _items.add(emptyDivider)
         }
@@ -307,7 +343,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 notes = notes,
                 displayOrder = currentOrder++,
                 category = category,
-                intervalGap = intervalGap
+                intervalGap = intervalGap,
+                notificationType = notificationType
             )
             _items.add(newItem)
             if (type == ItemType.Medicine) {
@@ -325,7 +362,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         times: List<LocalTime>,
         days: List<DayOfWeek>?,
         notes: String?,
-        intervalGap: Int?
+        intervalGap: Int?,
+        notificationType: Int = 0
     ) {
         val index = _items.indexOfFirst { it.id == originalItem.id }
         if (index != -1) {
@@ -338,6 +376,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 recurrenceDays = days,
                 notes = notes,
                 intervalGap = intervalGap,
+                notificationType = notificationType,
                 frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
                 else if (days != null) context.getString(R.string.frequency_specific_days)
                 else if (times.size > 1) context.getString(
@@ -442,10 +481,47 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
     fun reloadData() {
         loadData()
+        syncToWear()
+    }
+
+    private fun syncToWear() {
+        WearSyncManager.initialize(getApplication())
+        val today = LocalDate.now()
+
+        val itemsToday = _items.filter { item ->
+            when (item.type) {
+                ItemType.Event -> item.creationDate == today
+                ItemType.Medicine -> {
+                    val isAfterStart = !today.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
+                    val isCorrectDay =
+                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(today.dayOfWeek)
+                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(
+                        item.creationDate,
+                        today
+                    ) % item.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        val meds = itemsToday.filter { it.type == ItemType.Medicine }.map {
+            val taken = if (it.takenHistory.containsKey(today)) "✅ " else ""
+            "$taken${it.creationTime.format(formatter)} - ${it.title}"
+        }
+
+        val evs = itemsToday.filter { it.type == ItemType.Event && it.title.isNotBlank() && it.iconName != "DIVIDER" }.map {
+            "${it.creationTime.format(formatter)} - ${it.title}"
+        }
+
+        WearSyncManager.syncData(meds, evs)
     }
 
     private fun saveData() {
         DataRepository.saveData(getApplication(), _items)
+        syncToWear()
     }
 
     private fun loadData() {

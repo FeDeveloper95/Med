@@ -6,15 +6,11 @@ import android.graphics.Color.parseColor
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,8 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Palette
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -57,7 +51,6 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
-import com.fedeveloper95.med.AVAILABLE_COLORS
 import com.fedeveloper95.med.AVAILABLE_ICONS
 import com.fedeveloper95.med.ExpressiveTextButton
 import com.fedeveloper95.med.R
@@ -96,8 +89,14 @@ fun EventPopup(
     if (showIconPicker) {
         IconPickerDialog(
             currentIcon = selectedIconName,
+            currentColor = selectedColor,
             onDismiss = { showIconPicker = false },
-            onIconSelected = { selectedIconName = it; showIconPicker = false })
+            onConfirm = { icon, color ->
+                selectedIconName = icon
+                selectedColor = color
+                showIconPicker = false
+            }
+        )
     }
 
     if (showTimePickerForIndex != null) {
@@ -239,61 +238,6 @@ fun EventPopup(
                     time = time
                 ) { showTimePickerForIndex = 0 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.select_color),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    AVAILABLE_COLORS.forEach { colorCode ->
-                        val isSelected = selectedColor == colorCode
-                        val isDynamic = colorCode == "dynamic"
-                        val bg = if (isDynamic) MaterialTheme.colorScheme.surfaceVariant else try {
-                            Color(parseColor(colorCode))
-                        } catch (e: Exception) {
-                            Color.Gray
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(40.dp)
-                                .clip(CircleShape)
-                                .background(bg)
-                                .border(
-                                    if (isSelected) 3.dp else 0.dp,
-                                    if (isDynamic) MaterialTheme.colorScheme.primary else Color(
-                                        red = bg.red * 0.7f,
-                                        green = bg.green * 0.7f,
-                                        blue = bg.blue * 0.7f,
-                                        alpha = bg.alpha
-                                    ),
-                                    CircleShape
-                                )
-                                .clickable { selectedColor = colorCode },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            if (isDynamic) Icon(
-                                Icons.Filled.Palette,
-                                null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            if (isSelected && !isDynamic) Icon(
-                                Icons.Outlined.CheckCircle,
-                                null,
-                                tint = Color.Black.copy(0.5f),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                }
             }
         },
         confirmButton = {

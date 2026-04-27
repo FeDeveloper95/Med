@@ -21,11 +21,15 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
@@ -46,6 +50,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -93,10 +98,14 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.WideNavigationRail
+import androidx.compose.material3.WideNavigationRailItem
+import androidx.compose.material3.WideNavigationRailValue
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberWideNavigationRailState
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -151,6 +160,8 @@ import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.MedicinePopup
 import com.fedeveloper95.med.elements.MainActivity.NotesBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.WeeklyCalendarPager
+import com.fedeveloper95.med.elements.MainActivity.Tabs.StatsTab
+import com.fedeveloper95.med.elements.MainActivity.Tabs.YouTab
 import com.fedeveloper95.med.services.AppLockManager
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.services.MedViewModel
@@ -246,44 +257,12 @@ class MainActivity : ComponentActivity() {
                 onDispose { context.unregisterReceiver(receiver) }
             }
 
-            var currentTheme by remember {
-                mutableIntStateOf(
-                    prefs.getInt(
-                        PREF_THEME,
-                        THEME_SYSTEM
-                    )
-                )
-            }
-            var currentWeekStart by remember {
-                mutableStateOf(
-                    prefs.getString(
-                        PREF_WEEK_START,
-                        "monday"
-                    ) ?: "monday"
-                )
-            }
-            var currentSortOrder by remember {
-                mutableStateOf(
-                    prefs.getString(
-                        PREF_SORT_ORDER,
-                        "time"
-                    ) ?: "time"
-                )
-            }
+            var currentTheme by remember { mutableIntStateOf(prefs.getInt(PREF_THEME, THEME_SYSTEM)) }
+            var currentWeekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
+            var currentSortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
             var currentPresets by remember { mutableStateOf(loadPresets(prefs)) }
-            var useBottomSheet by remember {
-                mutableStateOf(
-                    prefs.getBoolean(
-                        "pref_experimental_bottom_sheet",
-                        true
-                    )
-                )
-            }
-            var useExperimentalNavBar by remember {
-                mutableStateOf(
-                    prefs.getBoolean("ExperimentalNavBar", false) || prefs.getBoolean("pref_experimental_navbar", false)
-                )
-            }
+            var useBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", true)) }
+            var useExperimentalNavBar by remember { mutableStateOf(prefs.getBoolean("ExperimentalNavBar", false) || prefs.getBoolean("pref_experimental_navbar", false)) }
 
             val currentVersionName = remember {
                 try {
@@ -292,15 +271,10 @@ class MainActivity : ComponentActivity() {
                     "1.0"
                 }
             }
-            val notificationPermissionLauncher =
-                rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
+            val notificationPermissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
 
             LaunchedEffect(Unit) {
-                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
-                        context,
-                        Manifest.permission.POST_NOTIFICATIONS
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
+                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
                 val update = Updater.checkForUpdates(currentVersionName)
@@ -320,26 +294,12 @@ class MainActivity : ComponentActivity() {
                 val listener =
                     SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
                         when (key) {
-                            PREF_THEME -> currentTheme =
-                                sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
-
-                            PREF_WEEK_START -> currentWeekStart =
-                                sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
-
-                            PREF_SORT_ORDER -> currentSortOrder =
-                                sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
-
-                            PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets =
-                                loadPresets(sharedPreferences)
-
-                            "pref_experimental_bottom_sheet" -> useBottomSheet =
-                                sharedPreferences.getBoolean(
-                                    "pref_experimental_bottom_sheet",
-                                    false
-                                )
-
-                            "ExperimentalNavBar", "pref_experimental_navbar" -> useExperimentalNavBar =
-                                sharedPreferences.getBoolean("ExperimentalNavBar", false) || sharedPreferences.getBoolean("pref_experimental_navbar", false)
+                            PREF_THEME -> currentTheme = sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
+                            PREF_WEEK_START -> currentWeekStart = sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
+                            PREF_SORT_ORDER -> currentSortOrder = sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
+                            PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets = loadPresets(sharedPreferences)
+                            "pref_experimental_bottom_sheet" -> useBottomSheet = sharedPreferences.getBoolean("pref_experimental_bottom_sheet", false)
+                            "ExperimentalNavBar", "pref_experimental_navbar" -> useExperimentalNavBar = sharedPreferences.getBoolean("ExperimentalNavBar", false) || sharedPreferences.getBoolean("pref_experimental_navbar", false)
                         }
                     }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -407,16 +367,14 @@ fun rememberCustomTooltipPositionProvider(
             ): IntOffset {
                 return when (position) {
                     TooltipPosition.Above -> {
-                        val x =
-                            anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
+                        val x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
                         val y = anchorBounds.top - popupContentSize.height - spacingPx
                         IntOffset(x, y)
                     }
 
                     TooltipPosition.Start -> {
                         val x = anchorBounds.left - popupContentSize.width - spacingPx
-                        val y =
-                            anchorBounds.top + (anchorBounds.height - popupContentSize.height) / 2
+                        val y = anchorBounds.top + (anchorBounds.height - popupContentSize.height) / 2
                         IntOffset(x, y)
                     }
                 }
@@ -434,7 +392,18 @@ fun ExpressiveIconButton(
     contentColor: Color
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isRealPressed by interactionSource.collectIsPressedAsState()
+    var isPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRealPressed) {
+        if (isRealPressed) {
+            isPressed = true
+        } else {
+            delay(200)
+            isPressed = false
+        }
+    }
+
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 20 else 50,
         animationSpec = tween(durationMillis = 200),
@@ -464,7 +433,18 @@ fun ExpressiveButton(
     contentColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isRealPressed by interactionSource.collectIsPressedAsState()
+    var isPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRealPressed) {
+        if (isRealPressed) {
+            isPressed = true
+        } else {
+            delay(200)
+            isPressed = false
+        }
+    }
+
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
         animationSpec = tween(durationMillis = 200),
@@ -492,7 +472,18 @@ fun ExpressiveTextButton(
     contentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
+    val isRealPressed by interactionSource.collectIsPressedAsState()
+    var isPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRealPressed) {
+        if (isRealPressed) {
+            isPressed = true
+        } else {
+            delay(200)
+            isPressed = false
+        }
+    }
+
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
         animationSpec = tween(durationMillis = 200),
@@ -547,11 +538,7 @@ fun MedApp(
                 Triple(
                     ItemType.Medicine,
                     Icons.Rounded.MedicalServices,
-                    Triple(
-                        context.getString(R.string.medicine_label),
-                        null as String?,
-                        null as String?
-                    )
+                    Triple(context.getString(R.string.medicine_label), null as String?, null as String?)
                 ),
                 Triple(
                     ItemType.Event,
@@ -563,8 +550,7 @@ fun MedApp(
             presets.mapNotNull { entry ->
                 val parts = entry.split("|")
                 if (parts.size >= 2) {
-                    val type =
-                        if (parts[0] == ItemType.Medicine.name) ItemType.Medicine else ItemType.Event
+                    val type = if (parts[0] == ItemType.Medicine.name) ItemType.Medicine else ItemType.Event
                     val name = parts[1]
                     val iconName = parts.getOrNull(2)
                     val colorCode = parts.getOrNull(3)
@@ -584,96 +570,120 @@ fun MedApp(
         defaultItems + presetItems
     }
 
-    BackHandler(fabMenuExpanded) { fabMenuExpanded = false }
+    BackHandler(enabled = fabMenuExpanded || selectedTab != 0) {
+        if (fabMenuExpanded) {
+            fabMenuExpanded = false
+        } else if (selectedTab != 0) {
+            selectedTab = 0
+        }
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = MaterialTheme.colorScheme.background,
-            floatingActionButton = {
-                if (!useExperimentalNavBar || selectedTab == 0) {
-                    MainFAB(
-                        fabMenuExpanded = fabMenuExpanded,
-                        onExpandedChange = { fabMenuExpanded = it },
-                        menuItems = menuItems,
-                        onMenuItemClick = { type, name, iconName, colorCode ->
-                            if (iconName == null) {
-                                preFilledText = ""
-                                if (type == ItemType.Medicine) showMedicineDialog =
-                                    true else showEventDialog = true
-                            } else {
-                                viewModel.addItem(
-                                    type,
-                                    name,
-                                    iconName,
-                                    colorCode,
-                                    listOf(LocalTime.now()),
-                                    null
-                                )
-                            }
-                        }
+        Row(modifier = Modifier.fillMaxSize()) {
+            if (useExperimentalNavBar && isExpandedScreen) {
+                val wideNavRailState = rememberWideNavigationRailState(initialValue = WideNavigationRailValue.Expanded)
+                WideNavigationRail(
+                    state = wideNavRailState,
+                    modifier = Modifier.width(IntrinsicSize.Max)
+                ) {
+                    val isRailExpanded = wideNavRailState.currentValue == WideNavigationRailValue.Expanded
+                    WideNavigationRailItem(
+                        railExpanded = isRailExpanded,
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 },
+                        icon = { Icon(Icons.Rounded.Home, contentDescription = null) },
+                        label = { Text(stringResource(R.string.home_tab_title), fontFamily = GoogleSansFlex) }
+                    )
+                    WideNavigationRailItem(
+                        railExpanded = isRailExpanded,
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 },
+                        icon = { Icon(Icons.Rounded.BarChart, contentDescription = null) },
+                        label = { Text(stringResource(R.string.stats_tab_title), fontFamily = GoogleSansFlex) }
+                    )
+                    WideNavigationRailItem(
+                        railExpanded = isRailExpanded,
+                        selected = selectedTab == 2,
+                        onClick = { selectedTab = 2 },
+                        icon = { Icon(Icons.Rounded.Person, contentDescription = null) },
+                        label = { Text(stringResource(R.string.you_tab_title), fontFamily = GoogleSansFlex) }
                     )
                 }
-            },
-            bottomBar = {
-                if (useExperimentalNavBar) {
-                    ShortNavigationBar {
-                        ShortNavigationBarItem(
-                            selected = selectedTab == 0,
-                            onClick = { selectedTab = 0 },
-                            icon = { Icon(Icons.Rounded.Home, contentDescription = null) },
-                            label = { Text("Home", fontFamily = GoogleSansFlex) }
-                        )
-                        ShortNavigationBarItem(
-                            selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            icon = { Icon(Icons.Rounded.BarChart, contentDescription = null) },
-                            label = { Text("Stats", fontFamily = GoogleSansFlex) }
-                        )
-                        ShortNavigationBarItem(
-                            selected = selectedTab == 2,
-                            onClick = { selectedTab = 2 },
-                            icon = { Icon(Icons.Rounded.Person, contentDescription = null) },
-                            label = { Text("You", fontFamily = GoogleSansFlex) }
-                        )
+            }
+
+            Scaffold(
+                modifier = Modifier.weight(1f),
+                containerColor = MaterialTheme.colorScheme.background,
+                floatingActionButton = {
+                    if (!useExperimentalNavBar || selectedTab == 0) {
+                        Box(modifier = Modifier.wrapContentSize(unbounded = true)) {
+                            MainFAB(
+                                fabMenuExpanded = fabMenuExpanded,
+                                onExpandedChange = { fabMenuExpanded = it },
+                                menuItems = menuItems,
+                                onMenuItemClick = { type, name, iconName, colorCode ->
+                                    fabMenuExpanded = false
+                                    if (iconName == null) {
+                                        preFilledText = ""
+                                        if (type == ItemType.Medicine) showMedicineDialog = true else showEventDialog = true
+                                    } else {
+                                        viewModel.addItem(type, name, iconName, colorCode, listOf(LocalTime.now()), null)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                },
+                bottomBar = {
+                    if (useExperimentalNavBar && !isExpandedScreen) {
+                        ShortNavigationBar {
+                            ShortNavigationBarItem(
+                                selected = selectedTab == 0,
+                                onClick = { selectedTab = 0 },
+                                icon = { Icon(Icons.Rounded.Home, contentDescription = null) },
+                                label = { Text(stringResource(R.string.home_tab_title), fontFamily = GoogleSansFlex) }
+                            )
+                            ShortNavigationBarItem(
+                                selected = selectedTab == 1,
+                                onClick = { selectedTab = 1 },
+                                icon = { Icon(Icons.Rounded.BarChart, contentDescription = null) },
+                                label = { Text(stringResource(R.string.stats_tab_title), fontFamily = GoogleSansFlex) }
+                            )
+                            ShortNavigationBarItem(
+                                selected = selectedTab == 2,
+                                onClick = { selectedTab = 2 },
+                                icon = { Icon(Icons.Rounded.Person, contentDescription = null) },
+                                label = { Text(stringResource(R.string.you_tab_title), fontFamily = GoogleSansFlex) }
+                            )
+                        }
                     }
                 }
-            }
-        ) { padding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding())
-            ) {
-                when (selectedTab) {
-                    0 -> {
-                        Column(
+            ) { padding ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding())
+                ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Row(
                             modifier = Modifier
-                                .fillMaxSize()
-                                .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 24.dp, vertical = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    stringResource(R.string.app_name),
-                                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                stringResource(R.string.app_name),
+                                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (selectedTab == 0) {
                                     ExpressiveIconButton(
                                         onClick = {
-                                            val intent =
-                                                Intent(context, EditModeActivity::class.java).apply {
-                                                    putExtra(
-                                                        "SELECTED_DATE",
-                                                        viewModel.selectedDate.toEpochDay()
-                                                    )
-                                                }
+                                            val intent = Intent(context, EditModeActivity::class.java).apply {
+                                                putExtra("SELECTED_DATE", viewModel.selectedDate.toEpochDay())
+                                            }
                                             context.startActivity(intent)
                                         },
                                         icon = Icons.Rounded.Edit,
@@ -690,467 +700,394 @@ fun MedApp(
                                         contentColor = MaterialTheme.colorScheme.onSurface
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    ExpressiveIconButton(
-                                        onClick = {
-                                            context.startActivity(
-                                                Intent(
-                                                    context,
-                                                    SettingsActivity::class.java
-                                                )
-                                            )
-                                        },
-                                        icon = Icons.Rounded.Settings,
-                                        contentDescription = stringResource(R.string.settings_desc),
-                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                }
+                                ExpressiveIconButton(
+                                    onClick = {
+                                        context.startActivity(Intent(context, SettingsActivity::class.java))
+                                    },
+                                    icon = Icons.Rounded.Settings,
+                                    contentDescription = stringResource(R.string.settings_desc),
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        }
+
+                        AnimatedContent(
+                            targetState = selectedTab,
+                            transitionSpec = {
+                                fadeIn(animationSpec = tween(200)).togetherWith(fadeOut(animationSpec = tween(200)))
+                            },
+                            label = "tab_transition",
+                            modifier = Modifier.weight(1f)
+                        ) { targetTab ->
+                            when (targetTab) {
+                                0 -> {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
+                                    ) {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        val localeForCalendar = if (weekStart == "sunday") Locale.US else Locale.ITALY
+                                        WeeklyCalendarPager(
+                                            selectedDate = viewModel.selectedDate,
+                                            onDateSelected = { viewModel.selectedDate = it },
+                                            locale = localeForCalendar
+                                        )
+                                        Spacer(modifier = Modifier.height(24.dp))
+
+                                        val initialPage = 10000
+                                        val dayPagerState = rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
+                                        val today = remember { LocalDate.now() }
+                                        var isProgrammaticScroll by remember { mutableStateOf(false) }
+
+                                        LaunchedEffect(viewModel.selectedDate) {
+                                            val daysDiff = ChronoUnit.DAYS.between(today, viewModel.selectedDate).toInt()
+                                            val targetPage = initialPage + daysDiff
+                                            if (dayPagerState.currentPage != targetPage) {
+                                                isProgrammaticScroll = true
+                                                try {
+                                                    dayPagerState.animateScrollToPage(targetPage)
+                                                } finally {
+                                                    isProgrammaticScroll = false
+                                                }
+                                            }
+                                        }
+
+                                        LaunchedEffect(dayPagerState) {
+                                            snapshotFlow { dayPagerState.currentPage }.collect { page ->
+                                                if (!isProgrammaticScroll) {
+                                                    val daysDiff = page - initialPage
+                                                    val newDate = today.plusDays(daysDiff.toLong())
+                                                    if (viewModel.selectedDate != newDate) {
+                                                        viewModel.selectedDate = newDate
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        HorizontalPager(
+                                            state = dayPagerState,
+                                            modifier = Modifier.weight(1f).fillMaxWidth()
+                                        ) { page ->
+                                            val daysDiff = page - initialPage
+                                            val pageDate = today.plusDays(daysDiff.toLong())
+
+                                            val pageItems = viewModel.items.filter { item ->
+                                                when (item.type) {
+                                                    ItemType.Event -> item.creationDate == pageDate
+                                                    ItemType.Medicine -> {
+                                                        val isAfterStart = !pageDate.isBefore(item.creationDate)
+                                                        val isBeforeEnd = item.endDate == null || !pageDate.isAfter(item.endDate)
+                                                        val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(pageDate.dayOfWeek)
+                                                        val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, pageDate) % item.intervalGap == 0L
+                                                        isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                                                    }
+                                                }
+                                            }.let { list ->
+                                                if (sortOrder == "time") {
+                                                    list.filter { it.iconName != "DIVIDER" }.sortedWith(compareBy { it.creationTime })
+                                                } else {
+                                                    var currentList = list.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+                                                    var changed = true
+                                                    while (changed) {
+                                                        changed = false
+                                                        val toRemove = currentList.filterIndexed { i, current ->
+                                                            if (current.iconName == "DIVIDER") {
+                                                                val next = currentList.getOrNull(i + 1)
+                                                                next == null || next.iconName == "DIVIDER"
+                                                            } else false
+                                                        }
+                                                        if (toRemove.isNotEmpty()) {
+                                                            currentList = currentList.filterNot { it in toRemove }
+                                                            changed = true
+                                                        }
+                                                    }
+                                                    currentList
+                                                }
+                                            }
+
+                                            var isRefreshing by remember { mutableStateOf(false) }
+                                            val pullRefreshState = rememberPullToRefreshState()
+                                            val onRefresh: () -> Unit = {
+                                                isRefreshing = true; scope.launch { delay(1000); viewModel.reloadData(); isRefreshing = false }
+                                            }
+
+                                            PullToRefreshBox(
+                                                state = pullRefreshState,
+                                                isRefreshing = isRefreshing,
+                                                onRefresh = onRefresh,
+                                                modifier = Modifier.fillMaxSize(),
+                                                indicator = {
+                                                    Box(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        contentAlignment = Alignment.TopCenter
+                                                    ) {
+                                                        PullToRefreshDefaults.LoadingIndicator(
+                                                            state = pullRefreshState,
+                                                            isRefreshing = isRefreshing
+                                                        )
+                                                    }
+                                                }
+                                            ) {
+                                                if (pageItems.isEmpty()) {
+                                                    Box(
+                                                        modifier = Modifier.fillMaxSize(),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                            Icon(
+                                                                Icons.Rounded.Event,
+                                                                contentDescription = null,
+                                                                modifier = Modifier.size(64.dp),
+                                                                tint = MaterialTheme.colorScheme.surfaceVariant
+                                                            )
+                                                            Spacer(modifier = Modifier.height(16.dp))
+                                                            Text(
+                                                                stringResource(R.string.no_events_label),
+                                                                style = MaterialTheme.typography.bodyLarge,
+                                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                            )
+                                                        }
+                                                    }
+                                                } else {
+                                                    if (isExpandedScreen) {
+                                                        LazyVerticalGrid(
+                                                            columns = GridCells.Adaptive(minSize = 340.dp),
+                                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                                        ) {
+                                                            items(
+                                                                count = pageItems.size,
+                                                                key = { pageItems[it].id },
+                                                                span = { idx ->
+                                                                    if (pageItems[idx].iconName == "DIVIDER") GridItemSpan(maxLineSpan) else GridItemSpan(1)
+                                                                }
+                                                            ) { idx ->
+                                                                val item = pageItems[idx]
+                                                                val isDivider = item.iconName == "DIVIDER"
+
+                                                                Box(
+                                                                    modifier = Modifier.animateItem(
+                                                                        placementSpec = spring(
+                                                                            stiffness = Spring.StiffnessMediumLow,
+                                                                            visibilityThreshold = IntOffset.VisibilityThreshold
+                                                                        ),
+                                                                        fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                                                        fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                                                    )
+                                                                ) {
+                                                                    if (isDivider) {
+                                                                        if (item.title.isNotBlank()) {
+                                                                            Row(
+                                                                                modifier = Modifier
+                                                                                    .fillMaxWidth()
+                                                                                    .padding(
+                                                                                        start = 8.dp,
+                                                                                        top = if (idx == 0) 0.dp else 16.dp,
+                                                                                        bottom = 16.dp,
+                                                                                        end = 8.dp
+                                                                                    ),
+                                                                                verticalAlignment = Alignment.CenterVertically
+                                                                            ) {
+                                                                                Text(
+                                                                                    text = item.title,
+                                                                                    style = MaterialTheme.typography.titleMedium.copy(
+                                                                                        fontFamily = GoogleSansFlex,
+                                                                                        fontWeight = FontWeight.Normal
+                                                                                    ),
+                                                                                    color = MaterialTheme.colorScheme.primary
+                                                                                )
+                                                                            }
+                                                                        } else {
+                                                                            Spacer(modifier = Modifier.height(if (idx == 0) 0.dp else 24.dp))
+                                                                        }
+                                                                    } else {
+                                                                        val shape = RoundedCornerShape(24.dp)
+                                                                        SwipeableSquishItem(
+                                                                            item = item,
+                                                                            shape = shape,
+                                                                            onDeleteThresholdReached = { resetAnimation ->
+                                                                                val itemToRestore = item
+                                                                                viewModel.deleteItem(item, pageDate)
+                                                                                val deletedMsg = context.getString(R.string.item_deleted, item.title)
+                                                                                val undoMsg = context.getString(R.string.undo_action)
+                                                                                scope.launch {
+                                                                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                                                                    val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                                                    val result = snackbarHostState.showSnackbar(
+                                                                                        message = deletedMsg,
+                                                                                        actionLabel = undoMsg,
+                                                                                        withDismissAction = true,
+                                                                                        duration = SnackbarDuration.Indefinite
+                                                                                    )
+                                                                                    dismissJob.cancel()
+                                                                                    if (result == SnackbarResult.ActionPerformed) {
+                                                                                        viewModel.restoreItem(itemToRestore)
+                                                                                        resetAnimation()
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            onSwipeStart = { activeSwipingItemId = item.id },
+                                                                            onSwipeCancel = { activeSwipingItemId = null }
+                                                                        ) {
+                                                                            MedDataCard(
+                                                                                item = item,
+                                                                                currentViewDate = pageDate,
+                                                                                shape = shape,
+                                                                                onToggle = { viewModel.toggleMedicine(item, pageDate) },
+                                                                                onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
+                                                                                onLongClick = { editingItem = item }
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height(100.dp)) }
+                                                        }
+                                                    } else {
+                                                        LazyColumn(
+                                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                                        ) {
+                                                            itemsIndexed(
+                                                                items = pageItems,
+                                                                key = { _, item -> item.id }) { index, item ->
+
+                                                                val isDivider = item.iconName == "DIVIDER"
+                                                                val isFirstInGroup = index == 0 || pageItems.getOrNull(index - 1)?.iconName == "DIVIDER"
+                                                                val isLastInGroup = index == pageItems.lastIndex || pageItems.getOrNull(index + 1)?.iconName == "DIVIDER"
+
+                                                                val topRadius = if (isFirstInGroup) 20.dp else 4.dp
+                                                                val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
+                                                                val shape = RoundedCornerShape(
+                                                                    topStart = topRadius,
+                                                                    topEnd = topRadius,
+                                                                    bottomStart = bottomRadius,
+                                                                    bottomEnd = bottomRadius
+                                                                )
+
+                                                                Box(
+                                                                    modifier = Modifier.animateItem(
+                                                                        placementSpec = spring(
+                                                                            stiffness = Spring.StiffnessMediumLow,
+                                                                            visibilityThreshold = IntOffset.VisibilityThreshold
+                                                                        ),
+                                                                        fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
+                                                                        fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                                                    )
+                                                                ) {
+                                                                    if (isDivider) {
+                                                                        if (item.title.isNotBlank()) {
+                                                                            Row(
+                                                                                modifier = Modifier
+                                                                                    .fillMaxWidth()
+                                                                                    .padding(
+                                                                                        start = 16.dp,
+                                                                                        top = if (index == 0) 0.dp else 16.dp,
+                                                                                        bottom = 16.dp,
+                                                                                        end = 16.dp
+                                                                                    ),
+                                                                                verticalAlignment = Alignment.CenterVertically
+                                                                            ) {
+                                                                                Text(
+                                                                                    text = item.title,
+                                                                                    style = MaterialTheme.typography.titleMedium.copy(
+                                                                                        fontFamily = GoogleSansFlex,
+                                                                                        fontWeight = FontWeight.Normal
+                                                                                    ),
+                                                                                    color = MaterialTheme.colorScheme.primary
+                                                                                )
+                                                                            }
+                                                                        } else {
+                                                                            Spacer(modifier = Modifier.height(if (index == 0) 0.dp else 24.dp))
+                                                                        }
+                                                                    } else {
+                                                                        SwipeableSquishItem(
+                                                                            item = item,
+                                                                            shape = shape,
+                                                                            onDeleteThresholdReached = { resetAnimation ->
+                                                                                val itemToRestore = item
+                                                                                viewModel.deleteItem(item, pageDate)
+                                                                                val deletedMsg = context.getString(R.string.item_deleted, item.title)
+                                                                                val undoMsg = context.getString(R.string.undo_action)
+                                                                                scope.launch {
+                                                                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                                                                    val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
+                                                                                    val result = snackbarHostState.showSnackbar(
+                                                                                        message = deletedMsg,
+                                                                                        actionLabel = undoMsg,
+                                                                                        withDismissAction = true,
+                                                                                        duration = SnackbarDuration.Indefinite
+                                                                                    )
+                                                                                    dismissJob.cancel()
+                                                                                    if (result == SnackbarResult.ActionPerformed) {
+                                                                                        viewModel.restoreItem(itemToRestore)
+                                                                                        resetAnimation()
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            onSwipeStart = { activeSwipingItemId = item.id },
+                                                                            onSwipeCancel = { activeSwipingItemId = null }
+                                                                        ) {
+                                                                            MedDataCard(
+                                                                                item = item,
+                                                                                currentViewDate = pageDate,
+                                                                                shape = shape,
+                                                                                onToggle = { viewModel.toggleMedicine(item, pageDate) },
+                                                                                onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
+                                                                                onLongClick = { editingItem = item }
+                                                                            )
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            item { Spacer(modifier = Modifier.height(100.dp)) }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                1 -> {
+                                    StatsTab(
+                                        viewModel = viewModel,
+                                        onNavigateToHome = { date ->
+                                            viewModel.selectedDate = date
+                                            selectedTab = 0
+                                        }
                                     )
                                 }
-                            }
-                            Spacer(modifier = Modifier.height(8.dp))
-                            val localeForCalendar = if (weekStart == "sunday") Locale.US else Locale.ITALY
-                            WeeklyCalendarPager(
-                                selectedDate = viewModel.selectedDate,
-                                onDateSelected = { viewModel.selectedDate = it },
-                                locale = localeForCalendar
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-
-                            val initialPage = 10000
-                            val dayPagerState =
-                                rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
-                            val today = remember { LocalDate.now() }
-
-                            var isProgrammaticScroll by remember { mutableStateOf(false) }
-
-                            LaunchedEffect(viewModel.selectedDate) {
-                                val daysDiff =
-                                    ChronoUnit.DAYS.between(today, viewModel.selectedDate).toInt()
-                                val targetPage = initialPage + daysDiff
-                                if (dayPagerState.currentPage != targetPage) {
-                                    isProgrammaticScroll = true
-                                    try {
-                                        dayPagerState.animateScrollToPage(targetPage)
-                                    } finally {
-                                        isProgrammaticScroll = false
-                                    }
-                                }
-                            }
-
-                            LaunchedEffect(dayPagerState) {
-                                snapshotFlow { dayPagerState.currentPage }.collect { page ->
-                                    if (!isProgrammaticScroll) {
-                                        val daysDiff = page - initialPage
-                                        val newDate = today.plusDays(daysDiff.toLong())
-                                        if (viewModel.selectedDate != newDate) {
-                                            viewModel.selectedDate = newDate
-                                        }
-                                    }
-                                }
-                            }
-
-                            HorizontalPager(
-                                state = dayPagerState,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                            ) { page ->
-                                val daysDiff = page - initialPage
-                                val pageDate = today.plusDays(daysDiff.toLong())
-
-                                val pageItems = viewModel.items.filter { item ->
-                                    when (item.type) {
-                                        ItemType.Event -> item.creationDate == pageDate
-                                        ItemType.Medicine -> {
-                                            val isAfterStart = !pageDate.isBefore(item.creationDate)
-                                            val isBeforeEnd =
-                                                item.endDate == null || !pageDate.isAfter(item.endDate)
-                                            val isCorrectDay =
-                                                item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
-                                                    pageDate.dayOfWeek
-                                                )
-                                            val isCorrectGap =
-                                                item.intervalGap == null || ChronoUnit.DAYS.between(
-                                                    item.creationDate,
-                                                    pageDate
-                                                ) % item.intervalGap == 0L
-                                            isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
-                                        }
-                                    }
-                                }.let { list ->
-                                    if (sortOrder == "time") {
-                                        list.filter { it.iconName != "DIVIDER" }
-                                            .sortedWith(compareBy { it.creationTime })
-                                    } else {
-                                        var currentList = list.sortedWith(
-                                            compareBy(
-                                                { it.displayOrder },
-                                                { it.creationTime })
-                                        )
-                                        var changed = true
-                                        while (changed) {
-                                            changed = false
-                                            val toRemove = currentList.filterIndexed { i, current ->
-                                                if (current.iconName == "DIVIDER") {
-                                                    val next = currentList.getOrNull(i + 1)
-                                                    next == null || next.iconName == "DIVIDER"
-                                                } else false
-                                            }
-                                            if (toRemove.isNotEmpty()) {
-                                                currentList = currentList.filterNot { it in toRemove }
-                                                changed = true
-                                            }
-                                        }
-                                        currentList
-                                    }
-                                }
-
-                                var isRefreshing by remember { mutableStateOf(false) }
-                                val pullRefreshState = rememberPullToRefreshState()
-                                val onRefresh: () -> Unit = {
-                                    isRefreshing = true; scope.launch {
-                                    delay(1000); viewModel.reloadData(); isRefreshing = false
-                                }
-                                }
-
-                                PullToRefreshBox(
-                                    state = pullRefreshState,
-                                    isRefreshing = isRefreshing,
-                                    onRefresh = onRefresh,
-                                    modifier = Modifier.fillMaxSize(),
-                                    indicator = {
-                                        Box(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            contentAlignment = Alignment.TopCenter
-                                        ) {
-                                            PullToRefreshDefaults.LoadingIndicator(
-                                                state = pullRefreshState,
-                                                isRefreshing = isRefreshing
-                                            )
-                                        }
-                                    }
-                                ) {
-                                    if (pageItems.isEmpty()) {
-                                        Box(
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                                Icon(
-                                                    Icons.Rounded.Event,
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(64.dp),
-                                                    tint = MaterialTheme.colorScheme.surfaceVariant
-                                                )
-                                                Spacer(modifier = Modifier.height(16.dp))
-                                                Text(
-                                                    stringResource(R.string.no_events_label),
-                                                    style = MaterialTheme.typography.bodyLarge,
-                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                                )
-                                            }
-                                        }
-                                    } else {
-                                        if (isExpandedScreen) {
-                                            LazyVerticalGrid(
-                                                columns = GridCells.Adaptive(minSize = 340.dp),
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(horizontal = 16.dp),
-                                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                                            ) {
-                                                items(
-                                                    count = pageItems.size,
-                                                    key = { pageItems[it].id },
-                                                    span = { idx ->
-                                                        if (pageItems[idx].iconName == "DIVIDER") GridItemSpan(
-                                                            maxLineSpan
-                                                        ) else GridItemSpan(1)
-                                                    }
-                                                ) { idx ->
-                                                    val item = pageItems[idx]
-                                                    val isDivider = item.iconName == "DIVIDER"
-
-                                                    Box(
-                                                        modifier = Modifier.animateItem(
-                                                            placementSpec = spring(
-                                                                stiffness = Spring.StiffnessMediumLow,
-                                                                visibilityThreshold = IntOffset.VisibilityThreshold
-                                                            ),
-                                                            fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                                            fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                                                        )
-                                                    ) {
-                                                        if (isDivider) {
-                                                            if (item.title.isNotBlank()) {
-                                                                Row(
-                                                                    modifier = Modifier
-                                                                        .fillMaxWidth()
-                                                                        .padding(
-                                                                            start = 8.dp,
-                                                                            top = if (idx == 0) 0.dp else 16.dp,
-                                                                            bottom = 16.dp,
-                                                                            end = 8.dp
-                                                                        ),
-                                                                    verticalAlignment = Alignment.CenterVertically
-                                                                ) {
-                                                                    Text(
-                                                                        text = item.title,
-                                                                        style = MaterialTheme.typography.titleMedium.copy(
-                                                                            fontFamily = GoogleSansFlex,
-                                                                            fontWeight = FontWeight.Normal
-                                                                        ),
-                                                                        color = MaterialTheme.colorScheme.primary
-                                                                    )
-                                                                }
-                                                            } else {
-                                                                Spacer(modifier = Modifier.height(if (idx == 0) 0.dp else 24.dp))
-                                                            }
-                                                        } else {
-                                                            val shape = RoundedCornerShape(24.dp)
-                                                            SwipeableSquishItem(
-                                                                item = item,
-                                                                shape = shape,
-                                                                onDeleteThresholdReached = { resetAnimation ->
-                                                                    val itemToRestore = item
-                                                                    viewModel.deleteItem(item, pageDate)
-                                                                    val deletedMsg = context.getString(
-                                                                        R.string.item_deleted,
-                                                                        item.title
-                                                                    )
-                                                                    val undoMsg =
-                                                                        context.getString(R.string.undo_action)
-                                                                    scope.launch {
-                                                                        snackbarHostState.currentSnackbarData?.dismiss()
-                                                                        val dismissJob =
-                                                                            launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                                        val result =
-                                                                            snackbarHostState.showSnackbar(
-                                                                                message = deletedMsg,
-                                                                                actionLabel = undoMsg,
-                                                                                withDismissAction = true,
-                                                                                duration = SnackbarDuration.Indefinite
-                                                                            )
-                                                                        dismissJob.cancel()
-                                                                        if (result == SnackbarResult.ActionPerformed) {
-                                                                            viewModel.restoreItem(
-                                                                                itemToRestore
-                                                                            )
-                                                                            resetAnimation()
-                                                                        }
-                                                                    }
-                                                                },
-                                                                onSwipeStart = {
-                                                                    activeSwipingItemId = item.id
-                                                                },
-                                                                onSwipeCancel = {
-                                                                    activeSwipingItemId = null
-                                                                }
-                                                            ) {
-                                                                MedDataCard(
-                                                                    item = item,
-                                                                    currentViewDate = pageDate,
-                                                                    shape = shape,
-                                                                    onToggle = {
-                                                                        viewModel.toggleMedicine(
-                                                                            item,
-                                                                            pageDate
-                                                                        )
-                                                                    },
-                                                                    onClick = {
-                                                                        if (!item.notes.isNullOrBlank()) noteToShow =
-                                                                            item.notes
-                                                                    },
-                                                                    onLongClick = { editingItem = item }
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                item(span = { GridItemSpan(maxLineSpan) }) {
-                                                    Spacer(
-                                                        modifier = Modifier.height(
-                                                            100.dp
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                        } else {
-                                            LazyColumn(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(horizontal = 16.dp),
-                                                verticalArrangement = Arrangement.spacedBy(2.dp)
-                                            ) {
-                                                itemsIndexed(
-                                                    items = pageItems,
-                                                    key = { _, item -> item.id }) { index, item ->
-
-                                                    val isDivider = item.iconName == "DIVIDER"
-                                                    val isFirstInGroup =
-                                                        index == 0 || pageItems.getOrNull(index - 1)?.iconName == "DIVIDER"
-                                                    val isLastInGroup =
-                                                        index == pageItems.lastIndex || pageItems.getOrNull(
-                                                            index + 1
-                                                        )?.iconName == "DIVIDER"
-
-                                                    val topRadius = if (isFirstInGroup) 20.dp else 4.dp
-                                                    val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
-                                                    val shape = RoundedCornerShape(
-                                                        topStart = topRadius,
-                                                        topEnd = topRadius,
-                                                        bottomStart = bottomRadius,
-                                                        bottomEnd = bottomRadius
-                                                    )
-
-                                                    Box(
-                                                        modifier = Modifier.animateItem(
-                                                            placementSpec = spring(
-                                                                stiffness = Spring.StiffnessMediumLow,
-                                                                visibilityThreshold = IntOffset.VisibilityThreshold
-                                                            ),
-                                                            fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                                            fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
-                                                        )
-                                                    ) {
-                                                        if (isDivider) {
-                                                            if (item.title.isNotBlank()) {
-                                                                Row(
-                                                                    modifier = Modifier
-                                                                        .fillMaxWidth()
-                                                                        .padding(
-                                                                            start = 16.dp,
-                                                                            top = if (index == 0) 0.dp else 16.dp,
-                                                                            bottom = 16.dp,
-                                                                            end = 16.dp
-                                                                        ),
-                                                                    verticalAlignment = Alignment.CenterVertically
-                                                                ) {
-                                                                    Text(
-                                                                        text = item.title,
-                                                                        style = MaterialTheme.typography.titleMedium.copy(
-                                                                            fontFamily = GoogleSansFlex,
-                                                                            fontWeight = FontWeight.Normal
-                                                                        ),
-                                                                        color = MaterialTheme.colorScheme.primary
-                                                                    )
-                                                                }
-                                                            } else {
-                                                                Spacer(modifier = Modifier.height(if (index == 0) 0.dp else 24.dp))
-                                                            }
-                                                        } else {
-                                                            SwipeableSquishItem(
-                                                                item = item,
-                                                                shape = shape,
-                                                                onDeleteThresholdReached = { resetAnimation ->
-                                                                    val itemToRestore = item
-                                                                    viewModel.deleteItem(item, pageDate)
-
-                                                                    val deletedMsg = context.getString(
-                                                                        R.string.item_deleted,
-                                                                        item.title
-                                                                    )
-                                                                    val undoMsg =
-                                                                        context.getString(R.string.undo_action)
-
-                                                                    scope.launch {
-                                                                        snackbarHostState.currentSnackbarData?.dismiss()
-                                                                        val dismissJob =
-                                                                            launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                                        val result =
-                                                                            snackbarHostState.showSnackbar(
-                                                                                message = deletedMsg,
-                                                                                actionLabel = undoMsg,
-                                                                                withDismissAction = true,
-                                                                                duration = SnackbarDuration.Indefinite
-                                                                            )
-                                                                        dismissJob.cancel()
-                                                                        if (result == SnackbarResult.ActionPerformed) {
-                                                                            viewModel.restoreItem(
-                                                                                itemToRestore
-                                                                            )
-                                                                            resetAnimation()
-                                                                        }
-                                                                    }
-                                                                },
-                                                                onSwipeStart = {
-                                                                    activeSwipingItemId = item.id
-                                                                },
-                                                                onSwipeCancel = {
-                                                                    activeSwipingItemId = null
-                                                                }
-                                                            ) {
-                                                                MedDataCard(
-                                                                    item = item,
-                                                                    currentViewDate = pageDate,
-                                                                    shape = shape,
-                                                                    onToggle = {
-                                                                        viewModel.toggleMedicine(
-                                                                            item,
-                                                                            pageDate
-                                                                        )
-                                                                    },
-                                                                    onClick = {
-                                                                        if (!item.notes.isNullOrBlank()) noteToShow =
-                                                                            item.notes
-                                                                    },
-                                                                    onLongClick = { editingItem = item }
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                                item { Spacer(modifier = Modifier.height(100.dp)) }
-                                            }
-                                        }
-                                    }
+                                2 -> {
+                                    YouTab()
                                 }
                             }
                         }
                     }
-                    1 -> {
+
+                    if (fabMenuExpanded) {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "Stats",
-                                style = MaterialTheme.typography.displayMedium,
-                                fontFamily = GoogleSansFlex,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
-                    }
-                    2 -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "You",
-                                style = MaterialTheme.typography.displayMedium,
-                                fontFamily = GoogleSansFlex,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                        }
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Transparent)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) { fabMenuExpanded = false }
+                        )
                     }
                 }
             }
-            if (fabMenuExpanded) Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Transparent)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null
-                    ) { fabMenuExpanded = false })
         }
 
         MedSnackbarHost(
             hostState = snackbarHostState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 120.dp)
+                .padding(bottom = if (useExperimentalNavBar && !isExpandedScreen) 180.dp else 120.dp)
         )
     }
 
@@ -1161,15 +1098,13 @@ fun MedApp(
     }
 
     if (showDatePicker) {
-        val datePickerState =
-            rememberDatePickerState(initialSelectedDateMillis = viewModel.selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = viewModel.selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 ExpressiveTextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        viewModel.selectedDate =
-                            LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000))
+                        viewModel.selectedDate = LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000))
                     }; showDatePicker = false
                 }, text = stringResource(R.string.ok_action))
             },
@@ -1193,17 +1128,8 @@ fun MedApp(
             if (isMed) {
                 MedicineBottomSheet(
                     onDismiss = { editingItem = null },
-                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            times,
-                            days,
-                            notes,
-                            intervalGap
-                        )
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType ->
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap, notificationType)
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -1212,16 +1138,7 @@ fun MedApp(
                 EventBottomSheet(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            times,
-                            days,
-                            notes,
-                            intervalGap
-                        )
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -1232,16 +1149,7 @@ fun MedApp(
                 MedicinePopup(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            times,
-                            days,
-                            notes,
-                            intervalGap
-                        )
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -1250,16 +1158,7 @@ fun MedApp(
                 EventPopup(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            times,
-                            days,
-                            notes,
-                            intervalGap
-                        )
+                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -1272,17 +1171,8 @@ fun MedApp(
         if (useBottomSheet) {
             MedicineBottomSheet(
                 onDismiss = { showMedicineDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(
-                        ItemType.Medicine,
-                        title,
-                        iconName,
-                        colorCode,
-                        times,
-                        days,
-                        notes = notes,
-                        intervalGap = intervalGap
-                    )
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType ->
+                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap, notificationType = notificationType)
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -1291,16 +1181,7 @@ fun MedApp(
             MedicinePopup(
                 onDismiss = { showMedicineDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(
-                        ItemType.Medicine,
-                        title,
-                        iconName,
-                        colorCode,
-                        times,
-                        days,
-                        notes = notes,
-                        intervalGap = intervalGap
-                    )
+                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -1313,16 +1194,7 @@ fun MedApp(
             EventBottomSheet(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(
-                        ItemType.Event,
-                        title,
-                        iconName,
-                        colorCode,
-                        times,
-                        days,
-                        notes = notes,
-                        intervalGap = intervalGap
-                    )
+                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showEventDialog = false
                 },
                 initialText = preFilledText
@@ -1331,16 +1203,7 @@ fun MedApp(
             EventPopup(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(
-                        ItemType.Event,
-                        title,
-                        iconName,
-                        colorCode,
-                        times,
-                        days,
-                        notes = notes,
-                        intervalGap = intervalGap
-                    )
+                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
                     showEventDialog = false
                 },
                 initialText = preFilledText
