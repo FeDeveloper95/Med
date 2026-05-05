@@ -6,11 +6,8 @@
     <string name="no_events">No events</string>
     <string name="add_event">Add Event</string>
     <string name="settings">Settings</string>
-    <string name="no_events_enabled">No events enabled in app</string>
+    <string name="no_events_enabled">No Quick Actions found</string>
     <string name="alarms_title">Alarms</string>
     <string name="alarms_desc">Receive alarms on your watch</string>
     <string name="quick_actions_title">Quick Actions</string>
-    <string name="action_add_med">Add Medicine</string>
-    <string name="action_add_event">Add Event</string>
-    <string name="action_community">Community</string>
 </resources>

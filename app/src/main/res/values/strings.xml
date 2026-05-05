@@ -222,7 +222,6 @@
     <string name="settings_reset_confirmation_desc">Are you sure you want to delete all your medicines, events, and settings? This action cannot be undone.</string>
     <string name="settings_reset_action">Reset</string>
     <string name="group_name_label">Group name</string>
-    <string name="add_divider">Add divider</string>
     <string name="delete_mode_action">Delete mode</string>
     <string name="add_to_group">Add to %1$s</string>
     <string name="remove_from_group">Remove from %1$s</string>
@@ -240,8 +239,6 @@
     <string name="height_title">Height</string>
     <string name="weight_title">Weight</string>
     <string name="allergies_title">Allergies</string>
-    <string name="gender_title">Gender</string>
-    <string name="emergency_contact_title">Emergency Contact</string>
     <string name="home_tab_title">Home</string>
     <string name="stats_tab_title">Stats</string>
     <string name="remove_photo">Remove photo</string>

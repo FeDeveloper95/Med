@@ -1,5 +1,4 @@
 @file:OptIn(ExperimentalTextApi::class)
-
 package com.fedeveloper95.med
 
 import android.annotation.SuppressLint
@@ -44,7 +43,6 @@ import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.ViewStream
 import androidx.compose.material.icons.rounded.Watch
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -76,8 +74,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -104,7 +104,6 @@ class SettingsActivity : ComponentActivity() {
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
             var currentThemeOverride by remember { mutableIntStateOf(savedTheme) }
-
             MedTheme(themeOverride = currentThemeOverride) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -130,29 +129,19 @@ fun SettingsScreen(
     onThemeChanged: (Int) -> Unit
 ) {
     val context = LocalContext.current
-
+    val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
-
     var weekStart by remember {
         mutableStateOf(
             prefs.getString(PREF_WEEK_START, "monday") ?: "monday"
         )
     }
     var sortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
-    var experimentalBottomSheet by remember {
-        mutableStateOf(
-            prefs.getBoolean(
-                "pref_experimental_bottom_sheet",
-                true
-            )
-        )
-    }
     var appLockEnabled by remember {
         mutableStateOf(
             prefs.getBoolean("pref_app_lock", false)
         )
     }
-
     var showThemeDialog by remember { mutableStateOf(false) }
     var showWeekStartDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
@@ -170,7 +159,6 @@ fun SettingsScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
     val appBarTypography = MaterialTheme.typography.copy(
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
@@ -232,7 +220,6 @@ fun SettingsScreen(
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
                 }
-
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_customization),
@@ -244,7 +231,6 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Palette,
@@ -266,12 +252,11 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Event,
                         title = stringResource(R.string.settings_week_start_title),
-                        subtitle = if (weekStart == "sunday") stringResource(R.string.sunday) else stringResource(
+                        subtitle = if (weekStart == "monday") stringResource(R.string.monday) else stringResource(
                             R.string.monday
                         ),
                         containerColor = Color(0xFFffb683),
@@ -281,7 +266,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Sort,
@@ -291,33 +275,16 @@ fun SettingsScreen(
                         ),
                         containerColor = Color(0xFF40C4FF),
                         iconColor = Color(0xFF003B5C),
-                        shape = RoundedCornerShape(4.dp),
-                        onClick = { showSortDialog = true }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
-
-                item {
-                    SettingsItemCard(
-                        icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
-                        title = stringResource(R.string.settings_presets_title),
-                        subtitle = stringResource(R.string.settings_presets_desc),
-                        containerColor = Color(0xFF80da88),
-                        iconColor = Color(0xFF00522c),
                         shape = RoundedCornerShape(
                             topStart = 4.dp,
                             topEnd = 4.dp,
                             bottomStart = 20.dp,
                             bottomEnd = 20.dp
                         ),
-                        onClick = {
-                            val intent = Intent(context, QuickActionsSettingsActivity::class.java)
-                            context.startActivity(intent)
-                        }
+                        onClick = { showSortDialog = true }
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_preferences),
@@ -329,7 +296,6 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.NotificationsActive,
@@ -350,24 +316,21 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
-                    SettingsSwitchCard(
-                        icon = Icons.Rounded.ViewStream,
-                        title = stringResource(R.string.settings_bottom_sheet_title),
-                        subtitle = stringResource(R.string.settings_bottom_sheet_desc),
-                        containerColor = Color(0xFFA1C9FF),
-                        iconColor = Color(0xFF04409F),
+                    SettingsItemCard(
+                        icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
+                        title = stringResource(R.string.settings_presets_title),
+                        subtitle = stringResource(R.string.settings_presets_desc),
+                        containerColor = Color(0xFF80da88),
+                        iconColor = Color(0xFF00522c),
                         shape = RoundedCornerShape(4.dp),
-                        checked = experimentalBottomSheet,
-                        onCheckedChange = {
-                            experimentalBottomSheet = it
-                            prefs.edit().putBoolean("pref_experimental_bottom_sheet", it).apply()
+                        onClick = {
+                            val intent = Intent(context, QuickActionsSettingsActivity::class.java)
+                            context.startActivity(intent)
                         }
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     val activity = LocalContext.current as ComponentActivity
                     SettingsSwitchCard(
@@ -379,6 +342,7 @@ fun SettingsScreen(
                         shape = RoundedCornerShape(4.dp),
                         checked = appLockEnabled,
                         onCheckedChange = { isChecked ->
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             if (isChecked) {
                                 AppLockManager.authenticate(
                                     activity,
@@ -395,7 +359,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Tune,
@@ -416,7 +379,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_more),
@@ -428,7 +390,6 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
-
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     item {
                         SettingsItemCard(
@@ -458,7 +419,6 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Watch,
@@ -483,7 +443,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_info),
@@ -495,7 +454,6 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Info,
@@ -524,7 +482,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Code,
@@ -543,7 +500,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.BugReport,
@@ -560,7 +516,6 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
-
                 item {
                     SettingsItemCard(
                         icon = ImageVector.vectorResource(R.drawable.ic_phone_update),
@@ -661,12 +616,10 @@ fun SettingsItemCard(
                     val targetPx = with(density) { 20.dp.toPx() }
                     fun lerp(start: Float, stop: Float, fraction: Float) =
                         (1 - fraction) * start + fraction * stop
-
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
                     val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
                     val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
                             rect = androidx.compose.ui.geometry.Rect(
@@ -785,12 +738,10 @@ fun SettingsSwitchCard(
                     val targetPx = with(density) { 20.dp.toPx() }
                     fun lerp(start: Float, stop: Float, fraction: Float) =
                         (1 - fraction) * start + fraction * stop
-
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
                     val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
                     val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
                             rect = androidx.compose.ui.geometry.Rect(

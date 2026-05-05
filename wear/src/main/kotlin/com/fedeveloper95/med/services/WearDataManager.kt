@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.android.gms.wearable.DataClient
@@ -15,10 +16,12 @@ import com.google.android.gms.wearable.Wearable
 
 @SuppressLint("StaticFieldLeak")
 object WearDataManager : DataClient.OnDataChangedListener {
+
     val enabledEvents = mutableStateListOf<String>()
     val availableEvents = mutableStateListOf<String>()
     val medicines = mutableStateListOf<String>()
     val eventsList = mutableStateListOf<String>()
+    val itemStates = mutableStateMapOf<String, Boolean>()
 
     var alarmsEnabled by mutableStateOf(true)
 
@@ -41,18 +44,38 @@ object WearDataManager : DataClient.OnDataChangedListener {
                 when (item.uri.path) {
                     "/settings" -> {
                         alarmsEnabled = dataMap.getBoolean("alarms_enabled", true)
-                        val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
-                        enabledEvents.clear()
-                        enabledEvents.addAll(events)
+
                         val avail = dataMap.getStringArray("available_events") ?: emptyArray()
                         availableEvents.clear()
-                        availableEvents.addAll(avail)
+                        val validAvailable = avail.filter { it.isNotBlank() }
+                        availableEvents.addAll(validAvailable)
+
+                        val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
+                        enabledEvents.clear()
+                        enabledEvents.addAll(events.filter { it.isNotBlank() && validAvailable.contains(it) })
                     }
                     "/med_data" -> {
+                        val meds = dataMap.getStringArray("medicines") ?: emptyArray()
                         medicines.clear()
-                        medicines.addAll(dataMap.getStringArray("medicines") ?: emptyArray())
+                        meds.forEach { med ->
+                            val isTaken = med.contains("✔") || med.contains("✓") || med.contains("✅")
+                            val clean = med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                            if (clean.isNotBlank()) {
+                                itemStates[clean] = isTaken
+                                medicines.add(clean)
+                            }
+                        }
+
+                        val evs = dataMap.getStringArray("events") ?: emptyArray()
                         eventsList.clear()
-                        eventsList.addAll(dataMap.getStringArray("events") ?: emptyArray())
+                        evs.forEach { ev ->
+                            val isTaken = ev.contains("✔") || ev.contains("✓") || ev.contains("✅")
+                            val clean = ev.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                            if (clean.isNotBlank()) {
+                                itemStates[clean] = isTaken
+                                eventsList.add(clean)
+                            }
+                        }
                     }
                 }
             }
@@ -92,6 +115,36 @@ object WearDataManager : DataClient.OnDataChangedListener {
         dataClient?.putDataItem(request)
     }
 
+    fun setItemTaken(itemName: String, isTaken: Boolean, type: String) {
+        itemStates[itemName] = isTaken
+
+        val request = PutDataMapRequest.create("/item_taken").apply {
+            dataMap.putString("item_name", itemName)
+            dataMap.putBoolean("is_taken", isTaken)
+            dataMap.putString("item_type", type)
+            dataMap.putLong("timestamp", System.currentTimeMillis())
+        }.asPutDataRequest().setUrgent()
+
+        dataClient?.putDataItem(request)
+    }
+
+    fun deleteItem(itemName: String, type: String) {
+        if (type == "medicine") {
+            medicines.remove(itemName)
+        } else {
+            eventsList.remove(itemName)
+        }
+        itemStates.remove(itemName)
+
+        val request = PutDataMapRequest.create("/delete_item").apply {
+            dataMap.putString("item_name", itemName)
+            dataMap.putString("item_type", type)
+            dataMap.putLong("timestamp", System.currentTimeMillis())
+        }.asPutDataRequest().setUrgent()
+
+        dataClient?.putDataItem(request)
+    }
+
     @SuppressLint("VisibleForTests")
     override fun onDataChanged(dataEvents: DataEventBuffer) {
         for (event in dataEvents) {
@@ -101,18 +154,38 @@ object WearDataManager : DataClient.OnDataChangedListener {
                 when (path) {
                     "/settings" -> {
                         alarmsEnabled = dataMap.getBoolean("alarms_enabled", true)
-                        val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
-                        enabledEvents.clear()
-                        enabledEvents.addAll(events)
+
                         val avail = dataMap.getStringArray("available_events") ?: emptyArray()
                         availableEvents.clear()
-                        availableEvents.addAll(avail)
+                        val validAvailable = avail.filter { it.isNotBlank() }
+                        availableEvents.addAll(validAvailable)
+
+                        val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
+                        enabledEvents.clear()
+                        enabledEvents.addAll(events.filter { it.isNotBlank() && validAvailable.contains(it) })
                     }
                     "/med_data" -> {
+                        val meds = dataMap.getStringArray("medicines") ?: emptyArray()
                         medicines.clear()
-                        medicines.addAll(dataMap.getStringArray("medicines") ?: emptyArray())
+                        meds.forEach { med ->
+                            val isTaken = med.contains("✔") || med.contains("✓") || med.contains("✅")
+                            val clean = med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                            if (clean.isNotBlank()) {
+                                itemStates[clean] = isTaken
+                                medicines.add(clean)
+                            }
+                        }
+
+                        val evs = dataMap.getStringArray("events") ?: emptyArray()
                         eventsList.clear()
-                        eventsList.addAll(dataMap.getStringArray("events") ?: emptyArray())
+                        evs.forEach { ev ->
+                            val isTaken = ev.contains("✔") || ev.contains("✓") || ev.contains("✅")
+                            val clean = ev.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                            if (clean.isNotBlank()) {
+                                itemStates[clean] = isTaken
+                                eventsList.add(clean)
+                            }
+                        }
                     }
                 }
             }

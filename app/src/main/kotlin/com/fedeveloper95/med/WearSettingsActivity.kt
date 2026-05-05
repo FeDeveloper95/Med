@@ -1,8 +1,4 @@
-@file:OptIn(
-    androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.compose.ui.text.ExperimentalTextApi::class,
-    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class
-)
+@file:OptIn(ExperimentalTextApi::class)
 
 package com.fedeveloper95.med
 
@@ -77,6 +73,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
@@ -95,7 +92,6 @@ class WearSettingsActivity : ComponentActivity() {
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
-
             MedTheme(themeOverride = savedTheme) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -114,23 +110,22 @@ class WearSettingsActivity : ComponentActivity() {
 fun WearSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
-
     var useWearOS by remember { mutableStateOf(prefs.getBoolean("pref_use_wearos", true)) }
-
     val showNotifications = remember { prefs.getBoolean(PREF_SHOW_NOTIFICATIONS, true) }
     val fullScreenAlarm = remember { prefs.getBoolean(PREF_FULL_SCREEN_ALARM, true) }
     val areAlarmsEnabled = showNotifications && fullScreenAlarm
-
     var ringOnWatch by remember { mutableStateOf(prefs.getBoolean("pref_wear_ring_alarms", true)) }
     var showQuickActionsList by remember { mutableStateOf(false) }
 
     val presetsStrings = remember { loadPresets(prefs) }
-    val allNames = remember(presetsStrings) { presetsStrings.mapNotNull { it.split("|").getOrNull(1) }.toSet() }
+    val allNames = remember(presetsStrings) {
+        presetsStrings.mapNotNull { it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() } }.toSet()
+    }
 
     var wearEnabledEvents by remember {
         val saved = prefs.getStringSet("pref_wear_enabled_events", null)
-        val initial = saved ?: allNames
-        if (saved == null) {
+        val initial = saved?.filter { allNames.contains(it) }?.toSet() ?: allNames
+        if (saved == null || saved != initial) {
             prefs.edit().putStringSet("pref_wear_enabled_events", initial).apply()
         }
         mutableStateOf(initial)
@@ -144,7 +139,6 @@ fun WearSettingsScreen(onBack: () -> Unit) {
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
     val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
     val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
-
     val availableIcons: Map<String, ImageVector> = remember(icSick, icMind, icMixture) {
         val tempMap = AVAILABLE_ICONS.toMutableMap()
         tempMap["MixtureMed"] = icSick
@@ -154,7 +148,6 @@ fun WearSettingsScreen(onBack: () -> Unit) {
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-
     val appBarTypography = MaterialTheme.typography.copy(
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
@@ -232,7 +225,6 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                 item {
                     val interactionSource = remember { MutableInteractionSource() }
                     val shape = RoundedCornerShape(64.dp)
-
                     Card(
                         modifier = Modifier.fillMaxWidth().clip(shape).clickable(interactionSource = interactionSource, indication = LocalIndication.current) {
                             useWearOS = !useWearOS
@@ -302,17 +294,17 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                         exit = fadeOut() + shrinkVertically()
                     ) {
                         Column {
-                            presetsStrings.forEachIndexed { index, preset ->
+                            val validPresets = presetsStrings.filter { it.split("|").getOrNull(1)?.isNotBlank() == true }
+                            validPresets.forEachIndexed { index, preset ->
                                 val parts = preset.split("|")
                                 val event = parts.getOrNull(1) ?: ""
                                 val iconName = parts.getOrNull(2) ?: "Event"
                                 val colorCode = parts.getOrNull(3) ?: "dynamic"
-
                                 val isSelected = wearEnabledEvents.contains(event)
 
                                 val itemShape = when {
-                                    presetsStrings.size == 1 -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
-                                    index == presetsStrings.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+                                    validPresets.size == 1 -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+                                    index == validPresets.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
                                     else -> RoundedCornerShape(4.dp)
                                 }
 
@@ -350,7 +342,8 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                                         WearSyncManager.syncSettings(ringOnWatch, newSet, allNames)
                                     }
                                 )
-                                if (index < presetsStrings.lastIndex) {
+
+                                if (index < validPresets.lastIndex) {
                                     Spacer(modifier = Modifier.height(2.dp))
                                 }
                             }
