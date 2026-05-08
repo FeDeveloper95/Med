@@ -257,7 +257,7 @@ fun SettingsScreen(
                         icon = Icons.Rounded.Event,
                         title = stringResource(R.string.settings_week_start_title),
                         subtitle = if (weekStart == "monday") stringResource(R.string.monday) else stringResource(
-                            R.string.monday
+                            R.string.sunday
                         ),
                         containerColor = Color(0xFFffb683),
                         iconColor = Color(0xFF753403),

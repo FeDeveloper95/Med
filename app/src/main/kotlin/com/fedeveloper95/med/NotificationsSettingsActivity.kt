@@ -18,6 +18,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -87,6 +88,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -311,6 +313,35 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
                     .padding(horizontal = 16.dp)
             ) {
                 item { Spacer(modifier = Modifier.height(8.dp)) }
+
+                item {
+                    val headerIconRes = when {
+                        !showNotifications -> R.drawable.header_notifs_none
+                        showNotifications && fullScreenAlarm && useSliderStyle -> R.drawable.header_notifs_alarm_swipe
+                        showNotifications && fullScreenAlarm && !useSliderStyle -> R.drawable.header_notifs_alarm_buttons
+                        else -> R.drawable.header_notifs_notifications
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Crossfade(
+                            targetState = headerIconRes,
+                            animationSpec = tween(durationMillis = 300),
+                            label = "header_transition"
+                        ) { iconRes ->
+                            Icon(
+                                painter = painterResource(id = iconRes),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(200.dp)
+                            )
+                        }
+                    }
+                }
 
                 item {
                     val interactionSource = remember { MutableInteractionSource() }

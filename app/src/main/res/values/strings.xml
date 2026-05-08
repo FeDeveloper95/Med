@@ -279,5 +279,8 @@
     <string name="wearos_quick_actions_header">Watch Quick Actions</string>
     <string name="wearos_quick_actions_desc">Select which Quick Actions can be shown on your watch.</string>
     <string name="wearos_master_toggle_title">Use Med on WearOS</string>
+    <string name="fullscreen_permission_title">Enable full screen alarms</string>
+    <string name="fullscreen_permission_desc">To get the most out of your alarms, you should allow Med to show full-screen notifications even when your screen is off.</string>
+    <string name="enable_action">Enable</string>
 
 </resources>

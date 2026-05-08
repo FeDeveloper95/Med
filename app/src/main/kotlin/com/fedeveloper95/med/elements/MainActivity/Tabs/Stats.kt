@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -212,21 +213,46 @@ fun StatsTab(
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-                if (isExpanded) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Box(modifier = Modifier.weight(1f)) {
+
+                // Limito la larghezza su tablet in modo che non sembri "enorme"
+                Box(
+                    modifier = Modifier.widthIn(max = 840.dp),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    if (isExpanded) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.Top
+                        ) {
+                            Box(modifier = Modifier.weight(1f)) {
+                                StatsSummaryCard(
+                                    streak = streak.toString(),
+                                    adherence = "$adherence%",
+                                    missedPerWeek = missedPerWeekStr,
+                                    isVertical = true
+                                )
+                            }
+                            Box(modifier = Modifier.weight(1.5f)) {
+                                CalendarCard(
+                                    currentMonth = currentMonth,
+                                    pagerState = pagerState,
+                                    today = today,
+                                    items = viewModel.items,
+                                    onNavigateToHome = onNavigateToHome,
+                                    initialPage = initialPage
+                                )
+                            }
+                        }
+                    } else {
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             StatsSummaryCard(
                                 streak = streak.toString(),
                                 adherence = "$adherence%",
                                 missedPerWeek = missedPerWeekStr,
-                                isVertical = true
+                                isVertical = false
                             )
-                        }
-                        Box(modifier = Modifier.weight(1.5f)) {
+                            Spacer(modifier = Modifier.height(24.dp))
                             CalendarCard(
                                 currentMonth = currentMonth,
                                 pagerState = pagerState,
@@ -237,22 +263,6 @@ fun StatsTab(
                             )
                         }
                     }
-                } else {
-                    StatsSummaryCard(
-                        streak = streak.toString(),
-                        adherence = "$adherence%",
-                        missedPerWeek = missedPerWeekStr,
-                        isVertical = false
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    CalendarCard(
-                        currentMonth = currentMonth,
-                        pagerState = pagerState,
-                        today = today,
-                        items = viewModel.items,
-                        onNavigateToHome = onNavigateToHome,
-                        initialPage = initialPage
-                    )
                 }
                 Spacer(modifier = Modifier.height(100.dp))
             }

@@ -152,16 +152,15 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fedeveloper95.med.elements.MainActivity.CommunityBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.EventBottomSheet
-import com.fedeveloper95.med.elements.MainActivity.EventPopup
 import com.fedeveloper95.med.elements.MainActivity.MainFAB
 import com.fedeveloper95.med.elements.MainActivity.MedDataCard
 import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
 import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
-import com.fedeveloper95.med.elements.MainActivity.MedicinePopup
 import com.fedeveloper95.med.elements.MainActivity.NotesBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.WeeklyCalendarPager
 import com.fedeveloper95.med.elements.MainActivity.Tabs.StatsTab
 import com.fedeveloper95.med.elements.MainActivity.Tabs.YouTab
+import com.fedeveloper95.med.elements.NotificationsSettingsActivity.FullscreenNotifsHandler
 import com.fedeveloper95.med.services.AppLockManager
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.services.MedViewModel
@@ -307,6 +306,7 @@ class MainActivity : ComponentActivity() {
             }
 
             MedTheme(themeOverride = currentTheme) {
+                FullscreenNotifsHandler()
                 MedApp(
                     viewModel = viewModel,
                     weekStart = currentWeekStart,
@@ -1144,26 +1144,6 @@ fun MedApp(
                     initialItem = itemToEdit
                 )
             }
-        } else {
-            if (isMed) {
-                MedicinePopup(
-                    onDismiss = { editingItem = null },
-                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
-                        editingItem = null
-                    },
-                    initialItem = itemToEdit
-                )
-            } else {
-                EventPopup(
-                    onDismiss = { editingItem = null },
-                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
-                        editingItem = null
-                    },
-                    initialItem = itemToEdit
-                )
-            }
         }
     }
 
@@ -1177,30 +1157,12 @@ fun MedApp(
                 },
                 initialText = preFilledText
             )
-        } else {
-            MedicinePopup(
-                onDismiss = { showMedicineDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
-                    showMedicineDialog = false
-                },
-                initialText = preFilledText
-            )
         }
     }
 
     if (showEventDialog) {
         if (useBottomSheet) {
             EventBottomSheet(
-                onDismiss = { showEventDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
-                    showEventDialog = false
-                },
-                initialText = preFilledText
-            )
-        } else {
-            EventPopup(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
                     viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
