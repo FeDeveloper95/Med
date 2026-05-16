@@ -20,8 +20,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -45,11 +46,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -120,7 +121,7 @@ fun AnimatedActionButton(
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "btnMorph"
     )
 
@@ -442,8 +443,8 @@ fun UpdaterScreen(onBack: () -> Unit) {
                         ) {
                             when (val currentStatus = status) {
                                 is UpdateStatus.Checking -> {
-                                    ContainedLoadingIndicator(
-                                        modifier = Modifier.size(64.dp)
+                                    LoadingIndicator(
+                                        modifier = Modifier.size(120.dp)
                                     )
                                 }
 

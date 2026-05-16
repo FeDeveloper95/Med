@@ -1,15 +1,17 @@
 @file:OptIn(
-    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class,
+    ExperimentalMaterial3ExpressiveApi::class,
     androidx.compose.ui.text.ExperimentalTextApi::class,
-    androidx.compose.foundation.ExperimentalFoundationApi::class,
-    androidx.compose.material3.ExperimentalMaterial3Api::class
+    ExperimentalFoundationApi::class,
+    ExperimentalMaterial3Api::class
 )
 
 package com.fedeveloper95.med.elements.MainActivity.Tabs
 
 import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalIndication
@@ -171,8 +173,8 @@ fun StatsTab(
 
         streak = currentStreak
         adherence = if (totalScheduled > 0) (totalTaken * 100f / totalScheduled).toInt() else 0
-        val totalDays = java.lang.Math.max(1L, ChronoUnit.DAYS.between(earliestDate, today.plusDays(1)))
-        val weeks = java.lang.Math.max(1f, totalDays / 7f)
+        val totalDays = Math.max(1L, ChronoUnit.DAYS.between(earliestDate, today.plusDays(1)))
+        val weeks = Math.max(1f, totalDays / 7f)
         missedPerWeekStr = String.format(Locale.US, "%.1f", totalMissed / weeks)
     }
 
@@ -214,7 +216,6 @@ fun StatsTab(
             item {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Limito la larghezza su tablet in modo che non sembri "enorme"
                 Box(
                     modifier = Modifier.widthIn(max = 840.dp),
                     contentAlignment = Alignment.TopCenter
@@ -566,8 +567,8 @@ fun CalendarDayCell(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
-        targetValue = if (isPressed) 25 else 50,
-        animationSpec = tween(durationMillis = 200),
+        targetValue = if (isPressed) 15 else 50,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "corner"
     )
 

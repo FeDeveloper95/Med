@@ -18,15 +18,19 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,6 +78,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.services.DataRepository
@@ -114,9 +119,13 @@ class AlarmActivity : ComponentActivity() {
             registerReceiver(closeReceiver, filter)
         }
 
-        val itemTitle =
-            intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
-        val itemId = intent.getLongExtra("ITEM_ID", -1L)
+        val itemTitle = intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
+
+        val itemIds = intent.getLongArrayExtra("ITEM_IDS") ?: run {
+            val singleId = intent.getLongExtra("ITEM_ID", -1L)
+            if (singleId != -1L) longArrayOf(singleId) else longArrayOf()
+        }
+        val notifId = intent.getIntExtra("NOTIF_ID", -1)
 
         val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
         val currentTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
@@ -124,10 +133,11 @@ class AlarmActivity : ComponentActivity() {
         val useSlider = prefs.getBoolean("pref_alarm_style_slider", true)
 
         val items = DataRepository.loadData(this)
-        val currentItem = items.find { it.id == itemId }
+        val currentItem = items.find { it.id == itemIds.firstOrNull() }
 
         val iconName = currentItem?.iconName
         val colorCodeStr = currentItem?.colorCode
+        val isGrouped = itemIds.size > 1
 
         setContent {
             MedTheme(themeOverride = currentTheme) {
@@ -141,13 +151,15 @@ class AlarmActivity : ComponentActivity() {
                         useSlider = useSlider,
                         iconName = iconName,
                         colorCode = colorCodeStr,
+                        isGrouped = isGrouped,
                         onTake = {
                             val actionIntent = Intent(
                                 this@AlarmActivity,
                                 com.fedeveloper95.med.services.NotificationReceiver::class.java
                             ).apply {
                                 action = "ACTION_TAKEN"
-                                putExtra("ITEM_ID", itemId)
+                                putExtra("ITEM_IDS", itemIds)
+                                putExtra("NOTIF_ID", notifId)
                             }
                             sendBroadcast(actionIntent)
                             finishAndRemoveTask()
@@ -158,7 +170,8 @@ class AlarmActivity : ComponentActivity() {
                                 com.fedeveloper95.med.services.NotificationReceiver::class.java
                             ).apply {
                                 action = "ACTION_SNOOZE"
-                                putExtra("ITEM_ID", itemId)
+                                putExtra("ITEM_IDS", itemIds)
+                                putExtra("NOTIF_ID", notifId)
                             }
                             sendBroadcast(actionIntent)
                             finishAndRemoveTask()
@@ -176,12 +189,83 @@ class AlarmActivity : ComponentActivity() {
 }
 
 @Composable
+fun AnimatedAlarmButton(
+    text: String,
+    icon: ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isPrimary: Boolean = true
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val cornerPercent by animateIntAsState(
+        targetValue = if (isPressed) 15 else 50,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        label = "btnMorph"
+    )
+
+    if (isPrimary) {
+        Button(
+            onClick = onClick,
+            modifier = modifier.height(88.dp),
+            shape = RoundedCornerShape(cornerPercent),
+            interactionSource = interactionSource,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = text,
+                    fontFamily = GoogleSansFlex,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    } else {
+        FilledTonalButton(
+            onClick = onClick,
+            modifier = modifier.height(88.dp),
+            shape = RoundedCornerShape(cornerPercent),
+            interactionSource = interactionSource,
+            contentPadding = PaddingValues(0.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(icon, contentDescription = null, modifier = Modifier.size(24.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = text,
+                    fontFamily = GoogleSansFlex,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun AlarmScreen(
     title: String,
     snoozeDuration: Int,
     useSlider: Boolean,
     iconName: String?,
     colorCode: String?,
+    isGrouped: Boolean = false,
     onTake: () -> Unit,
     onSnooze: () -> Unit
 ) {
@@ -251,7 +335,7 @@ fun AlarmScreen(
         Spacer(modifier = Modifier.height(48.dp))
 
         Text(
-            text = stringResource(R.string.alarm_time_to_take, title),
+            text = if (isGrouped) title else stringResource(R.string.alarm_time_to_take, title),
             fontFamily = GoogleSansFlex,
             style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
             color = MaterialTheme.colorScheme.onSurface,
@@ -276,55 +360,27 @@ fun AlarmScreen(
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
             )
         } else {
-            Column(
+            Row(
                 modifier = Modifier
                     .widthIn(max = 400.dp)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Button(
-                    onClick = onTake,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(80.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Icon(
-                        Icons.Rounded.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(
-                        text = stringResource(R.string.alarm_taken_action),
-                        fontFamily = GoogleSansFlex,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
-
-                FilledTonalButton(
+                AnimatedAlarmButton(
+                    text = stringResource(R.string.alarm_snooze_action, snoozeDuration),
+                    icon = Icons.Rounded.Snooze,
                     onClick = onSnooze,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Icon(
-                        Icons.Rounded.Snooze,
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Text(
-                        text = stringResource(R.string.alarm_snooze_action, snoozeDuration),
-                        fontFamily = GoogleSansFlex,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
+                    modifier = Modifier.weight(1f),
+                    isPrimary = false
+                )
+
+                AnimatedAlarmButton(
+                    text = if (isGrouped) stringResource(R.string.notif_action_take_all) else stringResource(R.string.alarm_taken_action),
+                    icon = Icons.Rounded.Check,
+                    onClick = onTake,
+                    modifier = Modifier.weight(1f),
+                    isPrimary = true
+                )
             }
         }
     }

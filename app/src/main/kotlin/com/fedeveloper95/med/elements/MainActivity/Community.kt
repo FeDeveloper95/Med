@@ -4,8 +4,9 @@ package com.fedeveloper95.med.elements.MainActivity
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -64,12 +65,12 @@ fun CommunityBottomSheet(
 
     val cancelCorner by animateIntAsState(
         targetValue = if (isCancelPressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "cancelCorner"
     )
     val saveCorner by animateIntAsState(
         targetValue = if (isSavePressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "saveCorner"
     )
 

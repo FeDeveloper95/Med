@@ -21,8 +21,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.fedeveloper95.med.ExpressiveTextButton
+import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.R
+import com.fedeveloper95.med.elements.SettingsActivity.TextButtonWithAnimatedShape
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 
 @Composable
@@ -34,12 +35,13 @@ fun ResetPopup(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = ""
     )
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         title = {
             Text(
                 text = stringResource(R.string.settings_reset_title),
@@ -71,10 +73,9 @@ fun ResetPopup(
             }
         },
         dismissButton = {
-            ExpressiveTextButton(
+            TextButtonWithAnimatedShape(
                 onClick = onDismiss,
-                text = stringResource(R.string.cancel_action),
-                contentColor = MaterialTheme.colorScheme.onSurface
+                text = stringResource(R.string.cancel_action)
             )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,

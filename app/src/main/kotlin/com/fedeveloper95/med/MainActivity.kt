@@ -157,11 +157,12 @@ import com.fedeveloper95.med.elements.MainActivity.MedDataCard
 import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
 import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.NotesBottomSheet
-import com.fedeveloper95.med.elements.MainActivity.WeeklyCalendarPager
 import com.fedeveloper95.med.elements.MainActivity.Tabs.StatsTab
 import com.fedeveloper95.med.elements.MainActivity.Tabs.YouTab
+import com.fedeveloper95.med.elements.MainActivity.WeeklyCalendarPager
 import com.fedeveloper95.med.elements.NotificationsSettingsActivity.FullscreenNotifsHandler
 import com.fedeveloper95.med.services.AppLockManager
+import com.fedeveloper95.med.services.HandoffHelper
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.services.MedViewModel
 import com.fedeveloper95.med.services.Updater
@@ -224,6 +225,7 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         AppLockManager.init(application)
+        HandoffHelper.init(application)
         enableEdgeToEdge()
 
         setContent {
@@ -321,7 +323,7 @@ class MainActivity : ComponentActivity() {
                         prefs.edit()
                             .putString("last_version", currentVersionName)
                             .apply()
-                        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
                         val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             notificationManager.canUseFullScreenIntent()
                         } else {
@@ -392,21 +394,11 @@ fun ExpressiveIconButton(
     contentColor: Color
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isRealPressed by interactionSource.collectIsPressedAsState()
-    var isPressed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isRealPressed) {
-        if (isRealPressed) {
-            isPressed = true
-        } else {
-            delay(200)
-            isPressed = false
-        }
-    }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
     val cornerPercent by animateIntAsState(
-        targetValue = if (isPressed) 20 else 50,
-        animationSpec = tween(durationMillis = 200),
+        targetValue = if (isPressed) 15 else 50,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "corner"
     )
 
@@ -433,21 +425,11 @@ fun ExpressiveButton(
     contentColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isRealPressed by interactionSource.collectIsPressedAsState()
-    var isPressed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isRealPressed) {
-        if (isRealPressed) {
-            isPressed = true
-        } else {
-            delay(200)
-            isPressed = false
-        }
-    }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "corner"
     )
 
@@ -472,21 +454,11 @@ fun ExpressiveTextButton(
     contentColor: Color = MaterialTheme.colorScheme.primary
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isRealPressed by interactionSource.collectIsPressedAsState()
-    var isPressed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isRealPressed) {
-        if (isRealPressed) {
-            isPressed = true
-        } else {
-            delay(200)
-            isPressed = false
-        }
-    }
+    val isPressed by interactionSource.collectIsPressedAsState()
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "corner"
     )
 

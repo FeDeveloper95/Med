@@ -19,7 +19,7 @@ import java.time.format.DateTimeFormatter
 
 class AppWearListenerService : WearableListenerService() {
 
-    private fun syncDataToWear(context: android.content.Context) {
+    private fun syncDataToWear(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
             val items = DataRepository.loadData(context)
             val today = LocalDate.now()
@@ -77,7 +77,9 @@ class AppWearListenerService : WearableListenerService() {
                         CoroutineScope(Dispatchers.IO).launch {
                             val items = DataRepository.loadData(applicationContext).toMutableList()
 
-                            val prefs = applicationContext.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+                            val prefs = applicationContext.getSharedPreferences("med_settings",
+                                MODE_PRIVATE
+                            )
                             val jsonString = prefs.getString("pref_presets_ordered", null)
                             var foundIcon = "Event"
                             var foundColor = "dynamic"

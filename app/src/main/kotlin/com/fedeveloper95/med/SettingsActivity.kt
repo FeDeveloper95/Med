@@ -86,7 +86,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.fedeveloper95.med.elements.NotificationsSettingsActivity.SortOrderPopup
+import com.fedeveloper95.med.elements.SettingsActivity.OrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
 import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
 import com.fedeveloper95.med.services.AppLockManager
@@ -564,7 +564,7 @@ fun SettingsScreen(
     }
 
     if (showSortDialog) {
-        SortOrderPopup(
+        OrderPopup(
             selectedIndex = if (sortOrder == "time") 0 else 1,
             onOptionSelected = { index ->
                 sortOrder = if (index == 0) "time" else "custom"

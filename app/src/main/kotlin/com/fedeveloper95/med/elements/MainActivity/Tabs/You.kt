@@ -70,7 +70,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Density
@@ -93,17 +92,17 @@ data class CookieShape(val rotationDegrees: Float = 0f) : Shape {
         val path = Path()
         val cx = size.width / 2f
         val cy = size.height / 2f
-        val r = java.lang.Math.min(cx, cy)
-        val rotationRads = java.lang.Math.toRadians(rotationDegrees.toDouble())
+        val r = Math.min(cx, cy)
+        val rotationRads = Math.toRadians(rotationDegrees.toDouble())
 
         val points = 120
         for (i in 0..points) {
-            val baseAngle = (i * 2 * java.lang.Math.PI / points) - (java.lang.Math.PI / 2)
+            val baseAngle = (i * 2 * Math.PI / points) - (Math.PI / 2)
             val bump = 0.06
-            val currentR = r * (1 - bump * java.lang.Math.pow(java.lang.Math.sin(6 * baseAngle), 2.0))
+            val currentR = r * (1 - bump * Math.pow(Math.sin(6 * baseAngle), 2.0))
             val angle = baseAngle + rotationRads
-            val px = cx + currentR * java.lang.Math.cos(angle)
-            val py = cy + currentR * java.lang.Math.sin(angle)
+            val px = cx + currentR * Math.cos(angle)
+            val py = cy + currentR * Math.sin(angle)
 
             if (i == 0) path.moveTo(px.toFloat(), py.toFloat())
             else path.lineTo(px.toFloat(), py.toFloat())

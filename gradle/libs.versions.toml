@@ -1,6 +1,11 @@
 [versions]
-agp = "9.1.1"
+agp = "9.2.1"
+biometric = "1.2.0-alpha05"
+coilCompose = "2.7.0"
+composeMarkdown = "0.5.4"
 composeMaterial = "1.6.1"
+composeMaterial3 = "1.0.0-alpha20"
+foundation = "1.11.1"
 kotlin = "2.3.21"
 coreKtx = "1.18.0"
 lifecycleRuntimeKtx = "2.10.0"
@@ -9,14 +14,21 @@ composeBom = "2026.05.00"
 material3 = "1.5.0-alpha19"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
-materialVersion = "1.13.0"
+material3WindowSizeClass = "1.5.0-alpha19"
+materialVersion = "1.14.0"
 palette = "1.0.0"
 androidBuiltInKotlin = "9.2.1"
 playServicesWearable = "20.0.1"
 material = "13.0.0"
+ui = "1.11.1"
+uiToolingPreview = "1.11.1"
 
 [libraries]
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeMaterial" }
+androidx-compose-material3-window-size-class1 = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClass" }
+androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeMaterial" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
@@ -31,6 +43,12 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "material3" }
 androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphicsShapes" }
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
+androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeMaterial" }
+compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }
+compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "composeMaterial3" }
 material = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "playServicesWearable" }
 

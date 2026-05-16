@@ -2,8 +2,9 @@
 
 package com.fedeveloper95.med.elements.AdvancedSettingsActivity
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,14 +16,16 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.fedeveloper95.med.R
+import com.fedeveloper95.med.elements.SettingsActivity.TextButtonWithAnimatedShape
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 
 @Composable
@@ -34,12 +37,13 @@ fun RestorePopup(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "btnMorph"
     )
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
         icon = { Icon(Icons.Default.Warning, contentDescription = null) },
         title = {
             Text(
@@ -55,6 +59,8 @@ fun RestorePopup(
             )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        shape = RoundedCornerShape(32.dp),
+        tonalElevation = 6.dp,
         confirmButton = {
             Button(
                 onClick = onRestart,
@@ -73,13 +79,10 @@ fun RestorePopup(
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(
-                    text = stringResource(R.string.cancel),
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            TextButtonWithAnimatedShape(
+                onClick = onDismiss,
+                text = stringResource(R.string.cancel)
+            )
         }
     )
 }

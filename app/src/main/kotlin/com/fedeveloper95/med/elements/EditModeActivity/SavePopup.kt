@@ -37,7 +37,7 @@ fun SavePopup(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "btnMorph"
     )
 

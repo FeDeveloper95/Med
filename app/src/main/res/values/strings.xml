@@ -161,8 +161,6 @@
     <string name="day_short_sat">S</string>
     <string name="day_short_sun">S</string>
 
-    <string name="settings_bottom_sheet_title">Use Bottom Card design</string>
-    <string name="settings_bottom_sheet_desc">Use bottom cards instead of popups</string>
     <string name="settings_language_title">App Language</string>
     <string name="settings_language_desc">Change language in system settings</string>
 
@@ -184,7 +182,6 @@
     <string name="settings_snooze_duration_desc">%1$d minutes</string>
     <string name="alarm_default_title">Reminder</string>
     <string name="alarm_time_to_take">It\'s time to take\n%1$s</string>
-    <string name="alarm_swipe_to_respond">Swipe to reply</string>
     <string name="alarm_taken_action">Taken</string>
     <string name="alarm_snooze_action">Snooze (%1$d min)</string>
     <string name="alarm_snooze_desc">Snooze</string>
@@ -282,5 +279,8 @@
     <string name="fullscreen_permission_title">Enable full screen alarms</string>
     <string name="fullscreen_permission_desc">To get the most out of your alarms, you should allow Med to show full-screen notifications even when your screen is off.</string>
     <string name="enable_action">Enable</string>
+    <string name="notif_grouped_title">Time to take medications</string>
+    <string name="notif_action_take_all">Take All</string>
+    <string name="alarm_swipe_to_respond">Swipe to choose</string>
 
 </resources>

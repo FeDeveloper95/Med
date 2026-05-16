@@ -7,12 +7,13 @@
 package com.fedeveloper95.med.elements.MainActivity
 
 import android.graphics.Color.parseColor
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -21,18 +22,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.Event
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,10 +48,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,14 +60,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.AVAILABLE_ICONS
 import com.fedeveloper95.med.R
@@ -69,13 +78,12 @@ import com.fedeveloper95.med.elements.TimePickerSwitchable
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
 import java.time.LocalTime
 
 @Composable
 fun EventBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<java.time.DayOfWeek>?, String?, Int?) -> Unit,
     initialItem: MedData? = null,
     initialText: String = ""
 ) {
@@ -86,20 +94,14 @@ fun EventBottomSheet(
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
     var nameError by remember { mutableStateOf(false) }
 
-    var selectedTimes by remember {
-        mutableStateOf(
-            if (initialItem != null) listOf(initialItem.creationTime) else listOf(
-                LocalTime.now()
-            )
-        )
+    var selectedTime by remember {
+        mutableStateOf(initialItem?.creationTime ?: LocalTime.now())
     }
 
     var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Event") }
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
-    var showTimePickerForIndex by remember { mutableStateOf<Int?>(null) }
-
-    val focusRequester = remember { FocusRequester() }
+    var showTimePicker by remember { mutableStateOf(false) }
 
     if (showIconPicker) {
         IconPickerDialog(
@@ -114,19 +116,14 @@ fun EventBottomSheet(
         )
     }
 
-    if (showTimePickerForIndex != null) {
-        val index = showTimePickerForIndex!!
-        val initialTime = selectedTimes.getOrElse(index) { LocalTime.now() }
-
+    if (showTimePicker) {
         TimePickerSwitchable(
-            onDismiss = { showTimePickerForIndex = null },
+            onDismiss = { showTimePicker = false },
             onConfirm = { newTime ->
-                val newTimes = selectedTimes.toMutableList()
-                if (index < newTimes.size) newTimes[index] = newTime else newTimes.add(newTime)
-                selectedTimes = newTimes
-                showTimePickerForIndex = null
+                selectedTime = newTime
+                showTimePicker = false
             },
-            initialTime = initialTime
+            initialTime = selectedTime
         )
     }
 
@@ -141,36 +138,54 @@ fun EventBottomSheet(
 
     val cancelCorner by animateIntAsState(
         targetValue = if (isCancelPressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "cancelCorner"
     )
     val saveCorner by animateIntAsState(
         targetValue = if (isSavePressed) 15 else 50,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "saveCorner"
     )
+
+    val listState = rememberLazyListState()
+    var wasAtTopWhenGestureStarted by remember { mutableStateOf(true) }
+
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+                return if (!wasAtTopWhenGestureStarted) available else Velocity.Zero
+            }
+        }
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
+        modifier = Modifier.statusBarsPadding(),
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        dragHandle = {
-            Box(
-                modifier = Modifier
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }) {}
-                    .padding(vertical = 10.dp)
-            ) {
-                BottomSheetDefaults.DragHandle()
-            }
-        },
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
     ) {
-        CompositionLocalProvider(LocalOverscrollConfiguration provides null) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.ime)
+        ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 24.dp),
+                state = listState,
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .fillMaxWidth()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitFirstDown(requireUnconsumed = false)
+                                wasAtTopWhenGestureStarted = !listState.canScrollBackward
+                            }
+                        }
+                    }
+                    .nestedScroll(nestedScrollConnection),
+                contentPadding = PaddingValues(start = 24.dp, end = 24.dp, bottom = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
@@ -241,10 +256,11 @@ fun EventBottomSheet(
                 item {
                     OutlinedTextField(
                         value = text,
-                        onValueChange = { text = it; nameError = false },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .focusRequester(focusRequester),
+                        onValueChange = {
+                            text = it
+                            nameError = false
+                        },
+                        modifier = Modifier.fillMaxWidth(),
                         placeholder = {
                             Text(
                                 stringResource(R.string.name_hint),
@@ -277,78 +293,85 @@ fun EventBottomSheet(
                 item { Spacer(modifier = Modifier.height(24.dp)) }
 
                 item {
-                    val time = selectedTimes.firstOrNull() ?: LocalTime.now()
                     TimeSelectorItem(
                         label = stringResource(R.string.time_label),
-                        time = time
-                    ) { showTimePickerForIndex = 0 }
+                        time = selectedTime
+                    ) { showTimePicker = true }
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
 
                 item {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Surface(
+                        color = Color.Transparent,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        OutlinedButton(
-                            onClick = {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        onDismiss()
-                                    }
-                                }
-                            },
+                        Row(
                             modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            shape = RoundedCornerShape(cancelCorner),
-                            interactionSource = cancelInteractionSource
+                                .fillMaxWidth()
+                                .navigationBarsPadding()
+                                .padding(bottom = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Text(
-                                stringResource(R.string.cancel_action),
-                                fontFamily = GoogleSansFlex,
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1
-                            )
-                        }
-
-                        Button(
-                            onClick = {
-                                if (text.isNotBlank()) {
+                            OutlinedButton(
+                                onClick = {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                                         if (!sheetState.isVisible) {
-                                            onConfirm(
-                                                text,
-                                                selectedIconName,
-                                                selectedColor,
-                                                selectedTimes,
-                                                null,
-                                                notes.takeIf { it.isNotBlank() },
-                                                null
-                                            )
+                                            onDismiss()
                                         }
                                     }
-                                } else {
-                                    nameError = true
-                                }
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(50.dp),
-                            shape = RoundedCornerShape(saveCorner),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            ),
-                            interactionSource = saveInteractionSource
-                        ) {
-                            Text(
-                                stringResource(R.string.save_action),
-                                fontFamily = GoogleSansFlex,
-                                style = MaterialTheme.typography.titleMedium,
-                                maxLines = 1
-                            )
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(cancelCorner),
+                                interactionSource = cancelInteractionSource
+                            ) {
+                                Text(
+                                    stringResource(R.string.cancel_action),
+                                    fontFamily = GoogleSansFlex,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1
+                                )
+                            }
+
+                            Button(
+                                onClick = {
+                                    if (text.isNotBlank()) {
+                                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                            if (!sheetState.isVisible) {
+                                                onConfirm(
+                                                    text,
+                                                    selectedIconName,
+                                                    selectedColor,
+                                                    listOf(selectedTime),
+                                                    null,
+                                                    notes.takeIf { it.isNotBlank() },
+                                                    null
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        nameError = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(saveCorner),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                interactionSource = saveInteractionSource
+                            ) {
+                                Text(
+                                    stringResource(R.string.save_action),
+                                    fontFamily = GoogleSansFlex,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1
+                                )
+                            }
                         }
                     }
                 }

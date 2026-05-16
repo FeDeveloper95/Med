@@ -14,7 +14,9 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButtonMenu
 import androidx.compose.material3.FloatingActionButtonMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleFloatingActionButton
@@ -54,83 +56,90 @@ fun MainFAB(
     menuItems: List<Triple<ItemType, androidx.compose.ui.graphics.vector.ImageVector, Triple<String, String?, String?>>>,
     onMenuItemClick: (ItemType, String, String?, String?) -> Unit
 ) {
-    FloatingActionButtonMenu(
-        expanded = fabMenuExpanded,
-        button = {
-            val tooltipPos = if (fabMenuExpanded) TooltipPosition.Start else TooltipPosition.Above
-            val expandedString = stringResource(R.string.expanded_state)
-            val collapsedString = stringResource(R.string.collapsed_state)
-            val menuActionDesc = stringResource(R.string.menu_action_desc)
-            TooltipBox(
-                positionProvider = rememberCustomTooltipPositionProvider(tooltipPos),
-                tooltip = {
-                    PlainTooltip {
-                        Text(
-                            stringResource(R.string.menu_tooltip),
-                            fontFamily = GoogleSansFlex
+    MaterialExpressiveTheme(
+        colorScheme = MaterialTheme.colorScheme,
+        typography = MaterialTheme.typography,
+        shapes = MaterialTheme.shapes,
+        motionScheme = MotionScheme.expressive()
+    ) {
+        FloatingActionButtonMenu(
+            expanded = fabMenuExpanded,
+            button = {
+                val tooltipPos = if (fabMenuExpanded) TooltipPosition.Start else TooltipPosition.Above
+                val expandedString = stringResource(R.string.expanded_state)
+                val collapsedString = stringResource(R.string.collapsed_state)
+                val menuActionDesc = stringResource(R.string.menu_action_desc)
+                TooltipBox(
+                    positionProvider = rememberCustomTooltipPositionProvider(tooltipPos),
+                    tooltip = {
+                        PlainTooltip {
+                            Text(
+                                stringResource(R.string.menu_tooltip),
+                                fontFamily = GoogleSansFlex
+                            )
+                        }
+                    },
+                    state = rememberTooltipState()
+                ) {
+                    ToggleFloatingActionButton(
+                        modifier = Modifier
+                            .semantics {
+                                traversalIndex = -1f
+                                stateDescription =
+                                    if (fabMenuExpanded) expandedString else collapsedString
+                                contentDescription = menuActionDesc
+                            }
+                            .animateFloatingActionButton(
+                                visible = true,
+                                alignment = Alignment.BottomEnd
+                            )
+                            .focusRequester(remember { FocusRequester() }),
+                        checked = fabMenuExpanded,
+                        onCheckedChange = { onExpandedChange(!fabMenuExpanded) }
+                    ) {
+                        val imageVector by remember { derivedStateOf { if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add } }
+                        Icon(
+                            painter = rememberVectorPainter(imageVector),
+                            contentDescription = null,
+                            modifier = Modifier.animateIcon({ checkedProgress })
                         )
                     }
-                },
-                state = rememberTooltipState()
-            ) {
-                ToggleFloatingActionButton(
-                    modifier = Modifier
-                        .semantics {
-                            traversalIndex = -1f
-                            stateDescription =
-                                if (fabMenuExpanded) expandedString else collapsedString
-                            contentDescription = menuActionDesc
-                        }
-                        .animateFloatingActionButton(
-                            visible = true,
-                            alignment = Alignment.BottomEnd
-                        )
-                        .focusRequester(remember { FocusRequester() }),
-                    checked = fabMenuExpanded,
-                    onCheckedChange = { onExpandedChange(!fabMenuExpanded) }
-                ) {
-                    val imageVector by remember { derivedStateOf { if (checkedProgress > 0.5f) Icons.Filled.Close else Icons.Filled.Add } }
-                    Icon(
-                        painter = rememberVectorPainter(imageVector),
-                        contentDescription = null,
-                        modifier = Modifier.animateIcon({ checkedProgress })
-                    )
                 }
             }
-        }
-    ) {
-        val closeMenuString = stringResource(R.string.close_menu_action)
-        menuItems.forEachIndexed { i, item ->
-            val (name, iconName, colorCode) = item.third
+        ) {
+            val closeMenuString = stringResource(R.string.close_menu_action)
+            menuItems.forEachIndexed { i, item ->
+                val (name, iconName, colorCode) = item.third
 
-            FloatingActionButtonMenuItem(
-                modifier = Modifier.semantics {
-                    isTraversalGroup = true
-                    if (i == menuItems.size - 1) customActions =
-                        listOf(
-                            CustomAccessibilityAction(
-                                label = closeMenuString,
-                                action = { onExpandedChange(false); true })
-                        )
-                },
-                onClick = {
-                    onExpandedChange(false)
-                    onMenuItemClick(item.first, name, iconName, colorCode)
-                },
-                icon = {
-                    if (colorCode != null && colorCode != "dynamic") {
-                        val color = try {
-                            Color(parseColor(colorCode))
-                        } catch (e: Exception) {
-                            MaterialTheme.colorScheme.primary
+                FloatingActionButtonMenuItem(
+                    modifier = Modifier.semantics {
+                        isTraversalGroup = true
+                        if (i == menuItems.size - 1) customActions =
+                            listOf(
+                                CustomAccessibilityAction(
+                                    label = closeMenuString,
+                                    action = { onExpandedChange(false); true })
+                            )
+                    },
+                    onClick = {
+                        onExpandedChange(false)
+                        onMenuItemClick(item.first, name, iconName, colorCode)
+                    },
+                    icon = {
+                        if (colorCode != null && colorCode != "dynamic") {
+                            val color = try {
+                                Color(parseColor(colorCode))
+                            } catch (e: Exception) {
+                                MaterialTheme.colorScheme.primary
+                            }
+                            Icon(item.second, contentDescription = null, tint = color)
+                        } else {
+                            Icon(item.second, contentDescription = null)
                         }
-                        Icon(item.second, contentDescription = null, tint = color)
-                    } else {
-                        Icon(item.second, contentDescription = null)
-                    }
-                },
-                text = { Text(text = name, fontFamily = GoogleSansFlex) }
-            )
+                    },
+                    text = { Text(text = name, fontFamily = GoogleSansFlex) }
+                )
+            }
         }
     }
 }

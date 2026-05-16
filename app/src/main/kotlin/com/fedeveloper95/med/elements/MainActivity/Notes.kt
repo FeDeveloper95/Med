@@ -2,8 +2,9 @@
 
 package com.fedeveloper95.med.elements.MainActivity
 
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
@@ -71,7 +72,7 @@ fun NotesBottomSheet(
             val isPressed by interactionSource.collectIsPressedAsState()
             val cornerPercent by animateIntAsState(
                 targetValue = if (isPressed) 15 else 50,
-                animationSpec = tween(durationMillis = 200),
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
                 label = ""
             )
 

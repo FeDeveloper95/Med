@@ -16,8 +16,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -343,7 +344,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
                                             val cornerPercent by animateIntAsState(
                                                 targetValue = if (isPressed) 15 else 50,
-                                                animationSpec = tween(durationMillis = 200),
+                                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
                                                 label = "corner"
                                             )
 
@@ -428,7 +429,7 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
                                     val cornerPercent by animateIntAsState(
                                         targetValue = targetCorner,
-                                        animationSpec = tween(durationMillis = 200),
+                                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
                                         label = "colorCorner"
                                     )
 

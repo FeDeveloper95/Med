@@ -36,12 +36,12 @@ android {
 
 dependencies {
     implementation(libs.play.services.wearable)
-    implementation("androidx.wear.compose:compose-material3:1.0.0-alpha20")
-    implementation("androidx.wear.compose:compose-foundation:1.6.1")
-    implementation("androidx.wear.compose:compose-navigation:1.6.1")
-    implementation("androidx.compose.ui:ui:1.11.0")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.11.0")
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
+    implementation(libs.compose.material3)
+    implementation(libs.compose.foundation)
+    implementation(libs.androidx.compose.navigation)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 }
