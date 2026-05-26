@@ -99,7 +99,6 @@ fun IllnessesBottomSheet(
 
     var selectedDate by remember { mutableStateOf(initialItem?.creationDate ?: LocalDate.now()) }
 
-    // Impostato a "Bed" (ic_mind) come predefinito per le malattie
     var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Bed") }
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
