@@ -39,9 +39,9 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.compose.foundation)
     implementation(libs.androidx.compose.navigation)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.ui.v1110)
+    implementation(libs.androidx.compose.ui.tooling.preview.v1110)
+    implementation(libs.androidx.compose.material.icons.extended.v161)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
 }

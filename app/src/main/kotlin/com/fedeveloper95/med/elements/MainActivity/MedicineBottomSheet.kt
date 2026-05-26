@@ -1,6 +1,7 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class, ExperimentalTextApi::class,
-    ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class
+    ExperimentalMaterial3ExpressiveApi::class, ExperimentalFoundationApi::class,
+    ExperimentalLayoutApi::class
 )
 
 package com.fedeveloper95.med.elements.MainActivity
@@ -19,6 +20,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +28,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -41,8 +42,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
@@ -91,7 +94,7 @@ import com.fedeveloper95.med.AVAILABLE_ICONS
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.SingleSelectConnectedButtonGroupWithFlowLayout
 import com.fedeveloper95.med.TimeSelectorItem
-import com.fedeveloper95.med.elements.TimePickerSwitchable
+import com.fedeveloper95.med.elements.TimePicker
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.launch
@@ -105,7 +108,7 @@ import java.util.Locale
 @Composable
 fun MedicineBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int, Long?, Long?) -> Unit,
     initialItem: MedData? = null,
     initialText: String = ""
 ) {
@@ -116,37 +119,53 @@ fun MedicineBottomSheet(
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
     var nameError by remember { mutableStateOf(false) }
 
-    var frequencyUnit by remember {
-        mutableStateOf(
+    var frequencyType by remember {
+        mutableIntStateOf(
             when {
-                initialItem?.intervalGap == 14 -> "BiWeek"
-                initialItem?.recurrenceDays != null -> "Week"
-                else -> "Day"
+                initialItem?.intervalGap != null && initialItem.intervalGap > 1 -> 2
+                initialItem?.recurrenceDays != null -> 1
+                else -> 0
             }
         )
     }
 
-    var frequencyCountStr by remember {
+    var selectedTimes by remember {
         mutableStateOf(
+            if (initialItem != null) listOf(initialItem.creationTime) else listOf(LocalTime.now())
+        )
+    }
+
+    var timesPerDay by remember {
+        mutableIntStateOf(if (frequencyType == 0 && initialItem != null) selectedTimes.size else 1)
+    }
+
+    val initGap = initialItem?.intervalGap
+    var intervalUnit by remember {
+        mutableIntStateOf(
             when {
-                initialItem != null && frequencyUnit == "Week" -> (initialItem.recurrenceDays?.size ?: 1).toString()
-                else -> "1"
+                initGap != null && initGap % 30 == 0 -> 2
+                initGap != null && initGap % 7 == 0 -> 1
+                else -> 0
             }
         )
     }
-    var expandedUnit by remember { mutableStateOf(false) }
-    var selectedDays by remember {
+
+    var intervalDays by remember {
         mutableStateOf(
-            initialItem?.recurrenceDays?.toSet() ?: setOf(
-                LocalDate.now().dayOfWeek
-            )
+            when {
+                initGap != null && initGap % 30 == 0 -> (initGap / 30).toString()
+                initGap != null && initGap % 7 == 0 -> (initGap / 7).toString()
+                initGap != null -> initGap.toString()
+                else -> "2"
+            }
         )
     }
-    var selectedTimes by remember {
+
+    var expandedInterval by remember { mutableStateOf(false) }
+
+    var selectedDays by remember {
         mutableStateOf(
-            if (initialItem != null) listOf(initialItem.creationTime) else listOf(
-                LocalTime.now()
-            )
+            initialItem?.recurrenceDays?.toSet() ?: setOf(LocalDate.now().dayOfWeek)
         )
     }
 
@@ -154,14 +173,15 @@ fun MedicineBottomSheet(
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
     var showTimePickerForIndex by remember { mutableStateOf<Int?>(null) }
+    var showSaveFrequencyPopup by remember { mutableStateOf(false) }
 
     var notificationType by remember { mutableIntStateOf(initialItem?.notificationType ?: 0) }
 
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(frequencyCountStr, frequencyUnit) {
-        if (frequencyUnit == "Day") {
-            val count = frequencyCountStr.toIntOrNull() ?: 1
+    LaunchedEffect(frequencyType, timesPerDay) {
+        if (frequencyType == 0) {
+            val count = timesPerDay
             if (count > 0 && count != selectedTimes.size) {
                 val newTimes = selectedTimes.toMutableList()
                 if (count > newTimes.size) {
@@ -174,11 +194,6 @@ fun MedicineBottomSheet(
         } else {
             if (selectedTimes.isEmpty()) selectedTimes = listOf(LocalTime.now())
             if (selectedTimes.size > 1) selectedTimes = listOf(selectedTimes.first())
-
-            val limit = frequencyCountStr.toIntOrNull()
-            if (limit != null && selectedDays.size > limit) {
-                selectedDays = selectedDays.toList().take(limit).toSet()
-            }
         }
     }
 
@@ -199,7 +214,7 @@ fun MedicineBottomSheet(
         val index = showTimePickerForIndex!!
         val initialTime = selectedTimes.getOrElse(index) { LocalTime.now() }
 
-        TimePickerSwitchable(
+        TimePicker(
             onDismiss = { showTimePickerForIndex = null },
             onConfirm = { newTime ->
                 val newTimes = selectedTimes.toMutableList()
@@ -208,6 +223,41 @@ fun MedicineBottomSheet(
                 showTimePickerForIndex = null
             },
             initialTime = initialTime
+        )
+    }
+
+    if (showSaveFrequencyPopup) {
+        SaveFrequencyPopup(
+            onDismiss = { showSaveFrequencyPopup = false },
+            onApply = { start, end ->
+                showSaveFrequencyPopup = false
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    if (!sheetState.isVisible) {
+                        val days = if (frequencyType == 1) selectedDays.toList() else null
+                        val gap = if (frequencyType == 2) {
+                            val base = intervalDays.toIntOrNull() ?: 2
+                            when (intervalUnit) {
+                                1 -> base * 7
+                                2 -> base * 30
+                                else -> base
+                            }
+                        } else null
+
+                        onConfirm(
+                            text,
+                            selectedIconName,
+                            selectedColor,
+                            selectedTimes,
+                            days,
+                            notes.takeIf { it.isNotBlank() },
+                            gap,
+                            notificationType,
+                            start,
+                            end
+                        )
+                    }
+                }
+            }
         )
     }
 
@@ -384,13 +434,15 @@ fun MedicineBottomSheet(
                             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                         )
 
+                        val notifOptions = listOf(
+                            stringResource(R.string.notification_type_default),
+                            stringResource(R.string.notification_type_none),
+                            stringResource(R.string.notification_type_normal),
+                            stringResource(R.string.notification_type_alarm)
+                        )
+
                         SingleSelectConnectedButtonGroupWithFlowLayout(
-                            options = listOf(
-                                stringResource(R.string.notification_type_default),
-                                stringResource(R.string.notification_type_none),
-                                stringResource(R.string.notification_type_normal),
-                                stringResource(R.string.notification_type_alarm)
-                            ),
+                            options = notifOptions,
                             selectedIndex = notificationType,
                             onOptionSelected = { notificationType = it }
                         )
@@ -408,102 +460,72 @@ fun MedicineBottomSheet(
                             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
                         )
 
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            if (frequencyUnit != "BiWeek") {
-                                OutlinedTextField(
-                                    value = frequencyCountStr,
-                                    onValueChange = {
-                                        if (it.all { char -> char.isDigit() }) frequencyCountStr =
-                                            it
-                                    },
-                                    modifier = Modifier.weight(1f),
-                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                                    singleLine = true,
-                                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
-                                )
-                            }
+                        val freqOptions = listOf(
+                            stringResource(R.string.freq_mode_daily),
+                            stringResource(R.string.freq_mode_days),
+                            stringResource(R.string.freq_mode_interval)
+                        )
 
-                            ExposedDropdownMenuBox(
-                                expanded = expandedUnit,
-                                onExpandedChange = { expandedUnit = !expandedUnit },
-                                modifier = Modifier.weight(2f)
-                            ) {
-                                val dayLabel = stringResource(R.string.frequency_unit_day)
-                                val weekLabel = stringResource(R.string.frequency_unit_week)
-                                val biWeekLabel = stringResource(R.string.frequency_unit_biweek)
-
-                                OutlinedTextField(
-                                    value = when (frequencyUnit) {
-                                        "Day" -> dayLabel
-                                        "Week" -> weekLabel
-                                        else -> biWeekLabel
-                                    },
-                                    onValueChange = {},
-                                    readOnly = true,
-                                    trailingIcon = {
-                                        ExposedDropdownMenuDefaults.TrailingIcon(
-                                            expanded = expandedUnit
-                                        )
-                                    },
-                                    modifier = Modifier
-                                        .menuAnchor()
-                                        .fillMaxWidth()
-                                )
-                                ExposedDropdownMenu(
-                                    expanded = expandedUnit,
-                                    onDismissRequest = { expandedUnit = false },
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                                ) {
-                                    DropdownMenuItem(text = {
-                                        Text(
-                                            dayLabel,
-                                            fontFamily = GoogleSansFlex
-                                        )
-                                    }, onClick = { frequencyUnit = "Day"; expandedUnit = false })
-                                    DropdownMenuItem(text = {
-                                        Text(
-                                            weekLabel,
-                                            fontFamily = GoogleSansFlex
-                                        )
-                                    }, onClick = { frequencyUnit = "Week"; expandedUnit = false })
-                                    DropdownMenuItem(text = {
-                                        Text(
-                                            biWeekLabel,
-                                            fontFamily = GoogleSansFlex
-                                        )
-                                    }, onClick = { frequencyUnit = "BiWeek"; expandedUnit = false })
-                                }
-                            }
-                        }
+                        SingleSelectConnectedButtonGroupWithFlowLayout(
+                            options = freqOptions,
+                            selectedIndex = frequencyType,
+                            onOptionSelected = { frequencyType = it }
+                        )
                     }
                 }
 
                 item { Spacer(modifier = Modifier.height(16.dp)) }
 
-                if (frequencyUnit == "Week") {
-                    item {
-                        Text(
-                            text = stringResource(R.string.days_label),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
-                        )
-
-                        ButtonGroup(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            overflowIndicator = { state ->
-                                IconButton(onClick = { state.show() }) {
-                                    Icon(
-                                        Icons.Rounded.MoreHoriz,
-                                        contentDescription = stringResource(R.string.more_options)
+                when (frequencyType) {
+                    0 -> {
+                        item {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                        RoundedCornerShape(12.dp)
                                     )
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.times_per_day_label),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(onClick = { if (timesPerDay > 1) timesPerDay-- }) {
+                                        Icon(Icons.Rounded.Remove, contentDescription = null)
+                                    }
+                                    Text(
+                                        text = timesPerDay.toString(),
+                                        style = MaterialTheme.typography.titleMedium,
+                                        modifier = Modifier.padding(horizontal = 16.dp)
+                                    )
+                                    IconButton(onClick = { if (timesPerDay < 10) timesPerDay++ }) {
+                                        Icon(Icons.Rounded.Add, contentDescription = null)
+                                    }
                                 }
                             }
-                        ) {
+                        }
+
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                        itemsIndexed(selectedTimes) { index, time ->
+                            TimeSelectorItem(
+                                label = stringResource(
+                                    R.string.schedule_label_format,
+                                    index + 1
+                                ), time = time
+                            ) { showTimePickerForIndex = index }
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                    }
+
+                    1 -> {
+                        item {
                             val days = listOf(
                                 DayOfWeek.MONDAY,
                                 DayOfWeek.TUESDAY,
@@ -513,63 +535,122 @@ fun MedicineBottomSheet(
                                 DayOfWeek.SATURDAY,
                                 DayOfWeek.SUNDAY
                             )
-
-                            days.forEach { day ->
-                                val isSelected = selectedDays.contains(day)
-
-                                toggleableItem(
-                                    checked = isSelected,
-                                    label = day.getDisplayName(
-                                        TextStyle.NARROW,
-                                        Locale.getDefault()
-                                    ),
-                                    onCheckedChange = { _ ->
-                                        val limit = frequencyCountStr.toIntOrNull() ?: 7
-                                        selectedDays = if (isSelected) {
-                                            if (selectedDays.size > 1) selectedDays - day else selectedDays
-                                        } else {
-                                            if (selectedDays.size < limit) selectedDays + day else selectedDays
-                                        }
+                            ButtonGroup(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                overflowIndicator = { state ->
+                                    IconButton(onClick = { state.show() }) {
+                                        Icon(
+                                            Icons.Rounded.MoreHoriz,
+                                            contentDescription = stringResource(R.string.more_options)
+                                        )
                                     }
-                                )
+                                }
+                            ) {
+                                days.forEach { day ->
+                                    val isSelected = selectedDays.contains(day)
+
+                                    toggleableItem(
+                                        checked = isSelected,
+                                        label = day.getDisplayName(
+                                            TextStyle.NARROW,
+                                            Locale.getDefault()
+                                        ),
+                                        onCheckedChange = { _ ->
+                                            selectedDays = if (isSelected) {
+                                                if (selectedDays.size > 1) selectedDays - day else selectedDays
+                                            } else {
+                                                selectedDays + day
+                                            }
+                                        }
+                                    )
+                                }
                             }
+                        }
+
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                        item {
+                            TimeSelectorItem(
+                                label = stringResource(R.string.time_label),
+                                time = selectedTimes.firstOrNull() ?: LocalTime.now()
+                            ) { showTimePickerForIndex = 0 }
                         }
                     }
 
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                    2 -> {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.interval_every),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                OutlinedTextField(
+                                    value = intervalDays,
+                                    onValueChange = {
+                                        if (it.isEmpty() || it.all { char -> char.isDigit() }) intervalDays =
+                                            it
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                                    singleLine = true,
+                                    textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                                )
 
-                    item {
-                        TimeSelectorItem(
-                            label = stringResource(R.string.time_label),
-                            time = selectedTimes.firstOrNull() ?: LocalTime.now()
-                        ) { showTimePickerForIndex = 0 }
-                    }
-                } else if (frequencyUnit == "BiWeek") {
-                    item {
-                        TimeSelectorItem(
-                            label = stringResource(R.string.time_label),
-                            time = selectedTimes.firstOrNull() ?: LocalTime.now()
-                        ) { showTimePickerForIndex = 0 }
-                    }
-                } else {
-                    item {
-                        Text(
-                            text = stringResource(R.string.times_label),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.fillMaxWidth().padding(start = 4.dp, bottom = 8.dp),
-                            textAlign = TextAlign.Start
-                        )
-                    }
+                                ExposedDropdownMenuBox(
+                                    expanded = expandedInterval,
+                                    onExpandedChange = { expandedInterval = !expandedInterval },
+                                    modifier = Modifier.weight(1.5f)
+                                ) {
+                                    val options = listOf(
+                                        stringResource(R.string.interval_days),
+                                        stringResource(R.string.interval_weeks),
+                                        stringResource(R.string.interval_months)
+                                    )
 
-                    itemsIndexed(selectedTimes) { index, time ->
-                        TimeSelectorItem(
-                            label = stringResource(
-                                R.string.schedule_label_format,
-                                index + 1
-                            ), time = time
-                        ) { showTimePickerForIndex = index }
-                        Spacer(modifier = Modifier.height(12.dp))
+                                    OutlinedTextField(
+                                        value = options[intervalUnit],
+                                        onValueChange = {},
+                                        readOnly = true,
+                                        trailingIcon = {
+                                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedInterval)
+                                        },
+                                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                                    )
+
+                                    ExposedDropdownMenu(
+                                        expanded = expandedInterval,
+                                        onDismissRequest = { expandedInterval = false },
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                                    ) {
+                                        options.forEachIndexed { index, selectionOption ->
+                                            DropdownMenuItem(
+                                                text = { Text(selectionOption, fontFamily = GoogleSansFlex) },
+                                                onClick = {
+                                                    intervalUnit = index
+                                                    expandedInterval = false
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                        item {
+                            TimeSelectorItem(
+                                label = stringResource(R.string.time_label),
+                                time = selectedTimes.firstOrNull() ?: LocalTime.now()
+                            ) { showTimePickerForIndex = 0 }
+                        }
                     }
                 }
             }
@@ -610,21 +691,89 @@ fun MedicineBottomSheet(
                     Button(
                         onClick = {
                             if (text.isNotBlank()) {
-                                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                    if (!sheetState.isVisible) {
-                                        val days =
-                                            if (frequencyUnit == "Week") selectedDays.toList() else null
-                                        val gap = if (frequencyUnit == "BiWeek") 14 else null
-                                        onConfirm(
-                                            text,
-                                            selectedIconName,
-                                            selectedColor,
-                                            selectedTimes,
-                                            days,
-                                            notes.takeIf { it.isNotBlank() },
-                                            gap,
-                                            notificationType
-                                        )
+                                if (initialItem != null) {
+                                    val isModified = run {
+                                        val initialFreqType = when {
+                                            initialItem.intervalGap != null && initialItem.intervalGap > 1 -> 2
+                                            initialItem.recurrenceDays != null -> 1
+                                            else -> 0
+                                        }
+                                        val initialDaysSet = initialItem.recurrenceDays?.toSet() ?: setOf(LocalDate.now().dayOfWeek)
+
+                                        val currentBase = intervalDays.toIntOrNull() ?: 2
+                                        val currentGap = when(intervalUnit) {
+                                            1 -> currentBase * 7
+                                            2 -> currentBase * 30
+                                            else -> currentBase
+                                        }
+
+                                        text != initialItem.title ||
+                                                notes != (initialItem.notes ?: "") ||
+                                                selectedIconName != (initialItem.iconName ?: "MedicalServices") ||
+                                                selectedColor != (initialItem.colorCode ?: "dynamic") ||
+                                                notificationType != initialItem.notificationType ||
+                                                selectedTimes != listOf(initialItem.creationTime) ||
+                                                frequencyType != initialFreqType ||
+                                                (frequencyType == 1 && selectedDays != initialDaysSet) ||
+                                                (frequencyType == 2 && currentGap != (initialItem.intervalGap ?: 2))
+                                    }
+
+                                    if (isModified) {
+                                        showSaveFrequencyPopup = true
+                                    } else {
+                                        scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                            if (!sheetState.isVisible) {
+                                                val days = if (frequencyType == 1) selectedDays.toList() else null
+                                                val gap = if (frequencyType == 2) {
+                                                    val base = intervalDays.toIntOrNull() ?: 2
+                                                    when (intervalUnit) {
+                                                        1 -> base * 7
+                                                        2 -> base * 30
+                                                        else -> base
+                                                    }
+                                                } else null
+
+                                                onConfirm(
+                                                    text,
+                                                    selectedIconName,
+                                                    selectedColor,
+                                                    selectedTimes,
+                                                    days,
+                                                    notes.takeIf { it.isNotBlank() },
+                                                    gap,
+                                                    notificationType,
+                                                    null,
+                                                    null
+                                                )
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
+                                        if (!sheetState.isVisible) {
+                                            val days = if (frequencyType == 1) selectedDays.toList() else null
+                                            val gap = if (frequencyType == 2) {
+                                                val base = intervalDays.toIntOrNull() ?: 2
+                                                when (intervalUnit) {
+                                                    1 -> base * 7
+                                                    2 -> base * 30
+                                                    else -> base
+                                                }
+                                            } else null
+
+                                            onConfirm(
+                                                text,
+                                                selectedIconName,
+                                                selectedColor,
+                                                selectedTimes,
+                                                days,
+                                                notes.takeIf { it.isNotBlank() },
+                                                gap,
+                                                notificationType,
+                                                null,
+                                                null
+                                            )
+                                        }
                                     }
                                 }
                             } else {

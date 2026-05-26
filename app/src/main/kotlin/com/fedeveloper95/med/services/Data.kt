@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.R
@@ -242,7 +243,12 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             application.registerReceiver(updateReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
         } else {
-            application.registerReceiver(updateReceiver, filter)
+            ContextCompat.registerReceiver(
+                application,
+                updateReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
@@ -276,6 +282,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         val itemsOnDate = _items.filter { item ->
             when (item.type) {
                 ItemType.Event -> item.creationDate == selectedDate
+                ItemType.Illness -> {
+                    val isAfterStart = !selectedDate.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
+                    isAfterStart && isBeforeEnd
+                }
                 ItemType.Medicine -> {
                     val isAfterStart = !selectedDate.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
@@ -363,44 +374,124 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         days: List<DayOfWeek>?,
         notes: String?,
         intervalGap: Int?,
-        notificationType: Int = 0
+        notificationType: Int = 0,
+        rangeStart: Long? = -2L,
+        rangeEnd: Long? = -2L
     ) {
-        val index = _items.indexOfFirst { it.id == originalItem.id }
-        if (index != -1) {
-            val context = getApplication<Application>()
-            _items[index] = originalItem.copy(
+        val context = getApplication<Application>()
+        val freqLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
+        else if (days != null) context.getString(R.string.frequency_specific_days)
+        else if (times.size > 1) context.getString(
+            R.string.frequency_daily_multiple,
+            times.size
+        )
+        else context.getString(R.string.frequency_daily)
+
+        val isMedicine = originalItem.type == ItemType.Medicine
+        val isRangeUpdate = rangeStart != -2L
+
+        val relatedItems = if (originalItem.groupId != null) {
+            _items.filter { it.groupId == originalItem.groupId }
+        } else {
+            listOf(originalItem)
+        }
+
+        val relatedIds = relatedItems.map { it.id }.toSet()
+
+        if (isMedicine && isRangeUpdate) {
+            var editStart = selectedDate
+            var editEnd: LocalDate? = null
+
+            if (rangeStart == null && rangeEnd == null) {
+                editStart = selectedDate
+                editEnd = selectedDate
+            } else if (rangeStart == -1L) {
+                editStart = selectedDate
+                editEnd = originalItem.endDate
+            } else if (rangeStart != null) {
+                editStart = LocalDate.ofEpochDay(rangeStart / 86400000)
+                editEnd = if (rangeEnd != null && rangeEnd != -2L) LocalDate.ofEpochDay(rangeEnd / 86400000) else editStart
+            }
+
+            _items.removeAll { it.id in relatedIds }
+
+            val baseNewItem = originalItem.copy(
                 title = title,
                 iconName = iconName,
                 colorCode = colorCode,
-                creationTime = times.firstOrNull() ?: originalItem.creationTime,
                 recurrenceDays = days,
                 notes = notes,
                 intervalGap = intervalGap,
                 notificationType = notificationType,
-                frequencyLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
-                else if (days != null) context.getString(R.string.frequency_specific_days)
-                else if (times.size > 1) context.getString(
-                    R.string.frequency_daily_multiple,
-                    times.size
-                )
-                else context.getString(R.string.frequency_daily)
+                frequencyLabel = freqLabel
             )
 
-            if (times.size > 1) {
-                for (i in 1 until times.size) {
-                    val newItem = _items[index].copy(
+            relatedItems.forEachIndexed { i, oldItem ->
+                if (editStart.isAfter(oldItem.creationDate)) {
+                    val newEndDate = editStart.minusDays(1)
+                    val finalEndDate = if (oldItem.endDate != null && oldItem.endDate.isBefore(newEndDate)) oldItem.endDate else newEndDate
+                    _items.add(oldItem.copy(
                         id = System.nanoTime() + i,
-                        creationTime = times[i],
-                        takenHistory = HashMap()
-                    )
-                    _items.add(newItem)
+                        endDate = finalEndDate
+                    ))
                 }
             }
+
+            val editedGroupId = System.currentTimeMillis()
+            times.forEachIndexed { i, time ->
+                val editedPart = baseNewItem.copy(
+                    id = System.nanoTime() + 100 + i,
+                    groupId = editedGroupId,
+                    creationTime = time,
+                    creationDate = editStart,
+                    endDate = editEnd,
+                    takenHistory = HashMap()
+                )
+                _items.add(editedPart)
+                NotificationReceiver.scheduleNotification(getApplication(), editedPart)
+            }
+
+            if (editEnd != null) {
+                val newCreationDate = editEnd.plusDays(1)
+                relatedItems.forEachIndexed { i, oldItem ->
+                    if (oldItem.endDate == null || oldItem.endDate.isAfter(editEnd)) {
+                        val finalCreationDate = if (oldItem.creationDate.isAfter(newCreationDate)) oldItem.creationDate else newCreationDate
+                        _items.add(oldItem.copy(
+                            id = System.nanoTime() + 200 + i,
+                            creationDate = finalCreationDate
+                        ))
+                    }
+                }
+            }
+
             saveData()
-            if (originalItem.type == ItemType.Medicine) {
-                NotificationReceiver.scheduleNotification(getApplication(), _items[index])
+            return
+        }
+
+        _items.removeAll { it.id in relatedIds }
+
+        val newGroupId = System.currentTimeMillis()
+        times.forEachIndexed { i, time ->
+            val newItem = originalItem.copy(
+                id = System.nanoTime() + i,
+                groupId = newGroupId,
+                title = title,
+                iconName = iconName,
+                colorCode = colorCode,
+                creationTime = time,
+                creationDate = originalItem.creationDate,
+                recurrenceDays = days,
+                notes = notes,
+                intervalGap = intervalGap,
+                notificationType = notificationType,
+                frequencyLabel = freqLabel
+            )
+            _items.add(newItem)
+            if (newItem.type == ItemType.Medicine) {
+                NotificationReceiver.scheduleNotification(getApplication(), newItem)
             }
         }
+        saveData()
     }
 
     fun deleteItem(item: MedData, deleteDate: LocalDate) {
@@ -417,6 +508,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         val itemsOnDate = _items.filter {
             when (it.type) {
                 ItemType.Event -> it.creationDate == deleteDate
+                ItemType.Illness -> {
+                    val isAfterStart = !deleteDate.isBefore(it.creationDate)
+                    val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
+                    isAfterStart && isBeforeEnd
+                }
                 ItemType.Medicine -> {
                     val isAfterStart = !deleteDate.isBefore(it.creationDate)
                     val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
@@ -479,6 +575,15 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         saveData()
     }
 
+    fun confirmIllness(item: MedData, date: LocalDate) {
+        if (item.type != ItemType.Illness) return
+        val newHistory = HashMap(item.takenHistory)
+        newHistory[date] = LocalTime.now()
+        val index = _items.indexOfFirst { it.id == item.id }
+        if (index != -1) _items[index] = item.copy(takenHistory = newHistory)
+        saveData()
+    }
+
     fun reloadData() {
         loadData()
         syncToWear()
@@ -491,6 +596,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         val itemsToday = _items.filter { item ->
             when (item.type) {
                 ItemType.Event -> item.creationDate == today
+                ItemType.Illness -> {
+                    val isAfterStart = !today.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
+                    isAfterStart && isBeforeEnd
+                }
                 ItemType.Medicine -> {
                     val isAfterStart = !today.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
@@ -512,7 +622,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             "$taken${it.creationTime.format(formatter)} - ${it.title}"
         }
 
-        val evs = itemsToday.filter { it.type == ItemType.Event && it.title.isNotBlank() && it.iconName != "DIVIDER" }.map {
+        val evs = itemsToday.filter { (it.type == ItemType.Event || it.type == ItemType.Illness) && it.title.isNotBlank() && it.iconName != "DIVIDER" }.map {
             "${it.creationTime.format(formatter)} - ${it.title}"
         }
 

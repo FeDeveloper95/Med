@@ -84,6 +84,7 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 enum class DayStatus {
     ALL_TAKEN, PARTIAL, NONE_TAKEN, NO_MEDS, FUTURE
@@ -443,8 +444,8 @@ fun CalendarHeader(
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit
 ) {
-    val monthName = currentMonth.month.getDisplayName(TextStyle.FULL, Locale.getDefault())
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+    val monthName = currentMonth.month.getDisplayName(TextStyle.FULL, LocalLocale.current.platformLocale)
+        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(LocalLocale.current.platformLocale) else it.toString() }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -491,7 +492,7 @@ fun CalendarGrid(
         Row(modifier = Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { dayOfWeek ->
                 Text(
-                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, LocalLocale.current.platformLocale),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,

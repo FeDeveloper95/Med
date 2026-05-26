@@ -2,6 +2,7 @@ package com.fedeveloper95.med.services
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import com.google.android.gms.wearable.DataClient
 import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataEventBuffer
@@ -39,6 +40,16 @@ object WearSyncManager : DataClient.OnDataChangedListener {
                         .putBoolean("pref_wear_ring_alarms", alarms)
                         .putStringSet("pref_wear_enabled_events", events.toSet())
                         .apply()
+                } else if (path == "/action_take" || path == "/action_snooze") {
+                    val itemIds = dataMap.getLongArray("item_ids") ?: return
+                    val notifId = dataMap.getInt("notif_id", -1)
+
+                    val actionIntent = Intent(appContext, NotificationReceiver::class.java).apply {
+                        action = if (path == "/action_take") NotificationReceiver.ACTION_TAKEN else NotificationReceiver.ACTION_SNOOZE
+                        putExtra("ITEM_IDS", itemIds)
+                        putExtra("NOTIF_ID", notifId)
+                    }
+                    appContext?.sendBroadcast(actionIntent)
                 }
             }
         }
@@ -60,6 +71,16 @@ object WearSyncManager : DataClient.OnDataChangedListener {
             dataMap.putBoolean("alarms_enabled", alarmsEnabled)
             dataMap.putStringArray("enabled_events", enabledEvents.toTypedArray())
             dataMap.putStringArray("available_events", availableEvents.toTypedArray())
+            dataMap.putLong("timestamp", System.currentTimeMillis())
+        }.asPutDataRequest().setUrgent()
+        dataClient?.putDataItem(request)
+    }
+
+    fun triggerWatchAlarm(itemIds: LongArray, title: String, notifId: Int) {
+        val request = PutDataMapRequest.create("/trigger_alarm").apply {
+            dataMap.putLongArray("item_ids", itemIds)
+            dataMap.putString("title", title)
+            dataMap.putInt("notif_id", notifId)
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
         dataClient?.putDataItem(request)

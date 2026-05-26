@@ -45,7 +45,7 @@ import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import java.time.LocalTime
 
 @Composable
-fun TimePickerSwitchable(
+fun TimePicker(
     onDismiss: () -> Unit,
     onConfirm: (LocalTime) -> Unit,
     initialTime: LocalTime = LocalTime.now()

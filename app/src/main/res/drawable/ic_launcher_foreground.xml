@@ -49,6 +49,7 @@
           <item android:offset="0.1" android:color="#FFA5A8FC"/>
           <item android:offset="0.25" android:color="#FF64A8FF"/>
           <item android:offset="0.64" android:color="#FF0A69E2"/>
+          <item android:offset="0.96" android:color="#FF153174"/>
         </gradient>
       </aapt:attr>
     </path>

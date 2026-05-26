@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,6 +42,9 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +53,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -71,18 +76,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.AVAILABLE_ICONS
+import com.fedeveloper95.med.ExpressiveTextButton
 import com.fedeveloper95.med.R
-import com.fedeveloper95.med.TimeSelectorItem
-import com.fedeveloper95.med.elements.TimePicker
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.launch
-import java.time.LocalTime
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
-fun EventBottomSheet(
+fun IllnessesBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<java.time.DayOfWeek>?, String?, Int?) -> Unit,
+    onConfirm: (String, String?, String?, LocalDate) -> Unit,
     initialItem: MedData? = null,
     initialText: String = ""
 ) {
@@ -90,17 +95,15 @@ fun EventBottomSheet(
     val scope = rememberCoroutineScope()
 
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
-    var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
     var nameError by remember { mutableStateOf(false) }
 
-    var selectedTime by remember {
-        mutableStateOf(initialItem?.creationTime ?: LocalTime.now())
-    }
+    var selectedDate by remember { mutableStateOf(initialItem?.creationDate ?: LocalDate.now()) }
 
-    var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Event") }
+    // Impostato a "Bed" (ic_mind) come predefinito per le malattie
+    var selectedIconName by remember { mutableStateOf(initialItem?.iconName ?: "Bed") }
     var selectedColor by remember { mutableStateOf(initialItem?.colorCode ?: "dynamic") }
     var showIconPicker by remember { mutableStateOf(false) }
-    var showTimePicker by remember { mutableStateOf(false) }
+    var showDatePicker by remember { mutableStateOf(false) }
 
     if (showIconPicker) {
         IconPickerDialog(
@@ -115,15 +118,27 @@ fun EventBottomSheet(
         )
     }
 
-    if (showTimePicker) {
-        TimePicker(
-            onDismiss = { showTimePicker = false },
-            onConfirm = { newTime ->
-                selectedTime = newTime
-                showTimePicker = false
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                ExpressiveTextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { millis ->
+                        selectedDate = LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000))
+                    }; showDatePicker = false
+                }, text = stringResource(R.string.ok_action))
             },
-            initialTime = selectedTime
-        )
+            dismissButton = {
+                ExpressiveTextButton(
+                    onClick = { showDatePicker = false },
+                    text = stringResource(R.string.cancel_action)
+                )
+            },
+            colors = DatePickerDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            shape = RoundedCornerShape(32.dp),
+            tonalElevation = 6.dp
+        ) { DatePicker(state = datePickerState) }
     }
 
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
@@ -189,7 +204,7 @@ fun EventBottomSheet(
             ) {
                 item {
                     Text(
-                        text = stringResource(R.string.new_event_title),
+                        text = stringResource(R.string.new_illness_title),
                         fontFamily = GoogleSansFlex,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
@@ -271,31 +286,13 @@ fun EventBottomSheet(
                     )
                 }
 
-                item { Spacer(modifier = Modifier.height(12.dp)) }
-
-                item {
-                    OutlinedTextField(
-                        value = notes,
-                        onValueChange = { notes = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(
-                                stringResource(R.string.notes_hint),
-                                fontFamily = GoogleSansFlex
-                            )
-                        },
-                        minLines = 2,
-                        maxLines = 4
-                    )
-                }
-
                 item { Spacer(modifier = Modifier.height(24.dp)) }
 
                 item {
-                    TimeSelectorItem(
-                        label = stringResource(R.string.time_label),
-                        time = selectedTime
-                    ) { showTimePicker = true }
+                    DateSelectorItem(
+                        label = stringResource(R.string.day_of_start_label),
+                        date = selectedDate
+                    ) { showDatePicker = true }
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
@@ -343,10 +340,7 @@ fun EventBottomSheet(
                                                     text,
                                                     selectedIconName,
                                                     selectedColor,
-                                                    listOf(selectedTime),
-                                                    null,
-                                                    notes.takeIf { it.isNotBlank() },
-                                                    null
+                                                    selectedDate
                                                 )
                                             }
                                         }
@@ -376,6 +370,43 @@ fun EventBottomSheet(
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
             }
+        }
+    }
+}
+
+@Composable
+fun DateSelectorItem(label: String, date: LocalDate, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+            .clickable(onClick = onClick)
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            label,
+            fontFamily = GoogleSansFlex,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
+                fontFamily = GoogleSansFlex,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                Icons.Filled.Edit,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(16.dp)
+            )
         }
     }
 }

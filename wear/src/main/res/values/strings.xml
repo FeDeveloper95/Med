@@ -10,4 +10,7 @@
     <string name="alarms_title">Alarms</string>
     <string name="alarms_desc">Receive alarms on your watch</string>
     <string name="quick_actions_title">Quick Actions</string>
+    <string name="take">Take</string>
+    <string name="snooze">Snooze</string>
+
 </resources>

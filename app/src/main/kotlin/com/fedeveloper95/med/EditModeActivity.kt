@@ -240,6 +240,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
         allItems.filter { item ->
             when (item.type) {
                 ItemType.Event -> item.creationDate == selectedDate
+                ItemType.Illness -> false
                 ItemType.Medicine -> {
                     val isAfterStart = !selectedDate.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)

@@ -6,9 +6,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +28,9 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.RadioButtonChecked
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +52,7 @@ import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.AppScaffold
+import androidx.wear.compose.material3.ButtonGroup
 import androidx.wear.compose.material3.Card
 import androidx.wear.compose.material3.CardDefaults
 import androidx.wear.compose.material3.EdgeButton
@@ -55,6 +61,7 @@ import androidx.wear.compose.material3.IconButton
 import androidx.wear.compose.material3.IconButtonDefaults
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
+import androidx.wear.compose.material3.OpenOnPhoneDialog
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
@@ -109,6 +116,7 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
     val listState = rememberScalingLazyListState()
 
     var itemToDelete by remember { mutableStateOf<ItemToDelete?>(null) }
+    var showOpenOnPhone by remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         ScreenScaffold(
@@ -251,22 +259,49 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { Spacer(modifier = Modifier.height(8.dp)) }
 
                 item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
+                    val interactionRefresh = remember { MutableInteractionSource() }
+                    val isPressedRefresh by interactionRefresh.collectIsPressedAsState()
+                    val weightRefresh by animateFloatAsState(targetValue = if (isPressedRefresh) 1.5f else 1f, label = "")
+
+                    val interactionSettings = remember { MutableInteractionSource() }
+                    val isPressedSettings by interactionSettings.collectIsPressedAsState()
+                    val weightSettings by animateFloatAsState(targetValue = if (isPressedSettings) 1.5f else 1f, label = "")
+
+                    val interactionPhone = remember { MutableInteractionSource() }
+                    val isPressedPhone by interactionPhone.collectIsPressedAsState()
+                    val weightPhone by animateFloatAsState(targetValue = if (isPressedPhone) 1.5f else 1f, label = "")
+
+                    ButtonGroup(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
                     ) {
                         IconButton(
-                            onClick = {
-                                context.startActivity(Intent(context, SettingsActivity::class.java))
-                            },
+                            onClick = { WearDataManager.requestSyncFromPhone() },
+                            interactionSource = interactionRefresh,
                             colors = IconButtonDefaults.filledIconButtonColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceContainer,
                                 contentColor = MaterialTheme.colorScheme.onSurface
                             ),
-                            modifier = Modifier.size(52.dp)
+                            modifier = Modifier.weight(weightRefresh)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Refresh,
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                context.startActivity(Intent(context, SettingsActivity::class.java))
+                            },
+                            interactionSource = interactionSettings,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            modifier = Modifier.weight(weightSettings)
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Settings,
@@ -274,10 +309,35 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                                 modifier = Modifier.size(24.dp)
                             )
                         }
+                        IconButton(
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    data = android.net.Uri.parse("med://open")
+                                    setPackage("com.fedeveloper95.med")
+                                }
+                                val remoteIntent = Intent("com.google.android.wearable.intent.action.REMOTE_INTENT").apply {
+                                    putExtra("com.google.android.wearable.intent.extra.INTENT", intent)
+                                }
+                                context.sendBroadcast(remoteIntent)
+
+                                WearDataManager.openUrlOnPhone("com.fedeveloper95.med")
+                                showOpenOnPhone = true
+                            },
+                            interactionSource = interactionPhone,
+                            colors = IconButtonDefaults.filledIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            modifier = Modifier.weight(weightPhone)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Smartphone,
+                                contentDescription = stringResource(R.string.app_name),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
-
-                item { Spacer(modifier = Modifier.height(32.dp)) }
             }
         }
 
@@ -294,6 +354,12 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                 }
             )
         }
+
+        OpenOnPhoneDialog(
+            visible = showOpenOnPhone,
+            onDismissRequest = { showOpenOnPhone = false },
+            curvedText = { }
+        )
     }
 }
 

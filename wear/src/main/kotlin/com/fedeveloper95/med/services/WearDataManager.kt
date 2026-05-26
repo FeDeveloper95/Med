@@ -89,6 +89,15 @@ object WearDataManager : DataClient.OnDataChangedListener {
         dataClient?.putDataItem(request)
     }
 
+    fun sendActionToPhone(path: String, itemIds: LongArray, notifId: Int) {
+        val request = PutDataMapRequest.create(path).apply {
+            dataMap.putLongArray("item_ids", itemIds)
+            dataMap.putInt("notif_id", notifId)
+            dataMap.putLong("timestamp", System.currentTimeMillis())
+        }.asPutDataRequest().setUrgent()
+        dataClient?.putDataItem(request)
+    }
+
     fun syncSettings() {
         val request = PutDataMapRequest.create("/settings").apply {
             dataMap.putBoolean("alarms_enabled", alarmsEnabled)

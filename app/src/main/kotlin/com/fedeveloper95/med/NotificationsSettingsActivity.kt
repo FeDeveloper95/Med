@@ -21,7 +21,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -67,7 +66,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -240,6 +238,7 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
             )
         )
     }
+
     var useSliderStyle by remember {
         mutableStateOf(
             prefs.getBoolean(
@@ -248,6 +247,7 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
             )
         )
     }
+
     var snoozeDuration by remember { mutableIntStateOf(prefs.getInt(PREF_SNOOZE_DURATION, 10)) }
 
     var showSnoozeDialog by remember { mutableStateOf(false) }
@@ -346,7 +346,6 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
                 item {
                     val interactionSource = remember { MutableInteractionSource() }
                     val shape = RoundedCornerShape(64.dp)
-
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -504,6 +503,7 @@ fun SettingsSegmentedButtonCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
         animationSpec = tween(durationMillis = 200),
@@ -547,6 +547,7 @@ fun SettingsSegmentedButtonCard(
     }
 
     val alpha = if (enabled) 1f else 0.38f
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -600,9 +601,7 @@ fun SettingsSegmentedButtonCard(
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(20.dp))
-
             SingleSelectConnectedButtonGroupWithFlowLayout(
                 options = options,
                 selectedIndex = selectedIndex,
@@ -625,8 +624,8 @@ fun SingleSelectConnectedButtonGroupWithFlowLayout(
 ) {
     FlowRow(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         options.forEachIndexed { index, label ->
             ToggleButton(
@@ -638,15 +637,6 @@ fun SingleSelectConnectedButtonGroupWithFlowLayout(
                     options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                colors = ToggleButtonDefaults.toggleButtonColors(
-                    checkedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    checkedContentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledContainerColor = Color.Transparent,
-                    disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f)
-                ),
                 modifier = Modifier.semantics { role = Role.RadioButton },
             ) {
                 Text(
@@ -672,6 +662,7 @@ fun SettingsItemCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
         animationSpec = tween(durationMillis = 200),
@@ -715,6 +706,7 @@ fun SettingsItemCard(
     }
 
     val alpha = if (enabled) 1f else 0.38f
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -789,6 +781,7 @@ fun SettingsSwitchCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
         animationSpec = tween(durationMillis = 200),
@@ -832,6 +825,7 @@ fun SettingsSwitchCard(
     }
 
     val alpha = if (enabled) 1f else 0.38f
+
     Card(
         modifier = Modifier
             .fillMaxWidth()

@@ -65,7 +65,8 @@ object Updater {
                     var downloadUrl = ""
                     for (i in 0 until assets.length()) {
                         val asset = assets.getJSONObject(i)
-                        if (asset.getString("name").endsWith(".apk")) {
+                        val assetName = asset.getString("name")
+                        if (assetName.endsWith(".apk") && !assetName.contains("WearOS", ignoreCase = true)) {
                             downloadUrl = asset.getString("browser_download_url")
                             break
                         }

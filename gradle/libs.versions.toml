@@ -3,32 +3,43 @@ agp = "9.2.1"
 biometric = "1.2.0-alpha05"
 coilCompose = "2.7.0"
 composeMarkdown = "0.5.4"
-composeMaterial = "1.6.1"
-composeMaterial3 = "1.0.0-alpha20"
-foundation = "1.11.1"
+composeMaterial = "1.6.2"
+composeMaterial3 = "1.6.2"
+foundation = "1.11.2"
 kotlin = "2.3.21"
 coreKtx = "1.18.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
-composeBom = "2026.05.00"
-material3 = "1.5.0-alpha19"
+composeBom = "2026.05.01"
+material3 = "1.5.0-alpha20"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
-material3WindowSizeClass = "1.5.0-alpha19"
+material3AdaptiveNavigationSuite = "1.5.0-alpha20"
+material3Version = "1.5.0-alpha20"
+material3WindowSizeClass = "1.5.0-alpha20"
+material3WindowSizeClassVersion = "1.4.0"
+materialIconsExtended = "1.7.8"
 materialVersion = "1.14.0"
 palette = "1.0.0"
 androidBuiltInKotlin = "9.2.1"
 playServicesWearable = "20.0.1"
-material = "13.0.0"
-ui = "1.11.1"
-uiToolingPreview = "1.11.1"
+ui = "1.11.2"
+uiToolingPreview = "1.11.2"
+uiToolingPreviewVersion = "1.11.2"
+uiVersion = "1.11.2"
 
 [libraries]
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeMaterial" }
+androidx-compose-material-icons-extended-v161 = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
+androidx-compose-material3-v140 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-compose-material3-window-size-class1 = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClass" }
+androidx-compose-material3-window-size-class1-v140 = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClassVersion" }
 androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeMaterial" }
+androidx-compose-ui-tooling-preview-v1110 = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreviewVersion" }
+androidx-compose-ui-v1110 = { module = "androidx.compose.ui:ui", version.ref = "uiVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }

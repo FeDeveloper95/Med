@@ -15,7 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.MonitorWeight
+import androidx.compose.material.icons.rounded.FitnessCenter
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -84,7 +84,7 @@ fun WeightBottomSheet(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    imageVector = Icons.Rounded.MonitorWeight,
+                    imageVector = Icons.Rounded.FitnessCenter,
                     contentDescription = null,
                     tint = Color(0xFF1E7503),
                     modifier = Modifier.size(40.dp)

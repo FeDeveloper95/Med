@@ -113,11 +113,7 @@
     <string name="time_label">Time</string>
     <string name="choose_icon">Choose Icon</string>
     <string name="frequency_label">Frequency</string>
-    <string name="days_label">Specific Days</string>
 
-    <string name="frequency_unit_day">Day</string>
-    <string name="frequency_unit_week">Week</string>
-    <string name="times_label">Times</string>
     <string name="schedule_label_format">Schedule %1$d</string>
 
     <string name="download_title">Med Update</string>
@@ -279,8 +275,27 @@
     <string name="fullscreen_permission_title">Enable full screen alarms</string>
     <string name="fullscreen_permission_desc">To get the most out of your alarms, you should allow Med to show full-screen notifications even when your screen is off.</string>
     <string name="enable_action">Enable</string>
-    <string name="notif_grouped_title">Time to take medications</string>
-    <string name="notif_action_take_all">Take All</string>
+    <string name="notif_grouped_title">Time to take your medications</string>
+    <string name="notif_action_take_all">Take all</string>
     <string name="alarm_swipe_to_respond">Swipe to choose</string>
+    <string name="modify_medicine_title">Apply changes</string>
+    <string name="modify_only_this">Only this event</string>
+    <string name="modify_all_following">This and all following events</string>
+    <string name="modify_specific_range">Specific date range</string>
+    <string name="freq_mode_daily">Daily</string>
+    <string name="freq_mode_days">Specific days</string>
+    <string name="freq_mode_interval">Interval</string>
+    <string name="times_per_day_label">Times per day</string>
+    <string name="interval_every">Every</string>
+    <string name="interval_days">Days</string>
+    <string name="interval_weeks">Weeks</string>
+    <string name="interval_months">Months</string>
+    <string name="happy_birthday_msg">Happy birthday to you!</string>
+    <string name="illness_label">Illness</string>
+    <string name="illness_question">Do you still have %1$s?</string>
+    <string name="yes_action">Yes</string>
+    <string name="no_action">No</string>
+    <string name="new_illness_title">New illness</string>
+    <string name="day_of_start_label">Day of start</string>
 
 </resources>

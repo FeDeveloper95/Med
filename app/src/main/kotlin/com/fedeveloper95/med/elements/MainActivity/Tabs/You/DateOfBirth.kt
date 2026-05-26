@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.ExpressiveButton
 import com.fedeveloper95.med.ExpressiveTextButton
@@ -40,6 +46,35 @@ import com.fedeveloper95.med.R
 import com.fedeveloper95.med.elements.MainActivity.Tabs.CookieShape
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.launch
+
+class DateVisualTransformation : VisualTransformation {
+    override fun filter(text: AnnotatedString): TransformedText {
+        val trimmed = if (text.text.length >= 8) text.text.substring(0..7) else text.text
+        var out = ""
+        for (i in trimmed.indices) {
+            out += trimmed[i]
+            if (i == 1 || i == 3) out += "/"
+        }
+
+        val offsetMapping = object : OffsetMapping {
+            override fun originalToTransformed(offset: Int): Int {
+                if (offset <= 1) return offset
+                if (offset <= 3) return offset + 1
+                if (offset <= 8) return offset + 2
+                return 10
+            }
+
+            override fun transformedToOriginal(offset: Int): Int {
+                if (offset <= 2) return offset
+                if (offset <= 5) return offset - 1
+                if (offset <= 10) return offset - 2
+                return 8
+            }
+        }
+
+        return TransformedText(AnnotatedString(out), offsetMapping)
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +85,7 @@ fun DateOfBirthBottomSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
-    var textValue by remember { mutableStateOf(currentValue) }
+    var textValue by remember { mutableStateOf(currentValue.filter { it.isDigit() }) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -87,7 +122,10 @@ fun DateOfBirthBottomSheet(
             Spacer(modifier = Modifier.height(24.dp))
             OutlinedTextField(
                 value = textValue,
-                onValueChange = { textValue = it },
+                onValueChange = {
+                    val digits = it.filter { char -> char.isDigit() }.take(8)
+                    textValue = digits
+                },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
@@ -95,7 +133,9 @@ fun DateOfBirthBottomSheet(
                         fontFamily = GoogleSansFlex
                     )
                 },
-                singleLine = true
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                visualTransformation = DateVisualTransformation()
             )
             Spacer(modifier = Modifier.height(32.dp))
             Row(
@@ -128,7 +168,12 @@ fun DateOfBirthBottomSheet(
                         onClick = {
                             scope.launch {
                                 sheetState.hide()
-                                onSave(textValue)
+                                var out = ""
+                                for (i in textValue.indices) {
+                                    out += textValue[i]
+                                    if (i == 1 || i == 3) out += "/"
+                                }
+                                onSave(out)
                                 onDismiss()
                             }
                         },

@@ -178,26 +178,35 @@ class NotificationReceiver : BroadcastReceiver() {
                     effectiveType == "ALARM"
                 }
 
+                val wearAlarmsEnabled = prefs.getBoolean("pref_wear_ring_alarms", false)
+                val shouldTriggerWear = useFullScreen && wearAlarmsEnabled
+
                 createNotificationChannels(context)
-                val channelId = if (useFullScreen) ALARM_CHANNEL_ID else SIMPLE_NOTIF_CHANNEL_ID
+                val channelId = if (useFullScreen && !shouldTriggerWear) ALARM_CHANNEL_ID else SIMPLE_NOTIF_CHANNEL_ID
 
                 val notifId = validGroupItems.minOf { it.id }.toInt()
                 val isGrouped = validGroupItems.size > 1
                 val titles = validGroupItems.joinToString(", ") { it.title }
                 val itemIds = validGroupItems.map { it.id }.toLongArray()
 
+                WearSyncManager.initialize(context)
+
                 val builder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setContentTitle(if (isGrouped) context.getString(R.string.notif_grouped_title) else context.getString(R.string.notif_reminder_title, triggerItem.title))
                     .setContentText(if (isGrouped) titles else context.getString(R.string.notif_reminder_desc))
                     .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setAutoCancel(!useFullScreen)
+                    .setAutoCancel(!useFullScreen || shouldTriggerWear)
 
-                if (useFullScreen) {
+                if (useFullScreen && !shouldTriggerWear) {
                     val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                     builder.setCategory(NotificationCompat.CATEGORY_ALARM)
                     builder.setSound(soundUri)
                     builder.setVibrate(longArrayOf(0, 1000, 1000))
+                } else if (shouldTriggerWear) {
+                    WearSyncManager.triggerWatchAlarm(itemIds, titles, notifId)
+                    builder.setCategory(NotificationCompat.CATEGORY_REMINDER)
+                    builder.setSilent(true)
                 } else {
                     builder.setCategory(NotificationCompat.CATEGORY_REMINDER)
                     builder.setDefaults(NotificationCompat.DEFAULT_ALL)
@@ -232,7 +241,7 @@ class NotificationReceiver : BroadcastReceiver() {
                 builder.addAction(R.drawable.ic_notification, takeActionText, takePendingIntent)
                 builder.addAction(R.drawable.ic_notification, context.getString(R.string.notif_action_snooze), snoozePendingIntent)
 
-                if (useFullScreen) {
+                if (useFullScreen && !shouldTriggerWear) {
                     val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         putExtra("ITEM_IDS", itemIds)
@@ -263,7 +272,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
                 val notification = builder.build()
 
-                if (useFullScreen) {
+                if (useFullScreen && !shouldTriggerWear) {
                     notification.flags = notification.flags or Notification.FLAG_INSISTENT
                 }
 

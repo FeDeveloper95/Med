@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -62,7 +63,6 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material3.window.size.class1)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.play.services.wearable)
@@ -74,4 +74,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.material)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3.v140)
+    implementation(libs.androidx.compose.material3.window.size.class1.v140)
+    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 }
