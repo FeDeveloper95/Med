@@ -2,8 +2,7 @@
 
 **Never miss your medicine ever again.**
 
-![Med banner](https://github.com/user-attachments/assets/ee6b6af5-2380-4635-ad06-5120d729943f)
-
+<img width="4400" height="2475" alt="Med banner 2 0" src="https://github.com/user-attachments/assets/3ab94ca0-1415-428e-85e2-808188016c9d" />
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=android&logoColor=white) ![Material 3](https://img.shields.io/badge/Material%203-Expressive-purple?style=for-the-badge)
 
@@ -31,11 +30,17 @@ No fork of this project will recieve support, if you use a fork, ask the forker 
 ### :camera: Screenshots
 
 <details>
-  <summary><b>Click to expand screenshots</b></summary>
+  <summary><b>Phone screenshots</b></summary>
   <br>
-<img width="240" alt="Main" src="https://github.com/user-attachments/assets/516f0784-fcdd-495a-a60c-001b88a46a07" />
-<img width="240" alt="New Medicine" src="https://github.com/user-attachments/assets/b83b065f-0595-45b2-8b1b-8b7b6538ec45" />
-<img width="240" alt="Settings" src="https://github.com/user-attachments/assets/d31ea75b-a534-4915-b5df-d556daaa7a2e" />
-<img width="240" alt="Edit Mode" src="https://github.com/user-attachments/assets/613c1df2-f715-4b55-94f2-5af84e0d38a0" />
-
+<img width="5330" height="2540" alt="Phone" src="https://github.com/user-attachments/assets/7c5a9391-ade2-4efe-831c-0b9fbeed9dba" />
+</details>
+<details>
+  <summary><b>Watch screenshots</b></summary>
+  <br>
+<img width="5332" height="2533" alt="Watch" src="https://github.com/user-attachments/assets/bec8b48e-72f9-4164-bcd9-ff08517fda5f" />
+</details>
+<details>
+  <summary><b>Desktop screenshots</b></summary>
+  <br>
+  <img width="6132" height="3579" alt="Desktop" src="https://github.com/user-attachments/assets/dd638494-c072-4b67-84d0-86aa25649b6d" />
 </details>
