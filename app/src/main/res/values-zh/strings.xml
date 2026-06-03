@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">药物</string>
+    <string name="event_label">事件</string>
+    <string name="menu_tooltip">菜单</string>
+    <string name="menu_action_desc">操作菜单</string>
+    <string name="expanded_state">已展开</string>
+    <string name="collapsed_state">已折叠</string>
+    <string name="close_menu_action">关闭菜单</string>
+    <string name="choose_date_desc">选择日期</string>
+    <string name="settings_desc">设置</string>
+    <string name="no_events_label">今天没有事件</string>
+
+    <string name="item_deleted">已删除: %1$s</string>
+    <string name="undo_action">撤销</string>
+
+    <string name="cancel_action">取消</string>
+    <string name="ok_action">确定</string>
+    <string name="save_action">保存</string>
+    <string name="new_event_title">新事件</string>
+    <string name="new_medicine_title">新药物</string>
+    <string name="name_hint">名称</string>
+
+    <string name="settings_title">设置</string>
+    <string name="discard">返回</string>
+    <string name="cancel">取消</string>
+    <string name="restart_now">立即重启</string>
+
+    <string name="settings_theme_title">主题</string>
+    <string name="settings_theme_system">系统</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+
+    <string name="settings_week_start_title">一周的开始</string>
+    <string name="sunday">星期日</string>
+    <string name="monday">星期一</string>
+
+    <string name="settings_header_customization">个性化</string>
+    <string name="settings_presets_title">快速操作</string>
+    <string name="settings_presets_desc">在主菜单中管理自定义事件</string>
+    <string name="add_action">添加</string>
+
+    <string name="settings_header_info">信息</string>
+    <string name="settings_version_title">应用版本</string>
+    <string name="unknown">未知</string>
+    <string name="settings_developer_title">开发者</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">报告错误 / 提出建议</string>
+    <string name="settings_report_desc">在Telegram上联系</string>
+
+    <string name="settings_check_updates_title">检查更新</string>
+    <string name="settings_check_updates_desc">查找最新版本</string>
+    <string name="update_action">更新</string>
+    <string name="update_available">可用更新: v%1$s</string>
+    <string name="update_latest_version_msg">目前没有可用更新。</string>
+    <string name="update_error_msg">无法检查更新。请检查您的连接。</string>
+    <string name="later">稍后</string>
+
+    <string name="quick_actions_title">快速操作</string>
+    <string name="quick_actions_info">快速操作可帮助您将经常发生的现象或事件快速添加到Med中。</string>
+    <string name="active_actions_header">活动操作</string>
+
+    <string name="welcome_to">欢迎使用</string>
+    <string name="welcome_preparing_subtitle">让我们为您准备好一切。</string>
+    <string name="next">下一步</string>
+    <string name="back">返回</string>
+    <string name="get_started">开始</string>
+
+    <string name="perm_required">必填</string>
+    <string name="perm_permissions">权限</string>
+    <string name="perm_intro_text">这些权限是Med正常运行所必需的。请授予它们以继续。</string>
+
+    <string name="perm_notif_title">通知</string>
+    <string name="perm_notif_desc">立即了解何时该服药。</string>
+
+    <string name="perm_install_title">应用安装</string>
+    <string name="perm_install_desc">下载和安装更新所需。</string>
+
+    <string name="feat_discover">发现</string>
+    <string name="feat_features">功能</string>
+    <string name="feat_intro">以下是您可以使用新的Med应用执行的操作。</string>
+
+    <string name="feat_reminders_title">智能提醒</string>
+    <string name="feat_reminders_desc">及时收到药物的通知。</string>
+
+    <string name="feat_tracking_title">记录</string>
+    <string name="feat_tracking_desc">保留服药时间的历史记录。</string>
+
+    <string name="feat_presets_title">快速操作</string>
+    <string name="feat_presets_desc">立即设置重复事件的预设。</string>
+
+    <string name="feat_update_title">保持最新状态</string>
+    <string name="feat_update_desc">直接在应用设置中检查更新。</string>
+
+    <string name="settings_advanced_title">高级</string>
+    <string name="settings_advanced_desc">实验性功能和更新</string>
+    <string name="settings_auto_updates_title">自动更新</string>
+    <string name="settings_auto_updates_desc">在启动时检查更新</string>
+    <string name="settings_setup_title">初始设置</string>
+    <string name="settings_setup_desc">再次运行欢迎向导</string>
+    <string name="settings_backup_header">备份和恢复</string>
+    <string name="settings_export_title">导出设置</string>
+    <string name="settings_export_desc">保存配置</string>
+    <string name="settings_import_title">导入设置</string>
+    <string name="settings_import_desc">从备份文件中恢复</string>
+    <string name="dialog_restart_title">需要重启</string>
+    <string name="dialog_restart_desc">设置已导入。请重启应用程序以应用更改。</string>
+    <string name="export_success">设置成功导出</string>
+    <string name="export_error">导出设置时出错</string>
+    <string name="import_error">导入设置时出错</string>
+
+    <string name="select_color">颜色</string>
+    <string name="time_label">时间</string>
+    <string name="choose_icon">选择图标</string>
+    <string name="frequency_label">频率</string>
+
+    <string name="schedule_label_format">计划 %1$d</string>
+
+    <string name="download_title">Med更新</string>
+    <string name="download_desc">正在下载版本 %1$s…</string>
+    <string name="download_started">下载已开始…</string>
+    <string name="download_failed">下载失败: %1$s</string>
+    <string name="notif_channel_updates">更新</string>
+    <string name="update_notif_desc">点击查看详细信息并下载。</string>
+    <string name="install_error">安装错误: %1$s</string>
+
+    <string name="switch_to_text_input">切换到文本输入</string>
+    <string name="switch_to_touch_input">切换到触摸输入</string>
+
+    <string name="frequency_specific_days">特定日期</string>
+    <string name="frequency_daily_multiple">每天 %1$dx 次</string>
+    <string name="frequency_daily">每天</string>
+    <string name="edit_time_desc">编辑时间</string>
+    <string name="status_taken_format">已服 %1$s%2$s</string>
+    <string name="status_scheduled_format">计划于 %1$s</string>
+
+    <string name="dynamic_theme_desc">动态主题</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">一月</string>
+    <string name="month_february">二月</string>
+    <string name="month_march">三月</string>
+    <string name="month_april">四月</string>
+    <string name="month_may">五月</string>
+    <string name="month_june">六月</string>
+    <string name="month_july">七月</string>
+    <string name="month_august">八月</string>
+    <string name="month_september">九月</string>
+    <string name="month_october">十月</string>
+    <string name="month_november">十一月</string>
+    <string name="month_december">十二月</string>
+
+    <string name="day_short_mon">一</string>
+    <string name="day_short_tue">二</string>
+    <string name="day_short_wed">三</string>
+    <string name="day_short_thu">四</string>
+    <string name="day_short_fri">五</string>
+    <string name="day_short_sat">六</string>
+    <string name="day_short_sun">日</string>
+
+    <string name="settings_language_title">应用语言</string>
+    <string name="settings_language_desc">在系统设置中更改语言</string>
+
+    <string name="edit_mode_desc">编辑模式</string>
+    <string name="settings_sort_order_title">显示顺序</string>
+    <string name="settings_sort_order_time">按时间</string>
+    <string name="settings_sort_order_custom">自定义</string>
+    <string name="settings_header_preferences">首选项</string>
+    <string name="settings_notifications_title">通知</string>
+    <string name="settings_notifications_desc">管理通知和闹钟样式</string>
+    <string name="settings_show_notifications_title">显示通知</string>
+    <string name="settings_full_screen_alarm_title">全屏闹钟</string>
+    <string name="settings_full_screen_alarm_desc">使用闹钟点亮屏幕，而不是弹出通知</string>
+    <string name="settings_alarm_style_title">闹钟样式</string>
+    <string name="settings_alarm_style_desc">选择如何响应全屏闹钟</string>
+    <string name="settings_alarm_style_slider">滑块 (滑动)</string>
+    <string name="settings_alarm_style_buttons">按钮</string>
+    <string name="settings_snooze_duration_title">小睡时长</string>
+    <string name="settings_snooze_duration_desc">%1$d 分钟</string>
+    <string name="alarm_default_title">提醒</string>
+    <string name="alarm_time_to_take">该服用\n%1$s了</string>
+    <string name="alarm_taken_action">已服</string>
+    <string name="alarm_snooze_action">小睡 (%1$d 分钟)</string>
+    <string name="alarm_snooze_desc">小睡</string>
+    <string name="alarm_taken_desc">已服</string>
+    <string name="notif_reminder_title">提醒: %1$s</string>
+    <string name="notif_reminder_desc">该服药了</string>
+    <string name="notif_action_taken">已服</string>
+    <string name="notif_action_snooze">小睡</string>
+    <string name="notif_channel_alarms_name">药物闹钟</string>
+    <string name="notif_channel_alarms_desc">药物闹钟频道</string>
+    <string name="unsaved_changes_title">未保存的更改</string>
+    <string name="unsaved_changes_desc">退出前要保存新顺序吗？</string>
+    <string name="discard_action">放弃</string>
+    <string name="notes_hint">备注 (可选)</string>
+    <string name="frequency_unit_biweek">每 2 周</string>
+    <string name="more_options">更多</string>
+    <string name="community_title">加入社区</string>
+    <string name="community_desc">加入我的Telegram频道，不要错过关于我的项目的最新消息和更新，以及一些独家预览！</string>
+    <string name="no_thanks">不了，谢谢</string>
+    <string name="sure_action">当然！</string>
+    <string name="see_source_code">查看源代码</string>
+    <string name="check_updates_action">检查更新</string>
+    <string name="update_error_check">无法检查更新</string>
+    <string name="nothing_here_yet">这里还没有可以修改的内容…</string>
+    <string name="settings_testing_header">测试</string>
+    <string name="settings_test_alarm_title">测试闹钟/通知</string>
+    <string name="settings_test_alarm_desc">触发最近药物的闹钟</string>
+    <string name="settings_test_telegram_title">显示telegram弹窗</string>
+    <string name="settings_test_telegram_desc">显示社区弹出窗口</string>
+    <string name="settings_test_crash_title">使应用崩溃</string>
+    <string name="settings_test_crash_desc">强制发生致命异常以测试崩溃报告</string>
+    <string name="settings_danger_zone_header">危险区</string>
+    <string name="settings_reset_title">重置应用数据</string>
+    <string name="settings_reset_desc">永久删除所有数据和设置</string>
+    <string name="settings_reset_confirmation_desc">确定要删除所有的药物、事件和设置吗？此操作无法撤销。</string>
+    <string name="settings_reset_action">重置</string>
+    <string name="group_name_label">群组名称</string>
+    <string name="delete_mode_action">删除模式</string>
+    <string name="add_to_group">添加到 %1$s</string>
+    <string name="remove_from_group">从 %1$s 移除</string>
+    <string name="settings_app_lock_title">应用锁</string>
+    <string name="settings_app_lock_desc">打开Med需要PIN码或指纹</string>
+    <string name="unlock_to_enable">验证身份以启用锁定</string>
+    <string name="unlock_app">解锁Med</string>
+    <string name="unlock_action">解锁</string>
+
+    <string name="you_tab_title">我的</string>
+    <string name="medical_info_header">医疗信息</string>
+    <string name="not_set">未设置</string>
+    <string name="dob_title">出生日期</string>
+    <string name="blood_type_title">血型</string>
+    <string name="height_title">身高</string>
+    <string name="weight_title">体重</string>
+    <string name="allergies_title">过敏史</string>
+    <string name="home_tab_title">首页</string>
+    <string name="stats_tab_title">统计</string>
+    <string name="remove_photo">移除照片</string>
+    <string name="choose_another_photo">选择另一张照片</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">DD/MM/YYYY</string>
+    <string name="clear_action">清除</string>
+    <string name="height_hint">输入您的身高</string>
+    <string name="weight_hint">输入您的体重</string>
+    <string name="privacy_info">您的医疗数据仅保存在本地，绝不会发送给任何人。</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">输入您的过敏史</string>
+    <string name="stats_streak_label">连续记录</string>
+    <string name="stats_on_time_label">按时</string>
+    <string name="stats_missed_label">漏服/周</string>
+    <string name="notification_type_label">通知类型</string>
+    <string name="notification_type_none">无</string>
+    <string name="notification_type_normal">通知</string>
+    <string name="notification_type_alarm">闹钟</string>
+    <string name="notification_type_default">默认</string>
+    <string name="settings_header_more">更多</string>
+    <string name="settings_wearos_title">WearOS版Med</string>
+    <string name="settings_wearos_desc">管理WearOS配套应用</string>
+    <string name="wearos_settings_title">WearOS 设置</string>
+    <string name="wearos_ring_alarms_title">在手表上响铃</string>
+    <string name="wearos_ring_alarms_desc">闹钟将在您连接的WearOS设备上响起</string>
+    <string name="wearos_alarms_disabled_desc">闹钟目前已禁用或被通知替换</string>
+    <string name="wearos_quick_actions_header">手表快速操作</string>
+    <string name="wearos_quick_actions_desc">选择可以在手表上显示的快速操作。</string>
+    <string name="wearos_master_toggle_title">在WearOS上使用Med</string>
+    <string name="fullscreen_permission_title">启用全屏闹钟</string>
+    <string name="fullscreen_permission_desc">为了充分利用闹钟，您应该允许Med显示全屏通知，即使您的屏幕处于关闭状态。</string>
+    <string name="enable_action">启用</string>
+    <string name="notif_grouped_title">该吃药了</string>
+    <string name="notif_action_take_all">全部服下</string>
+    <string name="alarm_swipe_to_respond">滑动以选择</string>
+    <string name="modify_medicine_title">应用更改</string>
+    <string name="modify_only_this">仅此事件</string>
+    <string name="modify_all_following">此事件及所有后续事件</string>
+    <string name="modify_specific_range">特定日期范围</string>
+    <string name="freq_mode_daily">每天</string>
+    <string name="freq_mode_days">特定日期</string>
+    <string name="freq_mode_interval">间隔</string>
+    <string name="times_per_day_label">每天次数</string>
+    <string name="interval_every">每</string>
+    <string name="interval_days">天</string>
+    <string name="interval_weeks">周</string>
+    <string name="interval_months">月</string>
+    <string name="happy_birthday_msg">生日快乐！</string>
+    <string name="illness_label">疾病</string>
+    <string name="illness_question">您还有 %1$s 吗？</string>
+    <string name="yes_action">是</string>
+    <string name="no_action">否</string>
+    <string name="new_illness_title">新疾病</string>
+    <string name="day_of_start_label">开始日期</string>
+    <string name="edit_medicine_title">编辑药物</string>
+    <string name="edit_event_title">编辑事件</string>
+    <string name="edit_illness_title">编辑疾病</string>
+    <string name="personal_data_title">个人</string>
+    <string name="personal_data_header">数据</string>
+    <string name="personal_data_intro">这些信息完全可选，并且仅安全地保存在您的设备本地。</string>
+    <string name="feat_wearos_title">Wear OS版Med</string>
+    <string name="feat_wearos_desc">将您的提醒和事件无缝同步到智能手表。</string>
+    <string name="feat_tabs_title">您和统计数据</string>
+    <string name="feat_tabs_desc">跟踪您的个人健康数据并查看有关您习惯的详细统计信息。</string>
+    <string name="profile_picture">个人资料图片</string>
+    <string name="image_set">图片已设置</string>
+    <string name="tap_to_set">点击设置</string>
+</resources>

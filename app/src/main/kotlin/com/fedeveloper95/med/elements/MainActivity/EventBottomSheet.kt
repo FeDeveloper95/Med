@@ -189,7 +189,7 @@ fun EventBottomSheet(
             ) {
                 item {
                     Text(
-                        text = stringResource(R.string.new_event_title),
+                        text = stringResource(if (initialItem != null) R.string.edit_event_title else R.string.new_event_title),
                         fontFamily = GoogleSansFlex,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,

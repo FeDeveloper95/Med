@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Lääke</string>
+    <string name="event_label">Tapahtuma</string>
+    <string name="menu_tooltip">Valikko</string>
+    <string name="menu_action_desc">Toimintovalikko</string>
+    <string name="expanded_state">Laajennettu</string>
+    <string name="collapsed_state">Tiivistetty</string>
+    <string name="close_menu_action">Sulje valikko</string>
+    <string name="choose_date_desc">Valitse päivämäärä</string>
+    <string name="settings_desc">Asetukset</string>
+    <string name="no_events_label">Ei tapahtumia tälle päivälle</string>
+
+    <string name="item_deleted">Poistettu: %1$s</string>
+    <string name="undo_action">Kumoa</string>
+
+    <string name="cancel_action">Peruuta</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Tallenna</string>
+    <string name="new_event_title">Uusi tapahtuma</string>
+    <string name="new_medicine_title">Uusi lääke</string>
+    <string name="name_hint">Nimi</string>
+
+    <string name="settings_title">Asetukset</string>
+    <string name="discard">Takaisin</string>
+    <string name="cancel">Peruuta</string>
+    <string name="restart_now">Käynnistä uudelleen nyt</string>
+
+    <string name="settings_theme_title">Teema</string>
+    <string name="settings_theme_system">Järjestelmä</string>
+    <string name="settings_theme_light">Vaalea</string>
+    <string name="settings_theme_dark">Tumma</string>
+
+    <string name="settings_week_start_title">Viikon aloituspäivä</string>
+    <string name="sunday">Sunnuntai</string>
+    <string name="monday">Maanantai</string>
+
+    <string name="settings_header_customization">Mukauttaminen</string>
+    <string name="settings_presets_title">Pikatoiminnot</string>
+    <string name="settings_presets_desc">Hallitse mukautettuja tapahtumia päävalikossa</string>
+    <string name="add_action">Lisää</string>
+
+    <string name="settings_header_info">Tietoja</string>
+    <string name="settings_version_title">Sovelluksen versio</string>
+    <string name="unknown">Tuntematon</string>
+    <string name="settings_developer_title">Kehittäjä</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Ilmoita virheestä / ominaisuudesta</string>
+    <string name="settings_report_desc">Ota yhteyttä Telegramissa</string>
+
+    <string name="settings_check_updates_title">Tarkista päivitykset</string>
+    <string name="settings_check_updates_desc">Etsi uusin versio</string>
+    <string name="update_action">Päivitä</string>
+    <string name="update_available">Päivitys saatavilla: v%1$s</string>
+    <string name="update_latest_version_msg">Päivityksiä ei ole tällä hetkellä saatavilla.</string>
+    <string name="update_error_msg">Päivityksiä ei voitu tarkistaa. Tarkista yhteytesi.</string>
+    <string name="later">Myöhemmin</string>
+
+    <string name="quick_actions_title">Pikatoiminnot</string>
+    <string name="quick_actions_info">Pikatoiminnot auttavat sinua lisäämään nopeasti toistuvia ilmiöitä tai tapahtumia Med-sovellukseen.</string>
+    <string name="active_actions_header">Aktiiviset toiminnot</string>
+
+    <string name="welcome_to">Tervetuloa</string>
+    <string name="welcome_preparing_subtitle">Laitetaan kaikki valmiiksi sinua varten.</string>
+    <string name="next">Seuraava</string>
+    <string name="back">Takaisin</string>
+    <string name="get_started">Aloita</string>
+
+    <string name="perm_required">Vaaditaan</string>
+    <string name="perm_permissions">Luvat</string>
+    <string name="perm_intro_text">Nämä luvat vaaditaan, jotta Med toimii oikein. Myönnä ne jatkaaksesi.</string>
+
+    <string name="perm_notif_title">Ilmoitukset</string>
+    <string name="perm_notif_desc">Tiedä heti, milloin sinun on otettava lääkkeesi.</string>
+
+    <string name="perm_install_title">Sovelluksen asennus</string>
+    <string name="perm_install_desc">Vaaditaan päivitysten lataamiseen ja asentamiseen.</string>
+
+    <string name="feat_discover">Löydä</string>
+    <string name="feat_features">Ominaisuudet</string>
+    <string name="feat_intro">Tässä on mitä voit tehdä uudella Med-sovelluksellasi.</string>
+
+    <string name="feat_reminders_title">Älykkäät muistutukset</string>
+    <string name="feat_reminders_desc">Saa oikea-aikaisia ilmoituksia lääkkeistäsi.</string>
+
+    <string name="feat_tracking_title">Seuranta</string>
+    <string name="feat_tracking_desc">Pidä kirjaa siitä, milloin otit lääkkeesi.</string>
+
+    <string name="feat_presets_title">Pikatoiminnot</string>
+    <string name="feat_presets_desc">Määritä esiasetukset toistuville tapahtumille välittömästi.</string>
+
+    <string name="feat_update_title">Pysy ajan tasalla</string>
+    <string name="feat_update_desc">Tarkista päivitykset suoraan sovelluksen asetuksista.</string>
+
+    <string name="settings_advanced_title">Lisäasetukset</string>
+    <string name="settings_advanced_desc">Kokeelliset ominaisuudet ja päivitykset</string>
+    <string name="settings_auto_updates_title">Automaattiset päivitykset</string>
+    <string name="settings_auto_updates_desc">Tarkista päivitykset käynnistyksen yhteydessä</string>
+    <string name="settings_setup_title">Alkuasetukset</string>
+    <string name="settings_setup_desc">Suorita ohjattu aloitustoiminto uudelleen</string>
+    <string name="settings_backup_header">Varmuuskopiointi ja palautus</string>
+    <string name="settings_export_title">Vie asetukset</string>
+    <string name="settings_export_desc">Tallenna määritykset</string>
+    <string name="settings_import_title">Tuo asetukset</string>
+    <string name="settings_import_desc">Palauta varmuuskopiotiedostosta</string>
+    <string name="dialog_restart_title">Uudelleenkäynnistys vaaditaan</string>
+    <string name="dialog_restart_desc">Asetukset on tuotu. Käynnistä sovellus uudelleen ottaaksesi muutokset käyttöön.</string>
+    <string name="export_success">Asetukset viety onnistuneesti</string>
+    <string name="export_error">Virhe vietiessä asetuksia</string>
+    <string name="import_error">Virhe tuotaessa asetuksia</string>
+
+    <string name="select_color">Väri</string>
+    <string name="time_label">Aika</string>
+    <string name="choose_icon">Valitse kuvake</string>
+    <string name="frequency_label">Toistuvuus</string>
+
+    <string name="schedule_label_format">Aikataulu %1$d</string>
+
+    <string name="download_title">Med-päivitys</string>
+    <string name="download_desc">Ladataan versiota %1$s…</string>
+    <string name="download_started">Lataus aloitettu…</string>
+    <string name="download_failed">Lataus epäonnistui: %1$s</string>
+    <string name="notif_channel_updates">Päivitykset</string>
+    <string name="update_notif_desc">Napauta nähdäksesi tiedot ja ladataksesi.</string>
+    <string name="install_error">Asennusvirhe: %1$s</string>
+
+    <string name="switch_to_text_input">Vaihda tekstinsyöttöön</string>
+    <string name="switch_to_touch_input">Vaihda kosketussyöttöön</string>
+
+    <string name="frequency_specific_days">Tiettyinä päivinä</string>
+    <string name="frequency_daily_multiple">%1$dx päivässä</string>
+    <string name="frequency_daily">Päivittäin</string>
+    <string name="edit_time_desc">Muokkaa aikaa</string>
+    <string name="status_taken_format">Otettu %1$s%2$s</string>
+    <string name="status_scheduled_format">Ajoitettu %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynaaminen teema</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Tammikuu</string>
+    <string name="month_february">Helmikuu</string>
+    <string name="month_march">Maaliskuu</string>
+    <string name="month_april">Huhtikuu</string>
+    <string name="month_may">Toukokuu</string>
+    <string name="month_june">Kesäkuu</string>
+    <string name="month_july">Heinäkuu</string>
+    <string name="month_august">Elokuu</string>
+    <string name="month_september">Syyskuu</string>
+    <string name="month_october">Lokakuu</string>
+    <string name="month_november">Marraskuu</string>
+    <string name="month_december">Joulukuu</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">K</string>
+    <string name="day_short_thu">T</string>
+    <string name="day_short_fri">P</string>
+    <string name="day_short_sat">L</string>
+    <string name="day_short_sun">S</string>
+
+    <string name="settings_language_title">Sovelluksen kieli</string>
+    <string name="settings_language_desc">Vaihda kieli järjestelmän asetuksista</string>
+
+    <string name="edit_mode_desc">Muokkaustila</string>
+    <string name="settings_sort_order_title">Näyttöjärjestys</string>
+    <string name="settings_sort_order_time">Ajan mukaan</string>
+    <string name="settings_sort_order_custom">Mukautettu</string>
+    <string name="settings_header_preferences">Asetukset</string>
+    <string name="settings_notifications_title">Ilmoitukset</string>
+    <string name="settings_notifications_desc">Hallitse ilmoitusten ja herätysten tyyliä</string>
+    <string name="settings_show_notifications_title">Näytä ilmoitukset</string>
+    <string name="settings_full_screen_alarm_title">Koko näytön hälytys</string>
+    <string name="settings_full_screen_alarm_desc">Käynnistää näytön hälytyksellä ponnahdusilmoituksen sijaan</string>
+    <string name="settings_alarm_style_title">Hälytystyyli</string>
+    <string name="settings_alarm_style_desc">Valitse, miten haluat vastata koko näytön hälytykseen</string>
+    <string name="settings_alarm_style_slider">Liukusäädin (Pyyhkäise)</string>
+    <string name="settings_alarm_style_buttons">Painikkeet</string>
+    <string name="settings_snooze_duration_title">Torkun kesto</string>
+    <string name="settings_snooze_duration_desc">%1$d minuuttia</string>
+    <string name="alarm_default_title">Muistutus</string>
+    <string name="alarm_time_to_take">On aika ottaa\n%1$s</string>
+    <string name="alarm_taken_action">Otettu</string>
+    <string name="alarm_snooze_action">Torkku (%1$d min)</string>
+    <string name="alarm_snooze_desc">Torkku</string>
+    <string name="alarm_taken_desc">Otettu</string>
+    <string name="notif_reminder_title">Muistutus: %1$s</string>
+    <string name="notif_reminder_desc">On aika ottaa lääkkeesi</string>
+    <string name="notif_action_taken">Otettu</string>
+    <string name="notif_action_snooze">Torkku</string>
+    <string name="notif_channel_alarms_name">Lääkehälytykset</string>
+    <string name="notif_channel_alarms_desc">Kanava lääkehälytyksille</string>
+    <string name="unsaved_changes_title">Tallentamattomia muutoksia</string>
+    <string name="unsaved_changes_desc">Haluatko tallentaa uuden järjestyksen ennen poistumista?</string>
+    <string name="discard_action">Hylkää</string>
+    <string name="notes_hint">Muistiinpanot (Valinnainen)</string>
+    <string name="frequency_unit_biweek">Joka 2. viikko</string>
+    <string name="more_options">Lisää</string>
+    <string name="community_title">Liity yhteisöön</string>
+    <string name="community_desc">Liity Telegram-kanavalleni, jotta et jää paitsi uusimmista uutisista ja päivityksistä projekteistani, sekä yksinoikeudella julkaistavista kurkistuksista!</string>
+    <string name="no_thanks">Ei kiitos</string>
+    <string name="sure_action">Totta kai!</string>
+    <string name="see_source_code">Katso lähdekoodi</string>
+    <string name="check_updates_action">Tarkista päivitykset</string>
+    <string name="update_error_check">Päivityksiä ei voitu tarkistaa</string>
+    <string name="nothing_here_yet">Täällä ei ole vielä mitään muokattavaa…</string>
+    <string name="settings_testing_header">Testaus</string>
+    <string name="settings_test_alarm_title">Testihälytys/ilmoitus</string>
+    <string name="settings_test_alarm_desc">Laukaisee hälytyksen lähimmälle lääkkeelle</string>
+    <string name="settings_test_telegram_title">Näytä telegram-ponnahdusikkuna</string>
+    <string name="settings_test_telegram_desc">Näyttää yhteisön ponnahdusikkunan</string>
+    <string name="settings_test_crash_title">Kaada sovellus</string>
+    <string name="settings_test_crash_desc">Pakottaa vakavan poikkeuksen kaatumisraportoinnin testaamiseksi</string>
+    <string name="settings_danger_zone_header">Vaaravyöhyke</string>
+    <string name="settings_reset_title">Nollaa sovelluksen tiedot</string>
+    <string name="settings_reset_desc">Poista kaikki tiedot ja asetukset pysyvästi</string>
+    <string name="settings_reset_confirmation_desc">Oletko varma, että haluat poistaa kaikki lääkkeesi, tapahtumasi ja asetuksesi? Tätä toimintoa ei voi kumota.</string>
+    <string name="settings_reset_action">Nollaa</string>
+    <string name="group_name_label">Ryhmän nimi</string>
+    <string name="delete_mode_action">Poistotila</string>
+    <string name="add_to_group">Lisää ryhmään %1$s</string>
+    <string name="remove_from_group">Poista ryhmästä %1$s</string>
+    <string name="settings_app_lock_title">Sovelluksen lukitus</string>
+    <string name="settings_app_lock_desc">Vaadi PIN-koodi tai sormenjälki Med-sovelluksen avaamiseen</string>
+    <string name="unlock_to_enable">Tunnistaudu ottaaksesi lukituksen käyttöön</string>
+    <string name="unlock_app">Avaa Med</string>
+    <string name="unlock_action">Avaa lukitus</string>
+
+    <string name="you_tab_title">Sinä</string>
+    <string name="medical_info_header">Lääketieteelliset tiedot</string>
+    <string name="not_set">Ei asetettu</string>
+    <string name="dob_title">Syntymäaika</string>
+    <string name="blood_type_title">Veriryhmä</string>
+    <string name="height_title">Pituus</string>
+    <string name="weight_title">Paino</string>
+    <string name="allergies_title">Allergiat</string>
+    <string name="home_tab_title">Koti</string>
+    <string name="stats_tab_title">Tilastot</string>
+    <string name="remove_photo">Poista kuva</string>
+    <string name="choose_another_photo">Valitse toinen kuva</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">PP.KK.VVVV</string>
+    <string name="clear_action">Tyhjennä</string>
+    <string name="height_hint">Anna pituutesi</string>
+    <string name="weight_hint">Anna painosi</string>
+    <string name="privacy_info">Lääketieteelliset tietosi tallennetaan paikallisesti, eikä niitä koskaan lähetetä kenellekään.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">tuumaa</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">paunaa</string>
+    <string name="allergies_hint">Anna allergiasi</string>
+    <string name="stats_streak_label">Putki</string>
+    <string name="stats_on_time_label">Ajoissa</string>
+    <string name="stats_missed_label">Väliin jääneet/vk</string>
+    <string name="notification_type_label">Ilmoituksen tyyppi</string>
+    <string name="notification_type_none">Ei mitään</string>
+    <string name="notification_type_normal">Ilmoitus</string>
+    <string name="notification_type_alarm">Hälytys</string>
+    <string name="notification_type_default">Oletus</string>
+    <string name="settings_header_more">Lisää</string>
+    <string name="settings_wearos_title">Med WearOS:lle</string>
+    <string name="settings_wearos_desc">Hallitse WearOS-kumppanisovellusta</string>
+    <string name="wearos_settings_title">WearOS-asetukset</string>
+    <string name="wearos_ring_alarms_title">Soita kellossa</string>
+    <string name="wearos_ring_alarms_desc">Hälytykset soivat yhdistetyssä WearOS-laitteessasi</string>
+    <string name="wearos_alarms_disabled_desc">Hälytykset on tällä hetkellä poistettu käytöstä tai korvattu ilmoituksilla</string>
+    <string name="wearos_quick_actions_header">Kellon pikatoiminnot</string>
+    <string name="wearos_quick_actions_desc">Valitse, mitkä pikatoiminnot voidaan näyttää kellossasi.</string>
+    <string name="wearos_master_toggle_title">Käytä Med-sovellusta WearOS:ssä</string>
+    <string name="fullscreen_permission_title">Salli koko näytön hälytykset</string>
+    <string name="fullscreen_permission_desc">Jotta saisit kaiken irti hälytyksistäsi, sinun tulisi sallia Med-sovelluksen näyttää koko näytön ilmoituksia silloinkin, kun näyttö on pois päältä.</string>
+    <string name="enable_action">Ota käyttöön</string>
+    <string name="notif_grouped_title">Aika ottaa lääkkeesi</string>
+    <string name="notif_action_take_all">Ota kaikki</string>
+    <string name="alarm_swipe_to_respond">Pyyhkäise valitaksesi</string>
+    <string name="modify_medicine_title">Käytä muutoksia</string>
+    <string name="modify_only_this">Vain tämä tapahtuma</string>
+    <string name="modify_all_following">Tämä ja kaikki seuraavat tapahtumat</string>
+    <string name="modify_specific_range">Tietty ajanjakso</string>
+    <string name="freq_mode_daily">Päivittäin</string>
+    <string name="freq_mode_days">Tiettyinä päivinä</string>
+    <string name="freq_mode_interval">Aikaväli</string>
+    <string name="times_per_day_label">Kertaa päivässä</string>
+    <string name="interval_every">Joka</string>
+    <string name="interval_days">Päivä</string>
+    <string name="interval_weeks">Viikko</string>
+    <string name="interval_months">Kuukausi</string>
+    <string name="happy_birthday_msg">Hyvää syntymäpäivää!</string>
+    <string name="illness_label">Sairaus</string>
+    <string name="illness_question">Onko sinulla vielä %1$s?</string>
+    <string name="yes_action">Kyllä</string>
+    <string name="no_action">Ei</string>
+    <string name="new_illness_title">Uusi sairaus</string>
+    <string name="day_of_start_label">Aloituspäivä</string>
+    <string name="edit_medicine_title">Muokkaa lääkettä</string>
+    <string name="edit_event_title">Muokkaa tapahtumaa</string>
+    <string name="edit_illness_title">Muokkaa sairautta</string>
+    <string name="personal_data_title">Henkilö-</string>
+    <string name="personal_data_header">tiedot</string>
+    <string name="personal_data_intro">Nämä tiedot ovat täysin valinnaisia, ja ne tallennetaan turvallisesti vain paikallisesti laitteellesi.</string>
+    <string name="feat_wearos_title">Med Wear OS:ssä</string>
+    <string name="feat_wearos_desc">Synkronoi muistutuksesi ja tapahtumasi saumattomasti älykellosi kanssa.</string>
+    <string name="feat_tabs_title">Sinä ja Tilastot</string>
+    <string name="feat_tabs_desc">Seuraa henkilökohtaisia terveystietojasi ja tarkastele yksityiskohtaisia tilastoja tottumuksistasi.</string>
+    <string name="profile_picture">Profiilikuva</string>
+    <string name="image_set">Kuva asetettu</string>
+    <string name="tap_to_set">Napauta asettaaksesi</string>
+</resources>

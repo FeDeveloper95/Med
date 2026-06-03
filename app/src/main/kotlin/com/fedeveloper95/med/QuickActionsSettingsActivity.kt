@@ -66,6 +66,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,6 +84,7 @@ import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.services.WearSyncManager
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import com.fedeveloper95.med.ui.theme.darken
@@ -117,6 +119,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
+    LaunchedEffect(Unit) {
+        WearSyncManager.initialize(context)
+    }
+
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
     val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
     val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
@@ -144,6 +150,14 @@ fun QuickActionsScreen(onBack: () -> Unit) {
         presetsList = list
         val jsonArray = JSONArray(list)
         prefs.edit().putString(PREF_PRESETS_ORDERED, jsonArray.toString()).apply()
+
+        val allNames = list.mapNotNull { it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() } }.toSet()
+        val ringOnWatch = prefs.getBoolean("pref_wear_ring_alarms", true)
+        val savedEvents = prefs.getStringSet("pref_wear_enabled_events", null)
+        val wearEnabledEvents = savedEvents?.filter { allNames.contains(it) }?.toSet() ?: allNames
+        prefs.edit().putStringSet("pref_wear_enabled_events", wearEnabledEvents).apply()
+
+        WearSyncManager.syncSettings(ringOnWatch, wearEnabledEvents, allNames)
     }
 
     fun addPreset() {

@@ -18,8 +18,8 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -31,10 +31,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -61,20 +57,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
+import androidx.compose.material.icons.rounded.BarChart
+import androidx.compose.material.icons.rounded.CalendarMonth
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.Height
 import androidx.compose.material.icons.rounded.Notifications
-import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.SystemUpdate
+import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.Watch
+import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
@@ -84,8 +85,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,10 +99,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -111,6 +112,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -119,12 +121,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import com.fedeveloper95.med.elements.MainActivity.Tabs.You.AllergiesBottomSheet
+import com.fedeveloper95.med.elements.MainActivity.Tabs.You.BloodTypeBottomSheet
+import com.fedeveloper95.med.elements.MainActivity.Tabs.You.DateOfBirthBottomSheet
+import com.fedeveloper95.med.elements.MainActivity.Tabs.You.HeightBottomSheet
+import com.fedeveloper95.med.elements.MainActivity.Tabs.You.ProfileBottomSheet
+import com.fedeveloper95.med.elements.MainActivity.Tabs.You.WeightBottomSheet
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
 
 data class OnboardingPageInfo(
-    val content: @Composable (onUpdateScrollState: (Boolean) -> Unit) -> Unit
+    val content: @Composable () -> Unit
 )
 
 class WelcomeActivity : ComponentActivity() {
@@ -136,7 +144,15 @@ class WelcomeActivity : ComponentActivity() {
         val isFirstRun = prefs.getBoolean("is_first_run", true)
         val forceShow = intent.getBooleanExtra("FORCE_SHOW", false)
 
-        if (!isFirstRun && !forceShow) {
+        val currentVersionName = try {
+            packageManager.getPackageInfo(packageName, 0).versionName ?: "1.0"
+        } catch (e: Exception) {
+            "1.0"
+        }
+        val lastWelcomeVersion = prefs.getString("last_welcome_version", null)
+        val isUpdated = lastWelcomeVersion != currentVersionName
+
+        if (!isFirstRun && !forceShow && !isUpdated) {
             finishOnboarding()
             return
         }
@@ -150,6 +166,7 @@ class WelcomeActivity : ComponentActivity() {
                 ) {
                     WelcomePagerScreen(onFinished = {
                         prefs.edit().putBoolean("is_first_run", false).apply()
+                        prefs.edit().putString("last_welcome_version", currentVersionName).apply()
                         if (forceShow) {
                             finish()
                         } else {
@@ -172,6 +189,7 @@ class WelcomeActivity : ComponentActivity() {
 fun WelcomePagerScreen(onFinished: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     val commonAnimSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
     val topCardShape =
@@ -217,8 +235,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         )
     }
 
-    var isLastPageScrolledToEnd by remember { mutableStateOf(false) }
-
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -262,9 +278,42 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         }
     }
 
+    var dob by remember { mutableStateOf(prefs.getString("profile_dob", "") ?: "") }
+    var height by remember { mutableStateOf(prefs.getString("profile_height", "") ?: "") }
+    var weight by remember { mutableStateOf(prefs.getString("profile_weight", "") ?: "") }
+    var bloodType by remember { mutableStateOf(prefs.getString("profile_blood_type", "") ?: "") }
+    var allergies by remember { mutableStateOf(prefs.getString("profile_allergies", "") ?: "") }
+    var imageUriStr by remember { mutableStateOf(prefs.getString("profile_image_uri", "") ?: "") }
+    val currentPhotoUri = if (imageUriStr.isNotEmpty()) Uri.parse(imageUriStr) else null
+
+    var showProfileSheet by remember { mutableStateOf(false) }
+    var showDobSheet by remember { mutableStateOf(false) }
+    var showHeightSheet by remember { mutableStateOf(false) }
+    var showWeightSheet by remember { mutableStateOf(false) }
+    var showBloodTypeSheet by remember { mutableStateOf(false) }
+    var showAllergiesSheet by remember { mutableStateOf(false) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                try {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+                imageUriStr = uri.toString()
+                prefs.edit().putString("profile_image_uri", imageUriStr).apply()
+            }
+        }
+    )
+
     val pages = listOf(
         OnboardingPageInfo(
-            content = { _ ->
+            content = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -310,7 +359,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
             }
         ),
         OnboardingPageInfo(
-            content = { _ ->
+            content = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -434,7 +483,121 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
             }
         ),
         OnboardingPageInfo(
-            content = { onUpdateScroll ->
+            content = {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Spacer(modifier = Modifier.height(80.dp))
+
+                    Text(
+                        text = stringResource(R.string.personal_data_title),
+                        style = thinHeaderStyle,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = stringResource(R.string.personal_data_header),
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 48.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        lineHeight = 56.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = stringResource(R.string.personal_data_intro),
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontFamily = GoogleSansFlex
+                        ),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        ClickableFeatureCard(
+                            icon = Icons.Rounded.Person,
+                            iconColor = MaterialTheme.colorScheme.primaryContainer,
+                            iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
+                            title = stringResource(R.string.profile_picture),
+                            description = if (imageUriStr.isNotEmpty()) stringResource(R.string.image_set) else stringResource(R.string.tap_to_set),
+                            shape = topCardShape,
+                            onClick = { showProfileSheet = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        ClickableFeatureCard(
+                            icon = Icons.Rounded.CalendarMonth,
+                            iconColor = Color(0xFFffb683),
+                            iconTint = Color(0xFF753403),
+                            title = stringResource(R.string.dob_title),
+                            description = dob.ifEmpty { stringResource(R.string.tap_to_set) },
+                            shape = middleCardShape,
+                            onClick = { showDobSheet = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        ClickableFeatureCard(
+                            icon = Icons.Rounded.Height,
+                            iconColor = Color(0xFF83C5FF),
+                            iconTint = Color(0xFF034B75),
+                            title = stringResource(R.string.height_title),
+                            description = height.ifEmpty { stringResource(R.string.tap_to_set) },
+                            shape = middleCardShape,
+                            onClick = { showHeightSheet = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        ClickableFeatureCard(
+                            icon = Icons.Rounded.FitnessCenter,
+                            iconColor = Color(0xFFA5FF83),
+                            iconTint = Color(0xFF1E7503),
+                            title = stringResource(R.string.weight_title),
+                            description = weight.ifEmpty { stringResource(R.string.tap_to_set) },
+                            shape = middleCardShape,
+                            onClick = { showWeightSheet = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        ClickableFeatureCard(
+                            icon = Icons.Rounded.WaterDrop,
+                            iconColor = Color(0xFFffb4ab),
+                            iconTint = Color(0xFF690005),
+                            title = stringResource(R.string.blood_type_title),
+                            description = bloodType.ifEmpty { stringResource(R.string.tap_to_set) },
+                            shape = middleCardShape,
+                            onClick = { showBloodTypeSheet = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        ClickableFeatureCard(
+                            icon = Icons.Rounded.Warning,
+                            iconColor = Color(0xFFfcbd00),
+                            iconTint = Color(0xFF6d3a01),
+                            title = stringResource(R.string.allergies_title),
+                            description = allergies.ifEmpty { stringResource(R.string.tap_to_set) },
+                            shape = bottomCardShape,
+                            onClick = { showAllergiesSheet = true }
+                        )
+
+                        Spacer(modifier = Modifier.height(100.dp))
+                    }
+                }
+            }
+        ),
+        OnboardingPageInfo(
+            content = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -468,26 +631,13 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                     }
 
                     Box(modifier = Modifier.weight(1f)) {
-                        val scrollState = rememberScrollState()
-
-                        val isAtBottom by remember {
-                            derivedStateOf {
-                                val layoutInfo = scrollState.maxValue
-                                layoutInfo == 0 || scrollState.value >= (layoutInfo - 20)
-                            }
-                        }
-
-                        LaunchedEffect(isAtBottom) {
-                            onUpdateScroll(isAtBottom)
-                        }
-
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .verticalScroll(scrollState)
+                                .verticalScroll(rememberScrollState())
                         ) {
                             FeatureCard(
-                                icon = Icons.Rounded.Star,
+                                icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
                                 iconColor = Color(0xFFffaee4),
                                 iconTint = Color(0xFF8d0053),
                                 title = stringResource(R.string.feat_presets_title),
@@ -520,42 +670,37 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             Spacer(modifier = Modifier.height(2.dp))
 
                             FeatureCard(
+                                icon = Icons.Rounded.Watch,
+                                iconColor = Color(0xFF67D4FF),
+                                iconTint = Color(0xFF004E5D),
+                                title = stringResource(R.string.feat_wearos_title),
+                                description = stringResource(R.string.feat_wearos_desc),
+                                shape = middleCardShape
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            FeatureCard(
+                                icon = Icons.Rounded.BarChart,
+                                iconColor = Color(0xFFfcbd00),
+                                iconTint = Color(0xFF6d3a01),
+                                title = stringResource(R.string.feat_tabs_title),
+                                description = stringResource(R.string.feat_tabs_desc),
+                                shape = middleCardShape
+                            )
+
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            FeatureCard(
                                 icon = Icons.Rounded.SystemUpdate,
-                                iconColor = Color(0xFF67d4ff),
-                                iconTint = Color(0xFF004e5d),
+                                iconColor = Color(0xFFC7C7C7),
+                                iconTint = Color(0xFF2C2C2C),
                                 title = stringResource(R.string.feat_update_title),
                                 description = stringResource(R.string.feat_update_desc),
                                 shape = bottomCardShape
                             )
 
                             Spacer(modifier = Modifier.height(100.dp))
-                        }
-
-                        this@Column.AnimatedVisibility(
-                            visible = scrollState.canScrollForward,
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = 8.dp),
-                            enter = fadeIn() + scaleIn(),
-                            exit = fadeOut() + scaleOut()
-                        ) {
-                            LargeFloatingActionButton(
-                                onClick = {
-                                    scope.launch {
-                                        scrollState.animateScrollTo(scrollState.maxValue)
-                                    }
-                                },
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                shape = RoundedCornerShape(16.dp),
-                                modifier = Modifier.size(56.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Rounded.KeyboardArrowDown,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(28.dp)
-                                )
-                            }
                         }
                     }
                 }
@@ -593,14 +738,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                     .weight(1f)
                     .fillMaxWidth()
             ) { index ->
-                OnboardingPageItem(
-                    page = pages[index],
-                    onUpdateScroll = { scrolledToEnd ->
-                        if (index == pages.size - 1) {
-                            isLastPageScrolledToEnd = scrolledToEnd
-                        }
-                    }
-                )
+                OnboardingPageItem(page = pages[index])
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -662,20 +800,11 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    val isNextEnabled = !isLastPage || isLastPageScrolledToEnd
-
-                    val alphaNext by animateFloatAsState(
-                        targetValue = if (isNextEnabled) 1f else 0.5f,
-                        label = "nextAlpha"
-                    )
-
                     WelcomeExpressiveButton(
-                        text = if (isLastPage) stringResource(R.string.get_started) else stringResource(
-                            R.string.next
-                        ),
+                        text = if (isLastPage) stringResource(R.string.get_started) else stringResource(R.string.next),
                         onClick = {
                             if (isLastPage) {
-                                if (isLastPageScrolledToEnd) onFinished()
+                                onFinished()
                             } else {
                                 scope.launch {
                                     pagerState.animateScrollToPage(
@@ -685,13 +814,82 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 }
                             }
                         },
-                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = alphaNext),
-                        contentColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = alphaNext),
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
             }
         }
+    }
+
+    if (showProfileSheet) {
+        ProfileBottomSheet(
+            onDismiss = { showProfileSheet = false },
+            onRemove = {
+                imageUriStr = ""
+                prefs.edit().putString("profile_image_uri", "").apply()
+            },
+            onChange = {
+                photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+            },
+            currentPhotoUri = currentPhotoUri
+        )
+    }
+
+    if (showDobSheet) {
+        DateOfBirthBottomSheet(
+            onDismiss = { showDobSheet = false },
+            onSave = { newValue ->
+                dob = newValue
+                prefs.edit().putString("profile_dob", newValue).apply()
+            },
+            currentValue = dob
+        )
+    }
+
+    if (showHeightSheet) {
+        HeightBottomSheet(
+            onDismiss = { showHeightSheet = false },
+            onSave = { newValue ->
+                height = newValue
+                prefs.edit().putString("profile_height", newValue).apply()
+            },
+            currentValue = height
+        )
+    }
+
+    if (showWeightSheet) {
+        WeightBottomSheet(
+            onDismiss = { showWeightSheet = false },
+            onSave = { newValue ->
+                weight = newValue
+                prefs.edit().putString("profile_weight", newValue).apply()
+            },
+            currentValue = weight
+        )
+    }
+
+    if (showBloodTypeSheet) {
+        BloodTypeBottomSheet(
+            onDismiss = { showBloodTypeSheet = false },
+            onSave = { newValue ->
+                bloodType = newValue
+                prefs.edit().putString("profile_blood_type", newValue).apply()
+            },
+            currentValue = bloodType
+        )
+    }
+
+    if (showAllergiesSheet) {
+        AllergiesBottomSheet(
+            onDismiss = { showAllergiesSheet = false },
+            onSave = { newValue ->
+                allergies = newValue
+                prefs.edit().putString("profile_allergies", newValue).apply()
+            },
+            currentValue = allergies
+        )
     }
 }
 
@@ -735,7 +933,7 @@ fun RotatingShapeContainer(modifier: Modifier = Modifier) {
 
 @Composable
 fun PermissionCard(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     iconColor: Color,
     iconTint: Color,
     title: String,
@@ -846,8 +1044,127 @@ fun PermissionCard(
 }
 
 @Composable
+fun ClickableFeatureCard(
+    icon: ImageVector,
+    iconColor: Color,
+    iconTint: Color,
+    title: String,
+    description: String,
+    shape: Shape,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val pressProgress by animateFloatAsState(
+        targetValue = if (isPressed) 1f else 0f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        label = "anim_shape"
+    )
+
+    val animatedShape = remember(shape, pressProgress) {
+        if (shape is RoundedCornerShape) {
+            object : Shape {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
+                    val targetPx = with(density) { 20.dp.toPx() }
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
+
+                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
+                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
+                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
+                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
+                }
+            }
+        } else shape
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(animatedShape),
+        shape = animatedShape,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = title,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            supportingContent = {
+                Text(
+                    text = description,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            },
+            leadingContent = {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(iconColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconTint,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+            trailingContent = {
+                Icon(
+                    imageVector = Icons.Rounded.ChevronRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
+            modifier = Modifier
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
+                    onClick = onClick
+                )
+                .padding(vertical = 4.dp),
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent
+            )
+        )
+    }
+}
+
+@Composable
 fun FeatureCard(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     iconColor: Color,
     iconTint: Color,
     title: String,
@@ -903,11 +1220,8 @@ fun FeatureCard(
 }
 
 @Composable
-fun OnboardingPageItem(
-    page: OnboardingPageInfo,
-    onUpdateScroll: (Boolean) -> Unit
-) {
-    page.content(onUpdateScroll)
+fun OnboardingPageItem(page: OnboardingPageInfo) {
+    page.content()
 }
 
 @Composable

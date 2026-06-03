@@ -7,8 +7,6 @@
 
 package com.fedeveloper95.med
 
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color.parseColor
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -71,6 +69,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -96,16 +95,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fedeveloper95.med.elements.EditModeActivity.GroupNameBottomSheet
 import com.fedeveloper95.med.elements.EditModeActivity.SavePopup
-import com.fedeveloper95.med.services.DataRepository
+import com.fedeveloper95.med.services.EditItem
 import com.fedeveloper95.med.services.MedData
+import com.fedeveloper95.med.services.MedViewModel
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.util.Collections
 
 class EditModeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -137,54 +136,6 @@ class EditModeActivity : ComponentActivity() {
             }
         }
     }
-}
-
-sealed class EditItem {
-    abstract val uniqueId: String
-
-    data class Card(val med: MedData) : EditItem() {
-        override val uniqueId = "card_${med.id}"
-    }
-
-    data class Group(val divider: MedData, val cards: List<MedData>) : EditItem() {
-        override val uniqueId = "group_${divider.id}"
-    }
-}
-
-fun buildEditItems(flatList: List<MedData>): List<EditItem> {
-    val result = mutableListOf<EditItem>()
-    var currentGroupDivider: MedData? = null
-    val currentGroupCards = mutableListOf<MedData>()
-
-    for (item in flatList) {
-        if (item.iconName == "DIVIDER") {
-            if (currentGroupDivider != null) {
-                result.add(EditItem.Group(currentGroupDivider, currentGroupCards.toList()))
-            } else if (currentGroupCards.isNotEmpty()) {
-                currentGroupCards.forEach { result.add(EditItem.Card(it)) }
-            }
-
-            if (item.title.isNotBlank()) {
-                currentGroupDivider = item
-                currentGroupCards.clear()
-            } else {
-                currentGroupDivider = null
-                currentGroupCards.clear()
-            }
-        } else {
-            if (currentGroupDivider != null) {
-                currentGroupCards.add(item)
-            } else {
-                result.add(EditItem.Card(item))
-            }
-        }
-    }
-    if (currentGroupDivider != null) {
-        result.add(EditItem.Group(currentGroupDivider, currentGroupCards.toList()))
-    } else if (currentGroupCards.isNotEmpty()) {
-        currentGroupCards.forEach { result.add(EditItem.Card(it)) }
-    }
-    return result
 }
 
 @Composable
@@ -233,33 +184,13 @@ fun Modifier.draggableItem(
 )
 @Composable
 fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish: () -> Unit) {
-    val context = LocalContext.current
-    var allItems by remember { mutableStateOf(DataRepository.loadData(context)) }
+    val viewModel: MedViewModel = viewModel()
+    val editItems = viewModel.editItems
+    val hasChanges = viewModel.editHasChanges
 
-    val initialPageItems = remember {
-        allItems.filter { item ->
-            when (item.type) {
-                ItemType.Event -> item.creationDate == selectedDate
-                ItemType.Illness -> false
-                ItemType.Medicine -> {
-                    val isAfterStart = !selectedDate.isBefore(item.creationDate)
-                    val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
-                    val isCorrectDay =
-                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
-                            selectedDate.dayOfWeek
-                        )
-                    val isCorrectGap =
-                        item.intervalGap == null || java.time.temporal.ChronoUnit.DAYS.between(
-                            item.creationDate,
-                            selectedDate
-                        ) % item.intervalGap == 0L
-                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
-                }
-            }
-        }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+    LaunchedEffect(selectedDate) {
+        viewModel.loadEditItems(selectedDate)
     }
-
-    var editItems by remember { mutableStateOf(buildEditItems(initialPageItems)) }
 
     var showSavePopup by remember { mutableStateOf(false) }
     var showGroupNameSheet by remember { mutableStateOf(false) }
@@ -271,119 +202,12 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
     var innerDraggingId by remember { mutableStateOf<String?>(null) }
     var innerDraggedOffset by remember { mutableFloatStateOf(0f) }
 
-    val hasChanges = remember(editItems, initialPageItems) {
-        val currentFlatList = mutableListOf<MedData>()
-        var lastWasGroup = false
-        editItems.forEach { item ->
-            when (item) {
-                is EditItem.Card -> {
-                    if (lastWasGroup) {
-                        currentFlatList.add(
-                            MedData(
-                                id = 0,
-                                groupId = 0,
-                                type = ItemType.Event,
-                                title = "",
-                                iconName = "DIVIDER",
-                                colorCode = "",
-                                frequencyLabel = "",
-                                creationDate = selectedDate,
-                                creationTime = LocalTime.MIN,
-                                takenHistory = hashMapOf(),
-                                recurrenceDays = null,
-                                endDate = null,
-                                notes = null,
-                                displayOrder = 0,
-                                category = null,
-                                intervalGap = null
-                            )
-                        )
-                    }
-                    currentFlatList.add(item.med)
-                    lastWasGroup = false
-                }
-
-                is EditItem.Group -> {
-                    currentFlatList.add(item.divider)
-                    currentFlatList.addAll(item.cards)
-                    lastWasGroup = true
-                }
-            }
-        }
-
-        val filteredCurrent =
-            currentFlatList.filter { it.title.isNotBlank() || it.iconName != "DIVIDER" }
-        val filteredInitial =
-            initialPageItems.filter { it.title.isNotBlank() || it.iconName != "DIVIDER" }
-
-        filteredCurrent.map { it.id } != filteredInitial.map { it.id }
-    }
-
     BackHandler(enabled = hasChanges) {
         showSavePopup = true
     }
 
     fun saveOrder() {
-        val flatList = mutableListOf<MedData>()
-        var lastWasGroup = false
-
-        for (item in editItems) {
-            when (item) {
-                is EditItem.Card -> {
-                    if (lastWasGroup) {
-                        flatList.add(
-                            MedData(
-                                id = System.nanoTime(),
-                                groupId = System.currentTimeMillis(),
-                                type = ItemType.Event,
-                                title = "",
-                                iconName = "DIVIDER",
-                                colorCode = "dynamic",
-                                frequencyLabel = "",
-                                creationDate = selectedDate,
-                                creationTime = LocalTime.MIN,
-                                takenHistory = hashMapOf(),
-                                recurrenceDays = null,
-                                endDate = null,
-                                notes = null,
-                                displayOrder = 0,
-                                intervalGap = null,
-                                category = null
-                            )
-                        )
-                    }
-                    flatList.add(item.med)
-                    lastWasGroup = false
-                }
-
-                is EditItem.Group -> {
-                    flatList.add(item.divider)
-                    flatList.addAll(item.cards)
-                    lastWasGroup = true
-                }
-            }
-        }
-
-        val flatListIds = flatList.map { it.id }.toSet()
-        val updatedAllItems = allItems.filter {
-            it.creationDate != selectedDate || it.iconName != "DIVIDER" || flatListIds.contains(it.id)
-        }.toMutableList()
-
-        flatList.forEachIndexed { newIndex, item ->
-            val globalIndex = updatedAllItems.indexOfFirst { it.id == item.id }
-            if (globalIndex != -1) {
-                updatedAllItems[globalIndex] =
-                    updatedAllItems[globalIndex].copy(displayOrder = newIndex)
-            } else if (item.iconName == "DIVIDER") {
-                updatedAllItems.add(item.copy(displayOrder = newIndex))
-            }
-        }
-        DataRepository.saveData(context, updatedAllItems)
-
-        val prefs = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
-        prefs.edit().putString(PREF_SORT_ORDER, "custom").apply()
-
-        context.sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(context.packageName))
+        viewModel.saveEditOrder(selectedDate)
         onFinish()
     }
 
@@ -480,9 +304,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                 onDrag = { topDraggedOffset += it },
                                 onDragEnd = { topDraggingId = null; topDraggedOffset = 0f },
                                 onSwap = { from, to ->
-                                    val newItems = editItems.toMutableList()
-                                    Collections.swap(newItems, from, to)
-                                    editItems = newItems
+                                    viewModel.swapTopEditItems(from, to)
                                     topDraggedOffset += if (to > from) -itemHeightPx else itemHeightPx
                                 }
                             )
@@ -520,21 +342,11 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                         currentGroupId = null,
                                         currentGroupTitle = null,
                                         onDeleteClick = {
-                                            editItems =
-                                                editItems.filter { it.uniqueId != editItem.uniqueId }
+                                            viewModel.removeEditItem(editItem.uniqueId)
                                         },
                                         onRemoveFromGroup = null,
                                         onAddToGroup = { targetGroupId ->
-                                            val newItems = editItems.toMutableList()
-                                            newItems.remove(editItem)
-                                            val gIdx =
-                                                newItems.indexOfFirst { it is EditItem.Group && it.divider.id == targetGroupId }
-                                            if (gIdx != -1) {
-                                                val group = newItems[gIdx] as EditItem.Group
-                                                newItems[gIdx] =
-                                                    group.copy(cards = group.cards + editItem.med)
-                                            }
-                                            editItems = newItems
+                                            viewModel.addCardToGroup(editItem, targetGroupId)
                                         }
                                     )
                                 }
@@ -566,13 +378,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                             )
                                             if (isDeleteMode) {
                                                 IconButton(onClick = {
-                                                    val newItems = editItems.toMutableList()
-                                                    val gIdx = newItems.indexOf(editItem)
-                                                    newItems.removeAt(gIdx)
-                                                    newItems.addAll(
-                                                        gIdx,
-                                                        editItem.cards.map { EditItem.Card(it) })
-                                                    editItems = newItems
+                                                    viewModel.removeGroupComplete(editItem)
                                                 }) {
                                                     Icon(
                                                         Icons.Rounded.Delete,
@@ -619,19 +425,8 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                                         0f
                                                     },
                                                     onSwap = { from, to ->
-                                                        val gIdx = editItems.indexOf(editItem)
-                                                        if (gIdx != -1) {
-                                                            val group =
-                                                                editItems[gIdx] as EditItem.Group
-                                                            val newCards =
-                                                                group.cards.toMutableList()
-                                                            Collections.swap(newCards, from, to)
-                                                            val newItems = editItems.toMutableList()
-                                                            newItems[gIdx] =
-                                                                group.copy(cards = newCards)
-                                                            editItems = newItems
-                                                            innerDraggedOffset += if (to > from) -itemHeightPx else itemHeightPx
-                                                        }
+                                                        viewModel.swapInnerEditItems(editItem, from, to)
+                                                        innerDraggedOffset += if (to > from) -itemHeightPx else itemHeightPx
                                                     }
                                                 )
                                             } else Modifier
@@ -659,41 +454,10 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                                     currentGroupId = editItem.divider.id,
                                                     currentGroupTitle = editItem.divider.title,
                                                     onDeleteClick = {
-                                                        val newItems = editItems.toMutableList()
-                                                        val gIdx = newItems.indexOf(editItem)
-                                                        if (gIdx != -1) {
-                                                            val newCards =
-                                                                editItem.cards.filter { it.id != card.id }
-                                                            if (newCards.isEmpty()) newItems.removeAt(
-                                                                gIdx
-                                                            )
-                                                            else newItems[gIdx] =
-                                                                editItem.copy(cards = newCards)
-                                                            editItems = newItems
-                                                        }
+                                                        viewModel.deleteCardFromGroup(editItem, card.id)
                                                     },
                                                     onRemoveFromGroup = {
-                                                        val newItems = editItems.toMutableList()
-                                                        val gIdx = newItems.indexOf(editItem)
-                                                        if (gIdx != -1) {
-                                                            val newCards =
-                                                                editItem.cards.filter { it.id != card.id }
-                                                            if (newCards.isEmpty()) {
-                                                                newItems.removeAt(gIdx)
-                                                                newItems.add(
-                                                                    gIdx,
-                                                                    EditItem.Card(card)
-                                                                )
-                                                            } else {
-                                                                newItems[gIdx] =
-                                                                    editItem.copy(cards = newCards)
-                                                                newItems.add(
-                                                                    gIdx + 1,
-                                                                    EditItem.Card(card)
-                                                                )
-                                                            }
-                                                            editItems = newItems
-                                                        }
+                                                        viewModel.removeCardFromGroup(editItem, card.id)
                                                     },
                                                     onAddToGroup = null
                                                 )
@@ -748,25 +512,7 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
             onDismiss = { showGroupNameSheet = false },
             onConfirm = { groupName ->
                 showGroupNameSheet = false
-                val newDivider = MedData(
-                    id = System.nanoTime(),
-                    groupId = System.currentTimeMillis(),
-                    type = ItemType.Event,
-                    title = groupName,
-                    iconName = "DIVIDER",
-                    colorCode = "dynamic",
-                    frequencyLabel = "",
-                    creationDate = selectedDate,
-                    creationTime = LocalTime.MIN,
-                    takenHistory = hashMapOf(),
-                    recurrenceDays = null,
-                    endDate = null,
-                    notes = null,
-                    displayOrder = 0,
-                    intervalGap = null,
-                    category = null
-                )
-                editItems = editItems + EditItem.Group(newDivider, emptyList())
+                viewModel.addEditGroup(groupName, selectedDate)
             }
         )
     }
@@ -830,7 +576,6 @@ fun EditMedDataCard(
         if (customColor != null) Color.Black.copy(alpha = 0.7f) else if (isMedicine) MaterialTheme.colorScheme.onTertiaryContainer else MaterialTheme.colorScheme.onSecondaryContainer
 
     var menuExpanded by remember { mutableStateOf(false) }
-    LocalContext.current
 
     Card(
         modifier = modifier

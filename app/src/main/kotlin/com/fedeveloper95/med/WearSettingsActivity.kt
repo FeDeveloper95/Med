@@ -10,8 +10,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -110,7 +111,7 @@ class WearSettingsActivity : ComponentActivity() {
 fun WearSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
-    var useWearOS by remember { mutableStateOf(prefs.getBoolean("pref_use_wearos", true)) }
+    var useWearOS by remember { mutableStateOf(prefs.getBoolean("pref_use_wearos", false)) }
     val showNotifications = remember { prefs.getBoolean(PREF_SHOW_NOTIFICATIONS, true) }
     val fullScreenAlarm = remember { prefs.getBoolean(PREF_FULL_SCREEN_ALARM, true) }
     val areAlarmsEnabled = showNotifications && fullScreenAlarm
@@ -121,7 +122,6 @@ fun WearSettingsScreen(onBack: () -> Unit) {
     val allNames = remember(presetsStrings) {
         presetsStrings.mapNotNull { it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() } }.toSet()
     }
-
     var wearEnabledEvents by remember {
         val saved = prefs.getStringSet("pref_wear_enabled_events", null)
         val initial = saved?.filter { allNames.contains(it) }?.toSet() ?: allNames
@@ -210,7 +210,9 @@ fun WearSettingsScreen(onBack: () -> Unit) {
 
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -226,10 +228,13 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                     val interactionSource = remember { MutableInteractionSource() }
                     val shape = RoundedCornerShape(64.dp)
                     Card(
-                        modifier = Modifier.fillMaxWidth().clip(shape).clickable(interactionSource = interactionSource, indication = LocalIndication.current) {
-                            useWearOS = !useWearOS
-                            prefs.edit().putBoolean("pref_use_wearos", useWearOS).apply()
-                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(shape)
+                            .clickable(interactionSource = interactionSource, indication = LocalIndication.current) {
+                                useWearOS = !useWearOS
+                                prefs.edit().putBoolean("pref_use_wearos", useWearOS).apply()
+                            },
                         shape = shape,
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
                         elevation = CardDefaults.cardElevation(0.dp)
@@ -270,7 +275,7 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                 }
 
                 item {
-                    SettingsItemCard(
+                    WearSettingsItemCard(
                         icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
                         title = stringResource(R.string.wearos_quick_actions_header),
                         subtitle = stringResource(R.string.wearos_quick_actions_desc),
@@ -300,8 +305,8 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                                 val event = parts.getOrNull(1) ?: ""
                                 val iconName = parts.getOrNull(2) ?: "Event"
                                 val colorCode = parts.getOrNull(3) ?: "dynamic"
-                                val isSelected = wearEnabledEvents.contains(event)
 
+                                val isSelected = wearEnabledEvents.contains(event)
                                 val itemShape = when {
                                     validPresets.size == 1 -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
                                     index == validPresets.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
@@ -342,7 +347,6 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                                         WearSyncManager.syncSettings(ringOnWatch, newSet, allNames)
                                     }
                                 )
-
                                 if (index < validPresets.lastIndex) {
                                     Spacer(modifier = Modifier.height(2.dp))
                                 }
@@ -353,6 +357,132 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+fun WearSettingsItemCard(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    containerColor: Color,
+    iconColor: Color,
+    shape: Shape,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isRealPressed by interactionSource.collectIsPressedAsState()
+    var isPressed by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isRealPressed) {
+        if (isRealPressed) {
+            isPressed = true
+        } else {
+            delay(200)
+            isPressed = false
+        }
+    }
+
+    val pressProgress by animateFloatAsState(
+        targetValue = if (isPressed) 1f else 0f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        label = "anim_shape"
+    )
+
+    val animatedShape = remember(shape, pressProgress) {
+        if (shape is RoundedCornerShape) {
+            object : Shape {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
+                    val targetPx = with(density) { 20.dp.toPx() }
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
+
+                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
+                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
+                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
+                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
+                }
+            }
+        } else shape
+    }
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (enabled) 1f else 0.5f)
+            .clip(animatedShape),
+        shape = animatedShape,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = title,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.titleMedium
+                )
+            },
+            supportingContent = {
+                if (subtitle.isNotEmpty()) {
+                    Text(
+                        text = subtitle,
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            leadingContent = {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(containerColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            },
+            modifier = Modifier
+                .clickable(
+                    enabled = enabled,
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current,
+                    onClick = onClick
+                )
+                .padding(vertical = 4.dp),
+            colors = ListItemDefaults.colors(
+                containerColor = Color.Transparent
+            )
+        )
     }
 }
 
@@ -379,7 +509,7 @@ fun WearSwitchCard(
 
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "anim_shape"
     )
 

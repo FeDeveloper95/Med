@@ -66,6 +66,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,7 +85,6 @@ import java.time.YearMonth
 import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Locale
-import androidx.compose.ui.platform.LocalLocale
 
 enum class DayStatus {
     ALL_TAKEN, PARTIAL, NONE_TAKEN, NO_MEDS, FUTURE
@@ -133,51 +133,64 @@ fun StatsTab(
     val isExpanded = configuration.screenWidthDp > 600 || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val allMeds = viewModel.items.filter { it.type == ItemType.Medicine }
-    val hasMeds = allMeds.isNotEmpty()
 
-    var streak = 0
-    var adherence = 0
-    var missedPerWeekStr = "0.0"
+    val stats = remember(currentMonth, allMeds, today) {
+        var streakCalc = 0
+        var adherenceCalc = 0
+        var missedPerWeekCalc = "0.0"
 
-    if (hasMeds) {
-        val earliestDate = allMeds.minOfOrNull { it.creationDate } ?: today
-        var totalScheduled = 0
-        var totalTaken = 0
-        var totalMissed = 0
+        if (allMeds.isNotEmpty()) {
+            val monthStart = currentMonth.atDay(1)
+            val monthEnd = currentMonth.atEndOfMonth()
 
-        var currentStreak = 0
-        var streakBroken = false
+            if (!monthStart.isAfter(today)) {
+                val evalEnd = if (monthEnd.isAfter(today)) today else monthEnd
 
-        var dateCursor = today
-        while (!dateCursor.isBefore(earliestDate)) {
-            val scheduled = getScheduledMedsForDate(dateCursor, allMeds)
-            if (scheduled.isNotEmpty()) {
-                val takenCount = scheduled.count { it.takenHistory.containsKey(dateCursor) }
-                val scheduledCount = scheduled.size
+                var totalScheduled = 0
+                var totalTaken = 0
+                var totalMissed = 0
 
-                if (!dateCursor.isEqual(today) || takenCount > 0) {
-                    totalScheduled += scheduledCount
-                    totalTaken += takenCount
-                    totalMissed += (scheduledCount - takenCount)
-                }
+                var currentStreak = 0
+                var maxStreak = 0
 
-                if (!streakBroken) {
-                    if (takenCount == scheduledCount) {
-                        currentStreak++
-                    } else if (dateCursor.isBefore(today)) {
-                        streakBroken = true
+                var dateCursor = monthStart
+                while (!dateCursor.isAfter(evalEnd)) {
+                    val scheduled = getScheduledMedsForDate(dateCursor, allMeds)
+                    if (scheduled.isNotEmpty()) {
+                        val takenCount = scheduled.count { it.takenHistory.containsKey(dateCursor) }
+                        val scheduledCount = scheduled.size
+
+                        val countForStats = !dateCursor.isEqual(today) || takenCount > 0
+
+                        if (countForStats) {
+                            totalScheduled += scheduledCount
+                            totalTaken += takenCount
+                            totalMissed += (scheduledCount - takenCount)
+                        }
+
+                        if (takenCount == scheduledCount && scheduledCount > 0) {
+                            currentStreak++
+                            if (currentStreak > maxStreak) maxStreak = currentStreak
+                        } else if (countForStats) {
+                            currentStreak = 0
+                        }
                     }
+                    dateCursor = dateCursor.plusDays(1)
                 }
-            }
-            dateCursor = dateCursor.minusDays(1)
-        }
 
-        streak = currentStreak
-        adherence = if (totalScheduled > 0) (totalTaken * 100f / totalScheduled).toInt() else 0
-        val totalDays = Math.max(1L, ChronoUnit.DAYS.between(earliestDate, today.plusDays(1)))
-        val weeks = Math.max(1f, totalDays / 7f)
-        missedPerWeekStr = String.format(Locale.US, "%.1f", totalMissed / weeks)
+                streakCalc = maxStreak
+                adherenceCalc = if (totalScheduled > 0) (totalTaken * 100f / totalScheduled).toInt() else 0
+                val totalDays = Math.max(1L, ChronoUnit.DAYS.between(monthStart, evalEnd.plusDays(1)))
+                val weeks = Math.max(1f, totalDays / 7f)
+                missedPerWeekCalc = String.format(Locale.US, "%.1f", totalMissed / weeks)
+            }
+        }
+        Triple(streakCalc, adherenceCalc, missedPerWeekCalc)
     }
+
+    val streak = stats.first
+    val adherence = stats.second
+    val missedPerWeekStr = stats.third
 
     var isRefreshing by remember { mutableStateOf(false) }
     val pullRefreshState = rememberPullToRefreshState()

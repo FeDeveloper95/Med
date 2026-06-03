@@ -14,8 +14,9 @@ import android.os.CancellationSignal
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -26,8 +27,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -40,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
@@ -147,12 +147,10 @@ class LockActivity : ComponentActivity() {
                             verticalArrangement = Arrangement.Center
                         ) {
 
-                            Spacer(modifier = Modifier.height(32.dp))
-
                             Icon(
-                                imageVector = Icons.Rounded.Lock,
+                                painter = painterResource(id = R.drawable.ic_med_secure),
                                 contentDescription = null,
-                                modifier = Modifier.size(32.dp),
+                                modifier = Modifier.size(96.dp),
                                 tint = MaterialTheme.colorScheme.primary
                             )
 
@@ -162,7 +160,7 @@ class LockActivity : ComponentActivity() {
                             val isPressed by interactionSource.collectIsPressedAsState()
                             val cornerPercent by animateIntAsState(
                                 targetValue = if (isPressed) 15 else 50,
-                                animationSpec = tween(durationMillis = 200),
+                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
                                 label = "corner"
                             )
 

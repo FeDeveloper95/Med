@@ -71,6 +71,37 @@ class AppWearListenerService : WearableListenerService() {
                     "/request_sync" -> {
                         WearSyncManager.initialize(applicationContext)
                         syncDataToWear(applicationContext)
+
+                        val prefs = applicationContext.getSharedPreferences("med_settings",
+                            MODE_PRIVATE
+                        )
+                        val ringOnWatch = prefs.getBoolean("pref_wear_ring_alarms", true)
+
+                        val allNames = mutableSetOf<String>()
+                        val jsonString = prefs.getString("pref_presets_ordered", null)
+                        if (jsonString != null) {
+                            try {
+                                val jsonArray = org.json.JSONArray(jsonString)
+                                for (i in 0 until jsonArray.length()) {
+                                    val preset = jsonArray.getString(i)
+                                    val name = preset.split("|").getOrNull(1)
+                                    if (!name.isNullOrBlank()) allNames.add(name)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        } else {
+                            val oldSet = prefs.getStringSet("pref_presets", null)
+                            oldSet?.forEach { preset ->
+                                val name = preset.split("|").getOrNull(1)
+                                if (!name.isNullOrBlank()) allNames.add(name)
+                            }
+                        }
+
+                        val savedEvents = prefs.getStringSet("pref_wear_enabled_events", null)
+                        val wearEnabledEvents = savedEvents?.filter { allNames.contains(it) }?.toSet() ?: allNames
+
+                        WearSyncManager.syncSettings(ringOnWatch, wearEnabledEvents, allNames)
                     }
                     "/new_event" -> {
                         val eventName = dataMap.getString("event_name") ?: return

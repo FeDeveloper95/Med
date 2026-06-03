@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Gyógyszer</string>
+    <string name="event_label">Esemény</string>
+    <string name="menu_tooltip">Menü</string>
+    <string name="menu_action_desc">Művelet menü</string>
+    <string name="expanded_state">Kibontva</string>
+    <string name="collapsed_state">Összecsukva</string>
+    <string name="close_menu_action">Menü bezárása</string>
+    <string name="choose_date_desc">Dátum kiválasztása</string>
+    <string name="settings_desc">Beállítások</string>
+    <string name="no_events_label">Nincs esemény mára</string>
+
+    <string name="item_deleted">Törölve: %1$s</string>
+    <string name="undo_action">Visszavonás</string>
+
+    <string name="cancel_action">Mégse</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Mentés</string>
+    <string name="new_event_title">Új esemény</string>
+    <string name="new_medicine_title">Új gyógyszer</string>
+    <string name="name_hint">Név</string>
+
+    <string name="settings_title">Beállítások</string>
+    <string name="discard">Vissza</string>
+    <string name="cancel">Mégse</string>
+    <string name="restart_now">Újraindítás most</string>
+
+    <string name="settings_theme_title">Téma</string>
+    <string name="settings_theme_system">Rendszer</string>
+    <string name="settings_theme_light">Világos</string>
+    <string name="settings_theme_dark">Sötét</string>
+
+    <string name="settings_week_start_title">Hét kezdete</string>
+    <string name="sunday">Vasárnap</string>
+    <string name="monday">Hétfő</string>
+
+    <string name="settings_header_customization">Testreszabás</string>
+    <string name="settings_presets_title">Gyorsműveletek</string>
+    <string name="settings_presets_desc">Egyéni események kezelése a főmenüben</string>
+    <string name="add_action">Hozzáadás</string>
+
+    <string name="settings_header_info">Infó</string>
+    <string name="settings_version_title">Alkalmazás verziója</string>
+    <string name="unknown">Ismeretlen</string>
+    <string name="settings_developer_title">Fejlesztő</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Hiba / Funkció bejelentése</string>
+    <string name="settings_report_desc">Kapcsolatfelvétel Telegramon</string>
+
+    <string name="settings_check_updates_title">Frissítések keresése</string>
+    <string name="settings_check_updates_desc">Legújabb verzió keresése</string>
+    <string name="update_action">Frissítés</string>
+    <string name="update_available">Frissítés elérhető: v%1$s</string>
+    <string name="update_latest_version_msg">Jelenleg nincs elérhető frissítés.</string>
+    <string name="update_error_msg">Nem sikerült frissítéseket keresni. Ellenőrizze a kapcsolatot.</string>
+    <string name="later">Később</string>
+
+    <string name="quick_actions_title">Gyorsműveletek</string>
+    <string name="quick_actions_info">A Gyorsműveletek segítségével gyorsan hozzáadhat ismétlődő jelenségeket vagy eseményeket a Med-hez.</string>
+    <string name="active_actions_header">Aktív műveletek</string>
+
+    <string name="welcome_to">Üdvözli a</string>
+    <string name="welcome_preparing_subtitle">Mindent előkészítünk az Ön számára.</string>
+    <string name="next">Tovább</string>
+    <string name="back">Vissza</string>
+    <string name="get_started">Kezdés</string>
+
+    <string name="perm_required">Szükséges</string>
+    <string name="perm_permissions">Engedélyek</string>
+    <string name="perm_intro_text">Ezek az engedélyek szükségesek a Med megfelelő működéséhez. Kérjük, adja meg őket a folytatáshoz.</string>
+
+    <string name="perm_notif_title">Értesítések</string>
+    <string name="perm_notif_desc">Azonnal tudja meg, mikor kell bevennie a gyógyszereit.</string>
+
+    <string name="perm_install_title">Alkalmazás telepítése</string>
+    <string name="perm_install_desc">Szükséges a frissítések letöltéséhez és telepítéséhez.</string>
+
+    <string name="feat_discover">Felfedezés</string>
+    <string name="feat_features">Funkciók</string>
+    <string name="feat_intro">Íme, mit tehet az új Med alkalmazással.</string>
+
+    <string name="feat_reminders_title">Okos emlékeztetők</string>
+    <string name="feat_reminders_desc">Kapjon időben értesítést a gyógyszereiről.</string>
+
+    <string name="feat_tracking_title">Nyomon követés</string>
+    <string name="feat_tracking_desc">Vezessen naplót arról, mikor vette be a gyógyszereit.</string>
+
+    <string name="feat_presets_title">Gyorsműveletek</string>
+    <string name="feat_presets_desc">Állítson be azonnal előbeállításokat az ismétlődő eseményekhez.</string>
+
+    <string name="feat_update_title">Maradjon naprakész</string>
+    <string name="feat_update_desc">Ellenőrizze a frissítéseket közvetlenül az alkalmazás Beállításaiban.</string>
+
+    <string name="settings_advanced_title">Speciális</string>
+    <string name="settings_advanced_desc">Kísérleti funkciók és frissítések</string>
+    <string name="settings_auto_updates_title">Automatikus frissítések</string>
+    <string name="settings_auto_updates_desc">Frissítések keresése indításkor</string>
+    <string name="settings_setup_title">Kezdeti beállítás</string>
+    <string name="settings_setup_desc">Üdvözlő varázsló újbóli futtatása</string>
+    <string name="settings_backup_header">Biztonsági mentés és visszaállítás</string>
+    <string name="settings_export_title">Beállítások exportálása</string>
+    <string name="settings_export_desc">Konfiguráció mentése</string>
+    <string name="settings_import_title">Beállítások importálása</string>
+    <string name="settings_import_desc">Visszaállítás biztonsági mentés fájlból</string>
+    <string name="dialog_restart_title">Újraindítás szükséges</string>
+    <string name="dialog_restart_desc">A beállítások importálva. Indítsa újra az alkalmazást a módosítások alkalmazásához.</string>
+    <string name="export_success">Beállítások sikeresen exportálva</string>
+    <string name="export_error">Hiba a beállítások exportálásakor</string>
+    <string name="import_error">Hiba a beállítások importálásakor</string>
+
+    <string name="select_color">Szín</string>
+    <string name="time_label">Idő</string>
+    <string name="choose_icon">Ikon kiválasztása</string>
+    <string name="frequency_label">Gyakoriság</string>
+
+    <string name="schedule_label_format">%1$d. ütemterv</string>
+
+    <string name="download_title">Med Frissítés</string>
+    <string name="download_desc">%1$s verzió letöltése…</string>
+    <string name="download_started">Letöltés megkezdődött…</string>
+    <string name="download_failed">Sikertelen letöltés: %1$s</string>
+    <string name="notif_channel_updates">Frissítések</string>
+    <string name="update_notif_desc">Koppintson a részletek megtekintéséhez és a letöltéshez.</string>
+    <string name="install_error">Telepítési hiba: %1$s</string>
+
+    <string name="switch_to_text_input">Váltás szövegbevitelre</string>
+    <string name="switch_to_touch_input">Váltás érintéses bevitelre</string>
+
+    <string name="frequency_specific_days">Konkrét napok</string>
+    <string name="frequency_daily_multiple">Napi %1$dx</string>
+    <string name="frequency_daily">Naponta</string>
+    <string name="edit_time_desc">Idő szerkesztése</string>
+    <string name="status_taken_format">Bevéve %1$s %2$s</string>
+    <string name="status_scheduled_format">Ütemezve ekkorra: %1$s</string>
+
+    <string name="dynamic_theme_desc">Dinamikus téma</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Január</string>
+    <string name="month_february">Február</string>
+    <string name="month_march">Március</string>
+    <string name="month_april">Április</string>
+    <string name="month_may">Május</string>
+    <string name="month_june">Június</string>
+    <string name="month_july">Július</string>
+    <string name="month_august">Augusztus</string>
+    <string name="month_september">Szeptember</string>
+    <string name="month_october">Október</string>
+    <string name="month_november">November</string>
+    <string name="month_december">December</string>
+
+    <string name="day_short_mon">H</string>
+    <string name="day_short_tue">K</string>
+    <string name="day_short_wed">Sze</string>
+    <string name="day_short_thu">Cs</string>
+    <string name="day_short_fri">P</string>
+    <string name="day_short_sat">Szo</string>
+    <string name="day_short_sun">V</string>
+
+    <string name="settings_language_title">Alkalmazás nyelve</string>
+    <string name="settings_language_desc">Nyelv módosítása a rendszer beállításaiban</string>
+
+    <string name="edit_mode_desc">Szerkesztési mód</string>
+    <string name="settings_sort_order_title">Megjelenítési sorrend</string>
+    <string name="settings_sort_order_time">Idő szerint</string>
+    <string name="settings_sort_order_custom">Egyéni</string>
+    <string name="settings_header_preferences">Preferenciák</string>
+    <string name="settings_notifications_title">Értesítések</string>
+    <string name="settings_notifications_desc">Értesítési és riasztási stílus kezelése</string>
+    <string name="settings_show_notifications_title">Értesítések megjelenítése</string>
+    <string name="settings_full_screen_alarm_title">Teljes képernyős riasztás</string>
+    <string name="settings_full_screen_alarm_desc">Riasztással kapcsolja be a képernyőt egy felugró értesítés helyett</string>
+    <string name="settings_alarm_style_title">Riasztás stílusa</string>
+    <string name="settings_alarm_style_desc">Válassza ki, hogyan reagáljon a teljes képernyős riasztásra</string>
+    <string name="settings_alarm_style_slider">Csúszka (Csúsztatás)</string>
+    <string name="settings_alarm_style_buttons">Gombok</string>
+    <string name="settings_snooze_duration_title">Szundi időtartama</string>
+    <string name="settings_snooze_duration_desc">%1$d perc</string>
+    <string name="alarm_default_title">Emlékeztető</string>
+    <string name="alarm_time_to_take">Ideje bevenni a következőt:\n%1$s</string>
+    <string name="alarm_taken_action">Bevéve</string>
+    <string name="alarm_snooze_action">Szundi (%1$d perc)</string>
+    <string name="alarm_snooze_desc">Szundi</string>
+    <string name="alarm_taken_desc">Bevéve</string>
+    <string name="notif_reminder_title">Emlékeztető: %1$s</string>
+    <string name="notif_reminder_desc">Ideje bevenni a gyógyszerét</string>
+    <string name="notif_action_taken">Bevéve</string>
+    <string name="notif_action_snooze">Szundi</string>
+    <string name="notif_channel_alarms_name">Gyógyszer riasztások</string>
+    <string name="notif_channel_alarms_desc">Csatorna a gyógyszer riasztásokhoz</string>
+    <string name="unsaved_changes_title">Mentetlen módosítások</string>
+    <string name="unsaved_changes_desc">Szeretné menteni az új sorrendet kilépés előtt?</string>
+    <string name="discard_action">Elvetés</string>
+    <string name="notes_hint">Jegyzetek (Opcionális)</string>
+    <string name="frequency_unit_biweek">Kéthetente</string>
+    <string name="more_options">Több</string>
+    <string name="community_title">Csatlakozzon a közösséghez</string>
+    <string name="community_desc">Csatlakozzon Telegram csatornámhoz, hogy ne maradjon le a legújabb hírekről és frissítésekről a projektjeimmel kapcsolatban, valamint néhány exkluzív betekintésről!</string>
+    <string name="no_thanks">Nem, köszönöm</string>
+    <string name="sure_action">Persze!</string>
+    <string name="see_source_code">Forráskód megtekintése</string>
+    <string name="check_updates_action">Frissítések keresése</string>
+    <string name="update_error_check">Nem sikerült frissítéseket keresni</string>
+    <string name="nothing_here_yet">Egyelőre nincs itt mit módosítani…</string>
+    <string name="settings_testing_header">Tesztelés</string>
+    <string name="settings_test_alarm_title">Teszt riasztás/értesítés</string>
+    <string name="settings_test_alarm_desc">Riasztást indít a legközelebbi gyógyszerhez</string>
+    <string name="settings_test_telegram_title">Telegram felugró ablak megjelenítése</string>
+    <string name="settings_test_telegram_desc">Megjeleníti a közösségi felugró ablakot</string>
+    <string name="settings_test_crash_title">Alkalmazás összeomlasztása</string>
+    <string name="settings_test_crash_desc">Végzetes kivételt kényszerít a hibajelentés teszteléséhez</string>
+    <string name="settings_danger_zone_header">Veszélyzóna</string>
+    <string name="settings_reset_title">Alkalmazásadatok visszaállítása</string>
+    <string name="settings_reset_desc">Minden adat és beállítás végleges törlése</string>
+    <string name="settings_reset_confirmation_desc">Biztosan törölni szeretné az összes gyógyszerét, eseményét és beállítását? Ezt a műveletet nem lehet visszavonni.</string>
+    <string name="settings_reset_action">Visszaállítás</string>
+    <string name="group_name_label">Csoport neve</string>
+    <string name="delete_mode_action">Törlési mód</string>
+    <string name="add_to_group">Hozzáadás ehhez: %1$s</string>
+    <string name="remove_from_group">Eltávolítás innen: %1$s</string>
+    <string name="settings_app_lock_title">Alkalmazás zárolása</string>
+    <string name="settings_app_lock_desc">PIN kód vagy ujjlenyomat kérése a Med megnyitásához</string>
+    <string name="unlock_to_enable">Hitelesítés a zárolás engedélyezéséhez</string>
+    <string name="unlock_app">Med feloldása</string>
+    <string name="unlock_action">Feloldás</string>
+
+    <string name="you_tab_title">Te</string>
+    <string name="medical_info_header">Orvosi információk</string>
+    <string name="not_set">Nincs beállítva</string>
+    <string name="dob_title">Születési dátum</string>
+    <string name="blood_type_title">Vércsoport</string>
+    <string name="height_title">Magasság</string>
+    <string name="weight_title">Súly</string>
+    <string name="allergies_title">Allergiák</string>
+    <string name="home_tab_title">Kezdőlap</string>
+    <string name="stats_tab_title">Statisztikák</string>
+    <string name="remove_photo">Fotó eltávolítása</string>
+    <string name="choose_another_photo">Másik fotó választása</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">0+</string>
+    <string name="blood_type_o_neg">0-</string>
+    <string name="dob_hint">ÉÉÉÉ.MM.NN.</string>
+    <string name="clear_action">Törlés</string>
+    <string name="height_hint">Adja meg magasságát</string>
+    <string name="weight_hint">Adja meg súlyát</string>
+    <string name="privacy_info">Orvosi adatait helyben tároljuk, és soha nem küldjük el senkinek.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">Adja meg allergiáit</string>
+    <string name="stats_streak_label">Sorozat</string>
+    <string name="stats_on_time_label">Időben</string>
+    <string name="stats_missed_label">Kihagyott/hét</string>
+    <string name="notification_type_label">Értesítés típusa</string>
+    <string name="notification_type_none">Nincs</string>
+    <string name="notification_type_normal">Értesítés</string>
+    <string name="notification_type_alarm">Riasztás</string>
+    <string name="notification_type_default">Alapértelmezett</string>
+    <string name="settings_header_more">Több</string>
+    <string name="settings_wearos_title">Med WearOS-hez</string>
+    <string name="settings_wearos_desc">A WearOS kísérőalkalmazás kezelése</string>
+    <string name="wearos_settings_title">WearOS Beállítások</string>
+    <string name="wearos_ring_alarms_title">Csengetés az órán</string>
+    <string name="wearos_ring_alarms_desc">A riasztások a csatlakoztatott WearOS eszközén fognak csengeni</string>
+    <string name="wearos_alarms_disabled_desc">A riasztások jelenleg le vannak tiltva, vagy értesítések helyettesítik őket</string>
+    <string name="wearos_quick_actions_header">Óra Gyorsműveletek</string>
+    <string name="wearos_quick_actions_desc">Válassza ki, mely Gyorsműveletek jelenjenek meg az óráján.</string>
+    <string name="wearos_master_toggle_title">Med használata WearOS-en</string>
+    <string name="fullscreen_permission_title">Teljes képernyős riasztások engedélyezése</string>
+    <string name="fullscreen_permission_desc">Hogy a legtöbbet hozza ki riasztásaiból, engedélyeznie kell a Med számára a teljes képernyős értesítések megjelenítését, még kikapcsolt képernyő esetén is.</string>
+    <string name="enable_action">Engedélyezés</string>
+    <string name="notif_grouped_title">Ideje bevenni a gyógyszereket</string>
+    <string name="notif_action_take_all">Mind bevétele</string>
+    <string name="alarm_swipe_to_respond">Csúsztasson a választáshoz</string>
+    <string name="modify_medicine_title">Módosítások alkalmazása</string>
+    <string name="modify_only_this">Csak ez az esemény</string>
+    <string name="modify_all_following">Ez és minden következő esemény</string>
+    <string name="modify_specific_range">Konkrét dátumtartomány</string>
+    <string name="freq_mode_daily">Naponta</string>
+    <string name="freq_mode_days">Konkrét napok</string>
+    <string name="freq_mode_interval">Intervallum</string>
+    <string name="times_per_day_label">Alkalom naponta</string>
+    <string name="interval_every">Minden</string>
+    <string name="interval_days">Nap</string>
+    <string name="interval_weeks">Hét</string>
+    <string name="interval_months">Hónap</string>
+    <string name="happy_birthday_msg">Boldog születésnapot!</string>
+    <string name="illness_label">Betegség</string>
+    <string name="illness_question">Még mindig fennáll: %1$s?</string>
+    <string name="yes_action">Igen</string>
+    <string name="no_action">Nem</string>
+    <string name="new_illness_title">Új betegség</string>
+    <string name="day_of_start_label">Kezdés napja</string>
+    <string name="edit_medicine_title">Gyógyszer szerkesztése</string>
+    <string name="edit_event_title">Esemény szerkesztése</string>
+    <string name="edit_illness_title">Betegség szerkesztése</string>
+    <string name="personal_data_title">Személyes</string>
+    <string name="personal_data_header">adatok</string>
+    <string name="personal_data_intro">Ezek az adatok teljesen opcionálisak, és biztonságosan, csak helyileg tárolódnak az eszközén.</string>
+    <string name="feat_wearos_title">Med a Wear OS-en</string>
+    <string name="feat_wearos_desc">Szinkronizálja emlékeztetőit és eseményeit zökkenőmentesen okosórájával.</string>
+    <string name="feat_tabs_title">Te és Statisztikák</string>
+    <string name="feat_tabs_desc">Kövesse nyomon személyes egészségügyi adatait, és tekintse meg szokásai részletes statisztikáit.</string>
+    <string name="profile_picture">Profilkép</string>
+    <string name="image_set">Kép beállítva</string>
+    <string name="tap_to_set">Koppintson a beállításhoz</string>
+</resources>

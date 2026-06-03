@@ -81,6 +81,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.services.AlarmService
 import com.fedeveloper95.med.services.DataRepository
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
@@ -153,6 +154,7 @@ class AlarmActivity : ComponentActivity() {
                         colorCode = colorCodeStr,
                         isGrouped = isGrouped,
                         onTake = {
+                            stopService(Intent(this@AlarmActivity, AlarmService::class.java))
                             val actionIntent = Intent(
                                 this@AlarmActivity,
                                 com.fedeveloper95.med.services.NotificationReceiver::class.java
@@ -165,6 +167,7 @@ class AlarmActivity : ComponentActivity() {
                             finishAndRemoveTask()
                         },
                         onSnooze = {
+                            stopService(Intent(this@AlarmActivity, AlarmService::class.java))
                             val actionIntent = Intent(
                                 this@AlarmActivity,
                                 com.fedeveloper95.med.services.NotificationReceiver::class.java

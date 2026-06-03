@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalTextApi::class)
+
 package com.fedeveloper95.med
 
 import android.annotation.SuppressLint
@@ -11,8 +12,9 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -104,6 +106,7 @@ class SettingsActivity : ComponentActivity() {
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
             var currentThemeOverride by remember { mutableIntStateOf(savedTheme) }
+
             MedTheme(themeOverride = currentThemeOverride) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -131,17 +134,20 @@ fun SettingsScreen(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
     var weekStart by remember {
         mutableStateOf(
             prefs.getString(PREF_WEEK_START, "monday") ?: "monday"
         )
     }
+
     var sortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
     var appLockEnabled by remember {
         mutableStateOf(
             prefs.getBoolean("pref_app_lock", false)
         )
     }
+
     var showThemeDialog by remember { mutableStateOf(false) }
     var showWeekStartDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
@@ -159,6 +165,7 @@ fun SettingsScreen(
     }
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
     val appBarTypography = MaterialTheme.typography.copy(
         headlineMedium = MaterialTheme.typography.displaySmall.copy(
             fontFamily = GoogleSansFlex,
@@ -220,6 +227,7 @@ fun SettingsScreen(
                 item {
                     Spacer(modifier = Modifier.height(20.dp))
                 }
+
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_customization),
@@ -231,6 +239,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Palette,
@@ -252,6 +261,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Event,
@@ -266,6 +276,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Sort,
@@ -285,6 +296,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
+
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_preferences),
@@ -296,6 +308,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.NotificationsActive,
@@ -316,6 +329,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
@@ -331,6 +345,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     val activity = LocalContext.current as ComponentActivity
                     SettingsSwitchCard(
@@ -359,6 +374,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Tune,
@@ -379,6 +395,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
+
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_more),
@@ -390,6 +407,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     item {
                         SettingsItemCard(
@@ -419,6 +437,7 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Watch,
@@ -443,6 +462,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
+
                 item {
                     Text(
                         text = stringResource(R.string.settings_header_info),
@@ -454,6 +474,7 @@ fun SettingsScreen(
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Info,
@@ -482,6 +503,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.Code,
@@ -500,6 +522,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = Icons.Rounded.BugReport,
@@ -516,6 +539,7 @@ fun SettingsScreen(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                 }
+
                 item {
                     SettingsItemCard(
                         icon = ImageVector.vectorResource(R.drawable.ic_phone_update),
@@ -601,7 +625,7 @@ fun SettingsItemCard(
 
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "anim_shape"
     )
 
@@ -616,10 +640,12 @@ fun SettingsItemCard(
                     val targetPx = with(density) { 20.dp.toPx() }
                     fun lerp(start: Float, stop: Float, fraction: Float) =
                         (1 - fraction) * start + fraction * stop
+
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
                     val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
                     val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
                             rect = androidx.compose.ui.geometry.Rect(
@@ -723,7 +749,7 @@ fun SettingsSwitchCard(
 
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
         label = "anim_shape"
     )
 
@@ -738,10 +764,12 @@ fun SettingsSwitchCard(
                     val targetPx = with(density) { 20.dp.toPx() }
                     fun lerp(start: Float, stop: Float, fraction: Float) =
                         (1 - fraction) * start + fraction * stop
+
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
                     val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
                     val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
+
                     return Outline.Rounded(
                         androidx.compose.ui.geometry.RoundRect(
                             rect = androidx.compose.ui.geometry.Rect(

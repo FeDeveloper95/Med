@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Лекарство</string>
+    <string name="event_label">Событие</string>
+    <string name="menu_tooltip">Меню</string>
+    <string name="menu_action_desc">Меню действий</string>
+    <string name="expanded_state">Развернуто</string>
+    <string name="collapsed_state">Свернуто</string>
+    <string name="close_menu_action">Закрыть меню</string>
+    <string name="choose_date_desc">Выбрать дату</string>
+    <string name="settings_desc">Настройки</string>
+    <string name="no_events_label">На сегодня нет событий</string>
+
+    <string name="item_deleted">Удалено: %1$s</string>
+    <string name="undo_action">Отменить</string>
+
+    <string name="cancel_action">Отмена</string>
+    <string name="ok_action">ОК</string>
+    <string name="save_action">Сохранить</string>
+    <string name="new_event_title">Новое событие</string>
+    <string name="new_medicine_title">Новое лекарство</string>
+    <string name="name_hint">Имя</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="discard">Назад</string>
+    <string name="cancel">Отмена</string>
+    <string name="restart_now">Перезапустить сейчас</string>
+
+    <string name="settings_theme_title">Тема</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Темная</string>
+
+    <string name="settings_week_start_title">Начало недели</string>
+    <string name="sunday">Воскресенье</string>
+    <string name="monday">Понедельник</string>
+
+    <string name="settings_header_customization">Персонализация</string>
+    <string name="settings_presets_title">Быстрые действия</string>
+    <string name="settings_presets_desc">Управление пользовательскими событиями в главном меню</string>
+    <string name="add_action">Добавить</string>
+
+    <string name="settings_header_info">Информация</string>
+    <string name="settings_version_title">Версия приложения</string>
+    <string name="unknown">Неизвестно</string>
+    <string name="settings_developer_title">Разработчик</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Сообщить об ошибке / идее</string>
+    <string name="settings_report_desc">Связаться в Telegram</string>
+
+    <string name="settings_check_updates_title">Проверить обновления</string>
+    <string name="settings_check_updates_desc">Найти последнюю версию</string>
+    <string name="update_action">Обновить</string>
+    <string name="update_available">Доступно обновление: v%1$s</string>
+    <string name="update_latest_version_msg">На данный момент обновлений нет.</string>
+    <string name="update_error_msg">Не удалось проверить обновления. Проверьте подключение.</string>
+    <string name="later">Позже</string>
+
+    <string name="quick_actions_title">Быстрые действия</string>
+    <string name="quick_actions_info">Быстрые действия помогают быстро добавлять повторяющиеся явления или события в Med.</string>
+    <string name="active_actions_header">Активные действия</string>
+
+    <string name="welcome_to">Добро пожаловать в</string>
+    <string name="welcome_preparing_subtitle">Давайте все для вас подготовим.</string>
+    <string name="next">Далее</string>
+    <string name="back">Назад</string>
+    <string name="get_started">Начать</string>
+
+    <string name="perm_required">Требуется</string>
+    <string name="perm_permissions">Разрешения</string>
+    <string name="perm_intro_text">Эти разрешения необходимы для правильной работы Med. Пожалуйста, предоставьте их для продолжения.</string>
+
+    <string name="perm_notif_title">Уведомления</string>
+    <string name="perm_notif_desc">Узнавайте сразу, когда принимать лекарства.</string>
+
+    <string name="perm_install_title">Установка приложений</string>
+    <string name="perm_install_desc">Требуется для скачивания и установки обновлений.</string>
+
+    <string name="feat_discover">Откройте</string>
+    <string name="feat_features">Функции</string>
+    <string name="feat_intro">Вот что вы можете делать с вашим новым приложением Med.</string>
+
+    <string name="feat_reminders_title">Умные напоминания</string>
+    <string name="feat_reminders_desc">Получайте своевременные уведомления о ваших лекарствах.</string>
+
+    <string name="feat_tracking_title">Отслеживание</string>
+    <string name="feat_tracking_desc">Ведите историю приема ваших лекарств.</string>
+
+    <string name="feat_presets_title">Быстрые действия</string>
+    <string name="feat_presets_desc">Мгновенно настраивайте пресеты для повторяющихся событий.</string>
+
+    <string name="feat_update_title">Будьте в курсе</string>
+    <string name="feat_update_desc">Проверяйте обновления прямо в настройках приложения.</string>
+
+    <string name="settings_advanced_title">Дополнительно</string>
+    <string name="settings_advanced_desc">Экспериментальные функции и обновления</string>
+    <string name="settings_auto_updates_title">Автоматические обновления</string>
+    <string name="settings_auto_updates_desc">Проверять обновления при запуске</string>
+    <string name="settings_setup_title">Начальная настройка</string>
+    <string name="settings_setup_desc">Запустить мастер приветствия снова</string>
+    <string name="settings_backup_header">Резервное копирование и восстановление</string>
+    <string name="settings_export_title">Экспорт настроек</string>
+    <string name="settings_export_desc">Сохранить конфигурацию</string>
+    <string name="settings_import_title">Импорт настроек</string>
+    <string name="settings_import_desc">Восстановить из файла резервной копии</string>
+    <string name="dialog_restart_title">Требуется перезапуск</string>
+    <string name="dialog_restart_desc">Настройки импортированы. Перезапустите приложение, чтобы применить изменения.</string>
+    <string name="export_success">Настройки успешно экспортированы</string>
+    <string name="export_error">Ошибка экспорта настроек</string>
+    <string name="import_error">Ошибка импорта настроек</string>
+
+    <string name="select_color">Цвет</string>
+    <string name="time_label">Время</string>
+    <string name="choose_icon">Выбрать иконку</string>
+    <string name="frequency_label">Частота</string>
+
+    <string name="schedule_label_format">Расписание %1$d</string>
+
+    <string name="download_title">Обновление Med</string>
+    <string name="download_desc">Скачивание версии %1$s…</string>
+    <string name="download_started">Скачивание началось…</string>
+    <string name="download_failed">Ошибка скачивания: %1$s</string>
+    <string name="notif_channel_updates">Обновления</string>
+    <string name="update_notif_desc">Нажмите для просмотра деталей и скачивания.</string>
+    <string name="install_error">Ошибка установки: %1$s</string>
+
+    <string name="switch_to_text_input">Переключиться на текстовый ввод</string>
+    <string name="switch_to_touch_input">Переключиться на сенсорный ввод</string>
+
+    <string name="frequency_specific_days">Определенные дни</string>
+    <string name="frequency_daily_multiple">%1$d раз(а) в день</string>
+    <string name="frequency_daily">Ежедневно</string>
+    <string name="edit_time_desc">Изменить время</string>
+    <string name="status_taken_format">Принято %1$s%2$s</string>
+    <string name="status_scheduled_format">Запланировано на %1$s</string>
+
+    <string name="dynamic_theme_desc">Динамическая тема</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Январь</string>
+    <string name="month_february">Февраль</string>
+    <string name="month_march">Март</string>
+    <string name="month_april">Апрель</string>
+    <string name="month_may">Май</string>
+    <string name="month_june">Июнь</string>
+    <string name="month_july">Июль</string>
+    <string name="month_august">Август</string>
+    <string name="month_september">Сентябрь</string>
+    <string name="month_october">Октябрь</string>
+    <string name="month_november">Ноябрь</string>
+    <string name="month_december">Декабрь</string>
+
+    <string name="day_short_mon">П</string>
+    <string name="day_short_tue">В</string>
+    <string name="day_short_wed">С</string>
+    <string name="day_short_thu">Ч</string>
+    <string name="day_short_fri">П</string>
+    <string name="day_short_sat">С</string>
+    <string name="day_short_sun">В</string>
+
+    <string name="settings_language_title">Язык приложения</string>
+    <string name="settings_language_desc">Изменить язык в настройках системы</string>
+
+    <string name="edit_mode_desc">Режим редактирования</string>
+    <string name="settings_sort_order_title">Порядок отображения</string>
+    <string name="settings_sort_order_time">По времени</string>
+    <string name="settings_sort_order_custom">Свой</string>
+    <string name="settings_header_preferences">Предпочтения</string>
+    <string name="settings_notifications_title">Уведомления</string>
+    <string name="settings_notifications_desc">Управление стилем уведомлений и будильников</string>
+    <string name="settings_show_notifications_title">Показывать уведомления</string>
+    <string name="settings_full_screen_alarm_title">Полноэкранный будильник</string>
+    <string name="settings_full_screen_alarm_desc">Включает экран с будильником вместо всплывающего уведомления</string>
+    <string name="settings_alarm_style_title">Стиль будильника</string>
+    <string name="settings_alarm_style_desc">Выберите, как отвечать на полноэкранный будильник</string>
+    <string name="settings_alarm_style_slider">Слайдер (Свайп)</string>
+    <string name="settings_alarm_style_buttons">Кнопки</string>
+    <string name="settings_snooze_duration_title">Длительность откладывания</string>
+    <string name="settings_snooze_duration_desc">%1$d минут</string>
+    <string name="alarm_default_title">Напоминание</string>
+    <string name="alarm_time_to_take">Время принять\n%1$s</string>
+    <string name="alarm_taken_action">Принято</string>
+    <string name="alarm_snooze_action">Отложить (%1$d мин)</string>
+    <string name="alarm_snooze_desc">Отложить</string>
+    <string name="alarm_taken_desc">Принято</string>
+    <string name="notif_reminder_title">Напоминание: %1$s</string>
+    <string name="notif_reminder_desc">Время принять лекарство</string>
+    <string name="notif_action_taken">Принято</string>
+    <string name="notif_action_snooze">Отложить</string>
+    <string name="notif_channel_alarms_name">Будильники лекарств</string>
+    <string name="notif_channel_alarms_desc">Канал для будильников лекарств</string>
+    <string name="unsaved_changes_title">Несохраненные изменения</string>
+    <string name="unsaved_changes_desc">Хотите сохранить новый порядок перед выходом?</string>
+    <string name="discard_action">Сбросить</string>
+    <string name="notes_hint">Заметки (Необязательно)</string>
+    <string name="frequency_unit_biweek">Каждые 2 недели</string>
+    <string name="more_options">Еще</string>
+    <string name="community_title">Присоединяйтесь к сообществу</string>
+    <string name="community_desc">Присоединяйтесь к моему Telegram каналу, чтобы не пропустить последние новости и обновления о моих проектах, а также эксклюзивные анонсы!</string>
+    <string name="no_thanks">Нет, спасибо</string>
+    <string name="sure_action">Конечно!</string>
+    <string name="see_source_code">Смотреть исходный код</string>
+    <string name="check_updates_action">Проверить обновления</string>
+    <string name="update_error_check">Не удалось проверить обновления</string>
+    <string name="nothing_here_yet">Пока нечего изменять…</string>
+    <string name="settings_testing_header">Тестирование</string>
+    <string name="settings_test_alarm_title">Тест будильника/уведомления</string>
+    <string name="settings_test_alarm_desc">Срабатывает будильник для ближайшего лекарства</string>
+    <string name="settings_test_telegram_title">Показать всплывающее окно telegram</string>
+    <string name="settings_test_telegram_desc">Отображает всплывающее окно сообщества</string>
+    <string name="settings_test_crash_title">Вызвать сбой приложения</string>
+    <string name="settings_test_crash_desc">Вызывает фатальную ошибку для проверки отчетов о сбоях</string>
+    <string name="settings_danger_zone_header">Опасная зона</string>
+    <string name="settings_reset_title">Сброс данных приложения</string>
+    <string name="settings_reset_desc">Безвозвратно удалить все данные и настройки</string>
+    <string name="settings_reset_confirmation_desc">Вы уверены, что хотите удалить все ваши лекарства, события и настройки? Это действие нельзя отменить.</string>
+    <string name="settings_reset_action">Сбросить</string>
+    <string name="group_name_label">Имя группы</string>
+    <string name="delete_mode_action">Режим удаления</string>
+    <string name="add_to_group">Добавить в %1$s</string>
+    <string name="remove_from_group">Удалить из %1$s</string>
+    <string name="settings_app_lock_title">Блокировка приложения</string>
+    <string name="settings_app_lock_desc">Требовать PIN или отпечаток пальца для открытия Med</string>
+    <string name="unlock_to_enable">Пройдите аутентификацию, чтобы включить блокировку</string>
+    <string name="unlock_app">Разблокировать Med</string>
+    <string name="unlock_action">Разблокировать</string>
+
+    <string name="you_tab_title">Вы</string>
+    <string name="medical_info_header">Медицинская информация</string>
+    <string name="not_set">Не задано</string>
+    <string name="dob_title">Дата рождения</string>
+    <string name="blood_type_title">Группа крови</string>
+    <string name="height_title">Рост</string>
+    <string name="weight_title">Вес</string>
+    <string name="allergies_title">Аллергии</string>
+    <string name="home_tab_title">Главная</string>
+    <string name="stats_tab_title">Статистика</string>
+    <string name="remove_photo">Удалить фото</string>
+    <string name="choose_another_photo">Выбрать другое фото</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">ДД/ММ/ГГГГ</string>
+    <string name="clear_action">Очистить</string>
+    <string name="height_hint">Введите ваш рост</string>
+    <string name="weight_hint">Введите ваш вес</string>
+    <string name="privacy_info">Ваши медицинские данные сохраняются локально и никому не передаются.</string>
+    <string name="unit_cm">см</string>
+    <string name="unit_in">дюйм</string>
+    <string name="unit_kg">кг</string>
+    <string name="unit_lbs">фунты</string>
+    <string name="allergies_hint">Введите ваши аллергии</string>
+    <string name="stats_streak_label">Серия</string>
+    <string name="stats_on_time_label">Вовремя</string>
+    <string name="stats_missed_label">Пропущено/нед</string>
+    <string name="notification_type_label">Тип уведомления</string>
+    <string name="notification_type_none">Нет</string>
+    <string name="notification_type_normal">Уведомление</string>
+    <string name="notification_type_alarm">Будильник</string>
+    <string name="notification_type_default">По умолчанию</string>
+    <string name="settings_header_more">Дополнительно</string>
+    <string name="settings_wearos_title">Med для WearOS</string>
+    <string name="settings_wearos_desc">Управление приложением для WearOS</string>
+    <string name="wearos_settings_title">Настройки WearOS</string>
+    <string name="wearos_ring_alarms_title">Звонок на часах</string>
+    <string name="wearos_ring_alarms_desc">Будильники будут звонить на подключенном устройстве WearOS</string>
+    <string name="wearos_alarms_disabled_desc">Будильники сейчас отключены или заменены уведомлениями</string>
+    <string name="wearos_quick_actions_header">Быстрые действия на часах</string>
+    <string name="wearos_quick_actions_desc">Выберите, какие Быстрые действия могут отображаться на ваших часах.</string>
+    <string name="wearos_master_toggle_title">Использовать Med на WearOS</string>
+    <string name="fullscreen_permission_title">Включить полноэкранные будильники</string>
+    <string name="fullscreen_permission_desc">Чтобы максимально использовать ваши будильники, разрешите Med показывать полноэкранные уведомления даже при выключенном экране.</string>
+    <string name="enable_action">Включить</string>
+    <string name="notif_grouped_title">Время принять лекарства</string>
+    <string name="notif_action_take_all">Принять все</string>
+    <string name="alarm_swipe_to_respond">Смахните для выбора</string>
+    <string name="modify_medicine_title">Применить изменения</string>
+    <string name="modify_only_this">Только это событие</string>
+    <string name="modify_all_following">Это и все последующие события</string>
+    <string name="modify_specific_range">Определенный диапазон дат</string>
+    <string name="freq_mode_daily">Ежедневно</string>
+    <string name="freq_mode_days">Определенные дни</string>
+    <string name="freq_mode_interval">Интервал</string>
+    <string name="times_per_day_label">Раз(а) в день</string>
+    <string name="interval_every">Каждые</string>
+    <string name="interval_days">Дней</string>
+    <string name="interval_weeks">Недель</string>
+    <string name="interval_months">Месяцев</string>
+    <string name="happy_birthday_msg">С днем рождения!</string>
+    <string name="illness_label">Заболевание</string>
+    <string name="illness_question">У вас все еще есть %1$s?</string>
+    <string name="yes_action">Да</string>
+    <string name="no_action">Нет</string>
+    <string name="new_illness_title">Новое заболевание</string>
+    <string name="day_of_start_label">День начала</string>
+    <string name="edit_medicine_title">Изменить лекарство</string>
+    <string name="edit_event_title">Изменить событие</string>
+    <string name="edit_illness_title">Изменить заболевание</string>
+    <string name="personal_data_title">Персональные</string>
+    <string name="personal_data_header">данные</string>
+    <string name="personal_data_intro">Эти данные совершенно необязательны и надежно сохраняются только локально на вашем устройстве.</string>
+    <string name="feat_wearos_title">Med на Wear OS</string>
+    <string name="feat_wearos_desc">Легко синхронизируйте напоминания и события со своими смарт-часами.</string>
+    <string name="feat_tabs_title">Вы и Статистика</string>
+    <string name="feat_tabs_desc">Отслеживайте свои личные медицинские данные и просматривайте подробную статистику ваших привычек.</string>
+    <string name="profile_picture">Фото профиля</string>
+    <string name="image_set">Изображение установлено</string>
+    <string name="tap_to_set">Нажмите для установки</string>
+</resources>

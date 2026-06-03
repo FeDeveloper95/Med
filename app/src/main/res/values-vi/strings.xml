@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Thuốc</string>
+    <string name="event_label">Sự kiện</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Menu hành động</string>
+    <string name="expanded_state">Đã mở rộng</string>
+    <string name="collapsed_state">Đã thu gọn</string>
+    <string name="close_menu_action">Đóng menu</string>
+    <string name="choose_date_desc">Chọn ngày</string>
+    <string name="settings_desc">Cài đặt</string>
+    <string name="no_events_label">Không có sự kiện nào cho hôm nay</string>
+
+    <string name="item_deleted">Đã xóa: %1$s</string>
+    <string name="undo_action">Hoàn tác</string>
+
+    <string name="cancel_action">Hủy</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Lưu</string>
+    <string name="new_event_title">Sự kiện mới</string>
+    <string name="new_medicine_title">Thuốc mới</string>
+    <string name="name_hint">Tên</string>
+
+    <string name="settings_title">Cài đặt</string>
+    <string name="discard">Quay lại</string>
+    <string name="cancel">Hủy</string>
+    <string name="restart_now">Khởi động lại ngay</string>
+
+    <string name="settings_theme_title">Chủ đề</string>
+    <string name="settings_theme_system">Hệ thống</string>
+    <string name="settings_theme_light">Sáng</string>
+    <string name="settings_theme_dark">Tối</string>
+
+    <string name="settings_week_start_title">Ngày đầu tuần</string>
+    <string name="sunday">Chủ nhật</string>
+    <string name="monday">Thứ hai</string>
+
+    <string name="settings_header_customization">Tùy chỉnh</string>
+    <string name="settings_presets_title">Hành động nhanh</string>
+    <string name="settings_presets_desc">Quản lý các sự kiện tùy chỉnh ở menu chính</string>
+    <string name="add_action">Thêm</string>
+
+    <string name="settings_header_info">Thông tin</string>
+    <string name="settings_version_title">Phiên bản ứng dụng</string>
+    <string name="unknown">Không rõ</string>
+    <string name="settings_developer_title">Nhà phát triển</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Báo cáo lỗi / Tính năng</string>
+    <string name="settings_report_desc">Liên hệ qua Telegram</string>
+
+    <string name="settings_check_updates_title">Kiểm tra bản cập nhật</string>
+    <string name="settings_check_updates_desc">Tìm phiên bản mới nhất</string>
+    <string name="update_action">Cập nhật</string>
+    <string name="update_available">Bản cập nhật có sẵn: v%1$s</string>
+    <string name="update_latest_version_msg">Không có bản cập nhật nào vào lúc này.</string>
+    <string name="update_error_msg">Không thể kiểm tra bản cập nhật. Hãy kiểm tra kết nối của bạn.</string>
+    <string name="later">Để sau</string>
+
+    <string name="quick_actions_title">Hành động nhanh</string>
+    <string name="quick_actions_info">Hành động nhanh giúp bạn nhanh chóng thêm các hiện tượng hoặc sự kiện định kỳ vào Med.</string>
+    <string name="active_actions_header">Hành động đang hoạt động</string>
+
+    <string name="welcome_to">Chào mừng đến với</string>
+    <string name="welcome_preparing_subtitle">Hãy để chúng tôi chuẩn bị mọi thứ cho bạn.</string>
+    <string name="next">Tiếp theo</string>
+    <string name="back">Quay lại</string>
+    <string name="get_started">Bắt đầu</string>
+
+    <string name="perm_required">Bắt buộc</string>
+    <string name="perm_permissions">Quyền</string>
+    <string name="perm_intro_text">Cần có các quyền này để Med hoạt động chính xác. Vui lòng cấp quyền để tiếp tục.</string>
+
+    <string name="perm_notif_title">Thông báo</string>
+    <string name="perm_notif_desc">Biết ngay khi nào cần uống thuốc.</string>
+
+    <string name="perm_install_title">Cài đặt ứng dụng</string>
+    <string name="perm_install_desc">Cần thiết để tải xuống và cài đặt các bản cập nhật.</string>
+
+    <string name="feat_discover">Khám phá</string>
+    <string name="feat_features">Tính năng</string>
+    <string name="feat_intro">Dưới đây là những gì bạn có thể làm với ứng dụng Med mới của mình.</string>
+
+    <string name="feat_reminders_title">Lời nhắc thông minh</string>
+    <string name="feat_reminders_desc">Nhận thông báo kịp thời cho thuốc của bạn.</string>
+
+    <string name="feat_tracking_title">Theo dõi</string>
+    <string name="feat_tracking_desc">Lưu lại lịch sử thời điểm bạn đã uống thuốc.</string>
+
+    <string name="feat_presets_title">Hành động nhanh</string>
+    <string name="feat_presets_desc">Thiết lập các mục tạo sẵn cho các sự kiện định kỳ ngay lập tức.</string>
+
+    <string name="feat_update_title">Luôn cập nhật</string>
+    <string name="feat_update_desc">Kiểm tra bản cập nhật trực tiếp trong Cài đặt ứng dụng.</string>
+
+    <string name="settings_advanced_title">Nâng cao</string>
+    <string name="settings_advanced_desc">Các tính năng thử nghiệm và bản cập nhật</string>
+    <string name="settings_auto_updates_title">Cập nhật tự động</string>
+    <string name="settings_auto_updates_desc">Kiểm tra bản cập nhật khi khởi động</string>
+    <string name="settings_setup_title">Thiết lập ban đầu</string>
+    <string name="settings_setup_desc">Chạy lại trình hướng dẫn chào mừng</string>
+    <string name="settings_backup_header">Sao lưu &amp; Khôi phục</string>
+    <string name="settings_export_title">Xuất cài đặt</string>
+    <string name="settings_export_desc">Lưu cấu hình</string>
+    <string name="settings_import_title">Nhập cài đặt</string>
+    <string name="settings_import_desc">Khôi phục từ tệp sao lưu</string>
+    <string name="dialog_restart_title">Cần khởi động lại</string>
+    <string name="dialog_restart_desc">Đã nhập cài đặt. Khởi động lại ứng dụng để áp dụng các thay đổi.</string>
+    <string name="export_success">Đã xuất cài đặt thành công</string>
+    <string name="export_error">Lỗi khi xuất cài đặt</string>
+    <string name="import_error">Lỗi khi nhập cài đặt</string>
+
+    <string name="select_color">Màu sắc</string>
+    <string name="time_label">Thời gian</string>
+    <string name="choose_icon">Chọn biểu tượng</string>
+    <string name="frequency_label">Tần suất</string>
+
+    <string name="schedule_label_format">Lịch trình %1$d</string>
+
+    <string name="download_title">Cập nhật Med</string>
+    <string name="download_desc">Đang tải phiên bản %1$s…</string>
+    <string name="download_started">Đã bắt đầu tải xuống…</string>
+    <string name="download_failed">Tải xuống thất bại: %1$s</string>
+    <string name="notif_channel_updates">Cập nhật</string>
+    <string name="update_notif_desc">Nhấn để xem chi tiết và tải xuống.</string>
+    <string name="install_error">Lỗi cài đặt: %1$s</string>
+
+    <string name="switch_to_text_input">Chuyển sang Nhập văn bản</string>
+    <string name="switch_to_touch_input">Chuyển sang Nhập bằng cách chạm</string>
+
+    <string name="frequency_specific_days">Các ngày cụ thể</string>
+    <string name="frequency_daily_multiple">%1$dx Hàng ngày</string>
+    <string name="frequency_daily">Hàng ngày</string>
+    <string name="edit_time_desc">Sửa thời gian</string>
+    <string name="status_taken_format">Đã uống %1$s%2$s</string>
+    <string name="status_scheduled_format">Đã lên lịch cho %1$s</string>
+
+    <string name="dynamic_theme_desc">Chủ đề động</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Tháng 1</string>
+    <string name="month_february">Tháng 2</string>
+    <string name="month_march">Tháng 3</string>
+    <string name="month_april">Tháng 4</string>
+    <string name="month_may">Tháng 5</string>
+    <string name="month_june">Tháng 6</string>
+    <string name="month_july">Tháng 7</string>
+    <string name="month_august">Tháng 8</string>
+    <string name="month_september">Tháng 9</string>
+    <string name="month_october">Tháng 10</string>
+    <string name="month_november">Tháng 11</string>
+    <string name="month_december">Tháng 12</string>
+
+    <string name="day_short_mon">T2</string>
+    <string name="day_short_tue">T3</string>
+    <string name="day_short_wed">T4</string>
+    <string name="day_short_thu">T5</string>
+    <string name="day_short_fri">T6</string>
+    <string name="day_short_sat">T7</string>
+    <string name="day_short_sun">CN</string>
+
+    <string name="settings_language_title">Ngôn ngữ ứng dụng</string>
+    <string name="settings_language_desc">Đổi ngôn ngữ trong cài đặt hệ thống</string>
+
+    <string name="edit_mode_desc">Chế độ chỉnh sửa</string>
+    <string name="settings_sort_order_title">Thứ tự hiển thị</string>
+    <string name="settings_sort_order_time">Theo thời gian</string>
+    <string name="settings_sort_order_custom">Tùy chỉnh</string>
+    <string name="settings_header_preferences">Sở thích</string>
+    <string name="settings_notifications_title">Thông báo</string>
+    <string name="settings_notifications_desc">Quản lý kiểu thông báo và báo thức</string>
+    <string name="settings_show_notifications_title">Hiện thông báo</string>
+    <string name="settings_full_screen_alarm_title">Báo thức toàn màn hình</string>
+    <string name="settings_full_screen_alarm_desc">Bật màn hình với báo thức thay vì thông báo bật lên</string>
+    <string name="settings_alarm_style_title">Kiểu báo thức</string>
+    <string name="settings_alarm_style_desc">Chọn cách phản hồi báo thức toàn màn hình</string>
+    <string name="settings_alarm_style_slider">Thanh trượt (Vuốt)</string>
+    <string name="settings_alarm_style_buttons">Nút</string>
+    <string name="settings_snooze_duration_title">Thời gian báo lại</string>
+    <string name="settings_snooze_duration_desc">%1$d phút</string>
+    <string name="alarm_default_title">Lời nhắc</string>
+    <string name="alarm_time_to_take">Đã đến lúc uống\n%1$s</string>
+    <string name="alarm_taken_action">Đã uống</string>
+    <string name="alarm_snooze_action">Báo lại (%1$d phút)</string>
+    <string name="alarm_snooze_desc">Báo lại</string>
+    <string name="alarm_taken_desc">Đã uống</string>
+    <string name="notif_reminder_title">Lời nhắc: %1$s</string>
+    <string name="notif_reminder_desc">Đã đến lúc uống thuốc của bạn</string>
+    <string name="notif_action_taken">Đã uống</string>
+    <string name="notif_action_snooze">Báo lại</string>
+    <string name="notif_channel_alarms_name">Báo thức thuốc</string>
+    <string name="notif_channel_alarms_desc">Kênh cho báo thức thuốc</string>
+    <string name="unsaved_changes_title">Thay đổi chưa lưu</string>
+    <string name="unsaved_changes_desc">Bạn có muốn lưu thứ tự mới trước khi thoát không?</string>
+    <string name="discard_action">Loại bỏ</string>
+    <string name="notes_hint">Ghi chú (Không bắt buộc)</string>
+    <string name="frequency_unit_biweek">Mỗi 2 tuần</string>
+    <string name="more_options">Thêm</string>
+    <string name="community_title">Tham gia cộng đồng</string>
+    <string name="community_desc">Tham gia kênh Telegram của tôi để không bỏ lỡ tin tức và bản cập nhật mới nhất về các dự án của tôi, cùng với một số tin xem trước độc quyền!</string>
+    <string name="no_thanks">Không, cảm ơn</string>
+    <string name="sure_action">Chắc chắn rồi!</string>
+    <string name="see_source_code">Xem mã nguồn</string>
+    <string name="check_updates_action">Kiểm tra bản cập nhật</string>
+    <string name="update_error_check">Không thể kiểm tra bản cập nhật</string>
+    <string name="nothing_here_yet">Chưa có gì để sửa đổi ở đây…</string>
+    <string name="settings_testing_header">Thử nghiệm</string>
+    <string name="settings_test_alarm_title">Thử nghiệm báo thức/thông báo</string>
+    <string name="settings_test_alarm_desc">Kích hoạt báo thức cho thuốc gần nhất</string>
+    <string name="settings_test_telegram_title">Hiển thị popup telegram</string>
+    <string name="settings_test_telegram_desc">Hiển thị popup cộng đồng</string>
+    <string name="settings_test_crash_title">Gây sự cố ứng dụng</string>
+    <string name="settings_test_crash_desc">Buộc xảy ra ngoại lệ nghiêm trọng để thử nghiệm tính năng báo cáo sự cố</string>
+    <string name="settings_danger_zone_header">Khu vực nguy hiểm</string>
+    <string name="settings_reset_title">Đặt lại dữ liệu ứng dụng</string>
+    <string name="settings_reset_desc">Xóa vĩnh viễn tất cả dữ liệu và cài đặt</string>
+    <string name="settings_reset_confirmation_desc">Bạn có chắc chắn muốn xóa tất cả thuốc, sự kiện và cài đặt của mình không? Hành động này không thể hoàn tác.</string>
+    <string name="settings_reset_action">Đặt lại</string>
+    <string name="group_name_label">Tên nhóm</string>
+    <string name="delete_mode_action">Chế độ xóa</string>
+    <string name="add_to_group">Thêm vào %1$s</string>
+    <string name="remove_from_group">Xóa khỏi %1$s</string>
+    <string name="settings_app_lock_title">Khóa ứng dụng</string>
+    <string name="settings_app_lock_desc">Yêu cầu mã PIN hoặc vân tay để mở Med</string>
+    <string name="unlock_to_enable">Xác thực để bật khóa</string>
+    <string name="unlock_app">Mở khóa Med</string>
+    <string name="unlock_action">Mở khóa</string>
+
+    <string name="you_tab_title">Bạn</string>
+    <string name="medical_info_header">Thông tin y tế</string>
+    <string name="not_set">Chưa đặt</string>
+    <string name="dob_title">Ngày sinh</string>
+    <string name="blood_type_title">Nhóm máu</string>
+    <string name="height_title">Chiều cao</string>
+    <string name="weight_title">Cân nặng</string>
+    <string name="allergies_title">Dị ứng</string>
+    <string name="home_tab_title">Trang chủ</string>
+    <string name="stats_tab_title">Thống kê</string>
+    <string name="remove_photo">Xóa ảnh</string>
+    <string name="choose_another_photo">Chọn ảnh khác</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">DD/MM/YYYY</string>
+    <string name="clear_action">Xóa</string>
+    <string name="height_hint">Nhập chiều cao của bạn</string>
+    <string name="weight_hint">Nhập cân nặng của bạn</string>
+    <string name="privacy_info">Dữ liệu y tế của bạn được lưu cục bộ và không bao giờ được gửi cho bất kỳ ai.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">Nhập thông tin dị ứng của bạn</string>
+    <string name="stats_streak_label">Chuỗi</string>
+    <string name="stats_on_time_label">Đúng giờ</string>
+    <string name="stats_missed_label">Bỏ lỡ/tuần</string>
+    <string name="notification_type_label">Loại thông báo</string>
+    <string name="notification_type_none">Không có</string>
+    <string name="notification_type_normal">Thông báo</string>
+    <string name="notification_type_alarm">Báo thức</string>
+    <string name="notification_type_default">Mặc định</string>
+    <string name="settings_header_more">Thêm</string>
+    <string name="settings_wearos_title">Med cho WearOS</string>
+    <string name="settings_wearos_desc">Quản lý ứng dụng đồng hành WearOS</string>
+    <string name="wearos_settings_title">Cài đặt WearOS</string>
+    <string name="wearos_ring_alarms_title">Đổ chuông trên đồng hồ</string>
+    <string name="wearos_ring_alarms_desc">Báo thức sẽ đổ chuông trên thiết bị WearOS được kết nối của bạn</string>
+    <string name="wearos_alarms_disabled_desc">Báo thức hiện đang bị tắt hoặc được thay thế bằng thông báo</string>
+    <string name="wearos_quick_actions_header">Hành động nhanh trên đồng hồ</string>
+    <string name="wearos_quick_actions_desc">Chọn các Hành động nhanh có thể hiển thị trên đồng hồ của bạn.</string>
+    <string name="wearos_master_toggle_title">Sử dụng Med trên WearOS</string>
+    <string name="fullscreen_permission_title">Bật báo thức toàn màn hình</string>
+    <string name="fullscreen_permission_desc">Để tận dụng tối đa báo thức của mình, bạn nên cho phép Med hiển thị thông báo toàn màn hình ngay cả khi màn hình của bạn đang tắt.</string>
+    <string name="enable_action">Bật</string>
+    <string name="notif_grouped_title">Đến lúc uống thuốc của bạn</string>
+    <string name="notif_action_take_all">Uống tất cả</string>
+    <string name="alarm_swipe_to_respond">Vuốt để chọn</string>
+    <string name="modify_medicine_title">Áp dụng thay đổi</string>
+    <string name="modify_only_this">Chỉ sự kiện này</string>
+    <string name="modify_all_following">Sự kiện này và tất cả các sự kiện sau</string>
+    <string name="modify_specific_range">Khoảng ngày cụ thể</string>
+    <string name="freq_mode_daily">Hàng ngày</string>
+    <string name="freq_mode_days">Các ngày cụ thể</string>
+    <string name="freq_mode_interval">Khoảng thời gian</string>
+    <string name="times_per_day_label">Số lần mỗi ngày</string>
+    <string name="interval_every">Mỗi</string>
+    <string name="interval_days">Ngày</string>
+    <string name="interval_weeks">Tuần</string>
+    <string name="interval_months">Tháng</string>
+    <string name="happy_birthday_msg">Chúc mừng sinh nhật!</string>
+    <string name="illness_label">Bệnh tật</string>
+    <string name="illness_question">Bạn vẫn còn bị %1$s chứ?</string>
+    <string name="yes_action">Có</string>
+    <string name="no_action">Không</string>
+    <string name="new_illness_title">Bệnh mới</string>
+    <string name="day_of_start_label">Ngày bắt đầu</string>
+    <string name="edit_medicine_title">Sửa thuốc</string>
+    <string name="edit_event_title">Sửa sự kiện</string>
+    <string name="edit_illness_title">Sửa bệnh</string>
+    <string name="personal_data_title">Dữ liệu</string>
+    <string name="personal_data_header">cá nhân</string>
+    <string name="personal_data_intro">Những thông tin này là hoàn toàn tùy chọn và chỉ được lưu an toàn cục bộ trên thiết bị của bạn.</string>
+    <string name="feat_wearos_title">Med trên Wear OS</string>
+    <string name="feat_wearos_desc">Đồng bộ hóa lời nhắc và sự kiện của bạn một cách liền mạch với đồng hồ thông minh.</string>
+    <string name="feat_tabs_title">Bạn và Thống kê</string>
+    <string name="feat_tabs_desc">Theo dõi dữ liệu sức khỏe cá nhân của bạn và xem số liệu thống kê chi tiết về thói quen của bạn.</string>
+    <string name="profile_picture">Ảnh đại diện</string>
+    <string name="image_set">Đã đặt hình ảnh</string>
+    <string name="tap_to_set">Chạm để đặt</string>
+</resources>

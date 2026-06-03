@@ -58,11 +58,6 @@
             android:noHistory="true"
             android:theme="@android:style/Theme.DeviceDefault" />
 
-        <activity
-            android:name=".ThemeSettingsActivity"
-            android:exported="false"
-            android:theme="@android:style/Theme.DeviceDefault" />
-
     </application>
 
 </manifest>

@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">薬</string>
+    <string name="event_label">イベント</string>
+    <string name="menu_tooltip">メニュー</string>
+    <string name="menu_action_desc">アクションメニュー</string>
+    <string name="expanded_state">展開</string>
+    <string name="collapsed_state">折りたたみ</string>
+    <string name="close_menu_action">メニューを閉じる</string>
+    <string name="choose_date_desc">日付を選択</string>
+    <string name="settings_desc">設定</string>
+    <string name="no_events_label">今日のイベントはありません</string>
+
+    <string name="item_deleted">削除しました: %1$s</string>
+    <string name="undo_action">元に戻す</string>
+
+    <string name="cancel_action">キャンセル</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">保存</string>
+    <string name="new_event_title">新しいイベント</string>
+    <string name="new_medicine_title">新しい薬</string>
+    <string name="name_hint">名前</string>
+
+    <string name="settings_title">設定</string>
+    <string name="discard">戻る</string>
+    <string name="cancel">キャンセル</string>
+    <string name="restart_now">今すぐ再起動</string>
+
+    <string name="settings_theme_title">テーマ</string>
+    <string name="settings_theme_system">システム</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+
+    <string name="settings_week_start_title">週の始まり</string>
+    <string name="sunday">日曜日</string>
+    <string name="monday">月曜日</string>
+
+    <string name="settings_header_customization">カスタマイズ</string>
+    <string name="settings_presets_title">クイックアクション</string>
+    <string name="settings_presets_desc">メインメニューのカスタムイベントを管理する</string>
+    <string name="add_action">追加</string>
+
+    <string name="settings_header_info">情報</string>
+    <string name="settings_version_title">アプリのバージョン</string>
+    <string name="unknown">不明</string>
+    <string name="settings_developer_title">開発者</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">バグ / 機能の報告</string>
+    <string name="settings_report_desc">Telegramで連絡する</string>
+
+    <string name="settings_check_updates_title">アップデートを確認</string>
+    <string name="settings_check_updates_desc">最新バージョンを探す</string>
+    <string name="update_action">更新</string>
+    <string name="update_available">利用可能なアップデート: v%1$s</string>
+    <string name="update_latest_version_msg">現在利用可能なアップデートはありません。</string>
+    <string name="update_error_msg">アップデートを確認できませんでした。接続を確認してください。</string>
+    <string name="later">後で</string>
+
+    <string name="quick_actions_title">クイックアクション</string>
+    <string name="quick_actions_info">クイックアクションを使用すると、Medに定期的な現象やイベントをすばやく追加できます。</string>
+    <string name="active_actions_header">アクティブなアクション</string>
+
+    <string name="welcome_to">ようこそ</string>
+    <string name="welcome_preparing_subtitle">すべての準備を整えましょう。</string>
+    <string name="next">次へ</string>
+    <string name="back">戻る</string>
+    <string name="get_started">始める</string>
+
+    <string name="perm_required">必須</string>
+    <string name="perm_permissions">権限</string>
+    <string name="perm_intro_text">これらの権限はMedが正しく機能するために必要です。続行するには許可してください。</string>
+
+    <string name="perm_notif_title">通知</string>
+    <string name="perm_notif_desc">薬を飲む時間をすぐにお知らせします。</string>
+
+    <string name="perm_install_title">アプリのインストール</string>
+    <string name="perm_install_desc">アップデートのダウンロードとインストールに必要です。</string>
+
+    <string name="feat_discover">発見</string>
+    <string name="feat_features">機能</string>
+    <string name="feat_intro">新しいMedアプリでできることはこちらです。</string>
+
+    <string name="feat_reminders_title">スマートリマインダー</string>
+    <string name="feat_reminders_desc">薬の通知を適切なタイミングで受け取ります。</string>
+
+    <string name="feat_tracking_title">追跡</string>
+    <string name="feat_tracking_desc">薬を飲んだ履歴を保存します。</string>
+
+    <string name="feat_presets_title">クイックアクション</string>
+    <string name="feat_presets_desc">定期的なイベントのプリセットを即座に設定します。</string>
+
+    <string name="feat_update_title">常に最新の状態に</string>
+    <string name="feat_update_desc">アプリの設定から直接アップデートを確認します。</string>
+
+    <string name="settings_advanced_title">詳細設定</string>
+    <string name="settings_advanced_desc">実験的な機能とアップデート</string>
+    <string name="settings_auto_updates_title">自動アップデート</string>
+    <string name="settings_auto_updates_desc">起動時にアップデートを確認する</string>
+    <string name="settings_setup_title">初期セットアップ</string>
+    <string name="settings_setup_desc">ウェルカムウィザードを再度実行する</string>
+    <string name="settings_backup_header">バックアップと復元</string>
+    <string name="settings_export_title">設定をエクスポート</string>
+    <string name="settings_export_desc">構成を保存する</string>
+    <string name="settings_import_title">設定をインポート</string>
+    <string name="settings_import_desc">バックアップファイルから復元する</string>
+    <string name="dialog_restart_title">再起動が必要です</string>
+    <string name="dialog_restart_desc">設定がインポートされました。変更を適用するにはアプリを再起動してください。</string>
+    <string name="export_success">設定が正常にエクスポートされました</string>
+    <string name="export_error">設定のエクスポート中にエラーが発生しました</string>
+    <string name="import_error">設定のインポート中にエラーが発生しました</string>
+
+    <string name="select_color">色</string>
+    <string name="time_label">時間</string>
+    <string name="choose_icon">アイコンを選択</string>
+    <string name="frequency_label">頻度</string>
+
+    <string name="schedule_label_format">スケジュール %1$d</string>
+
+    <string name="download_title">Medのアップデート</string>
+    <string name="download_desc">バージョン %1$s をダウンロード中…</string>
+    <string name="download_started">ダウンロードを開始しました…</string>
+    <string name="download_failed">ダウンロードに失敗しました: %1$s</string>
+    <string name="notif_channel_updates">アップデート</string>
+    <string name="update_notif_desc">タップして詳細を表示し、ダウンロードします。</string>
+    <string name="install_error">インストールエラー: %1$s</string>
+
+    <string name="switch_to_text_input">テキスト入力に切り替える</string>
+    <string name="switch_to_touch_input">タッチ入力に切り替える</string>
+
+    <string name="frequency_specific_days">指定した日</string>
+    <string name="frequency_daily_multiple">1日 %1$d 回</string>
+    <string name="frequency_daily">毎日</string>
+    <string name="edit_time_desc">時間を編集</string>
+    <string name="status_taken_format">服用済み %1$s%2$s</string>
+    <string name="status_scheduled_format">予定: %1$s</string>
+
+    <string name="dynamic_theme_desc">ダイナミックテーマ</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">1月</string>
+    <string name="month_february">2月</string>
+    <string name="month_march">3月</string>
+    <string name="month_april">4月</string>
+    <string name="month_may">5月</string>
+    <string name="month_june">6月</string>
+    <string name="month_july">7月</string>
+    <string name="month_august">8月</string>
+    <string name="month_september">9月</string>
+    <string name="month_october">10月</string>
+    <string name="month_november">11月</string>
+    <string name="month_december">12月</string>
+
+    <string name="day_short_mon">月</string>
+    <string name="day_short_tue">火</string>
+    <string name="day_short_wed">水</string>
+    <string name="day_short_thu">木</string>
+    <string name="day_short_fri">金</string>
+    <string name="day_short_sat">土</string>
+    <string name="day_short_sun">日</string>
+
+    <string name="settings_language_title">アプリの言語</string>
+    <string name="settings_language_desc">システム設定で言語を変更する</string>
+
+    <string name="edit_mode_desc">編集モード</string>
+    <string name="settings_sort_order_title">表示順序</string>
+    <string name="settings_sort_order_time">時間順</string>
+    <string name="settings_sort_order_custom">カスタム</string>
+    <string name="settings_header_preferences">設定</string>
+    <string name="settings_notifications_title">通知</string>
+    <string name="settings_notifications_desc">通知とアラームのスタイルを管理する</string>
+    <string name="settings_show_notifications_title">通知を表示する</string>
+    <string name="settings_full_screen_alarm_title">全画面アラーム</string>
+    <string name="settings_full_screen_alarm_desc">ポップアップ通知の代わりにアラームで画面をオンにする</string>
+    <string name="settings_alarm_style_title">アラームのスタイル</string>
+    <string name="settings_alarm_style_desc">全画面アラームの応答方法を選択します</string>
+    <string name="settings_alarm_style_slider">スライダー（スワイプ）</string>
+    <string name="settings_alarm_style_buttons">ボタン</string>
+    <string name="settings_snooze_duration_title">スヌーズ時間</string>
+    <string name="settings_snooze_duration_desc">%1$d 分</string>
+    <string name="alarm_default_title">リマインダー</string>
+    <string name="alarm_time_to_take">%1$s を飲む時間です</string>
+    <string name="alarm_taken_action">服用済み</string>
+    <string name="alarm_snooze_action">スヌーズ（%1$d 分）</string>
+    <string name="alarm_snooze_desc">スヌーズ</string>
+    <string name="alarm_taken_desc">服用済み</string>
+    <string name="notif_reminder_title">リマインダー: %1$s</string>
+    <string name="notif_reminder_desc">薬を飲む時間です</string>
+    <string name="notif_action_taken">服用済み</string>
+    <string name="notif_action_snooze">スヌーズ</string>
+    <string name="notif_channel_alarms_name">薬のアラーム</string>
+    <string name="notif_channel_alarms_desc">薬のアラーム用チャンネル</string>
+    <string name="unsaved_changes_title">保存されていない変更</string>
+    <string name="unsaved_changes_desc">終了する前に新しい順序を保存しますか？</string>
+    <string name="discard_action">破棄</string>
+    <string name="notes_hint">メモ（任意）</string>
+    <string name="frequency_unit_biweek">2週間ごと</string>
+    <string name="more_options">詳細</string>
+    <string name="community_title">コミュニティに参加する</string>
+    <string name="community_desc">Telegramチャンネルに参加して、プロジェクトの最新ニュースやアップデート、さらに限定プレビューを見逃さないようにしましょう！</string>
+    <string name="no_thanks">いいえ、結構です</string>
+    <string name="sure_action">参加する！</string>
+    <string name="see_source_code">ソースコードを表示</string>
+    <string name="check_updates_action">アップデートを確認</string>
+    <string name="update_error_check">アップデートを確認できません</string>
+    <string name="nothing_here_yet">変更するものはまだありません…</string>
+    <string name="settings_testing_header">テスト</string>
+    <string name="settings_test_alarm_title">アラーム/通知のテスト</string>
+    <string name="settings_test_alarm_desc">最も近い薬のアラームをトリガーします</string>
+    <string name="settings_test_telegram_title">Telegramポップアップを表示</string>
+    <string name="settings_test_telegram_desc">コミュニティポップアップを表示します</string>
+    <string name="settings_test_crash_title">アプリをクラッシュさせる</string>
+    <string name="settings_test_crash_desc">クラッシュレポートをテストするために致命的な例外を強制的に発生させます</string>
+    <string name="settings_danger_zone_header">危険ゾーン</string>
+    <string name="settings_reset_title">アプリデータをリセット</string>
+    <string name="settings_reset_desc">すべてのデータと設定を完全に削除する</string>
+    <string name="settings_reset_confirmation_desc">すべての薬、イベント、設定を削除してもよろしいですか？この操作は元に戻せません。</string>
+    <string name="settings_reset_action">リセット</string>
+    <string name="group_name_label">グループ名</string>
+    <string name="delete_mode_action">削除モード</string>
+    <string name="add_to_group">%1$s に追加</string>
+    <string name="remove_from_group">%1$s から削除</string>
+    <string name="settings_app_lock_title">アプリロック</string>
+    <string name="settings_app_lock_desc">Medを開くにはPINまたは指紋が必要です</string>
+    <string name="unlock_to_enable">ロックを有効にするには認証してください</string>
+    <string name="unlock_app">Medのロックを解除</string>
+    <string name="unlock_action">ロック解除</string>
+
+    <string name="you_tab_title">あなた</string>
+    <string name="medical_info_header">医療情報</string>
+    <string name="not_set">未設定</string>
+    <string name="dob_title">生年月日</string>
+    <string name="blood_type_title">血液型</string>
+    <string name="height_title">身長</string>
+    <string name="weight_title">体重</string>
+    <string name="allergies_title">アレルギー</string>
+    <string name="home_tab_title">ホーム</string>
+    <string name="stats_tab_title">統計</string>
+    <string name="remove_photo">写真を削除</string>
+    <string name="choose_another_photo">別の写真を選択</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">YYYY/MM/DD</string>
+    <string name="clear_action">クリア</string>
+    <string name="height_hint">身長を入力</string>
+    <string name="weight_hint">体重を入力</string>
+    <string name="privacy_info">あなたの医療データはローカルに保存され、誰にも送信されることはありません。</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">アレルギーを入力</string>
+    <string name="stats_streak_label">連続記録</string>
+    <string name="stats_on_time_label">時間通り</string>
+    <string name="stats_missed_label">飲み忘れ/週</string>
+    <string name="notification_type_label">通知タイプ</string>
+    <string name="notification_type_none">なし</string>
+    <string name="notification_type_normal">通知</string>
+    <string name="notification_type_alarm">アラーム</string>
+    <string name="notification_type_default">デフォルト</string>
+    <string name="settings_header_more">その他</string>
+    <string name="settings_wearos_title">Med for WearOS</string>
+    <string name="settings_wearos_desc">WearOSコンパニオンアプリを管理する</string>
+    <string name="wearos_settings_title">WearOS 設定</string>
+    <string name="wearos_ring_alarms_title">時計で鳴らす</string>
+    <string name="wearos_ring_alarms_desc">接続されたWearOSデバイスでアラームが鳴ります</string>
+    <string name="wearos_alarms_disabled_desc">アラームは現在無効になっているか、通知に置き換えられています</string>
+    <string name="wearos_quick_actions_header">時計のクイックアクション</string>
+    <string name="wearos_quick_actions_desc">時計に表示するクイックアクションを選択します。</string>
+    <string name="wearos_master_toggle_title">WearOSでMedを使用する</string>
+    <string name="fullscreen_permission_title">全画面アラームを有効にする</string>
+    <string name="fullscreen_permission_desc">アラームを最大限に活用するには、画面がオフのときでもMedが全画面通知を表示できるようにする必要があります。</string>
+    <string name="enable_action">有効にする</string>
+    <string name="notif_grouped_title">薬を飲む時間です</string>
+    <string name="notif_action_take_all">すべて飲む</string>
+    <string name="alarm_swipe_to_respond">スワイプして選択</string>
+    <string name="modify_medicine_title">変更を適用</string>
+    <string name="modify_only_this">このイベントのみ</string>
+    <string name="modify_all_following">これ以降のすべてのイベント</string>
+    <string name="modify_specific_range">特定の日付範囲</string>
+    <string name="freq_mode_daily">毎日</string>
+    <string name="freq_mode_days">指定した日</string>
+    <string name="freq_mode_interval">間隔</string>
+    <string name="times_per_day_label">1日あたりの回数</string>
+    <string name="interval_every">間隔</string>
+    <string name="interval_days">日</string>
+    <string name="interval_weeks">週</string>
+    <string name="interval_months">月</string>
+    <string name="happy_birthday_msg">お誕生日おめでとうございます！</string>
+    <string name="illness_label">病気</string>
+    <string name="illness_question">まだ %1$s がありますか？</string>
+    <string name="yes_action">はい</string>
+    <string name="no_action">いいえ</string>
+    <string name="new_illness_title">新しい病気</string>
+    <string name="day_of_start_label">開始日</string>
+    <string name="edit_medicine_title">薬を編集</string>
+    <string name="edit_event_title">イベントを編集</string>
+    <string name="edit_illness_title">病気を編集</string>
+    <string name="personal_data_title">個人</string>
+    <string name="personal_data_header">データ</string>
+    <string name="personal_data_intro">これらの詳細は完全に任意であり、デバイス上にローカルにのみ安全に保存されます。</string>
+    <string name="feat_wearos_title">Wear OS の Med</string>
+    <string name="feat_wearos_desc">リマインダーとイベントをスマートウォッチとシームレスに同期します。</string>
+    <string name="feat_tabs_title">あなたと統計</string>
+    <string name="feat_tabs_desc">個人の健康データを追跡し、習慣の詳細な統計を表示します。</string>
+    <string name="profile_picture">プロフィール写真</string>
+    <string name="image_set">画像が設定されました</string>
+    <string name="tap_to_set">タップして設定</string>
+</resources>

@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Φάρμακο</string>
+    <string name="event_label">Συμβάν</string>
+    <string name="menu_tooltip">Μενού</string>
+    <string name="menu_action_desc">Μενού ενεργειών</string>
+    <string name="expanded_state">Αναπτυγμένο</string>
+    <string name="collapsed_state">Συμπτυγμένο</string>
+    <string name="close_menu_action">Κλείσιμο μενού</string>
+    <string name="choose_date_desc">Επιλογή ημερομηνίας</string>
+    <string name="settings_desc">Ρυθμίσεις</string>
+    <string name="no_events_label">Δεν υπάρχουν συμβάντα για σήμερα</string>
+
+    <string name="item_deleted">Διαγράφηκε: %1$s</string>
+    <string name="undo_action">Αναίρεση</string>
+
+    <string name="cancel_action">Ακύρωση</string>
+    <string name="ok_action">ΟΚ</string>
+    <string name="save_action">Αποθήκευση</string>
+    <string name="new_event_title">Νέο συμβάν</string>
+    <string name="new_medicine_title">Νέο φάρμακο</string>
+    <string name="name_hint">Όνομα</string>
+
+    <string name="settings_title">Ρυθμίσεις</string>
+    <string name="discard">Πίσω</string>
+    <string name="cancel">Ακύρωση</string>
+    <string name="restart_now">Επανεκκίνηση τώρα</string>
+
+    <string name="settings_theme_title">Θέμα</string>
+    <string name="settings_theme_system">Σύστημα</string>
+    <string name="settings_theme_light">Ανοιχτόχρωμο</string>
+    <string name="settings_theme_dark">Σκοτεινό</string>
+
+    <string name="settings_week_start_title">Έναρξη εβδομάδας</string>
+    <string name="sunday">Κυριακή</string>
+    <string name="monday">Δευτέρα</string>
+
+    <string name="settings_header_customization">Εξατομίκευση</string>
+    <string name="settings_presets_title">Γρήγορες ενέργειες</string>
+    <string name="settings_presets_desc">Διαχείριση προσαρμοσμένων συμβάντων στο κύριο μενού</string>
+    <string name="add_action">Προσθήκη</string>
+
+    <string name="settings_header_info">Πληροφορίες</string>
+    <string name="settings_version_title">Έκδοση εφαρμογής</string>
+    <string name="unknown">Άγνωστη</string>
+    <string name="settings_developer_title">Προγραμματιστής</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Αναφορά σφάλματος / δυνατότητας</string>
+    <string name="settings_report_desc">Επικοινωνία στο Telegram</string>
+
+    <string name="settings_check_updates_title">Έλεγχος για ενημερώσεις</string>
+    <string name="settings_check_updates_desc">Εύρεση της πιο πρόσφατης έκδοσης</string>
+    <string name="update_action">Ενημέρωση</string>
+    <string name="update_available">Διαθέσιμη ενημέρωση: v%1$s</string>
+    <string name="update_latest_version_msg">Δεν υπάρχουν διαθέσιμες ενημερώσεις αυτήν τη στιγμή.</string>
+    <string name="update_error_msg">Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις. Ελέγξτε τη σύνδεσή σας.</string>
+    <string name="later">Αργότερα</string>
+
+    <string name="quick_actions_title">Γρήγορες ενέργειες</string>
+    <string name="quick_actions_info">Οι Γρήγορες Ενέργειες σας βοηθούν να προσθέτετε γρήγορα επαναλαμβανόμενα φαινόμενα ή συμβάντα στο Med.</string>
+    <string name="active_actions_header">Ενεργές Ενέργειες</string>
+
+    <string name="welcome_to">Καλώς ήρθατε στο</string>
+    <string name="welcome_preparing_subtitle">Ας τα ετοιμάσουμε όλα για εσάς.</string>
+    <string name="next">Επόμενο</string>
+    <string name="back">Πίσω</string>
+    <string name="get_started">Ξεκινήστε</string>
+
+    <string name="perm_required">Απαιτείται</string>
+    <string name="perm_permissions">Άδειες</string>
+    <string name="perm_intro_text">Αυτές οι άδειες είναι απαραίτητες για τη σωστή λειτουργία του Med. Παρακαλούμε χορηγήστε τις για να προχωρήσετε.</string>
+
+    <string name="perm_notif_title">Ειδοποιήσεις</string>
+    <string name="perm_notif_desc">Μάθετε αμέσως πότε να πάρετε τα φάρμακά σας.</string>
+
+    <string name="perm_install_title">Εγκατάσταση εφαρμογών</string>
+    <string name="perm_install_desc">Απαιτείται για τη λήψη και εγκατάσταση ενημερώσεων.</string>
+
+    <string name="feat_discover">Ανακαλύψτε</string>
+    <string name="feat_features">Δυνατότητες</string>
+    <string name="feat_intro">Ορίστε τι μπορείτε να κάνετε με τη νέα σας εφαρμογή Med.</string>
+
+    <string name="feat_reminders_title">Έξυπνες υπενθυμίσεις</string>
+    <string name="feat_reminders_desc">Λάβετε έγκαιρες ειδοποιήσεις για τα φάρμακά σας.</string>
+
+    <string name="feat_tracking_title">Παρακολούθηση</string>
+    <string name="feat_tracking_desc">Κρατήστε ένα ιστορικό για το πότε πήρατε τα φάρμακά σας.</string>
+
+    <string name="feat_presets_title">Γρήγορες ενέργειες</string>
+    <string name="feat_presets_desc">Ορίστε άμεσα προεπιλογές για επαναλαμβανόμενα συμβάντα.</string>
+
+    <string name="feat_update_title">Μείνετε ενημερωμένοι</string>
+    <string name="feat_update_desc">Ελέγξτε για ενημερώσεις απευθείας στις Ρυθμίσεις της εφαρμογής.</string>
+
+    <string name="settings_advanced_title">Για προχωρημένους</string>
+    <string name="settings_advanced_desc">Πειραματικές λειτουργίες και ενημερώσεις</string>
+    <string name="settings_auto_updates_title">Αυτόματες ενημερώσεις</string>
+    <string name="settings_auto_updates_desc">Έλεγχος για ενημερώσεις κατά την εκκίνηση</string>
+    <string name="settings_setup_title">Αρχική ρύθμιση</string>
+    <string name="settings_setup_desc">Εκτελέστε ξανά τον οδηγό υποδοχής</string>
+    <string name="settings_backup_header">Δημιουργία αντιγράφων ασφαλείας &amp; Επαναφορά</string>
+    <string name="settings_export_title">Εξαγωγή ρυθμίσεων</string>
+    <string name="settings_export_desc">Αποθήκευση διαμόρφωσης</string>
+    <string name="settings_import_title">Εισαγωγή ρυθμίσεων</string>
+    <string name="settings_import_desc">Επαναφορά από αρχείο αντιγράφου ασφαλείας</string>
+    <string name="dialog_restart_title">Απαιτείται επανεκκίνηση</string>
+    <string name="dialog_restart_desc">Οι ρυθμίσεις έχουν εισαχθεί. Επανεκκινήστε την εφαρμογή για να εφαρμόσετε τις αλλαγές.</string>
+    <string name="export_success">Οι ρυθμίσεις εξήχθησαν με επιτυχία</string>
+    <string name="export_error">Σφάλμα κατά την εξαγωγή ρυθμίσεων</string>
+    <string name="import_error">Σφάλμα κατά την εισαγωγή ρυθμίσεων</string>
+
+    <string name="select_color">Χρώμα</string>
+    <string name="time_label">Ώρα</string>
+    <string name="choose_icon">Επιλογή εικονιδίου</string>
+    <string name="frequency_label">Συχνότητα</string>
+
+    <string name="schedule_label_format">Πρόγραμμα %1$d</string>
+
+    <string name="download_title">Ενημέρωση Med</string>
+    <string name="download_desc">Λήψη έκδοσης %1$s…</string>
+    <string name="download_started">Η λήψη ξεκίνησε…</string>
+    <string name="download_failed">Η λήψη απέτυχε: %1$s</string>
+    <string name="notif_channel_updates">Ενημερώσεις</string>
+    <string name="update_notif_desc">Πατήστε για προβολή λεπτομερειών και λήψη.</string>
+    <string name="install_error">Σφάλμα εγκατάστασης: %1$s</string>
+
+    <string name="switch_to_text_input">Εναλλαγή σε εισαγωγή κειμένου</string>
+    <string name="switch_to_touch_input">Εναλλαγή σε εισαγωγή αφής</string>
+
+    <string name="frequency_specific_days">Συγκεκριμένες ημέρες</string>
+    <string name="frequency_daily_multiple">%1$dx Ημερησίως</string>
+    <string name="frequency_daily">Ημερησίως</string>
+    <string name="edit_time_desc">Επεξεργασία ώρας</string>
+    <string name="status_taken_format">Λήφθηκε %1$s%2$s</string>
+    <string name="status_scheduled_format">Προγραμματισμένο για %1$s</string>
+
+    <string name="dynamic_theme_desc">Δυναμικό θέμα</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Ιανουάριος</string>
+    <string name="month_february">Φεβρουάριος</string>
+    <string name="month_march">Μάρτιος</string>
+    <string name="month_april">Απρίλιος</string>
+    <string name="month_may">Μάιος</string>
+    <string name="month_june">Ιούνιος</string>
+    <string name="month_july">Ιούλιος</string>
+    <string name="month_august">Αύγουστος</string>
+    <string name="month_september">Σεπτέμβριος</string>
+    <string name="month_october">Οκτώβριος</string>
+    <string name="month_november">Νοέμβριος</string>
+    <string name="month_december">Δεκέμβριος</string>
+
+    <string name="day_short_mon">Δ</string>
+    <string name="day_short_tue">Τ</string>
+    <string name="day_short_wed">Τ</string>
+    <string name="day_short_thu">Π</string>
+    <string name="day_short_fri">Π</string>
+    <string name="day_short_sat">Σ</string>
+    <string name="day_short_sun">Κ</string>
+
+    <string name="settings_language_title">Γλώσσα εφαρμογής</string>
+    <string name="settings_language_desc">Αλλαγή γλώσσας στις ρυθμίσεις συστήματος</string>
+
+    <string name="edit_mode_desc">Λειτουργία επεξεργασίας</string>
+    <string name="settings_sort_order_title">Σειρά εμφάνισης</string>
+    <string name="settings_sort_order_time">Κατά ώρα</string>
+    <string name="settings_sort_order_custom">Προσαρμοσμένη</string>
+    <string name="settings_header_preferences">Προτιμήσεις</string>
+    <string name="settings_notifications_title">Ειδοποιήσεις</string>
+    <string name="settings_notifications_desc">Διαχείριση στυλ ειδοποιήσεων και ειδοποιητηρίων</string>
+    <string name="settings_show_notifications_title">Εμφάνιση ειδοποιήσεων</string>
+    <string name="settings_full_screen_alarm_title">Ειδοποιητήριο πλήρους οθόνης</string>
+    <string name="settings_full_screen_alarm_desc">Ενεργοποιεί την οθόνη με ένα ειδοποιητήριο αντί για μια αναδυόμενη ειδοποίηση</string>
+    <string name="settings_alarm_style_title">Στυλ ειδοποιητηρίου</string>
+    <string name="settings_alarm_style_desc">Επιλέξτε πώς να απαντάτε στο ειδοποιητήριο πλήρους οθόνης</string>
+    <string name="settings_alarm_style_slider">Συρόμενο (Σάρωση)</string>
+    <string name="settings_alarm_style_buttons">Κουμπιά</string>
+    <string name="settings_snooze_duration_title">Διάρκεια αναβολής</string>
+    <string name="settings_snooze_duration_desc">%1$d λεπτά</string>
+    <string name="alarm_default_title">Υπενθύμιση</string>
+    <string name="alarm_time_to_take">Είναι ώρα να πάρετε\n%1$s</string>
+    <string name="alarm_taken_action">Λήφθηκε</string>
+    <string name="alarm_snooze_action">Αναβολή (%1$d λεπτά)</string>
+    <string name="alarm_snooze_desc">Αναβολή</string>
+    <string name="alarm_taken_desc">Λήφθηκε</string>
+    <string name="notif_reminder_title">Υπενθύμιση: %1$s</string>
+    <string name="notif_reminder_desc">Είναι ώρα να πάρετε το φάρμακό σας</string>
+    <string name="notif_action_taken">Λήφθηκε</string>
+    <string name="notif_action_snooze">Αναβολή</string>
+    <string name="notif_channel_alarms_name">Ειδοποιητήρια φαρμάκων</string>
+    <string name="notif_channel_alarms_desc">Κανάλι για ειδοποιητήρια φαρμάκων</string>
+    <string name="unsaved_changes_title">Μη αποθηκευμένες αλλαγές</string>
+    <string name="unsaved_changes_desc">Θέλετε να αποθηκεύσετε τη νέα σειρά πριν βγείτε;</string>
+    <string name="discard_action">Απόρριψη</string>
+    <string name="notes_hint">Σημειώσεις (Προαιρετικό)</string>
+    <string name="frequency_unit_biweek">Κάθε 2 εβδομάδες</string>
+    <string name="more_options">Περισσότερα</string>
+    <string name="community_title">Γίνετε μέλος της κοινότητας</string>
+    <string name="community_desc">Γίνετε μέλος του καναλιού μου στο Telegram για να μην χάσετε τα τελευταία νέα και ενημερώσεις για τα έργα μου, μαζί με μερικές αποκλειστικές κλεφτές ματιές!</string>
+    <string name="no_thanks">Όχι, ευχαριστώ</string>
+    <string name="sure_action">Σίγουρα!</string>
+    <string name="see_source_code">Προβολή πηγαίου κώδικκα</string>
+    <string name="check_updates_action">Έλεγχος για ενημερώσεις</string>
+    <string name="update_error_check">Δεν είναι δυνατός ο έλεγχος για ενημερώσεις</string>
+    <string name="nothing_here_yet">Τίποτα εδώ για τροποποίηση ακόμα…</string>
+    <string name="settings_testing_header">Δοκιμή</string>
+    <string name="settings_test_alarm_title">Δοκιμή ειδοποιητηρίου/ειδοποίησης</string>
+    <string name="settings_test_alarm_desc">Ενεργοποιεί το ειδοποιητήριο για το πλησιέστερο φάρμακο</string>
+    <string name="settings_test_telegram_title">Εμφάνιση αναδυόμενου παραθύρου telegram</string>
+    <string name="settings_test_telegram_desc">Εμφανίζει το αναδυόμενο παράθυρο της κοινότητας</string>
+    <string name="settings_test_crash_title">Κατάρρευση της εφαρμογής</string>
+    <string name="settings_test_crash_desc">Προκαλεί μια μοιραία εξαίρεση για τη δοκιμή της αναφοράς σφαλμάτων</string>
+    <string name="settings_danger_zone_header">Επικίνδυνη ζώνη</string>
+    <string name="settings_reset_title">Επαναφορά δεδομένων εφαρμογής</string>
+    <string name="settings_reset_desc">Μόνιμη διαγραφή όλων των δεδομένων και ρυθμίσεων</string>
+    <string name="settings_reset_confirmation_desc">Είστε σίγουροι ότι θέλετε να διαγράψετε όλα τα φάρμακα, τα συμβάντα και τις ρυθμίσεις σας; Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.</string>
+    <string name="settings_reset_action">Επαναφορά</string>
+    <string name="group_name_label">Όνομα ομάδας</string>
+    <string name="delete_mode_action">Λειτουργία διαγραφής</string>
+    <string name="add_to_group">Προσθήκη σε %1$s</string>
+    <string name="remove_from_group">Αφαίρεση από %1$s</string>
+    <string name="settings_app_lock_title">Κλείδωμα εφαρμογής</string>
+    <string name="settings_app_lock_desc">Απαίτηση PIN ή δακτυλικού αποτυπώματος για το άνοιγμα του Med</string>
+    <string name="unlock_to_enable">Επαληθεύστε την ταυτότητά σας για ενεργοποίηση κλειδώματος</string>
+    <string name="unlock_app">Ξεκλείδωμα Med</string>
+    <string name="unlock_action">Ξεκλείδωμα</string>
+
+    <string name="you_tab_title">Εσείς</string>
+    <string name="medical_info_header">Ιατρικές πληροφορίες</string>
+    <string name="not_set">Δεν έχει οριστεί</string>
+    <string name="dob_title">Ημερομηνία Γέννησης</string>
+    <string name="blood_type_title">Ομάδα Αίματος</string>
+    <string name="height_title">Ύψος</string>
+    <string name="weight_title">Βάρος</string>
+    <string name="allergies_title">Αλλεργίες</string>
+    <string name="home_tab_title">Αρχική</string>
+    <string name="stats_tab_title">Στατιστικά</string>
+    <string name="remove_photo">Αφαίρεση φωτογραφίας</string>
+    <string name="choose_another_photo">Επιλογή άλλης φωτογραφίας</string>
+    <string name="blood_type_a_pos">Α+</string>
+    <string name="blood_type_a_neg">Α-</string>
+    <string name="blood_type_b_pos">Β+</string>
+    <string name="blood_type_b_neg">Β-</string>
+    <string name="blood_type_ab_pos">ΑΒ+</string>
+    <string name="blood_type_ab_neg">ΑΒ-</string>
+    <string name="blood_type_o_pos">0+</string>
+    <string name="blood_type_o_neg">0-</string>
+    <string name="dob_hint">ΗΗ/ΜΜ/ΕΕΕΕ</string>
+    <string name="clear_action">Εκκαθάριση</string>
+    <string name="height_hint">Εισαγάγετε το ύψος σας</string>
+    <string name="weight_hint">Εισαγάγετε το βάρος σας</string>
+    <string name="privacy_info">Τα ιατρικά σας δεδομένα αποθηκεύονται τοπικά και δεν αποστέλλονται ποτέ σε κανέναν.</string>
+    <string name="unit_cm">εκ</string>
+    <string name="unit_in">ίντσες</string>
+    <string name="unit_kg">κιλά</string>
+    <string name="unit_lbs">λίβρες</string>
+    <string name="allergies_hint">Εισαγάγετε τις αλλεργίες σας</string>
+    <string name="stats_streak_label">Σερί</string>
+    <string name="stats_on_time_label">Στην ώρα τους</string>
+    <string name="stats_missed_label">Χαμένα/εβδ</string>
+    <string name="notification_type_label">Τύπος ειδοποίησης</string>
+    <string name="notification_type_none">Κανένας</string>
+    <string name="notification_type_normal">Ειδοποίηση</string>
+    <string name="notification_type_alarm">Ειδοποιητήριο</string>
+    <string name="notification_type_default">Προεπιλογή</string>
+    <string name="settings_header_more">Περισσότερα</string>
+    <string name="settings_wearos_title">Med για WearOS</string>
+    <string name="settings_wearos_desc">Διαχείριση της εφαρμογής συνοδού WearOS</string>
+    <string name="wearos_settings_title">Ρυθμίσεις WearOS</string>
+    <string name="wearos_ring_alarms_title">Κουδούνισμα στο ρολόι</string>
+    <string name="wearos_ring_alarms_desc">Τα ειδοποιητήρια θα χτυπούν στη συνδεδεμένη συσκευή σας WearOS</string>
+    <string name="wearos_alarms_disabled_desc">Τα ειδοποιητήρια είναι προς το παρόν απενεργοποιημένα ή έχουν αντικατασταθεί από ειδοποιήσεις</string>
+    <string name="wearos_quick_actions_header">Γρήγορες ενέργειες ρολογιού</string>
+    <string name="wearos_quick_actions_desc">Επιλέξτε ποιες Γρήγορες Ενέργειες μπορούν να εμφανίζονται στο ρολόι σας.</string>
+    <string name="wearos_master_toggle_title">Χρήση του Med στο WearOS</string>
+    <string name="fullscreen_permission_title">Ενεργοποίηση ειδοποιητηρίων πλήρους οθόνης</string>
+    <string name="fullscreen_permission_desc">Για να αξιοποιήσετε στο έπακρο τα ειδοποιητήριά σας, θα πρέπει να επιτρέψετε στο Med να εμφανίζει ειδοποιήσεις πλήρους οθόνης ακόμα και όταν η οθόνη σας είναι απενεργοποιημένη.</string>
+    <string name="enable_action">Ενεργοποίηση</string>
+    <string name="notif_grouped_title">Ώρα να πάρετε τα φάρμακά σας</string>
+    <string name="notif_action_take_all">Λήψη όλων</string>
+    <string name="alarm_swipe_to_respond">Σύρετε για επιλογή</string>
+    <string name="modify_medicine_title">Εφαρμογή αλλαγών</string>
+    <string name="modify_only_this">Μόνο αυτό το συμβάν</string>
+    <string name="modify_all_following">Αυτό και όλα τα επόμενα συμβάντα</string>
+    <string name="modify_specific_range">Συγκεκριμένο εύρος ημερομηνιών</string>
+    <string name="freq_mode_daily">Ημερησίως</string>
+    <string name="freq_mode_days">Συγκεκριμένες ημέρες</string>
+    <string name="freq_mode_interval">Διάστημα</string>
+    <string name="times_per_day_label">Φορές την ημέρα</string>
+    <string name="interval_every">Κάθε</string>
+    <string name="interval_days">Ημέρες</string>
+    <string name="interval_weeks">Εβδομάδες</string>
+    <string name="interval_months">Μήνες</string>
+    <string name="happy_birthday_msg">Χρόνια πολλά!</string>
+    <string name="illness_label">Ασθένεια</string>
+    <string name="illness_question">Έχετε ακόμα %1$s;</string>
+    <string name="yes_action">Ναι</string>
+    <string name="no_action">Όχι</string>
+    <string name="new_illness_title">Νέα ασθένεια</string>
+    <string name="day_of_start_label">Ημέρα έναρξης</string>
+    <string name="edit_medicine_title">Επεξεργασία φαρμάκου</string>
+    <string name="edit_event_title">Επεξεργασία συμβάντος</string>
+    <string name="edit_illness_title">Επεξεργασία ασθένειας</string>
+    <string name="personal_data_title">Προσωπικά</string>
+    <string name="personal_data_header">δεδομένα</string>
+    <string name="personal_data_intro">Αυτές οι λεπτομέρειες είναι εντελώς προαιρετικές και αποθηκεύονται με ασφάλεια μόνο τοπικά στη συσκευή σας.</string>
+    <string name="feat_wearos_title">Med στο Wear OS</string>
+    <string name="feat_wearos_desc">Συγχρονίστε τις υπενθυμίσεις και τα συμβάντα σας απρόσκοπτα με το smartwatch σας.</string>
+    <string name="feat_tabs_title">Εσείς και Στατιστικά</string>
+    <string name="feat_tabs_desc">Παρακολουθήστε τα προσωπικά σας δεδομένα υγείας και δείτε αναλυτικά στατιστικά στοιχεία για τις συνήθειές σας.</string>
+    <string name="profile_picture">Εικόνα προφίλ</string>
+    <string name="image_set">Η εικόνα ορίστηκε</string>
+    <string name="tap_to_set">Πατήστε για ορισμό</string>
+</resources>

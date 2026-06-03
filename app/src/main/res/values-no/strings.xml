@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Medisin</string>
+    <string name="event_label">Hendelse</string>
+    <string name="menu_tooltip">Meny</string>
+    <string name="menu_action_desc">Handlingsmeny</string>
+    <string name="expanded_state">Utvidet</string>
+    <string name="collapsed_state">Skjult</string>
+    <string name="close_menu_action">Lukk meny</string>
+    <string name="choose_date_desc">Velg dato</string>
+    <string name="settings_desc">Innstillinger</string>
+    <string name="no_events_label">Ingen hendelser for i dag</string>
+
+    <string name="item_deleted">Slettet: %1$s</string>
+    <string name="undo_action">Angre</string>
+
+    <string name="cancel_action">Avbryt</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Lagre</string>
+    <string name="new_event_title">Ny hendelse</string>
+    <string name="new_medicine_title">Ny medisin</string>
+    <string name="name_hint">Navn</string>
+
+    <string name="settings_title">Innstillinger</string>
+    <string name="discard">Tilbake</string>
+    <string name="cancel">Avbryt</string>
+    <string name="restart_now">Start på nytt nå</string>
+
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">System</string>
+    <string name="settings_theme_light">Lyst</string>
+    <string name="settings_theme_dark">Mørkt</string>
+
+    <string name="settings_week_start_title">Start på uken</string>
+    <string name="sunday">Søndag</string>
+    <string name="monday">Mandag</string>
+
+    <string name="settings_header_customization">Tilpasning</string>
+    <string name="settings_presets_title">Hurtighandlinger</string>
+    <string name="settings_presets_desc">Administrer egendefinerte hendelser i hovedmenyen</string>
+    <string name="add_action">Legg til</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">App-versjon</string>
+    <string name="unknown">Ukjent</string>
+    <string name="settings_developer_title">Utvikler</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Rapporter feil / funksjon</string>
+    <string name="settings_report_desc">Kontakt på Telegram</string>
+
+    <string name="settings_check_updates_title">Se etter oppdateringer</string>
+    <string name="settings_check_updates_desc">Finn den nyeste versjonen</string>
+    <string name="update_action">Oppdater</string>
+    <string name="update_available">Oppdatering tilgjengelig: v%1$s</string>
+    <string name="update_latest_version_msg">Ingen oppdateringer tilgjengelig for øyeblikket.</string>
+    <string name="update_error_msg">Kunne ikke se etter oppdateringer. Sjekk tilkoblingen din.</string>
+    <string name="later">Senere</string>
+
+    <string name="quick_actions_title">Hurtighandlinger</string>
+    <string name="quick_actions_info">Hurtighandlinger hjelper deg med å raskt legge til gjentakende fenomener eller hendelser i Med.</string>
+    <string name="active_actions_header">Aktive handlinger</string>
+
+    <string name="welcome_to">Velkommen til</string>
+    <string name="welcome_preparing_subtitle">La oss gjøre alt klart for deg.</string>
+    <string name="next">Neste</string>
+    <string name="back">Tilbake</string>
+    <string name="get_started">Kom i gang</string>
+
+    <string name="perm_required">Påkrevd</string>
+    <string name="perm_permissions">Tillatelser</string>
+    <string name="perm_intro_text">Disse tillatelsene er nødvendige for at Med skal fungere riktig. Vennligst gi dem for å fortsette.</string>
+
+    <string name="perm_notif_title">Varsler</string>
+    <string name="perm_notif_desc">Vit umiddelbart når du skal ta medisinene dine.</string>
+
+    <string name="perm_install_title">App-installasjon</string>
+    <string name="perm_install_desc">Kreves for å laste ned og installere oppdateringer.</string>
+
+    <string name="feat_discover">Oppdag</string>
+    <string name="feat_features">Funksjoner</string>
+    <string name="feat_intro">Her er hva du kan gjøre med din nye Med-app.</string>
+
+    <string name="feat_reminders_title">Smarte påminnelser</string>
+    <string name="feat_reminders_desc">Motta varsler i tide for medisinene dine.</string>
+
+    <string name="feat_tracking_title">Sporing</string>
+    <string name="feat_tracking_desc">Hold en historikk over når du tok medisinene dine.</string>
+
+    <string name="feat_presets_title">Hurtighandlinger</string>
+    <string name="feat_presets_desc">Sett opp forhåndsinnstillinger for gjentakende hendelser umiddelbart.</string>
+
+    <string name="feat_update_title">Hold deg oppdatert</string>
+    <string name="feat_update_desc">Se etter oppdateringer direkte i appinnstillingene.</string>
+
+    <string name="settings_advanced_title">Avansert</string>
+    <string name="settings_advanced_desc">Eksperimentelle funksjoner og oppdateringer</string>
+    <string name="settings_auto_updates_title">Automatiske oppdateringer</string>
+    <string name="settings_auto_updates_desc">Se etter oppdateringer ved oppstart</string>
+    <string name="settings_setup_title">Innledende oppsett</string>
+    <string name="settings_setup_desc">Kjør velkomstveiviseren på nytt</string>
+    <string name="settings_backup_header">Sikkerhetskopiering og gjenoppretting</string>
+    <string name="settings_export_title">Eksporter innstillinger</string>
+    <string name="settings_export_desc">Lagre konfigurasjon</string>
+    <string name="settings_import_title">Importer innstillinger</string>
+    <string name="settings_import_desc">Gjenopprett fra en sikkerhetskopifil</string>
+    <string name="dialog_restart_title">Omstart kreves</string>
+    <string name="dialog_restart_desc">Innstillinger er importert. Start appen på nytt for å bruke endringene.</string>
+    <string name="export_success">Innstillinger ble eksportert</string>
+    <string name="export_error">Feil ved eksport av innstillinger</string>
+    <string name="import_error">Feil ved import av innstillinger</string>
+
+    <string name="select_color">Farge</string>
+    <string name="time_label">Tid</string>
+    <string name="choose_icon">Velg ikon</string>
+    <string name="frequency_label">Frekvens</string>
+
+    <string name="schedule_label_format">Tidsplan %1$d</string>
+
+    <string name="download_title">Med-oppdatering</string>
+    <string name="download_desc">Laster ned versjon %1$s…</string>
+    <string name="download_started">Nedlasting startet…</string>
+    <string name="download_failed">Nedlasting mislyktes: %1$s</string>
+    <string name="notif_channel_updates">Oppdateringer</string>
+    <string name="update_notif_desc">Trykk for å se detaljer og laste ned.</string>
+    <string name="install_error">Installasjonsfeil: %1$s</string>
+
+    <string name="switch_to_text_input">Bytt til tekstinntasting</string>
+    <string name="switch_to_touch_input">Bytt til berøringsinntasting</string>
+
+    <string name="frequency_specific_days">Spesifikke dager</string>
+    <string name="frequency_daily_multiple">%1$dx daglig</string>
+    <string name="frequency_daily">Daglig</string>
+    <string name="edit_time_desc">Rediger tid</string>
+    <string name="status_taken_format">Tatt %1$s%2$s</string>
+    <string name="status_scheduled_format">Planlagt til %1$s</string>
+
+    <string name="dynamic_theme_desc">Dynamisk tema</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Januar</string>
+    <string name="month_february">Februar</string>
+    <string name="month_march">Mars</string>
+    <string name="month_april">April</string>
+    <string name="month_may">Mai</string>
+    <string name="month_june">Juni</string>
+    <string name="month_july">Juli</string>
+    <string name="month_august">August</string>
+    <string name="month_september">September</string>
+    <string name="month_october">Oktober</string>
+    <string name="month_november">November</string>
+    <string name="month_december">Desember</string>
+
+    <string name="day_short_mon">M</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">O</string>
+    <string name="day_short_thu">T</string>
+    <string name="day_short_fri">F</string>
+    <string name="day_short_sat">L</string>
+    <string name="day_short_sun">S</string>
+
+    <string name="settings_language_title">App-språk</string>
+    <string name="settings_language_desc">Endre språk i systeminnstillingene</string>
+
+    <string name="edit_mode_desc">Redigeringsmodus</string>
+    <string name="settings_sort_order_title">Visningsrekkefølge</string>
+    <string name="settings_sort_order_time">Etter tid</string>
+    <string name="settings_sort_order_custom">Egendefinert</string>
+    <string name="settings_header_preferences">Preferanser</string>
+    <string name="settings_notifications_title">Varsler</string>
+    <string name="settings_notifications_desc">Administrer varsel- og alarmstil</string>
+    <string name="settings_show_notifications_title">Vis varsler</string>
+    <string name="settings_full_screen_alarm_title">Fullskjermsalarm</string>
+    <string name="settings_full_screen_alarm_desc">Slår på skjermen med en alarm i stedet for et popup-varsel</string>
+    <string name="settings_alarm_style_title">Alarmstil</string>
+    <string name="settings_alarm_style_desc">Velg hvordan du vil svare på fullskjermsalarmen</string>
+    <string name="settings_alarm_style_slider">Glidebryter (Sveip)</string>
+    <string name="settings_alarm_style_buttons">Knapper</string>
+    <string name="settings_snooze_duration_title">Slumrevarighet</string>
+    <string name="settings_snooze_duration_desc">%1$d minutter</string>
+    <string name="alarm_default_title">Påminnelse</string>
+    <string name="alarm_time_to_take">Det er på tide å ta\n%1$s</string>
+    <string name="alarm_taken_action">Tatt</string>
+    <string name="alarm_snooze_action">Slumre (%1$d min)</string>
+    <string name="alarm_snooze_desc">Slumre</string>
+    <string name="alarm_taken_desc">Tatt</string>
+    <string name="notif_reminder_title">Påminnelse: %1$s</string>
+    <string name="notif_reminder_desc">Det er på tide å ta medisinen din</string>
+    <string name="notif_action_taken">Tatt</string>
+    <string name="notif_action_snooze">Slumre</string>
+    <string name="notif_channel_alarms_name">Medisinalarmer</string>
+    <string name="notif_channel_alarms_desc">Kanal for medisinalarmer</string>
+    <string name="unsaved_changes_title">Ulagrede endringer</string>
+    <string name="unsaved_changes_desc">Vil du lagre den nye rekkefølgen før du avslutter?</string>
+    <string name="discard_action">Forkast</string>
+    <string name="notes_hint">Notater (Valgfritt)</string>
+    <string name="frequency_unit_biweek">Hver 2. uke</string>
+    <string name="more_options">Mer</string>
+    <string name="community_title">Bli med i fellesskapet</string>
+    <string name="community_desc">Bli med i Telegram-kanalen min for å ikke gå glipp av de siste nyhetene og oppdateringene om prosjektene mine, sammen med noen eksklusive sniktitter!</string>
+    <string name="no_thanks">Nei takk</string>
+    <string name="sure_action">Javisst!</string>
+    <string name="see_source_code">Se kildekode</string>
+    <string name="check_updates_action">Se etter oppdateringer</string>
+    <string name="update_error_check">Kunne ikke se etter oppdateringer</string>
+    <string name="nothing_here_yet">Ingenting her å endre ennå…</string>
+    <string name="settings_testing_header">Testing</string>
+    <string name="settings_test_alarm_title">Test alarm/varsel</string>
+    <string name="settings_test_alarm_desc">Utløser alarmen for den nærmeste medisinen</string>
+    <string name="settings_test_telegram_title">Vis telegram-popup</string>
+    <string name="settings_test_telegram_desc">Viser fellesskapspopupen</string>
+    <string name="settings_test_crash_title">Krasj appen</string>
+    <string name="settings_test_crash_desc">Fremtvinger et fatalt unntak for å teste krasjrapportering</string>
+    <string name="settings_danger_zone_header">Faresone</string>
+    <string name="settings_reset_title">Tilbakestill appdata</string>
+    <string name="settings_reset_desc">Slett alle data og innstillinger permanent</string>
+    <string name="settings_reset_confirmation_desc">Er du sikker på at du vil slette alle medisinene, hendelsene og innstillingene dine? Denne handlingen kan ikke angres.</string>
+    <string name="settings_reset_action">Tilbakestill</string>
+    <string name="group_name_label">Gruppenavn</string>
+    <string name="delete_mode_action">Slettemodus</string>
+    <string name="add_to_group">Legg til i %1$s</string>
+    <string name="remove_from_group">Fjern fra %1$s</string>
+    <string name="settings_app_lock_title">App-lås</string>
+    <string name="settings_app_lock_desc">Krev PIN eller fingeravtrykk for å åpne Med</string>
+    <string name="unlock_to_enable">Godkjenn for å aktivere lås</string>
+    <string name="unlock_app">Lås opp Med</string>
+    <string name="unlock_action">Lås opp</string>
+
+    <string name="you_tab_title">Deg</string>
+    <string name="medical_info_header">Medisinsk informasjon</string>
+    <string name="not_set">Ikke angitt</string>
+    <string name="dob_title">Fødselsdato</string>
+    <string name="blood_type_title">Blodtype</string>
+    <string name="height_title">Høyde</string>
+    <string name="weight_title">Vekt</string>
+    <string name="allergies_title">Allergier</string>
+    <string name="home_tab_title">Hjem</string>
+    <string name="stats_tab_title">Statistikk</string>
+    <string name="remove_photo">Fjern bilde</string>
+    <string name="choose_another_photo">Velg et annet bilde</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">DD.MM.ÅÅÅÅ</string>
+    <string name="clear_action">Fjern</string>
+    <string name="height_hint">Skriv inn høyden din</string>
+    <string name="weight_hint">Skriv inn vekten din</string>
+    <string name="privacy_info">Dine medisinske data lagres lokalt og sendes aldri til noen.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">Skriv inn allergiene dine</string>
+    <string name="stats_streak_label">Rekke</string>
+    <string name="stats_on_time_label">I tide</string>
+    <string name="stats_missed_label">Glipp/uke</string>
+    <string name="notification_type_label">Varseltype</string>
+    <string name="notification_type_none">Ingen</string>
+    <string name="notification_type_normal">Varsel</string>
+    <string name="notification_type_alarm">Alarm</string>
+    <string name="notification_type_default">Standard</string>
+    <string name="settings_header_more">Mer</string>
+    <string name="settings_wearos_title">Med for WearOS</string>
+    <string name="settings_wearos_desc">Administrer WearOS-appen</string>
+    <string name="wearos_settings_title">WearOS-innstillinger</string>
+    <string name="wearos_ring_alarms_title">Ring på klokken</string>
+    <string name="wearos_ring_alarms_desc">Alarmer ringer på den tilkoblede WearOS-enheten</string>
+    <string name="wearos_alarms_disabled_desc">Alarmer er for øyeblikket deaktivert eller erstattet av varsler</string>
+    <string name="wearos_quick_actions_header">Hurtighandlinger på klokken</string>
+    <string name="wearos_quick_actions_desc">Velg hvilke hurtighandlinger som kan vises på klokken din.</string>
+    <string name="wearos_master_toggle_title">Bruk Med på WearOS</string>
+    <string name="fullscreen_permission_title">Aktiver fullskjermsalalarmer</string>
+    <string name="fullscreen_permission_desc">For å få mest mulig ut av alarmene dine, bør du la Med vise fullskjermsvarsler selv når skjermen er av.</string>
+    <string name="enable_action">Aktiver</string>
+    <string name="notif_grouped_title">På tide å ta medisinene dine</string>
+    <string name="notif_action_take_all">Ta alle</string>
+    <string name="alarm_swipe_to_respond">Sveip for å velge</string>
+    <string name="modify_medicine_title">Bruk endringer</string>
+    <string name="modify_only_this">Bare denne hendelsen</string>
+    <string name="modify_all_following">Denne og alle følgende hendelser</string>
+    <string name="modify_specific_range">Spesifikt datointervall</string>
+    <string name="freq_mode_daily">Daglig</string>
+    <string name="freq_mode_days">Spesifikke dager</string>
+    <string name="freq_mode_interval">Intervall</string>
+    <string name="times_per_day_label">Ganger per dag</string>
+    <string name="interval_every">Hver</string>
+    <string name="interval_days">Dager</string>
+    <string name="interval_weeks">Uker</string>
+    <string name="interval_months">Måneder</string>
+    <string name="happy_birthday_msg">Gratulerer med dagen!</string>
+    <string name="illness_label">Sykdom</string>
+    <string name="illness_question">Har du fortsatt %1$s?</string>
+    <string name="yes_action">Ja</string>
+    <string name="no_action">Nei</string>
+    <string name="new_illness_title">Ny sykdom</string>
+    <string name="day_of_start_label">Startdag</string>
+    <string name="edit_medicine_title">Rediger medisin</string>
+    <string name="edit_event_title">Rediger hendelse</string>
+    <string name="edit_illness_title">Rediger sykdom</string>
+    <string name="personal_data_title">Personlige</string>
+    <string name="personal_data_header">data</string>
+    <string name="personal_data_intro">Disse detaljene er helt valgfrie og lagres kun lokalt på enheten din.</string>
+    <string name="feat_wearos_title">Med på Wear OS</string>
+    <string name="feat_wearos_desc">Synkroniser påminnelser og hendelser sømløst med smartklokken din.</string>
+    <string name="feat_tabs_title">Deg og Statistikk</string>
+    <string name="feat_tabs_desc">Spor dine personlige helsedata og se detaljert statistikk over vanene dine.</string>
+    <string name="profile_picture">Profilbilde</string>
+    <string name="image_set">Bilde angitt</string>
+    <string name="tap_to_set">Trykk for å angi</string>
+</resources>

@@ -14,6 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import com.fedeveloper95.med.ItemType
+import com.fedeveloper95.med.PREF_SORT_ORDER
 import com.fedeveloper95.med.R
 import org.json.JSONArray
 import org.json.JSONObject
@@ -28,6 +29,17 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Collections
+
+sealed class EditItem {
+    abstract val uniqueId: String
+    data class Card(val med: MedData) : EditItem() {
+        override val uniqueId = "card_${med.id}"
+    }
+    data class Group(val divider: MedData, val cards: List<MedData>) : EditItem() {
+        override val uniqueId = "group_${divider.id}"
+    }
+}
 
 @Keep
 data class MedData(
@@ -226,6 +238,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
     val items: List<MedData> get() = _items
 
     var selectedDate by mutableStateOf(LocalDate.now())
+    var editItems by mutableStateOf<List<EditItem>>(emptyList())
+    var editHasChanges by mutableStateOf(false)
 
     private val updateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -259,6 +273,220 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun loadEditItems(date: LocalDate) {
+        val initial = _items.filter { item ->
+            when (item.type) {
+                ItemType.Event -> item.creationDate == date
+                ItemType.Illness -> false
+                ItemType.Medicine -> {
+                    val isAfterStart = !date.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !date.isAfter(item.endDate)
+                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(date.dayOfWeek)
+                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, date) % item.intervalGap == 0L
+                    isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
+                }
+            }
+        }.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
+
+        val result = mutableListOf<EditItem>()
+        var currentGroupDivider: MedData? = null
+        val currentGroupCards = mutableListOf<MedData>()
+
+        for (item in initial) {
+            if (item.iconName == "DIVIDER") {
+                if (currentGroupDivider != null) {
+                    result.add(EditItem.Group(currentGroupDivider, currentGroupCards.toList()))
+                } else if (currentGroupCards.isNotEmpty()) {
+                    currentGroupCards.forEach { result.add(EditItem.Card(it)) }
+                }
+
+                if (item.title.isNotBlank()) {
+                    currentGroupDivider = item
+                    currentGroupCards.clear()
+                } else {
+                    currentGroupDivider = null
+                    currentGroupCards.clear()
+                }
+            } else {
+                if (currentGroupDivider != null) {
+                    currentGroupCards.add(item)
+                } else {
+                    result.add(EditItem.Card(item))
+                }
+            }
+        }
+        if (currentGroupDivider != null) {
+            result.add(EditItem.Group(currentGroupDivider, currentGroupCards.toList()))
+        } else if (currentGroupCards.isNotEmpty()) {
+            currentGroupCards.forEach { result.add(EditItem.Card(it)) }
+        }
+        editItems = result
+        editHasChanges = false
+    }
+
+    fun swapTopEditItems(from: Int, to: Int) {
+        val newItems = editItems.toMutableList()
+        Collections.swap(newItems, from, to)
+        editItems = newItems
+        editHasChanges = true
+    }
+
+    fun swapInnerEditItems(group: EditItem.Group, from: Int, to: Int) {
+        val gIdx = editItems.indexOf(group)
+        if (gIdx != -1) {
+            val newCards = group.cards.toMutableList()
+            Collections.swap(newCards, from, to)
+            val newItems = editItems.toMutableList()
+            newItems[gIdx] = group.copy(cards = newCards)
+            editItems = newItems
+            editHasChanges = true
+        }
+    }
+
+    fun removeEditItem(uniqueId: String) {
+        editItems = editItems.filter { it.uniqueId != uniqueId }
+        editHasChanges = true
+    }
+
+    fun removeGroupComplete(group: EditItem.Group) {
+        val newItems = editItems.toMutableList()
+        val gIdx = newItems.indexOf(group)
+        if (gIdx != -1) {
+            newItems.removeAt(gIdx)
+            newItems.addAll(gIdx, group.cards.map { EditItem.Card(it) })
+            editItems = newItems
+            editHasChanges = true
+        }
+    }
+
+    fun removeCardFromGroup(group: EditItem.Group, cardId: Long) {
+        val newItems = editItems.toMutableList()
+        val gIdx = newItems.indexOf(group)
+        if (gIdx != -1) {
+            val newCards = group.cards.filter { it.id != cardId }
+            val theCard = group.cards.find { it.id == cardId }
+            if (newCards.isEmpty()) {
+                newItems.removeAt(gIdx)
+                if (theCard != null) newItems.add(gIdx, EditItem.Card(theCard))
+            } else {
+                newItems[gIdx] = group.copy(cards = newCards)
+                if (theCard != null) newItems.add(gIdx + 1, EditItem.Card(theCard))
+            }
+            editItems = newItems
+            editHasChanges = true
+        }
+    }
+
+    fun addCardToGroup(cardItem: EditItem.Card, targetGroupId: Long) {
+        val newItems = editItems.toMutableList()
+        newItems.remove(cardItem)
+        val gIdx = newItems.indexOfFirst { it is EditItem.Group && it.divider.id == targetGroupId }
+        if (gIdx != -1) {
+            val group = newItems[gIdx] as EditItem.Group
+            newItems[gIdx] = group.copy(cards = group.cards + cardItem.med)
+        }
+        editItems = newItems
+        editHasChanges = true
+    }
+
+    fun deleteCardFromGroup(group: EditItem.Group, cardId: Long) {
+        val newItems = editItems.toMutableList()
+        val gIdx = newItems.indexOf(group)
+        if (gIdx != -1) {
+            val newCards = group.cards.filter { it.id != cardId }
+            if (newCards.isEmpty()) newItems.removeAt(gIdx)
+            else newItems[gIdx] = group.copy(cards = newCards)
+            editItems = newItems
+            editHasChanges = true
+        }
+    }
+
+    fun addEditGroup(groupName: String, selectedDate: LocalDate) {
+        val newDivider = MedData(
+            id = System.nanoTime(),
+            groupId = System.currentTimeMillis(),
+            type = ItemType.Event,
+            title = groupName,
+            iconName = "DIVIDER",
+            colorCode = "dynamic",
+            frequencyLabel = "",
+            creationDate = selectedDate,
+            creationTime = LocalTime.MIN,
+            takenHistory = hashMapOf(),
+            recurrenceDays = null,
+            endDate = null,
+            notes = null,
+            displayOrder = 0,
+            intervalGap = null,
+            category = null
+        )
+        editItems = editItems + EditItem.Group(newDivider, emptyList())
+        editHasChanges = true
+    }
+
+    fun saveEditOrder(selectedDate: LocalDate) {
+        val flatList = mutableListOf<MedData>()
+        var lastWasGroup = false
+
+        for (item in editItems) {
+            when (item) {
+                is EditItem.Card -> {
+                    if (lastWasGroup) {
+                        flatList.add(
+                            MedData(
+                                id = System.nanoTime(),
+                                groupId = System.currentTimeMillis(),
+                                type = ItemType.Event,
+                                title = "",
+                                iconName = "DIVIDER",
+                                colorCode = "dynamic",
+                                frequencyLabel = "",
+                                creationDate = selectedDate,
+                                creationTime = LocalTime.MIN,
+                                takenHistory = hashMapOf(),
+                                recurrenceDays = null,
+                                endDate = null,
+                                notes = null,
+                                displayOrder = 0,
+                                intervalGap = null,
+                                category = null
+                            )
+                        )
+                    }
+                    flatList.add(item.med)
+                    lastWasGroup = false
+                }
+                is EditItem.Group -> {
+                    flatList.add(item.divider)
+                    flatList.addAll(item.cards)
+                    lastWasGroup = true
+                }
+            }
+        }
+
+        val flatListIds = flatList.map { it.id }.toSet()
+        val updatedAllItems = _items.filter {
+            it.creationDate != selectedDate || it.iconName != "DIVIDER" || flatListIds.contains(it.id)
+        }.toMutableList()
+
+        flatList.forEachIndexed { newIndex, item ->
+            val globalIndex = updatedAllItems.indexOfFirst { it.id == item.id }
+            if (globalIndex != -1) {
+                updatedAllItems[globalIndex] = updatedAllItems[globalIndex].copy(displayOrder = newIndex)
+            } else if (item.iconName == "DIVIDER") {
+                updatedAllItems.add(item.copy(displayOrder = newIndex))
+            }
+        }
+
+        _items.clear()
+        _items.addAll(updatedAllItems)
+        saveData()
+        editHasChanges = false
+        val prefs = getApplication<Application>().getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+        prefs.edit().putString(PREF_SORT_ORDER, "custom").apply()
+        getApplication<Application>().sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(getApplication<Application>().packageName))
     }
 
     fun addItem(

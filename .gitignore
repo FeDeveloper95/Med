@@ -27,3 +27,4 @@ kotlin-daemon-embeddable-*.jar
 
 *.log
 .DS_Store
+/wear/release/

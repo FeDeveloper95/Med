@@ -257,8 +257,14 @@ fun MedDataCard(
             supportingContent = {
                 Column {
                     if (isMedicine && !item.frequencyLabel.isNullOrBlank()) {
+                        val labelText = if (item.frequencyLabel.equals("Specific days", ignoreCase = true)) {
+                            stringResource(R.string.frequency_specific_days)
+                        } else {
+                            item.frequencyLabel
+                        }
+
                         Text(
-                            item.frequencyLabel,
+                            text = labelText,
                             fontFamily = GoogleSansFlex,
                             style = MaterialTheme.typography.bodySmall,
                             color = cardContentColor.copy(alpha = 0.6f),

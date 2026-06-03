@@ -324,7 +324,7 @@ fun MedicineBottomSheet(
             ) {
                 item {
                     Text(
-                        text = stringResource(R.string.new_medicine_title),
+                        text = stringResource(if (initialItem != null) R.string.edit_medicine_title else R.string.new_medicine_title),
                         fontFamily = GoogleSansFlex,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,

@@ -203,7 +203,7 @@ fun IllnessesBottomSheet(
             ) {
                 item {
                     Text(
-                        text = stringResource(R.string.new_illness_title),
+                        text = stringResource(if (initialItem != null) R.string.edit_illness_title else R.string.new_illness_title),
                         fontFamily = GoogleSansFlex,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,

@@ -290,12 +290,25 @@
     <string name="interval_days">Days</string>
     <string name="interval_weeks">Weeks</string>
     <string name="interval_months">Months</string>
-    <string name="happy_birthday_msg">Happy birthday to you!</string>
+    <string name="happy_birthday_msg">Happy birthday!</string>
     <string name="illness_label">Illness</string>
     <string name="illness_question">Do you still have %1$s?</string>
     <string name="yes_action">Yes</string>
     <string name="no_action">No</string>
     <string name="new_illness_title">New illness</string>
     <string name="day_of_start_label">Day of start</string>
+    <string name="edit_medicine_title">Edit medicine</string>
+    <string name="edit_event_title">Edit event</string>
+    <string name="edit_illness_title">Edit illness</string>
+    <string name="personal_data_title">Personal</string>
+    <string name="personal_data_header">data</string>
+    <string name="personal_data_intro">These details are completely optional and are securely saved only locally on your device.</string>
+    <string name="feat_wearos_title">Med on Wear OS</string>
+    <string name="feat_wearos_desc">Sync your reminders and events seamlessly with your smartwatch.</string>
+    <string name="feat_tabs_title">You and Stats</string>
+    <string name="feat_tabs_desc">Track your personal health data and view detailed statistics of your habits.</string>
+    <string name="profile_picture">Profile picture</string>
+    <string name="image_set">Image set</string>
+    <string name="tap_to_set">Tap to set</string>
 
 </resources>

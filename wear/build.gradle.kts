@@ -12,13 +12,14 @@ android {
         applicationId = "com.fedeveloper95.med"
         minSdk = 30
         targetSdk = 37
-        versionCode = 12
-        versionName = "1.2"
+        versionCode = 20
+        versionName = "2.0"
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Medicamento</string>
+    <string name="event_label">Evento</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Menu de ações</string>
+    <string name="expanded_state">Expandido</string>
+    <string name="collapsed_state">Recolhido</string>
+    <string name="close_menu_action">Fechar menu</string>
+    <string name="choose_date_desc">Escolher data</string>
+    <string name="settings_desc">Configurações</string>
+    <string name="no_events_label">Nenhum evento para hoje</string>
+
+    <string name="item_deleted">Apagado: %1$s</string>
+    <string name="undo_action">Desfazer</string>
+
+    <string name="cancel_action">Cancelar</string>
+    <string name="ok_action">OK</string>
+    <string name="save_action">Salvar</string>
+    <string name="new_event_title">Novo Evento</string>
+    <string name="new_medicine_title">Novo Medicamento</string>
+    <string name="name_hint">Nome</string>
+
+    <string name="settings_title">Configurações</string>
+    <string name="discard">Voltar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="restart_now">Reiniciar Agora</string>
+
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">Sistema</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+
+    <string name="settings_week_start_title">Início da semana</string>
+    <string name="sunday">Domingo</string>
+    <string name="monday">Segunda-feira</string>
+
+    <string name="settings_header_customization">Personalização</string>
+    <string name="settings_presets_title">Ações Rápidas</string>
+    <string name="settings_presets_desc">Gerenciar eventos personalizados no menu principal</string>
+    <string name="add_action">Adicionar</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">Versão do App</string>
+    <string name="unknown">Desconhecida</string>
+    <string name="settings_developer_title">Desenvolvedor</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Relatar Bug / Recurso</string>
+    <string name="settings_report_desc">Contato no Telegram</string>
+
+    <string name="settings_check_updates_title">Verificar Atualizações</string>
+    <string name="settings_check_updates_desc">Encontrar a versão mais recente</string>
+    <string name="update_action">Atualizar</string>
+    <string name="update_available">Atualização disponível: v%1$s</string>
+    <string name="update_latest_version_msg">Nenhuma atualização disponível no momento.</string>
+    <string name="update_error_msg">Não foi possível verificar atualizações. Verifique sua conexão.</string>
+    <string name="later">Mais tarde</string>
+
+    <string name="quick_actions_title">Ações Rápidas</string>
+    <string name="quick_actions_info">As Ações Rápidas ajudam você a adicionar rapidamente fenômenos ou eventos recorrentes ao Med.</string>
+    <string name="active_actions_header">Ações Ativas</string>
+
+    <string name="welcome_to">Bem-vindo ao</string>
+    <string name="welcome_preparing_subtitle">Vamos preparar tudo para você.</string>
+    <string name="next">Próximo</string>
+    <string name="back">Voltar</string>
+    <string name="get_started">Começar</string>
+
+    <string name="perm_required">Obrigatório</string>
+    <string name="perm_permissions">Permissões</string>
+    <string name="perm_intro_text">Essas permissões são necessárias para o Med funcionar corretamente. Por favor, conceda-as para prosseguir.</string>
+
+    <string name="perm_notif_title">Notificações</string>
+    <string name="perm_notif_desc">Saiba imediatamente quando tomar seus remédios.</string>
+
+    <string name="perm_install_title">Instalação de Apps</string>
+    <string name="perm_install_desc">Necessário para baixar e instalar atualizações.</string>
+
+    <string name="feat_discover">Descobrir</string>
+    <string name="feat_features">Recursos</string>
+    <string name="feat_intro">Aqui está o que você pode fazer com seu novo app Med.</string>
+
+    <string name="feat_reminders_title">Lembretes Inteligentes</string>
+    <string name="feat_reminders_desc">Receba notificações na hora certa para seus medicamentos.</string>
+
+    <string name="feat_tracking_title">Rastreamento</string>
+    <string name="feat_tracking_desc">Mantenha um histórico de quando você tomou seus medicamentos.</string>
+
+    <string name="feat_presets_title">Ações Rápidas</string>
+    <string name="feat_presets_desc">Configure predefinições para eventos recorrentes instantaneamente.</string>
+
+    <string name="feat_update_title">Mantenha-se Atualizado</string>
+    <string name="feat_update_desc">Verifique atualizações diretamente nas Configurações do app.</string>
+
+    <string name="settings_advanced_title">Avançado</string>
+    <string name="settings_advanced_desc">Recursos experimentais e atualizações</string>
+    <string name="settings_auto_updates_title">Atualizações automáticas</string>
+    <string name="settings_auto_updates_desc">Verificar atualizações ao iniciar</string>
+    <string name="settings_setup_title">Configuração Inicial</string>
+    <string name="settings_setup_desc">Executar o assistente de boas-vindas novamente</string>
+    <string name="settings_backup_header">Backup e Restauração</string>
+    <string name="settings_export_title">Exportar Configurações</string>
+    <string name="settings_export_desc">Salvar configuração</string>
+    <string name="settings_import_title">Importar Configurações</string>
+    <string name="settings_import_desc">Restaurar de um arquivo de backup</string>
+    <string name="dialog_restart_title">Reinício Necessário</string>
+    <string name="dialog_restart_desc">As configurações foram importadas. Reinicie o app para aplicar as mudanças.</string>
+    <string name="export_success">Configurações exportadas com sucesso</string>
+    <string name="export_error">Erro ao exportar configurações</string>
+    <string name="import_error">Erro ao importar configurações</string>
+
+    <string name="select_color">Cor</string>
+    <string name="time_label">Hora</string>
+    <string name="choose_icon">Escolher Ícone</string>
+    <string name="frequency_label">Frequência</string>
+
+    <string name="schedule_label_format">Horário %1$d</string>
+
+    <string name="download_title">Atualização do Med</string>
+    <string name="download_desc">Baixando versão %1$s…</string>
+    <string name="download_started">Download iniciado…</string>
+    <string name="download_failed">Falha no download: %1$s</string>
+    <string name="notif_channel_updates">Atualizações</string>
+    <string name="update_notif_desc">Toque para ver detalhes e baixar.</string>
+    <string name="install_error">Erro de instalação: %1$s</string>
+
+    <string name="switch_to_text_input">Mudar para Entrada de Texto</string>
+    <string name="switch_to_touch_input">Mudar para Entrada por Toque</string>
+
+    <string name="frequency_specific_days">Dias Específicos</string>
+    <string name="frequency_daily_multiple">%1$dx Diariamente</string>
+    <string name="frequency_daily">Diariamente</string>
+    <string name="edit_time_desc">Editar hora</string>
+    <string name="status_taken_format">Tomado %1$s%2$s</string>
+    <string name="status_scheduled_format">Agendado para %1$s</string>
+
+    <string name="dynamic_theme_desc">Tema Dinâmico</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Janeiro</string>
+    <string name="month_february">Fevereiro</string>
+    <string name="month_march">Março</string>
+    <string name="month_april">Abril</string>
+    <string name="month_may">Maio</string>
+    <string name="month_june">Junho</string>
+    <string name="month_july">Julho</string>
+    <string name="month_august">Agosto</string>
+    <string name="month_september">Setembro</string>
+    <string name="month_october">Outubro</string>
+    <string name="month_november">Novembro</string>
+    <string name="month_december">Dezembro</string>
+
+    <string name="day_short_mon">S</string>
+    <string name="day_short_tue">T</string>
+    <string name="day_short_wed">Q</string>
+    <string name="day_short_thu">Q</string>
+    <string name="day_short_fri">S</string>
+    <string name="day_short_sat">S</string>
+    <string name="day_short_sun">D</string>
+
+    <string name="settings_language_title">Idioma do App</string>
+    <string name="settings_language_desc">Mudar o idioma nas configurações do sistema</string>
+
+    <string name="edit_mode_desc">Modo de edição</string>
+    <string name="settings_sort_order_title">Ordem de exibição</string>
+    <string name="settings_sort_order_time">Por hora</string>
+    <string name="settings_sort_order_custom">Personalizado</string>
+    <string name="settings_header_preferences">Preferências</string>
+    <string name="settings_notifications_title">Notificações</string>
+    <string name="settings_notifications_desc">Gerenciar estilo de notificação e alarme</string>
+    <string name="settings_show_notifications_title">Mostrar notificações</string>
+    <string name="settings_full_screen_alarm_title">Alarme em tela cheia</string>
+    <string name="settings_full_screen_alarm_desc">Liga a tela com um alarme em vez de uma notificação pop-up</string>
+    <string name="settings_alarm_style_title">Estilo de alarme</string>
+    <string name="settings_alarm_style_desc">Escolha como responder ao alarme em tela cheia</string>
+    <string name="settings_alarm_style_slider">Deslizante (Deslizar)</string>
+    <string name="settings_alarm_style_buttons">Botões</string>
+    <string name="settings_snooze_duration_title">Duração da soneca</string>
+    <string name="settings_snooze_duration_desc">%1$d minutos</string>
+    <string name="alarm_default_title">Lembrete</string>
+    <string name="alarm_time_to_take">É hora de tomar\n%1$s</string>
+    <string name="alarm_taken_action">Tomado</string>
+    <string name="alarm_snooze_action">Soneca (%1$d min)</string>
+    <string name="alarm_snooze_desc">Soneca</string>
+    <string name="alarm_taken_desc">Tomado</string>
+    <string name="notif_reminder_title">Lembrete: %1$s</string>
+    <string name="notif_reminder_desc">É hora de tomar o seu remédio</string>
+    <string name="notif_action_taken">Tomado</string>
+    <string name="notif_action_snooze">Soneca</string>
+    <string name="notif_channel_alarms_name">Alarmes de medicamentos</string>
+    <string name="notif_channel_alarms_desc">Canal para alarmes de medicamentos</string>
+    <string name="unsaved_changes_title">Alterações não salvas</string>
+    <string name="unsaved_changes_desc">Deseja salvar a nova ordem antes de sair?</string>
+    <string name="discard_action">Descartar</string>
+    <string name="notes_hint">Notas (Opcional)</string>
+    <string name="frequency_unit_biweek">A cada 2 Semanas</string>
+    <string name="more_options">Mais</string>
+    <string name="community_title">Junte-se à comunidade</string>
+    <string name="community_desc">Junte-se ao meu canal no Telegram para não perder as últimas notícias e atualizações dos meus projetos, além de algumas prévias exclusivas!</string>
+    <string name="no_thanks">Não, obrigado</string>
+    <string name="sure_action">Claro!</string>
+    <string name="see_source_code">Ver código-fonte</string>
+    <string name="check_updates_action">Verificar atualizações</string>
+    <string name="update_error_check">Não foi possível verificar atualizações</string>
+    <string name="nothing_here_yet">Nada para modificar aqui ainda…</string>
+    <string name="settings_testing_header">Testes</string>
+    <string name="settings_test_alarm_title">Testar alarme/notificação</string>
+    <string name="settings_test_alarm_desc">Aciona o alarme para o medicamento mais próximo</string>
+    <string name="settings_test_telegram_title">Mostrar popup do telegram</string>
+    <string name="settings_test_telegram_desc">Exibe o popup da comunidade</string>
+    <string name="settings_test_crash_title">Forçar fechamento do app</string>
+    <string name="settings_test_crash_desc">Força uma exceção fatal para testar relatórios de falhas</string>
+    <string name="settings_danger_zone_header">Zona de perigo</string>
+    <string name="settings_reset_title">Redefinir dados do app</string>
+    <string name="settings_reset_desc">Excluir permanentemente todos os dados e configurações</string>
+    <string name="settings_reset_confirmation_desc">Tem certeza de que deseja excluir todos os seus medicamentos, eventos e configurações? Esta ação não pode ser desfeita.</string>
+    <string name="settings_reset_action">Redefinir</string>
+    <string name="group_name_label">Nome do grupo</string>
+    <string name="delete_mode_action">Modo de exclusão</string>
+    <string name="add_to_group">Adicionar a %1$s</string>
+    <string name="remove_from_group">Remover de %1$s</string>
+    <string name="settings_app_lock_title">Bloqueio do app</string>
+    <string name="settings_app_lock_desc">Exigir PIN ou impressão digital para abrir o Med</string>
+    <string name="unlock_to_enable">Autentique para ativar o bloqueio</string>
+    <string name="unlock_app">Desbloquear o Med</string>
+    <string name="unlock_action">Desbloquear</string>
+
+    <string name="you_tab_title">Você</string>
+    <string name="medical_info_header">Informações Médicas</string>
+    <string name="not_set">Não definido</string>
+    <string name="dob_title">Data de Nascimento</string>
+    <string name="blood_type_title">Tipo Sanguíneo</string>
+    <string name="height_title">Altura</string>
+    <string name="weight_title">Peso</string>
+    <string name="allergies_title">Alergias</string>
+    <string name="home_tab_title">Início</string>
+    <string name="stats_tab_title">Estatísticas</string>
+    <string name="remove_photo">Remover foto</string>
+    <string name="choose_another_photo">Escolher outra foto</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">DD/MM/AAAA</string>
+    <string name="clear_action">Limpar</string>
+    <string name="height_hint">Insira sua altura</string>
+    <string name="weight_hint">Insira seu peso</string>
+    <string name="privacy_info">Seus dados médicos são salvos localmente e nunca enviados a ninguém.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">Insira suas alergias</string>
+    <string name="stats_streak_label">Sequência</string>
+    <string name="stats_on_time_label">No horário</string>
+    <string name="stats_missed_label">Perdidos/sem</string>
+    <string name="notification_type_label">Tipo de notificação</string>
+    <string name="notification_type_none">Nenhum</string>
+    <string name="notification_type_normal">Notificação</string>
+    <string name="notification_type_alarm">Alarme</string>
+    <string name="notification_type_default">Padrão</string>
+    <string name="settings_header_more">Mais</string>
+    <string name="settings_wearos_title">Med para WearOS</string>
+    <string name="settings_wearos_desc">Gerenciar o app complementar WearOS</string>
+    <string name="wearos_settings_title">Configurações WearOS</string>
+    <string name="wearos_ring_alarms_title">Tocar no relógio</string>
+    <string name="wearos_ring_alarms_desc">Os alarmes tocarão no seu dispositivo WearOS conectado</string>
+    <string name="wearos_alarms_disabled_desc">Os alarmes estão atualmente desativados ou substituídos por notificações</string>
+    <string name="wearos_quick_actions_header">Ações Rápidas do Relógio</string>
+    <string name="wearos_quick_actions_desc">Selecione quais Ações Rápidas podem ser mostradas no seu relógio.</string>
+    <string name="wearos_master_toggle_title">Usar Med no WearOS</string>
+    <string name="fullscreen_permission_title">Ativar alarmes em tela cheia</string>
+    <string name="fullscreen_permission_desc">Para aproveitar ao máximo seus alarmes, você deve permitir que o Med mostre notificações em tela cheia, mesmo quando a tela estiver desligada.</string>
+    <string name="enable_action">Ativar</string>
+    <string name="notif_grouped_title">Hora de tomar seus medicamentos</string>
+    <string name="notif_action_take_all">Tomar todos</string>
+    <string name="alarm_swipe_to_respond">Deslize para escolher</string>
+    <string name="modify_medicine_title">Aplicar mudanças</string>
+    <string name="modify_only_this">Somente este evento</string>
+    <string name="modify_all_following">Este e todos os eventos seguintes</string>
+    <string name="modify_specific_range">Intervalo de datas específico</string>
+    <string name="freq_mode_daily">Diariamente</string>
+    <string name="freq_mode_days">Dias específicos</string>
+    <string name="freq_mode_interval">Intervalo</string>
+    <string name="times_per_day_label">Vezes por dia</string>
+    <string name="interval_every">A cada</string>
+    <string name="interval_days">Dias</string>
+    <string name="interval_weeks">Semanas</string>
+    <string name="interval_months">Meses</string>
+    <string name="happy_birthday_msg">Feliz aniversário!</string>
+    <string name="illness_label">Doença</string>
+    <string name="illness_question">Você ainda tem %1$s?</string>
+    <string name="yes_action">Sim</string>
+    <string name="no_action">Não</string>
+    <string name="new_illness_title">Nova doença</string>
+    <string name="day_of_start_label">Dia de início</string>
+    <string name="edit_medicine_title">Editar medicamento</string>
+    <string name="edit_event_title">Editar evento</string>
+    <string name="edit_illness_title">Editar doença</string>
+    <string name="personal_data_title">Dados</string>
+    <string name="personal_data_header">pessoais</string>
+    <string name="personal_data_intro">Estes detalhes são totalmente opcionais e são salvos com segurança apenas localmente no seu dispositivo.</string>
+    <string name="feat_wearos_title">Med no Wear OS</string>
+    <string name="feat_wearos_desc">Sincronize seus lembretes e eventos de forma transparente com seu smartwatch.</string>
+    <string name="feat_tabs_title">Você e Estatísticas</string>
+    <string name="feat_tabs_desc">Acompanhe seus dados pessoais de saúde e veja estatísticas detalhadas dos seus hábitos.</string>
+    <string name="profile_picture">Foto de perfil</string>
+    <string name="image_set">Imagem configurada</string>
+    <string name="tap_to_set">Toque para configurar</string>
+</resources>

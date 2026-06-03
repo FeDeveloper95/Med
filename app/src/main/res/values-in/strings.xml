@@ -1,0 +1,313 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="medicine_label">Obat</string>
+    <string name="event_label">Acara</string>
+    <string name="menu_tooltip">Menu</string>
+    <string name="menu_action_desc">Menu aksi</string>
+    <string name="expanded_state">Diperluas</string>
+    <string name="collapsed_state">Disembunyikan</string>
+    <string name="close_menu_action">Tutup menu</string>
+    <string name="choose_date_desc">Pilih tanggal</string>
+    <string name="settings_desc">Pengaturan</string>
+    <string name="no_events_label">Tidak ada acara untuk hari ini</string>
+
+    <string name="item_deleted">Dihapus: %1$s</string>
+    <string name="undo_action">Batal</string>
+
+    <string name="cancel_action">Batal</string>
+    <string name="ok_action">Oke</string>
+    <string name="save_action">Simpan</string>
+    <string name="new_event_title">Acara Baru</string>
+    <string name="new_medicine_title">Obat Baru</string>
+    <string name="name_hint">Nama</string>
+
+    <string name="settings_title">Pengaturan</string>
+    <string name="discard">Kembali</string>
+    <string name="cancel">Batal</string>
+    <string name="restart_now">Mulai Ulang Sekarang</string>
+
+    <string name="settings_theme_title">Tema</string>
+    <string name="settings_theme_system">Sistem</string>
+    <string name="settings_theme_light">Terang</string>
+    <string name="settings_theme_dark">Gelap</string>
+
+    <string name="settings_week_start_title">Awal minggu</string>
+    <string name="sunday">Minggu</string>
+    <string name="monday">Senin</string>
+
+    <string name="settings_header_customization">Kustomisasi</string>
+    <string name="settings_presets_title">Aksi Cepat</string>
+    <string name="settings_presets_desc">Kelola acara kustom di menu utama</string>
+    <string name="add_action">Tambah</string>
+
+    <string name="settings_header_info">Info</string>
+    <string name="settings_version_title">Versi Aplikasi</string>
+    <string name="unknown">Tidak diketahui</string>
+    <string name="settings_developer_title">Pengembang</string>
+    <string name="settings_developer_name">FeDeveloper95</string>
+    <string name="settings_report_title">Laporkan Bug / Fitur</string>
+    <string name="settings_report_desc">Hubungi di Telegram</string>
+
+    <string name="settings_check_updates_title">Periksa Pembaruan</string>
+    <string name="settings_check_updates_desc">Temukan versi terbaru</string>
+    <string name="update_action">Perbarui</string>
+    <string name="update_available">Pembaruan tersedia: v%1$s</string>
+    <string name="update_latest_version_msg">Tidak ada pembaruan saat ini.</string>
+    <string name="update_error_msg">Tidak dapat memeriksa pembaruan. Periksa koneksi Anda.</string>
+    <string name="later">Nanti</string>
+
+    <string name="quick_actions_title">Aksi Cepat</string>
+    <string name="quick_actions_info">Aksi Cepat membantu Anda dengan cepat menambahkan fenomena atau acara berulang ke Med.</string>
+    <string name="active_actions_header">Aksi Aktif</string>
+
+    <string name="welcome_to">Selamat datang di</string>
+    <string name="welcome_preparing_subtitle">Mari siapkan semuanya untuk Anda.</string>
+    <string name="next">Selanjutnya</string>
+    <string name="back">Kembali</string>
+    <string name="get_started">Mulai</string>
+
+    <string name="perm_required">Diperlukan</string>
+    <string name="perm_permissions">Izin</string>
+    <string name="perm_intro_text">Izin ini diperlukan agar Med berfungsi dengan benar. Harap berikan untuk melanjutkan.</string>
+
+    <string name="perm_notif_title">Notifikasi</string>
+    <string name="perm_notif_desc">Ketahui segera kapan harus minum obat Anda.</string>
+
+    <string name="perm_install_title">Instalasi Aplikasi</string>
+    <string name="perm_install_desc">Diperlukan untuk mengunduh dan menginstal pembaruan.</string>
+
+    <string name="feat_discover">Temukan</string>
+    <string name="feat_features">Fitur</string>
+    <string name="feat_intro">Inilah yang dapat Anda lakukan dengan aplikasi Med baru Anda.</string>
+
+    <string name="feat_reminders_title">Pengingat Cerdas</string>
+    <string name="feat_reminders_desc">Terima notifikasi tepat waktu untuk obat-obatan Anda.</string>
+
+    <string name="feat_tracking_title">Pelacakan</string>
+    <string name="feat_tracking_desc">Simpan riwayat kapan Anda meminum obat Anda.</string>
+
+    <string name="feat_presets_title">Aksi Cepat</string>
+    <string name="feat_presets_desc">Siapkan prasetel untuk acara berulang secara instan.</string>
+
+    <string name="feat_update_title">Tetap Diperbarui</string>
+    <string name="feat_update_desc">Periksa pembaruan langsung di Pengaturan aplikasi.</string>
+
+    <string name="settings_advanced_title">Lanjutan</string>
+    <string name="settings_advanced_desc">Fitur eksperimental dan pembaruan</string>
+    <string name="settings_auto_updates_title">Pembaruan otomatis</string>
+    <string name="settings_auto_updates_desc">Periksa pembaruan saat startup</string>
+    <string name="settings_setup_title">Pengaturan Awal</string>
+    <string name="settings_setup_desc">Jalankan kembali panduan selamat datang</string>
+    <string name="settings_backup_header">Pencadangan &amp; Pemulihan</string>
+    <string name="settings_export_title">Ekspor Pengaturan</string>
+    <string name="settings_export_desc">Simpan konfigurasi</string>
+    <string name="settings_import_title">Impor Pengaturan</string>
+    <string name="settings_import_desc">Pulihkan dari file cadangan</string>
+    <string name="dialog_restart_title">Perlu Mulai Ulang</string>
+    <string name="dialog_restart_desc">Pengaturan telah diimpor. Mulai ulang aplikasi untuk menerapkan perubahan.</string>
+    <string name="export_success">Pengaturan berhasil diekspor</string>
+    <string name="export_error">Kesalahan saat mengekspor pengaturan</string>
+    <string name="import_error">Kesalahan saat mengimpor pengaturan</string>
+
+    <string name="select_color">Warna</string>
+    <string name="time_label">Waktu</string>
+    <string name="choose_icon">Pilih Ikon</string>
+    <string name="frequency_label">Frekuensi</string>
+
+    <string name="schedule_label_format">Jadwal %1$d</string>
+
+    <string name="download_title">Pembaruan Med</string>
+    <string name="download_desc">Mengunduh versi %1$s…</string>
+    <string name="download_started">Unduhan dimulai…</string>
+    <string name="download_failed">Unduhan gagal: %1$s</string>
+    <string name="notif_channel_updates">Pembaruan</string>
+    <string name="update_notif_desc">Ketuk untuk melihat detail dan mengunduh.</string>
+    <string name="install_error">Kesalahan instalasi: %1$s</string>
+
+    <string name="switch_to_text_input">Beralih ke Input Teks</string>
+    <string name="switch_to_touch_input">Beralih ke Input Sentuh</string>
+
+    <string name="frequency_specific_days">Hari Tertentu</string>
+    <string name="frequency_daily_multiple">%1$dx Sehari</string>
+    <string name="frequency_daily">Setiap Hari</string>
+    <string name="edit_time_desc">Edit waktu</string>
+    <string name="status_taken_format">Diminum %1$s%2$s</string>
+    <string name="status_scheduled_format">Dijadwalkan untuk %1$s</string>
+
+    <string name="dynamic_theme_desc">Tema Dinamis</string>
+    <string name="version_format">v%1$s (%2$d)</string>
+    <string name="month_january">Januari</string>
+    <string name="month_february">Februari</string>
+    <string name="month_march">Maret</string>
+    <string name="month_april">April</string>
+    <string name="month_may">Mei</string>
+    <string name="month_june">Juni</string>
+    <string name="month_july">Juli</string>
+    <string name="month_august">Agustus</string>
+    <string name="month_september">September</string>
+    <string name="month_october">Oktober</string>
+    <string name="month_november">November</string>
+    <string name="month_december">Desember</string>
+
+    <string name="day_short_mon">S</string>
+    <string name="day_short_tue">S</string>
+    <string name="day_short_wed">R</string>
+    <string name="day_short_thu">K</string>
+    <string name="day_short_fri">J</string>
+    <string name="day_short_sat">S</string>
+    <string name="day_short_sun">M</string>
+
+    <string name="settings_language_title">Bahasa Aplikasi</string>
+    <string name="settings_language_desc">Ubah bahasa di pengaturan sistem</string>
+
+    <string name="edit_mode_desc">Mode edit</string>
+    <string name="settings_sort_order_title">Urutan tampilan</string>
+    <string name="settings_sort_order_time">Berdasarkan waktu</string>
+    <string name="settings_sort_order_custom">Kustom</string>
+    <string name="settings_header_preferences">Preferensi</string>
+    <string name="settings_notifications_title">Notifikasi</string>
+    <string name="settings_notifications_desc">Kelola gaya notifikasi dan alarm</string>
+    <string name="settings_show_notifications_title">Tampilkan notifikasi</string>
+    <string name="settings_full_screen_alarm_title">Alarm layar penuh</string>
+    <string name="settings_full_screen_alarm_desc">Menyalakan layar dengan alarm alih-alih notifikasi pop-up</string>
+    <string name="settings_alarm_style_title">Gaya alarm</string>
+    <string name="settings_alarm_style_desc">Pilih cara merespons alarm layar penuh</string>
+    <string name="settings_alarm_style_slider">Geser (Usap)</string>
+    <string name="settings_alarm_style_buttons">Tombol</string>
+    <string name="settings_snooze_duration_title">Durasi tunda</string>
+    <string name="settings_snooze_duration_desc">%1$d menit</string>
+    <string name="alarm_default_title">Pengingat</string>
+    <string name="alarm_time_to_take">Waktunya meminum\n%1$s</string>
+    <string name="alarm_taken_action">Diminum</string>
+    <string name="alarm_snooze_action">Tunda (%1$d mnt)</string>
+    <string name="alarm_snooze_desc">Tunda</string>
+    <string name="alarm_taken_desc">Diminum</string>
+    <string name="notif_reminder_title">Pengingat: %1$s</string>
+    <string name="notif_reminder_desc">Waktunya meminum obat Anda</string>
+    <string name="notif_action_taken">Diminum</string>
+    <string name="notif_action_snooze">Tunda</string>
+    <string name="notif_channel_alarms_name">Alarm obat</string>
+    <string name="notif_channel_alarms_desc">Saluran untuk alarm obat</string>
+    <string name="unsaved_changes_title">Perubahan belum disimpan</string>
+    <string name="unsaved_changes_desc">Apakah Anda ingin menyimpan urutan baru sebelum keluar?</string>
+    <string name="discard_action">Buang</string>
+    <string name="notes_hint">Catatan (Opsional)</string>
+    <string name="frequency_unit_biweek">Setiap 2 Minggu</string>
+    <string name="more_options">Lainnya</string>
+    <string name="community_title">Bergabung dengan komunitas</string>
+    <string name="community_desc">Bergabunglah dengan saluran Telegram saya agar tidak ketinggalan berita dan pembaruan terbaru tentang proyek saya, bersama dengan beberapa cuplikan eksklusif!</string>
+    <string name="no_thanks">Tidak, terima kasih</string>
+    <string name="sure_action">Tentu!</string>
+    <string name="see_source_code">Lihat kode sumber</string>
+    <string name="check_updates_action">Periksa pembaruan</string>
+    <string name="update_error_check">Tidak dapat memeriksa pembaruan</string>
+    <string name="nothing_here_yet">Belum ada yang bisa dimodifikasi di sini…</string>
+    <string name="settings_testing_header">Pengujian</string>
+    <string name="settings_test_alarm_title">Uji alarm/notifikasi</string>
+    <string name="settings_test_alarm_desc">Memicu alarm untuk obat terdekat</string>
+    <string name="settings_test_telegram_title">Tampilkan popup telegram</string>
+    <string name="settings_test_telegram_desc">Menampilkan popup komunitas</string>
+    <string name="settings_test_crash_title">Buat aplikasi mogok</string>
+    <string name="settings_test_crash_desc">Memaksa pengecualian fatal untuk menguji pelaporan kerusakan</string>
+    <string name="settings_danger_zone_header">Zona bahaya</string>
+    <string name="settings_reset_title">Setel ulang data aplikasi</string>
+    <string name="settings_reset_desc">Hapus semua data dan pengaturan secara permanen</string>
+    <string name="settings_reset_confirmation_desc">Yakin ingin menghapus semua obat, acara, dan pengaturan Anda? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="settings_reset_action">Setel Ulang</string>
+    <string name="group_name_label">Nama grup</string>
+    <string name="delete_mode_action">Mode hapus</string>
+    <string name="add_to_group">Tambahkan ke %1$s</string>
+    <string name="remove_from_group">Hapus dari %1$s</string>
+    <string name="settings_app_lock_title">Kunci aplikasi</string>
+    <string name="settings_app_lock_desc">Wajibkan PIN atau sidik jari untuk membuka Med</string>
+    <string name="unlock_to_enable">Autentikasi untuk mengaktifkan kunci</string>
+    <string name="unlock_app">Buka kunci Med</string>
+    <string name="unlock_action">Buka kunci</string>
+
+    <string name="you_tab_title">Anda</string>
+    <string name="medical_info_header">Informasi Medis</string>
+    <string name="not_set">Belum diatur</string>
+    <string name="dob_title">Tanggal Lahir</string>
+    <string name="blood_type_title">Golongan Darah</string>
+    <string name="height_title">Tinggi</string>
+    <string name="weight_title">Berat</string>
+    <string name="allergies_title">Alergi</string>
+    <string name="home_tab_title">Beranda</string>
+    <string name="stats_tab_title">Statistik</string>
+    <string name="remove_photo">Hapus foto</string>
+    <string name="choose_another_photo">Pilih foto lain</string>
+    <string name="blood_type_a_pos">A+</string>
+    <string name="blood_type_a_neg">A-</string>
+    <string name="blood_type_b_pos">B+</string>
+    <string name="blood_type_b_neg">B-</string>
+    <string name="blood_type_ab_pos">AB+</string>
+    <string name="blood_type_ab_neg">AB-</string>
+    <string name="blood_type_o_pos">O+</string>
+    <string name="blood_type_o_neg">O-</string>
+    <string name="dob_hint">HH/BB/TTTT</string>
+    <string name="clear_action">Bersihkan</string>
+    <string name="height_hint">Masukkan tinggi Anda</string>
+    <string name="weight_hint">Masukkan berat Anda</string>
+    <string name="privacy_info">Data medis Anda disimpan secara lokal dan tidak pernah dikirim ke siapa pun.</string>
+    <string name="unit_cm">cm</string>
+    <string name="unit_in">in</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lbs">lbs</string>
+    <string name="allergies_hint">Masukkan alergi Anda</string>
+    <string name="stats_streak_label">Rentetan</string>
+    <string name="stats_on_time_label">Tepat waktu</string>
+    <string name="stats_missed_label">Terlewat/mgg</string>
+    <string name="notification_type_label">Jenis notifikasi</string>
+    <string name="notification_type_none">Tidak ada</string>
+    <string name="notification_type_normal">Notifikasi</string>
+    <string name="notification_type_alarm">Alarm</string>
+    <string name="notification_type_default">Default</string>
+    <string name="settings_header_more">Lainnya</string>
+    <string name="settings_wearos_title">Med untuk WearOS</string>
+    <string name="settings_wearos_desc">Kelola aplikasi pendamping WearOS</string>
+    <string name="wearos_settings_title">Pengaturan WearOS</string>
+    <string name="wearos_ring_alarms_title">Dering di jam tangan</string>
+    <string name="wearos_ring_alarms_desc">Alarm akan berdering pada perangkat WearOS Anda yang terhubung</string>
+    <string name="wearos_alarms_disabled_desc">Alarm saat ini dinonaktifkan atau diganti dengan notifikasi</string>
+    <string name="wearos_quick_actions_header">Aksi Cepat Jam Tangan</string>
+    <string name="wearos_quick_actions_desc">Pilih Aksi Cepat yang dapat ditampilkan di jam tangan Anda.</string>
+    <string name="wearos_master_toggle_title">Gunakan Med di WearOS</string>
+    <string name="fullscreen_permission_title">Aktifkan alarm layar penuh</string>
+    <string name="fullscreen_permission_desc">Untuk memaksimalkan alarm Anda, izinkan Med menampilkan notifikasi layar penuh bahkan saat layar mati.</string>
+    <string name="enable_action">Aktifkan</string>
+    <string name="notif_grouped_title">Waktunya minum obat Anda</string>
+    <string name="notif_action_take_all">Minum semua</string>
+    <string name="alarm_swipe_to_respond">Usap untuk memilih</string>
+    <string name="modify_medicine_title">Terapkan perubahan</string>
+    <string name="modify_only_this">Hanya acara ini</string>
+    <string name="modify_all_following">Ini dan semua acara berikutnya</string>
+    <string name="modify_specific_range">Rentang tanggal tertentu</string>
+    <string name="freq_mode_daily">Setiap Hari</string>
+    <string name="freq_mode_days">Hari tertentu</string>
+    <string name="freq_mode_interval">Interval</string>
+    <string name="times_per_day_label">Kali per hari</string>
+    <string name="interval_every">Setiap</string>
+    <string name="interval_days">Hari</string>
+    <string name="interval_weeks">Minggu</string>
+    <string name="interval_months">Bulan</string>
+    <string name="happy_birthday_msg">Selamat ulang tahun!</string>
+    <string name="illness_label">Penyakit</string>
+    <string name="illness_question">Apakah Anda masih menderita %1$s?</string>
+    <string name="yes_action">Ya</string>
+    <string name="no_action">Tidak</string>
+    <string name="new_illness_title">Penyakit baru</string>
+    <string name="day_of_start_label">Hari mulai</string>
+    <string name="edit_medicine_title">Edit obat</string>
+    <string name="edit_event_title">Edit acara</string>
+    <string name="edit_illness_title">Edit penyakit</string>
+    <string name="personal_data_title">Data</string>
+    <string name="personal_data_header">pribadi</string>
+    <string name="personal_data_intro">Detail ini sepenuhnya opsional dan disimpan dengan aman hanya secara lokal di perangkat Anda.</string>
+    <string name="feat_wearos_title">Med di Wear OS</string>
+    <string name="feat_wearos_desc">Sinkronkan pengingat dan acara Anda secara lancar dengan jam tangan pintar Anda.</string>
+    <string name="feat_tabs_title">Anda dan Statistik</string>
+    <string name="feat_tabs_desc">Lacak data kesehatan pribadi Anda dan lihat statistik detail kebiasaan Anda.</string>
+    <string name="profile_picture">Gambar profil</string>
+    <string name="image_set">Gambar diatur</string>
+    <string name="tap_to_set">Ketuk untuk mengatur</string>
+</resources>
