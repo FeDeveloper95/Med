@@ -143,7 +143,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
     var hasNotificationPermission by remember {
         mutableStateOf(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             } else {
                 NotificationManagerCompat.from(context).areNotificationsEnabled()
             }
@@ -158,7 +161,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 val hasPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                    ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) == PackageManager.PERMISSION_GRANTED
                 } else {
                     NotificationManagerCompat.from(context).areNotificationsEnabled()
                 }
@@ -187,7 +193,10 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
     val handleNotificationToggle: (Boolean) -> Unit = { checked ->
         if (checked) {
             val hasPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
             } else {
                 NotificationManagerCompat.from(context).areNotificationsEnabled()
             }
@@ -197,11 +206,14 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
                 prefs.edit().putBoolean(PREF_SHOW_NOTIFICATIONS, true).apply()
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    val hasRequested = prefs.getBoolean("has_requested_notification_permission", false)
-                    val rationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                    val hasRequested =
+                        prefs.getBoolean("has_requested_notification_permission", false)
+                    val rationale =
+                        activity.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
 
                     if (!hasRequested || rationale) {
-                        prefs.edit().putBoolean("has_requested_notification_permission", true).apply()
+                        prefs.edit().putBoolean("has_requested_notification_permission", true)
+                            .apply()
                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                     } else {
                         val intent = Intent().apply {

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Medicin</string>
+    <string name="header_events">Begivenheder</string>
+    <string name="no_medicines">Ingen medicin</string>
+    <string name="no_events">Ingen begivenheder</string>
+    <string name="add_event">Tilføj begivenhed</string>
+    <string name="settings">Indstillinger</string>
+    <string name="no_events_enabled">Ingen hurtige handlinger fundet</string>
+    <string name="alarms_title">Alarmer</string>
+    <string name="alarms_desc">Modtag alarmer på dit ur</string>
+    <string name="quick_actions_title">Hurtige handlinger</string>
+    <string name="take">Tag</string>
+    <string name="snooze">Slumre</string>
+</resources>

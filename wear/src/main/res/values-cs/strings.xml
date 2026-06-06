@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Léky</string>
+    <string name="header_events">Události</string>
+    <string name="no_medicines">Žádné léky</string>
+    <string name="no_events">Žádné události</string>
+    <string name="add_event">Přidat událost</string>
+    <string name="settings">Nastavení</string>
+    <string name="no_events_enabled">Nebyly nalezeny žádné rychlé akce</string>
+    <string name="alarms_title">Budíky</string>
+    <string name="alarms_desc">Přijímat budíky na hodinkách</string>
+    <string name="quick_actions_title">Rychlé akce</string>
+    <string name="take">Vzít</string>
+    <string name="snooze">Odložit</string>
+</resources>

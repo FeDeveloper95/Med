@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Φάρμακα</string>
+    <string name="header_events">Συμβάντα</string>
+    <string name="no_medicines">Κανένα φάρμακο</string>
+    <string name="no_events">Κανένα συμβάν</string>
+    <string name="add_event">Προσθήκη συμβάντος</string>
+    <string name="settings">Ρυθμίσεις</string>
+    <string name="no_events_enabled">Δεν βρέθηκαν γρήγορες ενέργειες</string>
+    <string name="alarms_title">Ειδοποιήσεις</string>
+    <string name="alarms_desc">Λάβετε ειδοποιήσεις στο ρολόι σας</string>
+    <string name="quick_actions_title">Γρήγορες ενέργειες</string>
+    <string name="take">Λήψη</string>
+    <string name="snooze">Αναβολή</string>
+</resources>

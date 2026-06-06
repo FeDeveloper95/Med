@@ -151,7 +151,9 @@ fun QuickActionsScreen(onBack: () -> Unit) {
         val jsonArray = JSONArray(list)
         prefs.edit().putString(PREF_PRESETS_ORDERED, jsonArray.toString()).apply()
 
-        val allNames = list.mapNotNull { it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() } }.toSet()
+        val allNames =
+            list.mapNotNull { it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() } }
+                .toSet()
         val ringOnWatch = prefs.getBoolean("pref_wear_ring_alarms", true)
         val savedEvents = prefs.getStringSet("pref_wear_enabled_events", null)
         val wearEnabledEvents = savedEvents?.filter { allNames.contains(it) }?.toSet() ?: allNames
@@ -259,7 +261,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
-                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             val iconVector = availableIcons[selectedIconName] ?: Icons.Rounded.Event
 
                             val previewBackgroundColor = if (selectedColor == "dynamic") {
@@ -358,7 +363,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
                                             val cornerPercent by animateIntAsState(
                                                 targetValue = if (isPressed) 15 else 50,
-                                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                                                animationSpec = spring(
+                                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                                    stiffness = Spring.StiffnessMedium
+                                                ),
                                                 label = "corner"
                                             )
 
@@ -443,7 +451,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
 
                                     val cornerPercent by animateIntAsState(
                                         targetValue = targetCorner,
-                                        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                                        animationSpec = spring(
+                                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                                            stiffness = Spring.StiffnessMedium
+                                        ),
                                         label = "colorCorner"
                                     )
 

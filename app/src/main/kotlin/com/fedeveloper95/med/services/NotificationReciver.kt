@@ -72,12 +72,17 @@ class NotificationReceiver : BroadcastReceiver() {
             val nextDateTime = getNextOccurrence(item)
 
             if (nextDateTime != null) {
-                val timeInMillis = nextDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                val timeInMillis =
+                    nextDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
                         alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
                     } else {
-                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
+                        alarmManager.setExactAndAllowWhileIdle(
+                            AlarmManager.RTC_WAKEUP,
+                            timeInMillis,
+                            pendingIntent
+                        )
                     }
                 } catch (e: SecurityException) {
                     alarmManager.set(AlarmManager.RTC_WAKEUP, timeInMillis, pendingIntent)
@@ -182,7 +187,8 @@ class NotificationReceiver : BroadcastReceiver() {
                 val shouldTriggerWear = useFullScreen && wearAlarmsEnabled
 
                 createNotificationChannels(context)
-                val channelId = if (useFullScreen && !shouldTriggerWear) ALARM_CHANNEL_ID else SIMPLE_NOTIF_CHANNEL_ID
+                val channelId =
+                    if (useFullScreen && !shouldTriggerWear) ALARM_CHANNEL_ID else SIMPLE_NOTIF_CHANNEL_ID
 
                 val notifId = validGroupItems.minOf { it.id }.toInt()
                 val isGrouped = validGroupItems.size > 1
@@ -193,13 +199,19 @@ class NotificationReceiver : BroadcastReceiver() {
 
                 val builder = NotificationCompat.Builder(context, channelId)
                     .setSmallIcon(R.drawable.ic_notification)
-                    .setContentTitle(if (isGrouped) context.getString(R.string.notif_grouped_title) else context.getString(R.string.notif_reminder_title, triggerItem.title))
+                    .setContentTitle(
+                        if (isGrouped) context.getString(R.string.notif_grouped_title) else context.getString(
+                            R.string.notif_reminder_title,
+                            triggerItem.title
+                        )
+                    )
                     .setContentText(if (isGrouped) titles else context.getString(R.string.notif_reminder_desc))
                     .setPriority(NotificationCompat.PRIORITY_MAX)
                     .setAutoCancel(!useFullScreen || shouldTriggerWear)
 
                 if (useFullScreen && !shouldTriggerWear) {
-                    val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                     builder.setCategory(NotificationCompat.CATEGORY_ALARM)
                     builder.setSound(soundUri)
                     builder.setVibrate(longArrayOf(0, 1000, 1000))
@@ -236,14 +248,22 @@ class NotificationReceiver : BroadcastReceiver() {
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
 
-                val takeActionText = if (isGrouped) context.getString(R.string.notif_action_take_all) else context.getString(R.string.notif_action_taken)
+                val takeActionText =
+                    if (isGrouped) context.getString(R.string.notif_action_take_all) else context.getString(
+                        R.string.notif_action_taken
+                    )
 
                 builder.addAction(R.drawable.ic_notification, takeActionText, takePendingIntent)
-                builder.addAction(R.drawable.ic_notification, context.getString(R.string.notif_action_snooze), snoozePendingIntent)
+                builder.addAction(
+                    R.drawable.ic_notification,
+                    context.getString(R.string.notif_action_snooze),
+                    snoozePendingIntent
+                )
 
                 if (useFullScreen && !shouldTriggerWear) {
                     val fullScreenIntent = Intent(context, AlarmActivity::class.java).apply {
-                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
                         putExtra("ITEM_IDS", itemIds)
                         putExtra("ITEM_TITLE", titles)
                         putExtra("NOTIF_ID", notifId)
@@ -276,7 +296,8 @@ class NotificationReceiver : BroadcastReceiver() {
                     notification.flags = notification.flags or Notification.FLAG_INSISTENT
                 }
 
-                val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val notifManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notifManager.notify(notifId, notification)
             }
 
@@ -304,15 +325,21 @@ class NotificationReceiver : BroadcastReceiver() {
 
                     if (isDataUpdated) {
                         DataRepository.saveData(context, items)
-                        context.sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(context.packageName))
+                        context.sendBroadcast(
+                            Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
+                                context.packageName
+                            )
+                        )
                     }
 
                     val notifId = intent.getIntExtra("NOTIF_ID", -1)
                     if (notifId != -1) {
-                        val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val notifManager =
+                            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notifManager.cancel(notifId)
                     } else if (itemIds.size == 1) {
-                        val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val notifManager =
+                            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notifManager.cancel(itemIds[0].toInt())
                     }
 
@@ -328,7 +355,8 @@ class NotificationReceiver : BroadcastReceiver() {
 
                 if (itemIds != null) {
                     val snoozeDuration = prefs.getInt(PREF_SNOOZE_DURATION, 10)
-                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val alarmManager =
+                        context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     val snoozeTime = System.currentTimeMillis() + (snoozeDuration * 60 * 1000)
 
                     for (id in itemIds) {
@@ -348,7 +376,11 @@ class NotificationReceiver : BroadcastReceiver() {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
                                 alarmManager.set(AlarmManager.RTC_WAKEUP, snoozeTime, pendingIntent)
                             } else {
-                                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, snoozeTime, pendingIntent)
+                                alarmManager.setExactAndAllowWhileIdle(
+                                    AlarmManager.RTC_WAKEUP,
+                                    snoozeTime,
+                                    pendingIntent
+                                )
                             }
                         } catch (e: SecurityException) {
                             alarmManager.set(AlarmManager.RTC_WAKEUP, snoozeTime, pendingIntent)
@@ -357,10 +389,12 @@ class NotificationReceiver : BroadcastReceiver() {
 
                     val notifId = intent.getIntExtra("NOTIF_ID", -1)
                     if (notifId != -1) {
-                        val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val notifManager =
+                            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notifManager.cancel(notifId)
                     } else if (itemIds.size == 1) {
-                        val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                        val notifManager =
+                            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         notifManager.cancel(itemIds[0].toInt())
                     }
 
@@ -372,7 +406,8 @@ class NotificationReceiver : BroadcastReceiver() {
 
     private fun createNotificationChannels(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val name = context.getString(R.string.notif_channel_alarms_name)
             val descriptionText = context.getString(R.string.notif_channel_alarms_desc)
 
@@ -382,7 +417,8 @@ class NotificationReceiver : BroadcastReceiver() {
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = descriptionText
-                val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 val audioAttributes = AudioAttributes.Builder()
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                     .setUsage(AudioAttributes.USAGE_ALARM)

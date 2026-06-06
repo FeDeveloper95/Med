@@ -1,4 +1,8 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class, androidx.compose.ui.text.ExperimentalTextApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class,
+    androidx.compose.ui.text.ExperimentalTextApi::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.fedeveloper95.med.elements.MainActivity.Tabs.You
 

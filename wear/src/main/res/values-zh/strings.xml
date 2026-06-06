@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">药物</string>
+    <string name="header_events">事件</string>
+    <string name="no_medicines">暂无药物</string>
+    <string name="no_events">暂无事件</string>
+    <string name="add_event">添加事件</string>
+    <string name="settings">设置</string>
+    <string name="no_events_enabled">未找到快捷操作</string>
+    <string name="alarms_title">闹钟</string>
+    <string name="alarms_desc">在手表上接收闹钟</string>
+    <string name="quick_actions_title">快捷操作</string>
+    <string name="take">服用</string>
+    <string name="snooze">稍后提醒</string>
+</resources>

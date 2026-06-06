@@ -272,12 +272,18 @@ fun MedicineBottomSheet(
 
     val cancelCorner by animateIntAsState(
         targetValue = if (isCancelPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "cancelCorner"
     )
     val saveCorner by animateIntAsState(
         targetValue = if (isSavePressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "saveCorner"
     )
 
@@ -620,7 +626,9 @@ fun MedicineBottomSheet(
                                         trailingIcon = {
                                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedInterval)
                                         },
-                                        modifier = Modifier.menuAnchor().fillMaxWidth(),
+                                        modifier = Modifier
+                                            .menuAnchor()
+                                            .fillMaxWidth(),
                                         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
                                     )
 
@@ -631,7 +639,12 @@ fun MedicineBottomSheet(
                                     ) {
                                         options.forEachIndexed { index, selectionOption ->
                                             DropdownMenuItem(
-                                                text = { Text(selectionOption, fontFamily = GoogleSansFlex) },
+                                                text = {
+                                                    Text(
+                                                        selectionOption,
+                                                        fontFamily = GoogleSansFlex
+                                                    )
+                                                },
                                                 onClick = {
                                                     intervalUnit = index
                                                     expandedInterval = false
@@ -698,10 +711,11 @@ fun MedicineBottomSheet(
                                             initialItem.recurrenceDays != null -> 1
                                             else -> 0
                                         }
-                                        val initialDaysSet = initialItem.recurrenceDays?.toSet() ?: setOf(LocalDate.now().dayOfWeek)
+                                        val initialDaysSet = initialItem.recurrenceDays?.toSet()
+                                            ?: setOf(LocalDate.now().dayOfWeek)
 
                                         val currentBase = intervalDays.toIntOrNull() ?: 2
-                                        val currentGap = when(intervalUnit) {
+                                        val currentGap = when (intervalUnit) {
                                             1 -> currentBase * 7
                                             2 -> currentBase * 30
                                             else -> currentBase
@@ -709,13 +723,16 @@ fun MedicineBottomSheet(
 
                                         text != initialItem.title ||
                                                 notes != (initialItem.notes ?: "") ||
-                                                selectedIconName != (initialItem.iconName ?: "MedicalServices") ||
-                                                selectedColor != (initialItem.colorCode ?: "dynamic") ||
+                                                selectedIconName != (initialItem.iconName
+                                            ?: "MedicalServices") ||
+                                                selectedColor != (initialItem.colorCode
+                                            ?: "dynamic") ||
                                                 notificationType != initialItem.notificationType ||
                                                 selectedTimes != listOf(initialItem.creationTime) ||
                                                 frequencyType != initialFreqType ||
                                                 (frequencyType == 1 && selectedDays != initialDaysSet) ||
-                                                (frequencyType == 2 && currentGap != (initialItem.intervalGap ?: 2))
+                                                (frequencyType == 2 && currentGap != (initialItem.intervalGap
+                                                    ?: 2))
                                     }
 
                                     if (isModified) {
@@ -723,7 +740,8 @@ fun MedicineBottomSheet(
                                     } else {
                                         scope.launch { sheetState.hide() }.invokeOnCompletion {
                                             if (!sheetState.isVisible) {
-                                                val days = if (frequencyType == 1) selectedDays.toList() else null
+                                                val days =
+                                                    if (frequencyType == 1) selectedDays.toList() else null
                                                 val gap = if (frequencyType == 2) {
                                                     val base = intervalDays.toIntOrNull() ?: 2
                                                     when (intervalUnit) {
@@ -751,7 +769,8 @@ fun MedicineBottomSheet(
                                 } else {
                                     scope.launch { sheetState.hide() }.invokeOnCompletion {
                                         if (!sheetState.isVisible) {
-                                            val days = if (frequencyType == 1) selectedDays.toList() else null
+                                            val days =
+                                                if (frequencyType == 1) selectedDays.toList() else null
                                             val gap = if (frequencyType == 2) {
                                                 val base = intervalDays.toIntOrNull() ?: 2
                                                 when (intervalUnit) {

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Medicijnen</string>
+    <string name="header_events">Gebeurtenissen</string>
+    <string name="no_medicines">Geen medicijnen</string>
+    <string name="no_events">Geen gebeurtenissen</string>
+    <string name="add_event">Gebeurtenis toevoegen</string>
+    <string name="settings">Instellingen</string>
+    <string name="no_events_enabled">Geen snelle acties gevonden</string>
+    <string name="alarms_title">Alarmen</string>
+    <string name="alarms_desc">Ontvang alarmen op je horloge</string>
+    <string name="quick_actions_title">Snelle acties</string>
+    <string name="take">Innemen</string>
+    <string name="snooze">Sluimeren</string>
+</resources>

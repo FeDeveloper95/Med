@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Lääkkeet</string>
+    <string name="header_events">Tapahtumat</string>
+    <string name="no_medicines">Ei lääkkeitä</string>
+    <string name="no_events">Ei tapahtumia</string>
+    <string name="add_event">Lisää tapahtuma</string>
+    <string name="settings">Asetukset</string>
+    <string name="no_events_enabled">Pikatoimintoja ei löytynyt</string>
+    <string name="alarms_title">Hälytykset</string>
+    <string name="alarms_desc">Vastaanota hälytyksiä kellossasi</string>
+    <string name="quick_actions_title">Pikatoiminnot</string>
+    <string name="take">Ota</string>
+    <string name="snooze">Torkuta</string>
+</resources>

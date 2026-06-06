@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Mediciner</string>
+    <string name="header_events">Händelser</string>
+    <string name="no_medicines">Inga mediciner</string>
+    <string name="no_events">Inga händelser</string>
+    <string name="add_event">Lägg till händelse</string>
+    <string name="settings">Inställningar</string>
+    <string name="no_events_enabled">Inga snabbåtgärder hittades</string>
+    <string name="alarms_title">Larm</string>
+    <string name="alarms_desc">Ta emot larm på klockan</string>
+    <string name="quick_actions_title">Snabbåtgärder</string>
+    <string name="take">Ta</string>
+    <string name="snooze">Slumra</string>
+</resources>

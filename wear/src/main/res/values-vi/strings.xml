@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Thuốc</string>
+    <string name="header_events">Sự kiện</string>
+    <string name="no_medicines">Không có thuốc</string>
+    <string name="no_events">Không có sự kiện</string>
+    <string name="add_event">Thêm sự kiện</string>
+    <string name="settings">Cài đặt</string>
+    <string name="no_events_enabled">Không tìm thấy Hành động nhanh</string>
+    <string name="alarms_title">Báo thức</string>
+    <string name="alarms_desc">Nhận báo thức trên đồng hồ của bạn</string>
+    <string name="quick_actions_title">Hành động nhanh</string>
+    <string name="take">Uống</string>
+    <string name="snooze">Báo lại</string>
+</resources>

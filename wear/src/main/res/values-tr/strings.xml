@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">İlaçlar</string>
+    <string name="header_events">Etkinlikler</string>
+    <string name="no_medicines">İlaç yok</string>
+    <string name="no_events">Etkinlik yok</string>
+    <string name="add_event">Etkinlik Ekle</string>
+    <string name="settings">Ayarlar</string>
+    <string name="no_events_enabled">Hızlı İşlem bulunamadı</string>
+    <string name="alarms_title">Alarmlar</string>
+    <string name="alarms_desc">Saatinizde alarm alın</string>
+    <string name="quick_actions_title">Hızlı İşlemler</string>
+    <string name="take">Al</string>
+    <string name="snooze">Ertele</string>
+</resources>

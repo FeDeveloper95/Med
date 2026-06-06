@@ -331,10 +331,11 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                         onClick = {
                             val now = LocalTime.now()
                             val items = DataRepository.loadData(context)
-                            val closest = items.filter { it.type == ItemType.Medicine }.minByOrNull {
-                                val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
-                                if (diff >= 0) diff else diff + 24 * 60
-                            }
+                            val closest =
+                                items.filter { it.type == ItemType.Medicine }.minByOrNull {
+                                    val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
+                                    if (diff >= 0) diff else diff + 24 * 60
+                                }
 
                             if (closest != null) {
                                 val intent = Intent(context, AlarmActivity::class.java).apply {

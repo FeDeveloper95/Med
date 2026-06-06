@@ -65,7 +65,8 @@ fun MainFAB(
         FloatingActionButtonMenu(
             expanded = fabMenuExpanded,
             button = {
-                val tooltipPos = if (fabMenuExpanded) TooltipPosition.Start else TooltipPosition.Above
+                val tooltipPos =
+                    if (fabMenuExpanded) TooltipPosition.Start else TooltipPosition.Above
                 val expandedString = stringResource(R.string.expanded_state)
                 val collapsedString = stringResource(R.string.collapsed_state)
                 val menuActionDesc = stringResource(R.string.menu_action_desc)

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Лекарства</string>
+    <string name="header_events">События</string>
+    <string name="no_medicines">Нет лекарств</string>
+    <string name="no_events">Нет событий</string>
+    <string name="add_event">Добавить событие</string>
+    <string name="settings">Настройки</string>
+    <string name="no_events_enabled">Быстрые действия не найдены</string>
+    <string name="alarms_title">Будильники</string>
+    <string name="alarms_desc">Получать будильники на часы</string>
+    <string name="quick_actions_title">Быстрые действия</string>
+    <string name="take">Принять</string>
+    <string name="snooze">Отложить</string>
+</resources>

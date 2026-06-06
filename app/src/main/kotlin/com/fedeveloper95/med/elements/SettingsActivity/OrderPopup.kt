@@ -126,7 +126,10 @@ fun OrderPopup(
             }
         },
         confirmButton = {
-            TextButtonWithAnimatedShape(onClick = onDismiss, text = stringResource(R.string.cancel_action))
+            TextButtonWithAnimatedShape(
+                onClick = onDismiss,
+                text = stringResource(R.string.cancel_action)
+            )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(32.dp),

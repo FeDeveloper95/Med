@@ -53,7 +53,10 @@ fun TextButtonWithAnimatedShape(
     val isPressed by interactionSource.collectIsPressedAsState()
     val corner by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "corner"
     )
 
@@ -159,7 +162,10 @@ fun StartWeekPopup(
             }
         },
         confirmButton = {
-            TextButtonWithAnimatedShape(onClick = onDismiss, text = stringResource(R.string.cancel_action))
+            TextButtonWithAnimatedShape(
+                onClick = onDismiss,
+                text = stringResource(R.string.cancel_action)
+            )
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
         shape = RoundedCornerShape(32.dp),

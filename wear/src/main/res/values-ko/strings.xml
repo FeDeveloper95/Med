@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">약</string>
+    <string name="header_events">이벤트</string>
+    <string name="no_medicines">약 없음</string>
+    <string name="no_events">이벤트 없음</string>
+    <string name="add_event">이벤트 추가</string>
+    <string name="settings">설정</string>
+    <string name="no_events_enabled">빠른 작업을 찾을 수 없음</string>
+    <string name="alarms_title">알람</string>
+    <string name="alarms_desc">시계에서 알람 받기</string>
+    <string name="quick_actions_title">빠른 작업</string>
+    <string name="take">복용</string>
+    <string name="snooze">다시 알림</string>
+</resources>

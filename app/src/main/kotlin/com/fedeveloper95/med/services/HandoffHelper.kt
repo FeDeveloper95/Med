@@ -7,11 +7,15 @@ import android.os.Bundle
 
 object HandoffHelper {
     fun init(application: Application) {
-        application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+        application.registerActivityLifecycleCallbacks(object :
+            Application.ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
                 if (Build.VERSION.SDK_INT >= 37) {
                     try {
-                        val method = Activity::class.java.getMethod("setHandoffEnabled", Boolean::class.javaPrimitiveType)
+                        val method = Activity::class.java.getMethod(
+                            "setHandoffEnabled",
+                            Boolean::class.javaPrimitiveType
+                        )
                         method.invoke(activity, true)
                     } catch (e: Exception) {
                         e.printStackTrace()

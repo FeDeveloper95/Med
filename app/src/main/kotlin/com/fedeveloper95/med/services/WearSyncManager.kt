@@ -45,7 +45,8 @@ object WearSyncManager : DataClient.OnDataChangedListener {
                     val notifId = dataMap.getInt("notif_id", -1)
 
                     val actionIntent = Intent(appContext, NotificationReceiver::class.java).apply {
-                        action = if (path == "/action_take") NotificationReceiver.ACTION_TAKEN else NotificationReceiver.ACTION_SNOOZE
+                        action =
+                            if (path == "/action_take") NotificationReceiver.ACTION_TAKEN else NotificationReceiver.ACTION_SNOOZE
                         putExtra("ITEM_IDS", itemIds)
                         putExtra("NOTIF_ID", notifId)
                     }
@@ -66,7 +67,11 @@ object WearSyncManager : DataClient.OnDataChangedListener {
     }
 
     @SuppressLint("VisibleForTests")
-    fun syncSettings(alarmsEnabled: Boolean, enabledEvents: Set<String>, availableEvents: Set<String>) {
+    fun syncSettings(
+        alarmsEnabled: Boolean,
+        enabledEvents: Set<String>,
+        availableEvents: Set<String>
+    ) {
         val request = PutDataMapRequest.create("/settings").apply {
             dataMap.putBoolean("alarms_enabled", alarmsEnabled)
             dataMap.putStringArray("enabled_events", enabledEvents.toTypedArray())

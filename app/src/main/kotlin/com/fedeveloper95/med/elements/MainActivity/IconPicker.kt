@@ -103,7 +103,10 @@ fun IconPickerDialog(
 
                             val cornerPercent by animateIntAsState(
                                 targetValue = if (isPressed) 15 else 50,
-                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                                animationSpec = spring(
+                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    stiffness = Spring.StiffnessMedium
+                                ),
                                 label = "corner"
                             )
 
@@ -139,7 +142,11 @@ fun IconPickerDialog(
                         val remaining = 4 - rowItems.size
                         if (remaining > 0) {
                             repeat(remaining) {
-                                Spacer(modifier = Modifier.weight(1f).aspectRatio(1f))
+                                Spacer(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                )
                             }
                         }
                     }
@@ -179,7 +186,10 @@ fun IconPickerDialog(
 
                         val cornerPercent by animateIntAsState(
                             targetValue = targetCorner,
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioMediumBouncy,
+                                stiffness = Spring.StiffnessMedium
+                            ),
                             label = "colorCorner"
                         )
 

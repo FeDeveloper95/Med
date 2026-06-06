@@ -38,8 +38,13 @@ class AppWearListenerService : WearableListenerService() {
                 if (item.type == ItemType.Medicine) {
                     val isAfterStart = !today.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
-                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(today.dayOfWeek)
-                    val isCorrectGap = item.intervalGap == null || java.time.temporal.ChronoUnit.DAYS.between(item.creationDate, today) % item.intervalGap == 0L
+                    val isCorrectDay =
+                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(today.dayOfWeek)
+                    val isCorrectGap =
+                        item.intervalGap == null || java.time.temporal.ChronoUnit.DAYS.between(
+                            item.creationDate,
+                            today
+                        ) % item.intervalGap == 0L
 
                     if (isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap) {
                         medicinesList.add(displayStr)
@@ -72,7 +77,8 @@ class AppWearListenerService : WearableListenerService() {
                         WearSyncManager.initialize(applicationContext)
                         syncDataToWear(applicationContext)
 
-                        val prefs = applicationContext.getSharedPreferences("med_settings",
+                        val prefs = applicationContext.getSharedPreferences(
+                            "med_settings",
                             MODE_PRIVATE
                         )
                         val ringOnWatch = prefs.getBoolean("pref_wear_ring_alarms", true)
@@ -99,16 +105,19 @@ class AppWearListenerService : WearableListenerService() {
                         }
 
                         val savedEvents = prefs.getStringSet("pref_wear_enabled_events", null)
-                        val wearEnabledEvents = savedEvents?.filter { allNames.contains(it) }?.toSet() ?: allNames
+                        val wearEnabledEvents =
+                            savedEvents?.filter { allNames.contains(it) }?.toSet() ?: allNames
 
                         WearSyncManager.syncSettings(ringOnWatch, wearEnabledEvents, allNames)
                     }
+
                     "/new_event" -> {
                         val eventName = dataMap.getString("event_name") ?: return
                         CoroutineScope(Dispatchers.IO).launch {
                             val items = DataRepository.loadData(applicationContext).toMutableList()
 
-                            val prefs = applicationContext.getSharedPreferences("med_settings",
+                            val prefs = applicationContext.getSharedPreferences(
+                                "med_settings",
                                 MODE_PRIVATE
                             )
                             val jsonString = prefs.getString("pref_presets_ordered", null)
@@ -164,10 +173,15 @@ class AppWearListenerService : WearableListenerService() {
                             )
                             items.add(newItem)
                             DataRepository.saveData(applicationContext, items)
-                            sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(packageName))
+                            sendBroadcast(
+                                Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
+                                    packageName
+                                )
+                            )
                             syncDataToWear(applicationContext)
                         }
                     }
+
                     "/open_url" -> {
                         val url = dataMap.getString("url") ?: return
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
@@ -179,6 +193,7 @@ class AppWearListenerService : WearableListenerService() {
                             e.printStackTrace()
                         }
                     }
+
                     "/item_taken" -> {
                         val itemName = dataMap.getString("item_name") ?: return
                         val itemTypeStr = dataMap.getString("item_type") ?: return
@@ -189,7 +204,8 @@ class AppWearListenerService : WearableListenerService() {
                             val today = LocalDate.now()
                             var updated = false
 
-                            val targetType = if (itemTypeStr == "medicine") ItemType.Medicine else ItemType.Event
+                            val targetType =
+                                if (itemTypeStr == "medicine") ItemType.Medicine else ItemType.Event
 
                             val cleanItemName = if (itemName.contains("-")) {
                                 itemName.substringAfter("-").trim()
@@ -203,7 +219,11 @@ class AppWearListenerService : WearableListenerService() {
 
                                 val itemTitle = item.title.trim()
 
-                                if (itemTitle.equals(cleanItemName, ignoreCase = true) || itemName.contains(itemTitle, ignoreCase = true)) {
+                                if (itemTitle.equals(
+                                        cleanItemName,
+                                        ignoreCase = true
+                                    ) || itemName.contains(itemTitle, ignoreCase = true)
+                                ) {
                                     val history = HashMap(item.takenHistory)
                                     if (isTaken) {
                                         history[today] = LocalTime.now()
@@ -217,11 +237,16 @@ class AppWearListenerService : WearableListenerService() {
 
                             if (updated) {
                                 DataRepository.saveData(applicationContext, items)
-                                sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(packageName))
+                                sendBroadcast(
+                                    Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
+                                        packageName
+                                    )
+                                )
                                 syncDataToWear(applicationContext)
                             }
                         }
                     }
+
                     "/delete_item" -> {
                         val itemName = dataMap.getString("item_name") ?: return
                         val itemTypeStr = dataMap.getString("item_type") ?: return
@@ -230,7 +255,8 @@ class AppWearListenerService : WearableListenerService() {
                             val items = DataRepository.loadData(applicationContext).toMutableList()
                             var updated = false
 
-                            val targetType = if (itemTypeStr == "medicine") ItemType.Medicine else ItemType.Event
+                            val targetType =
+                                if (itemTypeStr == "medicine") ItemType.Medicine else ItemType.Event
 
                             val cleanItemName = if (itemName.contains("-")) {
                                 itemName.substringAfter("-").trim()
@@ -245,7 +271,11 @@ class AppWearListenerService : WearableListenerService() {
 
                                 val itemTitle = item.title.trim()
 
-                                if (itemTitle.equals(cleanItemName, ignoreCase = true) || itemName.contains(itemTitle, ignoreCase = true)) {
+                                if (itemTitle.equals(
+                                        cleanItemName,
+                                        ignoreCase = true
+                                    ) || itemName.contains(itemTitle, ignoreCase = true)
+                                ) {
                                     iterator.remove()
                                     updated = true
                                 }
@@ -253,7 +283,11 @@ class AppWearListenerService : WearableListenerService() {
 
                             if (updated) {
                                 DataRepository.saveData(applicationContext, items)
-                                sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(packageName))
+                                sendBroadcast(
+                                    Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
+                                        packageName
+                                    )
+                                )
                                 syncDataToWear(applicationContext)
                             }
                         }

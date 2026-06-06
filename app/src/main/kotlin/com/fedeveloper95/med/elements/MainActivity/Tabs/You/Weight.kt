@@ -1,4 +1,8 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class, androidx.compose.ui.text.ExperimentalTextApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class,
+    androidx.compose.ui.text.ExperimentalTextApi::class,
+    ExperimentalMaterial3Api::class
+)
 
 package com.fedeveloper95.med.elements.MainActivity.Tabs.You
 
@@ -59,7 +63,8 @@ fun WeightBottomSheet(
     val options = listOf(stringResource(R.string.unit_kg), stringResource(R.string.unit_lbs))
     val initialParts = currentValue.split(" ")
     val initialText = initialParts.firstOrNull() ?: ""
-    val initialUnit = if (initialParts.size > 1 && options.contains(initialParts[1])) initialParts[1] else options[0]
+    val initialUnit =
+        if (initialParts.size > 1 && options.contains(initialParts[1])) initialParts[1] else options[0]
 
     var textValue by remember { mutableStateOf(initialText) }
     var selectedOption by remember { mutableStateOf(initialUnit) }
@@ -174,7 +179,8 @@ fun WeightBottomSheet(
                         onClick = {
                             scope.launch {
                                 sheetState.hide()
-                                val finalValue = if (textValue.isNotBlank()) "$textValue $selectedOption" else ""
+                                val finalValue =
+                                    if (textValue.isNotBlank()) "$textValue $selectedOption" else ""
                                 onSave(finalValue)
                                 onDismiss()
                             }

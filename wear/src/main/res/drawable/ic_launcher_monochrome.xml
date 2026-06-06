@@ -1,74 +1,15 @@
-<!--
-  ~ Copyright (C) 2026 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<!--
-  ~ Copyright (C) 2026 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<!--
-  ~ Copyright (C) 2026 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<!--
-  ~ Copyright (C) 2026 The Android Open Source Project
-  ~
-  ~ Licensed under the Apache License, Version 2.0 (the "License");
-  ~ you may not use this file except in compliance with the License.
-  ~ You may obtain a copy of the License at
-  ~
-  ~      http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="512"
     android:viewportHeight="512">
-  <group android:scaleX="0.6"
-      android:scaleY="0.6"
-      android:translateX="102.4"
-      android:translateY="102.4">
-    <path
-        android:pathData="M237.46,460.76C243.37,463.08 249.55,464.25 256,464.25C262.45,464.25 268.54,463.08 274.27,460.76C280.01,458.43 285.2,454.93 289.86,450.27L434.45,305.15C446.63,292.61 455.77,278.27 461.86,262.15C467.95,246.02 471,229.18 471,211.63C471,175.07 458.91,143.54 434.72,117.03C410.53,90.51 380.52,77.25 344.69,77.25C327.49,77.25 311.27,80.65 296.04,87.46C280.82,94.27 267.47,103.77 256,115.95C244.18,103.77 230.65,94.27 215.42,87.46C200.19,80.65 183.98,77.25 166.77,77.25C130.94,77.25 101.02,90.51 77.01,117.03C53,143.54 41,175.25 41,212.16C41,215.03 41.09,217.63 41.27,219.96C41.61,224.42 45.43,227.75 49.91,227.75H339.31C345.4,227.75 350.51,225.69 354.63,221.57C358.75,217.45 360.81,212.34 360.81,206.25C360.81,200.16 358.75,195.05 354.63,190.93C350.51,186.81 345.4,184.75 339.31,184.75C334.3,184.75 329.82,186.09 325.88,188.78C319.53,193.11 312.11,198.64 304.7,196.62L297.17,194.56C286.04,191.53 279.2,179.65 285.66,170.09C289.52,164.38 294.32,159.32 300.08,154.92C311.54,146.14 324.62,141.75 339.31,141.75C357.23,141.75 372.46,148.02 385,160.56C397.54,173.1 403.81,188.33 403.81,206.25C403.81,224.17 397.54,239.4 385,251.94C372.46,264.48 357.23,270.75 339.31,270.75H314.05C315.13,274.33 316.02,277.83 316.74,281.23C317.45,284.64 317.81,288.31 317.81,292.25C317.81,310.17 311.54,325.4 299,337.94C286.46,350.48 271.23,356.75 253.31,356.75C238.62,356.75 225.54,352.36 214.07,343.58C208.32,339.18 203.52,334.12 199.66,328.41C193.2,318.85 200.04,306.97 211.18,303.94L218.7,301.89C226.11,299.86 233.53,305.39 239.88,309.72C243.82,312.41 248.3,313.75 253.31,313.75C259.4,313.75 264.51,311.69 268.63,307.57C272.75,303.45 274.81,298.34 274.81,292.25C274.81,286.16 272.75,281.05 268.63,276.93C264.51,272.81 259.4,270.75 253.31,270.75H74.7C64.66,270.75 58.11,281.06 63.84,289.29C67.96,295.21 72.53,300.67 77.55,305.69L221.6,450.27C226.26,454.93 231.54,458.43 237.46,460.76Z"
-        android:fillColor="#000000"/>
-  </group>
+    <group
+        android:scaleX="0.6"
+        android:scaleY="0.6"
+        android:translateX="102.4"
+        android:translateY="102.4">
+        <path
+            android:fillColor="#000000"
+            android:pathData="M344.69,77.25C380.52,77.25 410.53,90.51 434.72,117.03C458.91,143.54 471,175.07 471,211.63C471,229.18 467.95,246.02 461.86,262.15C455.77,278.27 446.63,292.61 434.45,305.15L289.86,450.27C285.2,454.93 280.01,458.43 274.27,460.76C268.54,463.08 262.45,464.25 256,464.25C249.55,464.25 243.46,463.08 237.73,460.76C231.99,458.43 226.8,454.93 222.14,450.27L77.55,305.15C65.37,292.61 56.23,278.27 50.14,262.15C44.05,246.02 41,229.18 41,211.63C41,175.07 53.09,143.54 77.28,117.03C101.47,90.51 131.48,77.25 167.31,77.25C184.51,77.25 200.73,80.65 215.96,87.46C231.18,94.27 244.53,103.77 256,115.95C267.47,103.77 280.82,94.27 296.04,87.46C311.27,80.65 327.49,77.25 344.69,77.25ZM338.98,141.25C324.28,141.25 311.2,145.64 299.74,154.42C293.99,158.82 289.18,163.88 285.32,169.59C278.86,179.15 285.7,191.03 296.84,194.06L304.36,196.11C311.78,198.14 319.19,192.61 325.54,188.28C329.48,185.59 333.96,184.25 338.98,184.25C345.07,184.25 350.17,186.31 354.29,190.43C358.42,194.55 360.48,199.66 360.48,205.75C360.48,211.84 358.42,216.95 354.29,221.07C350.17,225.19 345.07,227.25 338.98,227.25H102.5C90.63,227.25 81,236.88 81,248.75C81,260.62 90.63,270.25 102.5,270.25H252.98C259.07,270.25 264.17,272.31 268.29,276.43C272.42,280.55 274.48,285.66 274.48,291.75C274.48,297.84 272.42,302.95 268.29,307.07C264.17,311.19 259.07,313.25 252.98,313.25C247.96,313.25 243.48,311.91 239.54,309.22C233.19,304.89 225.78,299.36 218.36,301.39L211.32,303.31C199.92,306.42 192.91,318.59 199.6,328.32C203.41,333.86 208.13,338.78 213.74,343.08C225.2,351.86 238.28,356.25 252.98,356.25C270.89,356.25 286.12,349.98 298.66,337.44C311.2,324.9 317.48,309.67 317.48,291.75C317.48,287.81 317.12,284.14 316.4,280.73C315.68,277.33 314.79,273.83 313.71,270.25H338.98C356.89,270.25 372.12,263.98 384.66,251.44C397.2,238.9 403.48,223.67 403.48,205.75C403.48,187.83 397.2,172.6 384.66,160.06C372.12,147.52 356.89,141.25 338.98,141.25Z" />
+    </group>
 </vector>

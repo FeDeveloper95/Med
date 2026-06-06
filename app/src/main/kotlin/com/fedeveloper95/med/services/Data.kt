@@ -33,9 +33,11 @@ import java.util.Collections
 
 sealed class EditItem {
     abstract val uniqueId: String
+
     data class Card(val med: MedData) : EditItem() {
         override val uniqueId = "card_${med.id}"
     }
+
     data class Group(val divider: MedData, val cards: List<MedData>) : EditItem() {
         override val uniqueId = "group_${divider.id}"
     }
@@ -283,8 +285,12 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 ItemType.Medicine -> {
                     val isAfterStart = !date.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !date.isAfter(item.endDate)
-                    val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(date.dayOfWeek)
-                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, date) % item.intervalGap == 0L
+                    val isCorrectDay =
+                        item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(date.dayOfWeek)
+                    val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(
+                        item.creationDate,
+                        date
+                    ) % item.intervalGap == 0L
                     isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                 }
             }
@@ -458,6 +464,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                     flatList.add(item.med)
                     lastWasGroup = false
                 }
+
                 is EditItem.Group -> {
                     flatList.add(item.divider)
                     flatList.addAll(item.cards)
@@ -474,7 +481,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         flatList.forEachIndexed { newIndex, item ->
             val globalIndex = updatedAllItems.indexOfFirst { it.id == item.id }
             if (globalIndex != -1) {
-                updatedAllItems[globalIndex] = updatedAllItems[globalIndex].copy(displayOrder = newIndex)
+                updatedAllItems[globalIndex] =
+                    updatedAllItems[globalIndex].copy(displayOrder = newIndex)
             } else if (item.iconName == "DIVIDER") {
                 updatedAllItems.add(item.copy(displayOrder = newIndex))
             }
@@ -484,9 +492,14 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         _items.addAll(updatedAllItems)
         saveData()
         editHasChanges = false
-        val prefs = getApplication<Application>().getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+        val prefs =
+            getApplication<Application>().getSharedPreferences("med_settings", Context.MODE_PRIVATE)
         prefs.edit().putString(PREF_SORT_ORDER, "custom").apply()
-        getApplication<Application>().sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(getApplication<Application>().packageName))
+        getApplication<Application>().sendBroadcast(
+            Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
+                getApplication<Application>().packageName
+            )
+        )
     }
 
     fun addItem(
@@ -515,6 +528,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                     val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
                     isAfterStart && isBeforeEnd
                 }
+
                 ItemType.Medicine -> {
                     val isAfterStart = !selectedDate.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !selectedDate.isAfter(item.endDate)
@@ -638,7 +652,8 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 editEnd = originalItem.endDate
             } else if (rangeStart != null) {
                 editStart = LocalDate.ofEpochDay(rangeStart / 86400000)
-                editEnd = if (rangeEnd != null && rangeEnd != -2L) LocalDate.ofEpochDay(rangeEnd / 86400000) else editStart
+                editEnd =
+                    if (rangeEnd != null && rangeEnd != -2L) LocalDate.ofEpochDay(rangeEnd / 86400000) else editStart
             }
 
             _items.removeAll { it.id in relatedIds }
@@ -657,11 +672,14 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             relatedItems.forEachIndexed { i, oldItem ->
                 if (editStart.isAfter(oldItem.creationDate)) {
                     val newEndDate = editStart.minusDays(1)
-                    val finalEndDate = if (oldItem.endDate != null && oldItem.endDate.isBefore(newEndDate)) oldItem.endDate else newEndDate
-                    _items.add(oldItem.copy(
-                        id = System.nanoTime() + i,
-                        endDate = finalEndDate
-                    ))
+                    val finalEndDate =
+                        if (oldItem.endDate != null && oldItem.endDate.isBefore(newEndDate)) oldItem.endDate else newEndDate
+                    _items.add(
+                        oldItem.copy(
+                            id = System.nanoTime() + i,
+                            endDate = finalEndDate
+                        )
+                    )
                 }
             }
 
@@ -683,11 +701,14 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 val newCreationDate = editEnd.plusDays(1)
                 relatedItems.forEachIndexed { i, oldItem ->
                     if (oldItem.endDate == null || oldItem.endDate.isAfter(editEnd)) {
-                        val finalCreationDate = if (oldItem.creationDate.isAfter(newCreationDate)) oldItem.creationDate else newCreationDate
-                        _items.add(oldItem.copy(
-                            id = System.nanoTime() + 200 + i,
-                            creationDate = finalCreationDate
-                        ))
+                        val finalCreationDate =
+                            if (oldItem.creationDate.isAfter(newCreationDate)) oldItem.creationDate else newCreationDate
+                        _items.add(
+                            oldItem.copy(
+                                id = System.nanoTime() + 200 + i,
+                                creationDate = finalCreationDate
+                            )
+                        )
                     }
                 }
             }
@@ -741,6 +762,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                     val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
                     isAfterStart && isBeforeEnd
                 }
+
                 ItemType.Medicine -> {
                     val isAfterStart = !deleteDate.isBefore(it.creationDate)
                     val isBeforeEnd = it.endDate == null || !deleteDate.isAfter(it.endDate)
@@ -829,6 +851,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                     val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
                     isAfterStart && isBeforeEnd
                 }
+
                 ItemType.Medicine -> {
                     val isAfterStart = !today.isBefore(item.creationDate)
                     val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
@@ -850,9 +873,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             "$taken${it.creationTime.format(formatter)} - ${it.title}"
         }
 
-        val evs = itemsToday.filter { (it.type == ItemType.Event || it.type == ItemType.Illness) && it.title.isNotBlank() && it.iconName != "DIVIDER" }.map {
-            "${it.creationTime.format(formatter)} - ${it.title}"
-        }
+        val evs =
+            itemsToday.filter { (it.type == ItemType.Event || it.type == ItemType.Illness) && it.title.isNotBlank() && it.iconName != "DIVIDER" }
+                .map {
+                    "${it.creationTime.format(formatter)} - ${it.title}"
+                }
 
         WearSyncManager.syncData(meds, evs)
     }

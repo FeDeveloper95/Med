@@ -1,4 +1,8 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class, androidx.compose.ui.text.ExperimentalTextApi::class)
+@file:OptIn(
+    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class,
+    androidx.compose.ui.text.ExperimentalTextApi::class
+)
+
 package com.fedeveloper95.med.elements.MainActivity.Tabs
 
 import android.content.Context
@@ -88,7 +92,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 data class CookieShape(val rotationDegrees: Float = 0f) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ): Outline {
         val path = Path()
         val cx = size.width / 2f
         val cy = size.height / 2f
@@ -137,7 +145,8 @@ fun YouTab() {
     val rotationAnim = remember { Animatable(0f) }
 
     val configuration = LocalConfiguration.current
-    val isExpanded = configuration.screenWidthDp > 600 || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isExpanded =
+        configuration.screenWidthDp > 600 || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     LaunchedEffect(Unit) {
         rotationAnim.animateTo(
@@ -155,7 +164,8 @@ fun YouTab() {
                         uri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
-                } catch (e: Exception) { }
+                } catch (e: Exception) {
+                }
                 prefs.edit().putString("profile_photo_uri", uri.toString()).apply()
                 profilePhotoUri = uri
             }

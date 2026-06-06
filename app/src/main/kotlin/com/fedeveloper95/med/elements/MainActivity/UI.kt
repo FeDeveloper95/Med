@@ -200,7 +200,10 @@ fun MedDataCard(
             }
             launch {
                 scale.snapTo(0f)
-                scale.animateTo(1.1f, animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+                scale.animateTo(
+                    1.1f,
+                    animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+                )
             }
             launch {
                 rotation.snapTo(0f)
@@ -257,11 +260,12 @@ fun MedDataCard(
             supportingContent = {
                 Column {
                     if (isMedicine && !item.frequencyLabel.isNullOrBlank()) {
-                        val labelText = if (item.frequencyLabel.equals("Specific days", ignoreCase = true)) {
-                            stringResource(R.string.frequency_specific_days)
-                        } else {
-                            item.frequencyLabel
-                        }
+                        val labelText =
+                            if (item.frequencyLabel.equals("Specific days", ignoreCase = true)) {
+                                stringResource(R.string.frequency_specific_days)
+                            } else {
+                                item.frequencyLabel
+                            }
 
                         Text(
                             text = labelText,
@@ -435,7 +439,8 @@ fun WeeklyCalendarPager(
         }
 
         val interactionSources = remember { List(7) { MutableInteractionSource() } }
-        val interactionPressedIndex = interactionSources.indexOfFirst { it.collectIsPressedAsState().value }
+        val interactionPressedIndex =
+            interactionSources.indexOfFirst { it.collectIsPressedAsState().value }
 
         var simulatedPressIndex by remember { mutableIntStateOf(-1) }
         var isInitialLoad by remember { mutableStateOf(true) }
@@ -453,7 +458,8 @@ fun WeeklyCalendarPager(
             }
         }
 
-        val activeIndex = if (interactionPressedIndex != -1) interactionPressedIndex else simulatedPressIndex
+        val activeIndex =
+            if (interactionPressedIndex != -1) interactionPressedIndex else simulatedPressIndex
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -484,7 +490,10 @@ fun WeeklyCalendarPager(
                         label = "weightAnim"
                     )
 
-                    Box(modifier = Modifier.weight(animatedWeight), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.weight(animatedWeight),
+                        contentAlignment = Alignment.Center
+                    ) {
                         CalendarDayItem(
                             date = date,
                             isSelected = date == selectedDate,

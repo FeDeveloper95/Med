@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Gyógyszerek</string>
+    <string name="header_events">Események</string>
+    <string name="no_medicines">Nincs gyógyszer</string>
+    <string name="no_events">Nincs esemény</string>
+    <string name="add_event">Esemény hozzáadása</string>
+    <string name="settings">Beállítások</string>
+    <string name="no_events_enabled">Nem találhatók gyorsműveletek</string>
+    <string name="alarms_title">Riasztások</string>
+    <string name="alarms_desc">Riasztások fogadása az óráján</string>
+    <string name="quick_actions_title">Gyorsműveletek</string>
+    <string name="take">Bevesz</string>
+    <string name="snooze">Szundi</string>
+</resources>

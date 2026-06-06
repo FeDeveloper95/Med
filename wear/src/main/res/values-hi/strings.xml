@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">दवाएं</string>
+    <string name="header_events">ईवेंट</string>
+    <string name="no_medicines">कोई दवा नहीं</string>
+    <string name="no_events">कोई ईवेंट नहीं</string>
+    <string name="add_event">ईवेंट जोड़ें</string>
+    <string name="settings">सेटिंग</string>
+    <string name="no_events_enabled">कोई त्वरित कार्रवाई नहीं मिली</string>
+    <string name="alarms_title">अलार्म</string>
+    <string name="alarms_desc">अपनी घड़ी पर अलार्म प्राप्त करें</string>
+    <string name="quick_actions_title">त्वरित कार्रवाइयां</string>
+    <string name="take">लें</string>
+    <string name="snooze">स्नूज़ करें</string>
+</resources>

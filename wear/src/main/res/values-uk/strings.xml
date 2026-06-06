@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Ліки</string>
+    <string name="header_events">Події</string>
+    <string name="no_medicines">Немає ліків</string>
+    <string name="no_events">Немає подій</string>
+    <string name="add_event">Додати подію</string>
+    <string name="settings">Налаштування</string>
+    <string name="no_events_enabled">Швидких дій не знайдено</string>
+    <string name="alarms_title">Будильники</string>
+    <string name="alarms_desc">Отримуйте будильники на годиннику</string>
+    <string name="quick_actions_title">Швидкі дії</string>
+    <string name="take">Прийняти</string>
+    <string name="snooze">Відкласти</string>
+</resources>

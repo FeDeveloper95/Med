@@ -120,7 +120,8 @@ class AlarmActivity : ComponentActivity() {
             registerReceiver(closeReceiver, filter)
         }
 
-        val itemTitle = intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
+        val itemTitle =
+            intent.getStringExtra("ITEM_TITLE") ?: getString(R.string.alarm_default_title)
 
         val itemIds = intent.getLongArrayExtra("ITEM_IDS") ?: run {
             val singleId = intent.getLongExtra("ITEM_ID", -1L)
@@ -204,7 +205,10 @@ fun AnimatedAlarmButton(
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "btnMorph"
     )
 
@@ -378,7 +382,9 @@ fun AlarmScreen(
                 )
 
                 AnimatedAlarmButton(
-                    text = if (isGrouped) stringResource(R.string.notif_action_take_all) else stringResource(R.string.alarm_taken_action),
+                    text = if (isGrouped) stringResource(R.string.notif_action_take_all) else stringResource(
+                        R.string.alarm_taken_action
+                    ),
                     icon = Icons.Rounded.Check,
                     onClick = onTake,
                     modifier = Modifier.weight(1f),

@@ -120,7 +120,9 @@ fun WearSettingsScreen(onBack: () -> Unit) {
 
     val presetsStrings = remember { loadPresets(prefs) }
     val allNames = remember(presetsStrings) {
-        presetsStrings.mapNotNull { it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() } }.toSet()
+        presetsStrings.mapNotNull {
+            it.split("|").getOrNull(1)?.takeIf { name -> name.isNotBlank() }
+        }.toSet()
     }
     var wearEnabledEvents by remember {
         val saved = prefs.getStringSet("pref_wear_enabled_events", null)
@@ -231,22 +233,45 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(shape)
-                            .clickable(interactionSource = interactionSource, indication = LocalIndication.current) {
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = LocalIndication.current
+                            ) {
                                 useWearOS = !useWearOS
                                 prefs.edit().putBoolean("pref_use_wearos", useWearOS).apply()
                             },
                         shape = shape,
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer, contentColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
                         elevation = CardDefaults.cardElevation(0.dp)
                     ) {
                         ListItem(
                             modifier = Modifier.padding(vertical = 4.dp),
-                            headlineContent = { Text(text = stringResource(R.string.wearos_master_toggle_title), fontFamily = GoogleSansFlex, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimaryContainer) },
+                            headlineContent = {
+                                Text(
+                                    text = stringResource(R.string.wearos_master_toggle_title),
+                                    fontFamily = GoogleSansFlex,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            },
                             trailingContent = {
                                 Switch(
                                     checked = useWearOS,
-                                    onCheckedChange = { useWearOS = it; prefs.edit().putBoolean("pref_use_wearos", it).apply() },
-                                    thumbContent = { Icon(imageVector = if (useWearOS) Icons.Rounded.Check else Icons.Rounded.Close, contentDescription = null, modifier = Modifier.size(SwitchDefaults.IconSize)) }
+                                    onCheckedChange = {
+                                        useWearOS = it; prefs.edit()
+                                        .putBoolean("pref_use_wearos", it).apply()
+                                    },
+                                    thumbContent = {
+                                        Icon(
+                                            imageVector = if (useWearOS) Icons.Rounded.Check else Icons.Rounded.Close,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
                                 )
                             },
                             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
@@ -259,10 +284,17 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                     WearSwitchCard(
                         icon = Icons.Rounded.Watch,
                         title = stringResource(R.string.wearos_ring_alarms_title),
-                        subtitle = if (areAlarmsEnabled) stringResource(R.string.wearos_ring_alarms_desc) else stringResource(R.string.wearos_alarms_disabled_desc),
+                        subtitle = if (areAlarmsEnabled) stringResource(R.string.wearos_ring_alarms_desc) else stringResource(
+                            R.string.wearos_alarms_disabled_desc
+                        ),
                         containerColor = if (areAlarmsEnabled && useWearOS) Color(0xFF80DEEA) else MaterialTheme.colorScheme.surfaceVariant,
                         iconColor = if (areAlarmsEnabled && useWearOS) Color(0xFF006064) else MaterialTheme.colorScheme.onSurfaceVariant,
-                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp, bottomStart = 4.dp, bottomEnd = 4.dp),
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 4.dp,
+                            bottomEnd = 4.dp
+                        ),
                         checked = ringOnWatch,
                         enabled = areAlarmsEnabled && useWearOS,
                         onCheckedChange = { isChecked ->
@@ -284,7 +316,12 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                         shape = if (showQuickActionsList) {
                             RoundedCornerShape(4.dp)
                         } else {
-                            RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+                            RoundedCornerShape(
+                                topStart = 4.dp,
+                                topEnd = 4.dp,
+                                bottomStart = 20.dp,
+                                bottomEnd = 20.dp
+                            )
                         },
                         enabled = useWearOS,
                         onClick = { showQuickActionsList = !showQuickActionsList }
@@ -299,7 +336,9 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                         exit = fadeOut() + shrinkVertically()
                     ) {
                         Column {
-                            val validPresets = presetsStrings.filter { it.split("|").getOrNull(1)?.isNotBlank() == true }
+                            val validPresets = presetsStrings.filter {
+                                it.split("|").getOrNull(1)?.isNotBlank() == true
+                            }
                             validPresets.forEachIndexed { index, preset ->
                                 val parts = preset.split("|")
                                 val event = parts.getOrNull(1) ?: ""
@@ -308,8 +347,20 @@ fun WearSettingsScreen(onBack: () -> Unit) {
 
                                 val isSelected = wearEnabledEvents.contains(event)
                                 val itemShape = when {
-                                    validPresets.size == 1 -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
-                                    index == validPresets.lastIndex -> RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+                                    validPresets.size == 1 -> RoundedCornerShape(
+                                        topStart = 4.dp,
+                                        topEnd = 4.dp,
+                                        bottomStart = 20.dp,
+                                        bottomEnd = 20.dp
+                                    )
+
+                                    index == validPresets.lastIndex -> RoundedCornerShape(
+                                        topStart = 4.dp,
+                                        topEnd = 4.dp,
+                                        bottomStart = 20.dp,
+                                        bottomEnd = 20.dp
+                                    )
+
                                     else -> RoundedCornerShape(4.dp)
                                 }
 
@@ -343,7 +394,9 @@ fun WearSettingsScreen(onBack: () -> Unit) {
                                         val newSet = wearEnabledEvents.toMutableSet()
                                         if (checked) newSet.add(event) else newSet.remove(event)
                                         wearEnabledEvents = newSet
-                                        prefs.edit().putStringSet("pref_wear_enabled_events", newSet).apply()
+                                        prefs.edit()
+                                            .putStringSet("pref_wear_enabled_events", newSet)
+                                            .apply()
                                         WearSyncManager.syncSettings(ringOnWatch, newSet, allNames)
                                     }
                                 )
@@ -386,7 +439,10 @@ fun WearSettingsItemCard(
 
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "anim_shape"
     )
 
@@ -504,43 +560,95 @@ fun WearSwitchCard(
     var isPressed by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRealPressed) {
-        if (isRealPressed) isPressed = true else { delay(200); isPressed = false }
+        if (isRealPressed) isPressed = true else {
+            delay(200); isPressed = false
+        }
     }
 
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "anim_shape"
     )
 
     val animatedShape = remember(shape, pressProgress) {
         if (shape is RoundedCornerShape) {
             object : Shape {
-                override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
+                override fun createOutline(
+                    size: Size,
+                    layoutDirection: LayoutDirection,
+                    density: Density
+                ): Outline {
                     val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) = (1 - fraction) * start + fraction * stop
+                    fun lerp(start: Float, stop: Float, fraction: Float) =
+                        (1 - fraction) * start + fraction * stop
+
                     val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
                     val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
                     val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
                     val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-                    return Outline.Rounded(androidx.compose.ui.geometry.RoundRect(rect = androidx.compose.ui.geometry.Rect(0f, 0f, size.width, size.height), topLeft = androidx.compose.ui.geometry.CornerRadius(ts), topRight = androidx.compose.ui.geometry.CornerRadius(te), bottomRight = androidx.compose.ui.geometry.CornerRadius(be), bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)))
+                    return Outline.Rounded(
+                        androidx.compose.ui.geometry.RoundRect(
+                            rect = androidx.compose.ui.geometry.Rect(
+                                0f,
+                                0f,
+                                size.width,
+                                size.height
+                            ),
+                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
+                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
+                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
+                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
+                        )
+                    )
                 }
             }
         } else shape
     }
 
     Card(
-        modifier = Modifier.fillMaxWidth().alpha(if (enabled) 1f else 0.5f).clip(animatedShape),
+        modifier = Modifier
+            .fillMaxWidth()
+            .alpha(if (enabled) 1f else 0.5f)
+            .clip(animatedShape),
         shape = animatedShape,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         ListItem(
-            headlineContent = { Text(text = title, fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = if (isCompact) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.titleMedium) },
-            supportingContent = { if (subtitle.isNotEmpty()) Text(text = subtitle, fontFamily = GoogleSansFlex, fontWeight = FontWeight.Normal, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) },
+            headlineContent = {
+                Text(
+                    text = title,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Normal,
+                    style = if (isCompact) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.titleMedium
+                )
+            },
+            supportingContent = {
+                if (subtitle.isNotEmpty()) Text(
+                    text = subtitle,
+                    fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Normal,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            },
             leadingContent = {
-                Box(modifier = Modifier.size(if (isCompact) 40.dp else 48.dp).clip(CircleShape).background(containerColor), contentAlignment = Alignment.Center) {
-                    Icon(imageVector = icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(if (isCompact) 20.dp else 24.dp))
+                Box(
+                    modifier = Modifier
+                        .size(if (isCompact) 40.dp else 48.dp)
+                        .clip(CircleShape)
+                        .background(containerColor), contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier.size(if (isCompact) 20.dp else 24.dp)
+                    )
                 }
             },
             trailingContent = {
@@ -548,10 +656,22 @@ fun WearSwitchCard(
                     checked = checked,
                     enabled = enabled,
                     onCheckedChange = onCheckedChange,
-                    thumbContent = { Icon(imageVector = if (checked) Icons.Rounded.Check else Icons.Rounded.Close, contentDescription = null, modifier = Modifier.size(SwitchDefaults.IconSize)) }
+                    thumbContent = {
+                        Icon(
+                            imageVector = if (checked) Icons.Rounded.Check else Icons.Rounded.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                        )
+                    }
                 )
             },
-            modifier = Modifier.clickable(enabled = enabled, interactionSource = interactionSource, indication = LocalIndication.current) { onCheckedChange(!checked) }.padding(vertical = if (isCompact) 0.dp else 4.dp),
+            modifier = Modifier
+                .clickable(
+                    enabled = enabled,
+                    interactionSource = interactionSource,
+                    indication = LocalIndication.current
+                ) { onCheckedChange(!checked) }
+                .padding(vertical = if (isCompact) 0.dp else 4.dp),
             colors = ListItemDefaults.colors(containerColor = Color.Transparent)
         )
     }

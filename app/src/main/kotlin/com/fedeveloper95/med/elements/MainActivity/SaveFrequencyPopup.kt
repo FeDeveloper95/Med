@@ -103,7 +103,10 @@ fun SaveFrequencyPopup(
                 AnimatedButton(
                     onClick = {
                         showDateRangePicker = false
-                        onApply(dateRangePickerState.selectedStartDateMillis, dateRangePickerState.selectedEndDateMillis)
+                        onApply(
+                            dateRangePickerState.selectedStartDateMillis,
+                            dateRangePickerState.selectedEndDateMillis
+                        )
                     },
                     text = stringResource(R.string.save_action)
                 )
@@ -163,7 +166,9 @@ fun SaveFrequencyPopup(
                 options.forEach { (index, title) ->
                     val isSelected = selectedOption == index
                     val containerColor by animateColorAsState(
-                        targetValue = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0f),
+                        targetValue = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer.copy(
+                            alpha = 0f
+                        ),
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
                             stiffness = Spring.StiffnessLow

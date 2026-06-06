@@ -66,7 +66,12 @@ import com.fedeveloper95.med.services.WearDataManager
 import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
 
-data class ItemToDelete(val rawName: String, val displayName: String, val type: String, val resetAnim: () -> Unit)
+data class ItemToDelete(
+    val rawName: String,
+    val displayName: String,
+    val type: String,
+    val resetAnim: () -> Unit
+)
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,12 +150,16 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = stringResource(R.string.no_medicines), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                text = stringResource(R.string.no_medicines),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 } else {
                     items(medicines, key = { "med_$it" }) { med ->
-                        val cleanText = med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                        val cleanText =
+                            med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
                         val timeRegex = Regex("^(\\d{1,2}:\\d{2})\\s*(?:-\\s*)?(.*)")
                         val match = timeRegex.find(cleanText)
                         val time = match?.groupValues?.get(1) ?: ""
@@ -176,7 +185,10 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(text = name, color = MaterialTheme.colorScheme.onSurface)
+                                        Text(
+                                            text = name,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
                                         if (time.isNotEmpty()) {
                                             Text(
                                                 text = time,
@@ -214,7 +226,10 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = stringResource(R.string.no_events), color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                text = stringResource(R.string.no_events),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 } else {
@@ -313,7 +328,10 @@ fun SwipeableSquishItemWear(
                         val threshold = -itemWidth * 0.5f
                         if (offsetX.value < threshold) {
                             scope.launch {
-                                offsetX.animateTo(-itemWidth, spring(stiffness = Spring.StiffnessMedium))
+                                offsetX.animateTo(
+                                    -itemWidth,
+                                    spring(stiffness = Spring.StiffnessMedium)
+                                )
                                 val resetAnim = { scope.launch { offsetX.animateTo(0f) } }
                                 onDeleteThresholdReached { resetAnim.invoke() }
                             }

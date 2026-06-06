@@ -259,7 +259,8 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         onResult = { isGranted ->
             hasNotificationPermission = isGranted
             if (isGranted && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 if (!notificationManager.canUseFullScreenIntent()) {
                     val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
                         data = Uri.parse("package:${context.packageName}")
@@ -526,7 +527,9 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             iconColor = MaterialTheme.colorScheme.primaryContainer,
                             iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
                             title = stringResource(R.string.profile_picture),
-                            description = if (imageUriStr.isNotEmpty()) stringResource(R.string.image_set) else stringResource(R.string.tap_to_set),
+                            description = if (imageUriStr.isNotEmpty()) stringResource(R.string.image_set) else stringResource(
+                                R.string.tap_to_set
+                            ),
                             shape = topCardShape,
                             onClick = { showProfileSheet = true }
                         )
@@ -801,7 +804,9 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         .fillMaxHeight()
                 ) {
                     WelcomeExpressiveButton(
-                        text = if (isLastPage) stringResource(R.string.get_started) else stringResource(R.string.next),
+                        text = if (isLastPage) stringResource(R.string.get_started) else stringResource(
+                            R.string.next
+                        ),
                         onClick = {
                             if (isLastPage) {
                                 onFinished()
@@ -946,7 +951,10 @@ fun PermissionCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "anim_shape"
     )
 
@@ -1057,7 +1065,10 @@ fun ClickableFeatureCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
         targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "anim_shape"
     )
 
@@ -1238,7 +1249,10 @@ private fun WelcomeExpressiveButton(
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "btnMorph"
     )
 

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Medicine</string>
+    <string name="header_events">Eventi</string>
+    <string name="no_medicines">Nessuna medicina</string>
+    <string name="no_events">Nessun evento</string>
+    <string name="add_event">Aggiungi evento</string>
+    <string name="settings">Impostazioni</string>
+    <string name="no_events_enabled">Nessuna azione rapida trovata</string>
+    <string name="alarms_title">Sveglie</string>
+    <string name="alarms_desc">Ricevi le sveglie sul tuo orologio</string>
+    <string name="quick_actions_title">Azioni rapide</string>
+    <string name="take">Prendi</string>
+    <string name="snooze">Posticipa</string>
+</resources>

@@ -425,7 +425,11 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                                         0f
                                                     },
                                                     onSwap = { from, to ->
-                                                        viewModel.swapInnerEditItems(editItem, from, to)
+                                                        viewModel.swapInnerEditItems(
+                                                            editItem,
+                                                            from,
+                                                            to
+                                                        )
                                                         innerDraggedOffset += if (to > from) -itemHeightPx else itemHeightPx
                                                     }
                                                 )
@@ -454,10 +458,16 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
                                                     currentGroupId = editItem.divider.id,
                                                     currentGroupTitle = editItem.divider.title,
                                                     onDeleteClick = {
-                                                        viewModel.deleteCardFromGroup(editItem, card.id)
+                                                        viewModel.deleteCardFromGroup(
+                                                            editItem,
+                                                            card.id
+                                                        )
                                                     },
                                                     onRemoveFromGroup = {
-                                                        viewModel.removeCardFromGroup(editItem, card.id)
+                                                        viewModel.removeCardFromGroup(
+                                                            editItem,
+                                                            card.id
+                                                        )
                                                     },
                                                     onAddToGroup = null
                                                 )

@@ -1,4 +1,9 @@
-@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(
+    ExperimentalTextApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
+
 package com.fedeveloper95.med
 
 import android.Manifest
@@ -217,11 +222,39 @@ class MainActivity : ComponentActivity() {
                 onDispose { context.unregisterReceiver(receiver) }
             }
 
-            var currentTheme by remember { mutableIntStateOf(prefs.getInt(PREF_THEME, THEME_SYSTEM)) }
-            var currentWeekStart by remember { mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday") }
-            var currentSortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
+            var currentTheme by remember {
+                mutableIntStateOf(
+                    prefs.getInt(
+                        PREF_THEME,
+                        THEME_SYSTEM
+                    )
+                )
+            }
+            var currentWeekStart by remember {
+                mutableStateOf(
+                    prefs.getString(
+                        PREF_WEEK_START,
+                        "monday"
+                    ) ?: "monday"
+                )
+            }
+            var currentSortOrder by remember {
+                mutableStateOf(
+                    prefs.getString(
+                        PREF_SORT_ORDER,
+                        "time"
+                    ) ?: "time"
+                )
+            }
             var currentPresets by remember { mutableStateOf(loadPresets(prefs)) }
-            var useBottomSheet by remember { mutableStateOf(prefs.getBoolean("pref_experimental_bottom_sheet", true)) }
+            var useBottomSheet by remember {
+                mutableStateOf(
+                    prefs.getBoolean(
+                        "pref_experimental_bottom_sheet",
+                        true
+                    )
+                )
+            }
             var currentDob by remember { mutableStateOf(prefs.getString("profile_dob", "") ?: "") }
 
             val currentVersionName = remember {
@@ -232,10 +265,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val notificationPermissionLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
+            val notificationPermissionLauncher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { }
 
             LaunchedEffect(Unit) {
-                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= 33 && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
                 val update = Updater.checkForUpdates(currentVersionName)
@@ -255,12 +293,23 @@ class MainActivity : ComponentActivity() {
                 val listener =
                     SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
                         when (key) {
-                            PREF_THEME -> currentTheme = sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
-                            PREF_WEEK_START -> currentWeekStart = sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
-                            PREF_SORT_ORDER -> currentSortOrder = sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
-                            PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets = loadPresets(sharedPreferences)
-                            "pref_experimental_bottom_sheet" -> useBottomSheet = sharedPreferences.getBoolean("pref_experimental_bottom_sheet", true)
-                            "profile_dob" -> currentDob = sharedPreferences.getString("profile_dob", "") ?: ""
+                            PREF_THEME -> currentTheme =
+                                sharedPreferences.getInt(PREF_THEME, THEME_SYSTEM)
+
+                            PREF_WEEK_START -> currentWeekStart =
+                                sharedPreferences.getString(PREF_WEEK_START, "monday") ?: "monday"
+
+                            PREF_SORT_ORDER -> currentSortOrder =
+                                sharedPreferences.getString(PREF_SORT_ORDER, "time") ?: "time"
+
+                            PREF_PRESETS, PREF_PRESETS_ORDERED -> currentPresets =
+                                loadPresets(sharedPreferences)
+
+                            "pref_experimental_bottom_sheet" -> useBottomSheet =
+                                sharedPreferences.getBoolean("pref_experimental_bottom_sheet", true)
+
+                            "profile_dob" -> currentDob =
+                                sharedPreferences.getString("profile_dob", "") ?: ""
                         }
                     }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -283,22 +332,29 @@ class MainActivity : ComponentActivity() {
                         prefs.edit()
                             .putString("last_version", currentVersionName)
                             .apply()
-                        val notificationManager = context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                        val canUseFullScreen = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            notificationManager.canUseFullScreenIntent()
-                        } else {
-                            true
-                        }
-                        val hasNotificationPermission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-                        } else {
-                            NotificationManagerCompat.from(context).areNotificationsEnabled()
-                        }
+                        val notificationManager =
+                            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+                        val canUseFullScreen =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                notificationManager.canUseFullScreenIntent()
+                            } else {
+                                true
+                            }
+                        val hasNotificationPermission =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.POST_NOTIFICATIONS
+                                ) == PackageManager.PERMISSION_GRANTED
+                            } else {
+                                NotificationManagerCompat.from(context).areNotificationsEnabled()
+                            }
                         if (hasNotificationPermission && !canUseFullScreen) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                val intent = Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
-                                    data = Uri.parse("package:${context.packageName}")
-                                }
+                                val intent =
+                                    Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
+                                        data = Uri.parse("package:${context.packageName}")
+                                    }
                                 context.startActivity(intent)
                             }
                         }
@@ -329,13 +385,16 @@ fun rememberCustomTooltipPositionProvider(
             ): IntOffset {
                 return when (position) {
                     TooltipPosition.Above -> {
-                        val x = anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
+                        val x =
+                            anchorBounds.left + (anchorBounds.width - popupContentSize.width) / 2
                         val y = anchorBounds.top - popupContentSize.height - spacingPx
                         IntOffset(x, y)
                     }
+
                     TooltipPosition.Start -> {
                         val x = anchorBounds.left - popupContentSize.width - spacingPx
-                        val y = anchorBounds.top + (anchorBounds.height - popupContentSize.height) / 2
+                        val y =
+                            anchorBounds.top + (anchorBounds.height - popupContentSize.height) / 2
                         IntOffset(x, y)
                     }
                 }
@@ -356,7 +415,10 @@ fun ExpressiveIconButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "corner"
     )
 
@@ -386,7 +448,10 @@ fun ExpressiveButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "corner"
     )
 
@@ -414,7 +479,10 @@ fun ExpressiveTextButton(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "corner"
     )
 
@@ -504,7 +572,8 @@ fun IllnessCard(
     }
 
     val iconBoxColor = customColor ?: MaterialTheme.colorScheme.primaryContainer
-    val iconBoxTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onPrimaryContainer
+    val iconBoxTintColor =
+        if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onPrimaryContainer
 
     Card(
         modifier = Modifier
@@ -519,17 +588,32 @@ fun IllnessCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
-                    modifier = Modifier.size(48.dp).clip(CircleShape).background(iconBoxColor),
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(iconBoxColor),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(icon, contentDescription = null, tint = iconBoxTintColor, modifier = Modifier.size(24.dp))
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        tint = iconBoxTintColor,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = if (isConfirmed) item.title else stringResource(R.string.illness_question, item.title),
+                    text = if (isConfirmed) item.title else stringResource(
+                        R.string.illness_question,
+                        item.title
+                    ),
                     fontFamily = GoogleSansFlex,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,

@@ -96,7 +96,10 @@ fun getScheduledMedsForDate(date: LocalDate, items: List<MedData>): List<MedData
                 !date.isBefore(item.creationDate) &&
                 (item.endDate == null || !date.isAfter(item.endDate)) &&
                 (item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(date.dayOfWeek)) &&
-                (item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, date) % item.intervalGap == 0L)
+                (item.intervalGap == null || ChronoUnit.DAYS.between(
+                    item.creationDate,
+                    date
+                ) % item.intervalGap == 0L)
     }
 }
 
@@ -130,7 +133,8 @@ fun StatsTab(
     val today = LocalDate.now()
     val scope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
-    val isExpanded = configuration.screenWidthDp > 600 || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val isExpanded =
+        configuration.screenWidthDp > 600 || configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     val allMeds = viewModel.items.filter { it.type == ItemType.Medicine }
 
@@ -179,8 +183,10 @@ fun StatsTab(
                 }
 
                 streakCalc = maxStreak
-                adherenceCalc = if (totalScheduled > 0) (totalTaken * 100f / totalScheduled).toInt() else 0
-                val totalDays = Math.max(1L, ChronoUnit.DAYS.between(monthStart, evalEnd.plusDays(1)))
+                adherenceCalc =
+                    if (totalScheduled > 0) (totalTaken * 100f / totalScheduled).toInt() else 0
+                val totalDays =
+                    Math.max(1L, ChronoUnit.DAYS.between(monthStart, evalEnd.plusDays(1)))
                 val weeks = Math.max(1f, totalDays / 7f)
                 missedPerWeekCalc = String.format(Locale.US, "%.1f", totalMissed / weeks)
             }
@@ -286,7 +292,12 @@ fun StatsTab(
 }
 
 @Composable
-fun StatsSummaryCard(streak: String, adherence: String, missedPerWeek: String, isVertical: Boolean = false) {
+fun StatsSummaryCard(
+    streak: String,
+    adherence: String,
+    missedPerWeek: String,
+    isVertical: Boolean = false
+) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -457,8 +468,9 @@ fun CalendarHeader(
     onPreviousMonth: () -> Unit,
     onNextMonth: () -> Unit
 ) {
-    val monthName = currentMonth.month.getDisplayName(TextStyle.FULL, LocalLocale.current.platformLocale)
-        .replaceFirstChar { if (it.isLowerCase()) it.titlecase(LocalLocale.current.platformLocale) else it.toString() }
+    val monthName =
+        currentMonth.month.getDisplayName(TextStyle.FULL, LocalLocale.current.platformLocale)
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(LocalLocale.current.platformLocale) else it.toString() }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -505,7 +517,10 @@ fun CalendarGrid(
         Row(modifier = Modifier.fillMaxWidth()) {
             daysOfWeek.forEach { dayOfWeek ->
                 Text(
-                    text = dayOfWeek.getDisplayName(TextStyle.SHORT, LocalLocale.current.platformLocale),
+                    text = dayOfWeek.getDisplayName(
+                        TextStyle.SHORT,
+                        LocalLocale.current.platformLocale
+                    ),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
@@ -527,9 +542,17 @@ fun CalendarGrid(
             Row(modifier = Modifier.fillMaxWidth()) {
                 for (i in 0..6) {
                     if (currentDay == 1 && i < firstDayOfWeekIndex) {
-                        Box(modifier = Modifier.weight(1f).aspectRatio(1f))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                        )
                     } else if (currentDay > daysInMonth) {
-                        Box(modifier = Modifier.weight(1f).aspectRatio(1f))
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                        )
                     } else {
                         val date = currentMonth.atDay(currentDay)
                         val status = getStatusForDate(date)
@@ -582,7 +605,10 @@ fun CalendarDayCell(
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "corner"
     )
 
@@ -593,7 +619,11 @@ fun CalendarDayCell(
             .clip(RoundedCornerShape(cornerPercent))
             .background(containerColor)
             .then(
-                if (isToday) Modifier.border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(cornerPercent))
+                if (isToday) Modifier.border(
+                    3.dp,
+                    MaterialTheme.colorScheme.primary,
+                    RoundedCornerShape(cornerPercent)
+                )
                 else Modifier
             )
             .clickable(

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">ยา</string>
+    <string name="header_events">กิจกรรม</string>
+    <string name="no_medicines">ไม่มียา</string>
+    <string name="no_events">ไม่มีกิจกรรม</string>
+    <string name="add_event">เพิ่มกิจกรรม</string>
+    <string name="settings">การตั้งค่า</string>
+    <string name="no_events_enabled">ไม่พบการดำเนินการด่วน</string>
+    <string name="alarms_title">การปลุก</string>
+    <string name="alarms_desc">รับการปลุกบนนาฬิกาของคุณ</string>
+    <string name="quick_actions_title">การดำเนินการด่วน</string>
+    <string name="take">ทาน</string>
+    <string name="snooze">เลื่อน</string>
+</resources>

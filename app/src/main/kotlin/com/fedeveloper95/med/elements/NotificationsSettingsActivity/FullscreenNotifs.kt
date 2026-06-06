@@ -106,12 +106,18 @@ fun FullscreenNotifsBottomSheet(
 
     val cancelCorner by animateIntAsState(
         targetValue = if (isCancelPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "cancelCorner"
     )
     val saveCorner by animateIntAsState(
         targetValue = if (isSavePressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "saveCorner"
     )
 

@@ -121,7 +121,10 @@ fun AnimatedActionButton(
 
     val cornerPercent by animateIntAsState(
         targetValue = if (isPressed) 15 else 50,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium),
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessMedium
+        ),
         label = "btnMorph"
     )
 
@@ -396,7 +399,9 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                         enabled = !isDownloading
                                     )
                                     AnimatedActionButton(
-                                        text = if (isDownloading) "Downloading..." else stringResource(R.string.update_action),
+                                        text = if (isDownloading) "Downloading..." else stringResource(
+                                            R.string.update_action
+                                        ),
                                         onClick = {
                                             isDownloading = true
                                             Updater.startDownload(

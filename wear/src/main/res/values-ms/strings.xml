@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">Ubat-ubatan</string>
+    <string name="header_events">Acara</string>
+    <string name="no_medicines">Tiada ubat</string>
+    <string name="no_events">Tiada acara</string>
+    <string name="add_event">Tambah Acara</string>
+    <string name="settings">Tetapan</string>
+    <string name="no_events_enabled">Tiada Tindakan Pantas ditemui</string>
+    <string name="alarms_title">Penggera</string>
+    <string name="alarms_desc">Terima penggera pada jam tangan anda</string>
+    <string name="quick_actions_title">Tindakan Pantas</string>
+    <string name="take">Ambil</string>
+    <string name="snooze">Tunda</string>
+</resources>

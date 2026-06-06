@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med</string>
+    <string name="header_medicines">薬</string>
+    <string name="header_events">イベント</string>
+    <string name="no_medicines">薬がありません</string>
+    <string name="no_events">イベントがありません</string>
+    <string name="add_event">イベントを追加</string>
+    <string name="settings">設定</string>
+    <string name="no_events_enabled">クイックアクションが見つかりません</string>
+    <string name="alarms_title">アラーム</string>
+    <string name="alarms_desc">スマートウォッチでアラームを受信する</string>
+    <string name="quick_actions_title">クイックアクション</string>
+    <string name="take">服用</string>
+    <string name="snooze">スヌーズ</string>
+</resources>

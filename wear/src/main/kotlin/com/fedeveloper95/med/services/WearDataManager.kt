@@ -52,14 +52,21 @@ object WearDataManager : DataClient.OnDataChangedListener {
 
                         val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
                         enabledEvents.clear()
-                        enabledEvents.addAll(events.filter { it.isNotBlank() && validAvailable.contains(it) })
+                        enabledEvents.addAll(events.filter {
+                            it.isNotBlank() && validAvailable.contains(
+                                it
+                            )
+                        })
                     }
+
                     "/med_data" -> {
                         val meds = dataMap.getStringArray("medicines") ?: emptyArray()
                         medicines.clear()
                         meds.forEach { med ->
-                            val isTaken = med.contains("✔") || med.contains("✓") || med.contains("✅")
-                            val clean = med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                            val isTaken =
+                                med.contains("✔") || med.contains("✓") || med.contains("✅")
+                            val clean =
+                                med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
                             if (clean.isNotBlank()) {
                                 itemStates[clean] = isTaken
                                 medicines.add(clean)
@@ -171,14 +178,21 @@ object WearDataManager : DataClient.OnDataChangedListener {
 
                         val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
                         enabledEvents.clear()
-                        enabledEvents.addAll(events.filter { it.isNotBlank() && validAvailable.contains(it) })
+                        enabledEvents.addAll(events.filter {
+                            it.isNotBlank() && validAvailable.contains(
+                                it
+                            )
+                        })
                     }
+
                     "/med_data" -> {
                         val meds = dataMap.getStringArray("medicines") ?: emptyArray()
                         medicines.clear()
                         meds.forEach { med ->
-                            val isTaken = med.contains("✔") || med.contains("✓") || med.contains("✅")
-                            val clean = med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
+                            val isTaken =
+                                med.contains("✔") || med.contains("✓") || med.contains("✅")
+                            val clean =
+                                med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
                             if (clean.isNotBlank()) {
                                 itemStates[clean] = isTaken
                                 medicines.add(clean)

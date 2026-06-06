@@ -1,4 +1,9 @@
-@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@file:OptIn(
+    ExperimentalTextApi::class,
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
+)
+
 package com.fedeveloper95.med.services
 
 import android.content.Intent
@@ -152,7 +157,11 @@ fun MedApp(
                 Triple(
                     ItemType.Medicine,
                     Icons.Rounded.MedicalServices,
-                    Triple(context.getString(R.string.medicine_label), null as String?, null as String?)
+                    Triple(
+                        context.getString(R.string.medicine_label),
+                        null as String?,
+                        null as String?
+                    )
                 ),
                 Triple(
                     ItemType.Event,
@@ -169,7 +178,7 @@ fun MedApp(
             presets.mapNotNull { entry ->
                 val parts = entry.split("|")
                 if (parts.size >= 2) {
-                    val type = when(parts[0]) {
+                    val type = when (parts[0]) {
                         ItemType.Medicine.name -> ItemType.Medicine
                         ItemType.Illness.name -> ItemType.Illness
                         else -> ItemType.Event
@@ -203,32 +212,49 @@ fun MedApp(
     Box(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxSize()) {
             if (isExpandedScreen) {
-                val wideNavRailState = rememberWideNavigationRailState(initialValue = WideNavigationRailValue.Expanded)
+                val wideNavRailState =
+                    rememberWideNavigationRailState(initialValue = WideNavigationRailValue.Expanded)
                 WideNavigationRail(
                     state = wideNavRailState,
                     modifier = Modifier.width(IntrinsicSize.Max)
                 ) {
-                    val isRailExpanded = wideNavRailState.currentValue == WideNavigationRailValue.Expanded
+                    val isRailExpanded =
+                        wideNavRailState.currentValue == WideNavigationRailValue.Expanded
                     WideNavigationRailItem(
                         railExpanded = isRailExpanded,
                         selected = selectedTab == 0,
                         onClick = { selectedTab = 0 },
                         icon = { Icon(Icons.Rounded.Home, contentDescription = null) },
-                        label = { Text(stringResource(R.string.home_tab_title), fontFamily = GoogleSansFlex) }
+                        label = {
+                            Text(
+                                stringResource(R.string.home_tab_title),
+                                fontFamily = GoogleSansFlex
+                            )
+                        }
                     )
                     WideNavigationRailItem(
                         railExpanded = isRailExpanded,
                         selected = selectedTab == 1,
                         onClick = { selectedTab = 1 },
                         icon = { Icon(Icons.Rounded.BarChart, contentDescription = null) },
-                        label = { Text(stringResource(R.string.stats_tab_title), fontFamily = GoogleSansFlex) }
+                        label = {
+                            Text(
+                                stringResource(R.string.stats_tab_title),
+                                fontFamily = GoogleSansFlex
+                            )
+                        }
                     )
                     WideNavigationRailItem(
                         railExpanded = isRailExpanded,
                         selected = selectedTab == 2,
                         onClick = { selectedTab = 2 },
                         icon = { Icon(Icons.Rounded.Person, contentDescription = null) },
-                        label = { Text(stringResource(R.string.you_tab_title), fontFamily = GoogleSansFlex) }
+                        label = {
+                            Text(
+                                stringResource(R.string.you_tab_title),
+                                fontFamily = GoogleSansFlex
+                            )
+                        }
                     )
                 }
             }
@@ -251,7 +277,14 @@ fun MedApp(
                                         else if (type == ItemType.Illness) showIllnessDialog = true
                                         else showEventDialog = true
                                     } else {
-                                        viewModel.addItem(type, name, iconName, colorCode, listOf(LocalTime.now()), null)
+                                        viewModel.addItem(
+                                            type,
+                                            name,
+                                            iconName,
+                                            colorCode,
+                                            listOf(LocalTime.now()),
+                                            null
+                                        )
                                     }
                                 }
                             )
@@ -265,19 +298,34 @@ fun MedApp(
                                 selected = selectedTab == 0,
                                 onClick = { selectedTab = 0 },
                                 icon = { Icon(Icons.Rounded.Home, contentDescription = null) },
-                                label = { Text(stringResource(R.string.home_tab_title), fontFamily = GoogleSansFlex) }
+                                label = {
+                                    Text(
+                                        stringResource(R.string.home_tab_title),
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
                             )
                             ShortNavigationBarItem(
                                 selected = selectedTab == 1,
                                 onClick = { selectedTab = 1 },
                                 icon = { Icon(Icons.Rounded.BarChart, contentDescription = null) },
-                                label = { Text(stringResource(R.string.stats_tab_title), fontFamily = GoogleSansFlex) }
+                                label = {
+                                    Text(
+                                        stringResource(R.string.stats_tab_title),
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
                             )
                             ShortNavigationBarItem(
                                 selected = selectedTab == 2,
                                 onClick = { selectedTab = 2 },
                                 icon = { Icon(Icons.Rounded.Person, contentDescription = null) },
-                                label = { Text(stringResource(R.string.you_tab_title), fontFamily = GoogleSansFlex) }
+                                label = {
+                                    Text(
+                                        stringResource(R.string.you_tab_title),
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
                             )
                         }
                     }
@@ -286,7 +334,10 @@ fun MedApp(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = padding.calculateTopPadding(), bottom = padding.calculateBottomPadding())
+                        .padding(
+                            top = padding.calculateTopPadding(),
+                            bottom = padding.calculateBottomPadding()
+                        )
                 ) {
                     Column(modifier = Modifier.fillMaxSize()) {
                         Row(
@@ -305,8 +356,14 @@ fun MedApp(
                                 if (selectedTab == 0) {
                                     ExpressiveIconButton(
                                         onClick = {
-                                            val intent = Intent(context, EditModeActivity::class.java).apply {
-                                                putExtra("SELECTED_DATE", viewModel.selectedDate.toEpochDay())
+                                            val intent = Intent(
+                                                context,
+                                                EditModeActivity::class.java
+                                            ).apply {
+                                                putExtra(
+                                                    "SELECTED_DATE",
+                                                    viewModel.selectedDate.toEpochDay()
+                                                )
                                             }
                                             context.startActivity(intent)
                                         },
@@ -327,7 +384,12 @@ fun MedApp(
                                 }
                                 ExpressiveIconButton(
                                     onClick = {
-                                        context.startActivity(Intent(context, SettingsActivity::class.java))
+                                        context.startActivity(
+                                            Intent(
+                                                context,
+                                                SettingsActivity::class.java
+                                            )
+                                        )
                                     },
                                     icon = Icons.Rounded.Settings,
                                     contentDescription = stringResource(R.string.settings_desc),
@@ -340,7 +402,11 @@ fun MedApp(
                         AnimatedContent(
                             targetState = selectedTab,
                             transitionSpec = {
-                                fadeIn(animationSpec = tween(200)).togetherWith(fadeOut(animationSpec = tween(200)))
+                                fadeIn(animationSpec = tween(200)).togetherWith(
+                                    fadeOut(
+                                        animationSpec = tween(200)
+                                    )
+                                )
                             },
                             label = "tab_transition",
                             modifier = Modifier.weight(1f)
@@ -354,7 +420,8 @@ fun MedApp(
                                     ) {
                                         Spacer(modifier = Modifier.height(8.dp))
 
-                                        val localeForCalendar = if (weekStart == "sunday") Locale.US else Locale.ITALY
+                                        val localeForCalendar =
+                                            if (weekStart == "sunday") Locale.US else Locale.ITALY
                                         WeeklyCalendarPager(
                                             selectedDate = viewModel.selectedDate,
                                             onDateSelected = { viewModel.selectedDate = it },
@@ -363,12 +430,17 @@ fun MedApp(
                                         Spacer(modifier = Modifier.height(24.dp))
 
                                         val initialPage = 10000
-                                        val dayPagerState = rememberPagerState(initialPage = initialPage, pageCount = { 20000 })
+                                        val dayPagerState = rememberPagerState(
+                                            initialPage = initialPage,
+                                            pageCount = { 20000 })
                                         val today = remember { LocalDate.now() }
                                         var isProgrammaticScroll by remember { mutableStateOf(false) }
 
                                         LaunchedEffect(viewModel.selectedDate) {
-                                            val daysDiff = ChronoUnit.DAYS.between(today, viewModel.selectedDate).toInt()
+                                            val daysDiff = ChronoUnit.DAYS.between(
+                                                today,
+                                                viewModel.selectedDate
+                                            ).toInt()
                                             val targetPage = initialPage + daysDiff
                                             if (dayPagerState.currentPage != targetPage) {
                                                 isProgrammaticScroll = true
@@ -394,7 +466,9 @@ fun MedApp(
 
                                         HorizontalPager(
                                             state = dayPagerState,
-                                            modifier = Modifier.weight(1f).fillMaxWidth()
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .fillMaxWidth()
                                         ) { page ->
                                             val daysDiff = page - initialPage
                                             val pageDate = today.plusDays(daysDiff.toLong())
@@ -414,49 +488,81 @@ fun MedApp(
                                                 when (item.type) {
                                                     ItemType.Event -> item.creationDate == pageDate
                                                     ItemType.Illness -> {
-                                                        val isAfterStart = !pageDate.isBefore(item.creationDate)
-                                                        val isBeforeEnd = item.endDate == null || !pageDate.isAfter(item.endDate)
+                                                        val isAfterStart =
+                                                            !pageDate.isBefore(item.creationDate)
+                                                        val isBeforeEnd =
+                                                            item.endDate == null || !pageDate.isAfter(
+                                                                item.endDate
+                                                            )
                                                         isAfterStart && isBeforeEnd
                                                     }
+
                                                     ItemType.Medicine -> {
-                                                        val isAfterStart = !pageDate.isBefore(item.creationDate)
-                                                        val isBeforeEnd = item.endDate == null || !pageDate.isAfter(item.endDate)
-                                                        val isCorrectDay = item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(pageDate.dayOfWeek)
-                                                        val isCorrectGap = item.intervalGap == null || ChronoUnit.DAYS.between(item.creationDate, pageDate) % item.intervalGap == 0L
+                                                        val isAfterStart =
+                                                            !pageDate.isBefore(item.creationDate)
+                                                        val isBeforeEnd =
+                                                            item.endDate == null || !pageDate.isAfter(
+                                                                item.endDate
+                                                            )
+                                                        val isCorrectDay =
+                                                            item.recurrenceDays.isNullOrEmpty() || item.recurrenceDays.contains(
+                                                                pageDate.dayOfWeek
+                                                            )
+                                                        val isCorrectGap =
+                                                            item.intervalGap == null || ChronoUnit.DAYS.between(
+                                                                item.creationDate,
+                                                                pageDate
+                                                            ) % item.intervalGap == 0L
                                                         isAfterStart && isBeforeEnd && isCorrectDay && isCorrectGap
                                                     }
                                                 }
                                             }
 
-                                            val illnesses = pageItems.filter { it.type == ItemType.Illness }
+                                            val illnesses =
+                                                pageItems.filter { it.type == ItemType.Illness }
 
-                                            val displayItems = pageItems.filterNot { it in illnesses }.let { list ->
-                                                if (sortOrder == "time") {
-                                                    list.filter { it.iconName != "DIVIDER" }.sortedWith(compareBy { it.creationTime })
-                                                } else {
-                                                    var currentList = list.sortedWith(compareBy({ it.displayOrder }, { it.creationTime }))
-                                                    var changed = true
-                                                    while (changed) {
-                                                        changed = false
-                                                        val toRemove = currentList.filterIndexed { i, current ->
-                                                            if (current.iconName == "DIVIDER" && current.title.isBlank()) {
-                                                                val next = currentList.getOrNull(i + 1)
-                                                                next == null || next.iconName == "DIVIDER"
-                                                            } else false
-                                                        }
-                                                        if (toRemove.isNotEmpty()) {
-                                                            currentList = currentList.filterNot { it in toRemove }
-                                                            changed = true
+                                            val displayItems =
+                                                pageItems.filterNot { it in illnesses }
+                                                    .let { list ->
+                                                        if (sortOrder == "time") {
+                                                            list.filter { it.iconName != "DIVIDER" }
+                                                                .sortedWith(compareBy { it.creationTime })
+                                                        } else {
+                                                            var currentList = list.sortedWith(
+                                                                compareBy(
+                                                                    { it.displayOrder },
+                                                                    { it.creationTime })
+                                                            )
+                                                            var changed = true
+                                                            while (changed) {
+                                                                changed = false
+                                                                val toRemove =
+                                                                    currentList.filterIndexed { i, current ->
+                                                                        if (current.iconName == "DIVIDER" && current.title.isBlank()) {
+                                                                            val next =
+                                                                                currentList.getOrNull(
+                                                                                    i + 1
+                                                                                )
+                                                                            next == null || next.iconName == "DIVIDER"
+                                                                        } else false
+                                                                    }
+                                                                if (toRemove.isNotEmpty()) {
+                                                                    currentList =
+                                                                        currentList.filterNot { it in toRemove }
+                                                                    changed = true
+                                                                }
+                                                            }
+                                                            currentList
                                                         }
                                                     }
-                                                    currentList
-                                                }
-                                            }
 
                                             var isRefreshing by remember { mutableStateOf(false) }
                                             val pullRefreshState = rememberPullToRefreshState()
                                             val onRefresh: () -> Unit = {
-                                                isRefreshing = true; scope.launch { delay(1000); viewModel.reloadData(); isRefreshing = false }
+                                                isRefreshing = true; scope.launch {
+                                                delay(1000); viewModel.reloadData(); isRefreshing =
+                                                false
+                                            }
                                             }
 
                                             PullToRefreshBox(
@@ -480,13 +586,19 @@ fun MedApp(
                                                     Column(modifier = Modifier.fillMaxSize()) {
                                                         if (isPageBirthday) {
                                                             Spacer(modifier = Modifier.height(16.dp))
-                                                            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                                            Box(
+                                                                modifier = Modifier.padding(
+                                                                    horizontal = 16.dp
+                                                                )
+                                                            ) {
                                                                 BirthdayCard()
                                                             }
                                                             Spacer(modifier = Modifier.height(16.dp))
                                                         }
                                                         Box(
-                                                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                                                            modifier = Modifier
+                                                                .weight(1f)
+                                                                .fillMaxWidth(),
                                                             contentAlignment = Alignment.Center
                                                         ) {
                                                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -509,70 +621,131 @@ fun MedApp(
                                                     if (isExpandedScreen) {
                                                         LazyVerticalGrid(
                                                             columns = GridCells.Adaptive(minSize = 340.dp),
-                                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .padding(horizontal = 16.dp),
+                                                            horizontalArrangement = Arrangement.spacedBy(
+                                                                12.dp
+                                                            ),
+                                                            verticalArrangement = Arrangement.spacedBy(
+                                                                12.dp
+                                                            )
                                                         ) {
                                                             if (illnesses.isNotEmpty()) {
                                                                 items(
                                                                     count = illnesses.size,
                                                                     key = { "illness_${illnesses[it].id}" },
-                                                                    span = { GridItemSpan(maxLineSpan) }
+                                                                    span = {
+                                                                        GridItemSpan(
+                                                                            maxLineSpan
+                                                                        )
+                                                                    }
                                                                 ) { idx ->
                                                                     val item = illnesses[idx]
-                                                                    val isConfirmed = item.takenHistory.containsKey(pageDate) || pageDate == item.creationDate
-                                                                    val shape = RoundedCornerShape(24.dp)
+                                                                    val isConfirmed =
+                                                                        item.takenHistory.containsKey(
+                                                                            pageDate
+                                                                        ) || pageDate == item.creationDate
+                                                                    val shape =
+                                                                        RoundedCornerShape(24.dp)
                                                                     SwipeableSquishItem(
                                                                         item = item,
                                                                         shape = shape,
                                                                         onDeleteThresholdReached = { resetAnimation ->
                                                                             val itemToRestore = item
-                                                                            viewModel.deleteItem(item, pageDate)
-                                                                            val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                                            val undoMsg = context.getString(R.string.undo_action)
+                                                                            viewModel.deleteItem(
+                                                                                item,
+                                                                                pageDate
+                                                                            )
+                                                                            val deletedMsg =
+                                                                                context.getString(
+                                                                                    R.string.item_deleted,
+                                                                                    item.title
+                                                                                )
+                                                                            val undoMsg =
+                                                                                context.getString(R.string.undo_action)
                                                                             scope.launch {
                                                                                 snackbarHostState.currentSnackbarData?.dismiss()
-                                                                                val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                                                val result = snackbarHostState.showSnackbar(
-                                                                                    message = deletedMsg,
-                                                                                    actionLabel = undoMsg,
-                                                                                    withDismissAction = true,
-                                                                                    duration = SnackbarDuration.Indefinite
-                                                                                )
+                                                                                val dismissJob =
+                                                                                    launch {
+                                                                                        delay(2000); snackbarHostState.currentSnackbarData?.dismiss()
+                                                                                    }
+                                                                                val result =
+                                                                                    snackbarHostState.showSnackbar(
+                                                                                        message = deletedMsg,
+                                                                                        actionLabel = undoMsg,
+                                                                                        withDismissAction = true,
+                                                                                        duration = SnackbarDuration.Indefinite
+                                                                                    )
                                                                                 dismissJob.cancel()
                                                                                 if (result == SnackbarResult.ActionPerformed) {
-                                                                                    viewModel.restoreItem(itemToRestore)
+                                                                                    viewModel.restoreItem(
+                                                                                        itemToRestore
+                                                                                    )
                                                                                     resetAnimation()
                                                                                 }
                                                                             }
                                                                         },
-                                                                        onSwipeStart = { activeSwipingItemId = item.id },
-                                                                        onSwipeCancel = { activeSwipingItemId = null }
+                                                                        onSwipeStart = {
+                                                                            activeSwipingItemId =
+                                                                                item.id
+                                                                        },
+                                                                        onSwipeCancel = {
+                                                                            activeSwipingItemId =
+                                                                                null
+                                                                        }
                                                                     ) {
                                                                         IllnessCard(
                                                                             item = item,
                                                                             isConfirmed = isConfirmed,
                                                                             onYes = {
-                                                                                val now = LocalTime.now()
-                                                                                var currDate = item.creationDate
-                                                                                while (!currDate.isAfter(pageDate)) {
-                                                                                    item.takenHistory[currDate] = now
-                                                                                    currDate = currDate.plusDays(1)
+                                                                                val now =
+                                                                                    LocalTime.now()
+                                                                                var currDate =
+                                                                                    item.creationDate
+                                                                                while (!currDate.isAfter(
+                                                                                        pageDate
+                                                                                    )
+                                                                                ) {
+                                                                                    item.takenHistory[currDate] =
+                                                                                        now
+                                                                                    currDate =
+                                                                                        currDate.plusDays(
+                                                                                            1
+                                                                                        )
                                                                                 }
-                                                                                viewModel.confirmIllness(item, pageDate)
+                                                                                viewModel.confirmIllness(
+                                                                                    item,
+                                                                                    pageDate
+                                                                                )
                                                                                 viewModel.reloadData()
                                                                             },
-                                                                            onNo = { viewModel.deleteItem(item, pageDate) },
-                                                                            onLongClick = { editingItem = item }
+                                                                            onNo = {
+                                                                                viewModel.deleteItem(
+                                                                                    item,
+                                                                                    pageDate
+                                                                                )
+                                                                            },
+                                                                            onLongClick = {
+                                                                                editingItem = item
+                                                                            }
                                                                         )
                                                                     }
                                                                 }
                                                             }
                                                             if (isPageBirthday) {
-                                                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                                                item(span = {
+                                                                    GridItemSpan(
+                                                                        maxLineSpan
+                                                                    )
+                                                                }) {
                                                                     Column {
                                                                         BirthdayCard()
-                                                                        Spacer(modifier = Modifier.height(4.dp))
+                                                                        Spacer(
+                                                                            modifier = Modifier.height(
+                                                                                4.dp
+                                                                            )
+                                                                        )
                                                                     }
                                                                 }
                                                             }
@@ -580,19 +753,26 @@ fun MedApp(
                                                                 count = displayItems.size,
                                                                 key = { displayItems[it].id },
                                                                 span = { idx ->
-                                                                    if (displayItems[idx].iconName == "DIVIDER") GridItemSpan(maxLineSpan) else GridItemSpan(1)
+                                                                    if (displayItems[idx].iconName == "DIVIDER") GridItemSpan(
+                                                                        maxLineSpan
+                                                                    ) else GridItemSpan(1)
                                                                 }
                                                             ) { idx ->
                                                                 val item = displayItems[idx]
-                                                                val isDivider = item.iconName == "DIVIDER"
+                                                                val isDivider =
+                                                                    item.iconName == "DIVIDER"
                                                                 Box(
                                                                     modifier = Modifier.animateItem(
                                                                         placementSpec = spring(
                                                                             stiffness = Spring.StiffnessMediumLow,
                                                                             visibilityThreshold = IntOffset.VisibilityThreshold
                                                                         ),
-                                                                        fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                                                        fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                                                        fadeOutSpec = spring(
+                                                                            stiffness = Spring.StiffnessMediumLow
+                                                                        ),
+                                                                        fadeInSpec = spring(
+                                                                            stiffness = Spring.StiffnessMediumLow
+                                                                        )
                                                                     )
                                                                 ) {
                                                                     if (isDivider) {
@@ -618,124 +798,233 @@ fun MedApp(
                                                                                 )
                                                                             }
                                                                         } else {
-                                                                            Spacer(modifier = Modifier.height(if (idx == 0) 0.dp else 32.dp))
+                                                                            Spacer(
+                                                                                modifier = Modifier.height(
+                                                                                    if (idx == 0) 0.dp else 32.dp
+                                                                                )
+                                                                            )
                                                                         }
                                                                     } else {
-                                                                        val shape = RoundedCornerShape(24.dp)
+                                                                        val shape =
+                                                                            RoundedCornerShape(24.dp)
                                                                         SwipeableSquishItem(
                                                                             item = item,
                                                                             shape = shape,
                                                                             onDeleteThresholdReached = { resetAnimation ->
-                                                                                val itemToRestore = item
-                                                                                viewModel.deleteItem(item, pageDate)
-                                                                                val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                                                val undoMsg = context.getString(R.string.undo_action)
+                                                                                val itemToRestore =
+                                                                                    item
+                                                                                viewModel.deleteItem(
+                                                                                    item,
+                                                                                    pageDate
+                                                                                )
+                                                                                val deletedMsg =
+                                                                                    context.getString(
+                                                                                        R.string.item_deleted,
+                                                                                        item.title
+                                                                                    )
+                                                                                val undoMsg =
+                                                                                    context.getString(
+                                                                                        R.string.undo_action
+                                                                                    )
                                                                                 scope.launch {
                                                                                     snackbarHostState.currentSnackbarData?.dismiss()
-                                                                                    val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                                                    val result = snackbarHostState.showSnackbar(
-                                                                                        message = deletedMsg,
-                                                                                        actionLabel = undoMsg,
-                                                                                        withDismissAction = true,
-                                                                                        duration = SnackbarDuration.Indefinite
-                                                                                    )
+                                                                                    val dismissJob =
+                                                                                        launch {
+                                                                                            delay(
+                                                                                                2000
+                                                                                            ); snackbarHostState.currentSnackbarData?.dismiss()
+                                                                                        }
+                                                                                    val result =
+                                                                                        snackbarHostState.showSnackbar(
+                                                                                            message = deletedMsg,
+                                                                                            actionLabel = undoMsg,
+                                                                                            withDismissAction = true,
+                                                                                            duration = SnackbarDuration.Indefinite
+                                                                                        )
                                                                                     dismissJob.cancel()
                                                                                     if (result == SnackbarResult.ActionPerformed) {
-                                                                                        viewModel.restoreItem(itemToRestore)
+                                                                                        viewModel.restoreItem(
+                                                                                            itemToRestore
+                                                                                        )
                                                                                         resetAnimation()
                                                                                     }
                                                                                 }
                                                                             },
-                                                                            onSwipeStart = { activeSwipingItemId = item.id },
-                                                                            onSwipeCancel = { activeSwipingItemId = null }
+                                                                            onSwipeStart = {
+                                                                                activeSwipingItemId =
+                                                                                    item.id
+                                                                            },
+                                                                            onSwipeCancel = {
+                                                                                activeSwipingItemId =
+                                                                                    null
+                                                                            }
                                                                         ) {
                                                                             MedDataCard(
                                                                                 item = item,
                                                                                 currentViewDate = pageDate,
                                                                                 shape = shape,
-                                                                                onToggle = { viewModel.toggleMedicine(item, pageDate) },
-                                                                                onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
-                                                                                onLongClick = { editingItem = item }
+                                                                                onToggle = {
+                                                                                    viewModel.toggleMedicine(
+                                                                                        item,
+                                                                                        pageDate
+                                                                                    )
+                                                                                },
+                                                                                onClick = {
+                                                                                    if (!item.notes.isNullOrBlank()) noteToShow =
+                                                                                        item.notes
+                                                                                },
+                                                                                onLongClick = {
+                                                                                    editingItem =
+                                                                                        item
+                                                                                }
                                                                             )
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                            item(span = { GridItemSpan(maxLineSpan) }) { Spacer(modifier = Modifier.height(100.dp)) }
+                                                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                                                Spacer(
+                                                                    modifier = Modifier.height(100.dp)
+                                                                )
+                                                            }
                                                         }
                                                     } else {
                                                         LazyColumn(
-                                                            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                                            modifier = Modifier
+                                                                .fillMaxSize()
+                                                                .padding(horizontal = 16.dp),
+                                                            verticalArrangement = Arrangement.spacedBy(
+                                                                2.dp
+                                                            )
                                                         ) {
                                                             if (illnesses.isNotEmpty()) {
                                                                 itemsIndexed(
                                                                     items = illnesses,
                                                                     key = { _, item -> "illness_${item.id}" }
                                                                 ) { _, item ->
-                                                                    val isConfirmed = item.takenHistory.containsKey(pageDate) || pageDate == item.creationDate
-                                                                    val shape = RoundedCornerShape(24.dp)
+                                                                    val isConfirmed =
+                                                                        item.takenHistory.containsKey(
+                                                                            pageDate
+                                                                        ) || pageDate == item.creationDate
+                                                                    val shape =
+                                                                        RoundedCornerShape(24.dp)
                                                                     SwipeableSquishItem(
                                                                         item = item,
                                                                         shape = shape,
                                                                         onDeleteThresholdReached = { resetAnimation ->
                                                                             val itemToRestore = item
-                                                                            viewModel.deleteItem(item, pageDate)
-                                                                            val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                                            val undoMsg = context.getString(R.string.undo_action)
+                                                                            viewModel.deleteItem(
+                                                                                item,
+                                                                                pageDate
+                                                                            )
+                                                                            val deletedMsg =
+                                                                                context.getString(
+                                                                                    R.string.item_deleted,
+                                                                                    item.title
+                                                                                )
+                                                                            val undoMsg =
+                                                                                context.getString(R.string.undo_action)
                                                                             scope.launch {
                                                                                 snackbarHostState.currentSnackbarData?.dismiss()
-                                                                                val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                                                val result = snackbarHostState.showSnackbar(
-                                                                                    message = deletedMsg,
-                                                                                    actionLabel = undoMsg,
-                                                                                    withDismissAction = true,
-                                                                                    duration = SnackbarDuration.Indefinite
-                                                                                )
+                                                                                val dismissJob =
+                                                                                    launch {
+                                                                                        delay(2000); snackbarHostState.currentSnackbarData?.dismiss()
+                                                                                    }
+                                                                                val result =
+                                                                                    snackbarHostState.showSnackbar(
+                                                                                        message = deletedMsg,
+                                                                                        actionLabel = undoMsg,
+                                                                                        withDismissAction = true,
+                                                                                        duration = SnackbarDuration.Indefinite
+                                                                                    )
                                                                                 dismissJob.cancel()
                                                                                 if (result == SnackbarResult.ActionPerformed) {
-                                                                                    viewModel.restoreItem(itemToRestore)
+                                                                                    viewModel.restoreItem(
+                                                                                        itemToRestore
+                                                                                    )
                                                                                     resetAnimation()
                                                                                 }
                                                                             }
                                                                         },
-                                                                        onSwipeStart = { activeSwipingItemId = item.id },
-                                                                        onSwipeCancel = { activeSwipingItemId = null }
+                                                                        onSwipeStart = {
+                                                                            activeSwipingItemId =
+                                                                                item.id
+                                                                        },
+                                                                        onSwipeCancel = {
+                                                                            activeSwipingItemId =
+                                                                                null
+                                                                        }
                                                                     ) {
                                                                         IllnessCard(
                                                                             item = item,
                                                                             isConfirmed = isConfirmed,
                                                                             onYes = {
-                                                                                val now = LocalTime.now()
-                                                                                var currDate = item.creationDate
-                                                                                while (!currDate.isAfter(pageDate)) {
-                                                                                    item.takenHistory[currDate] = now
-                                                                                    currDate = currDate.plusDays(1)
+                                                                                val now =
+                                                                                    LocalTime.now()
+                                                                                var currDate =
+                                                                                    item.creationDate
+                                                                                while (!currDate.isAfter(
+                                                                                        pageDate
+                                                                                    )
+                                                                                ) {
+                                                                                    item.takenHistory[currDate] =
+                                                                                        now
+                                                                                    currDate =
+                                                                                        currDate.plusDays(
+                                                                                            1
+                                                                                        )
                                                                                 }
-                                                                                viewModel.confirmIllness(item, pageDate)
+                                                                                viewModel.confirmIllness(
+                                                                                    item,
+                                                                                    pageDate
+                                                                                )
                                                                                 viewModel.reloadData()
                                                                             },
-                                                                            onNo = { viewModel.deleteItem(item, pageDate) },
-                                                                            onLongClick = { editingItem = item }
+                                                                            onNo = {
+                                                                                viewModel.deleteItem(
+                                                                                    item,
+                                                                                    pageDate
+                                                                                )
+                                                                            },
+                                                                            onLongClick = {
+                                                                                editingItem = item
+                                                                            }
                                                                         )
                                                                     }
                                                                 }
                                                             }
                                                             if (isPageBirthday) {
                                                                 item {
-                                                                    Spacer(modifier = Modifier.height(8.dp))
+                                                                    Spacer(
+                                                                        modifier = Modifier.height(
+                                                                            8.dp
+                                                                        )
+                                                                    )
                                                                     BirthdayCard()
-                                                                    Spacer(modifier = Modifier.height(14.dp))
+                                                                    Spacer(
+                                                                        modifier = Modifier.height(
+                                                                            14.dp
+                                                                        )
+                                                                    )
                                                                 }
                                                             }
                                                             itemsIndexed(
                                                                 items = displayItems,
                                                                 key = { _, item -> item.id }) { index, item ->
-                                                                val isDivider = item.iconName == "DIVIDER"
-                                                                val isFirstInGroup = index == 0 || displayItems.getOrNull(index - 1)?.iconName == "DIVIDER"
-                                                                val isLastInGroup = index == displayItems.lastIndex || displayItems.getOrNull(index + 1)?.iconName == "DIVIDER"
-                                                                val topRadius = if (isFirstInGroup) 20.dp else 4.dp
-                                                                val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
+                                                                val isDivider =
+                                                                    item.iconName == "DIVIDER"
+                                                                val isFirstInGroup =
+                                                                    index == 0 || displayItems.getOrNull(
+                                                                        index - 1
+                                                                    )?.iconName == "DIVIDER"
+                                                                val isLastInGroup =
+                                                                    index == displayItems.lastIndex || displayItems.getOrNull(
+                                                                        index + 1
+                                                                    )?.iconName == "DIVIDER"
+                                                                val topRadius =
+                                                                    if (isFirstInGroup) 20.dp else 4.dp
+                                                                val bottomRadius =
+                                                                    if (isLastInGroup) 20.dp else 4.dp
                                                                 val shape = RoundedCornerShape(
                                                                     topStart = topRadius,
                                                                     topEnd = topRadius,
@@ -748,8 +1037,12 @@ fun MedApp(
                                                                             stiffness = Spring.StiffnessMediumLow,
                                                                             visibilityThreshold = IntOffset.VisibilityThreshold
                                                                         ),
-                                                                        fadeOutSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                                                        fadeInSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                                                                        fadeOutSpec = spring(
+                                                                            stiffness = Spring.StiffnessMediumLow
+                                                                        ),
+                                                                        fadeInSpec = spring(
+                                                                            stiffness = Spring.StiffnessMediumLow
+                                                                        )
                                                                     )
                                                                 ) {
                                                                     if (isDivider) {
@@ -775,49 +1068,95 @@ fun MedApp(
                                                                                 )
                                                                             }
                                                                         } else {
-                                                                            Spacer(modifier = Modifier.height(if (index == 0) 0.dp else 0.dp))
+                                                                            Spacer(
+                                                                                modifier = Modifier.height(
+                                                                                    if (index == 0) 0.dp else 0.dp
+                                                                                )
+                                                                            )
                                                                         }
                                                                     } else {
                                                                         SwipeableSquishItem(
                                                                             item = item,
                                                                             shape = shape,
                                                                             onDeleteThresholdReached = { resetAnimation ->
-                                                                                val itemToRestore = item
-                                                                                viewModel.deleteItem(item, pageDate)
-                                                                                val deletedMsg = context.getString(R.string.item_deleted, item.title)
-                                                                                val undoMsg = context.getString(R.string.undo_action)
+                                                                                val itemToRestore =
+                                                                                    item
+                                                                                viewModel.deleteItem(
+                                                                                    item,
+                                                                                    pageDate
+                                                                                )
+                                                                                val deletedMsg =
+                                                                                    context.getString(
+                                                                                        R.string.item_deleted,
+                                                                                        item.title
+                                                                                    )
+                                                                                val undoMsg =
+                                                                                    context.getString(
+                                                                                        R.string.undo_action
+                                                                                    )
                                                                                 scope.launch {
                                                                                     snackbarHostState.currentSnackbarData?.dismiss()
-                                                                                    val dismissJob = launch { delay(2000); snackbarHostState.currentSnackbarData?.dismiss() }
-                                                                                    val result = snackbarHostState.showSnackbar(
-                                                                                        message = deletedMsg,
-                                                                                        actionLabel = undoMsg,
-                                                                                        withDismissAction = true,
-                                                                                        duration = SnackbarDuration.Indefinite
-                                                                                    )
+                                                                                    val dismissJob =
+                                                                                        launch {
+                                                                                            delay(
+                                                                                                2000
+                                                                                            ); snackbarHostState.currentSnackbarData?.dismiss()
+                                                                                        }
+                                                                                    val result =
+                                                                                        snackbarHostState.showSnackbar(
+                                                                                            message = deletedMsg,
+                                                                                            actionLabel = undoMsg,
+                                                                                            withDismissAction = true,
+                                                                                            duration = SnackbarDuration.Indefinite
+                                                                                        )
                                                                                     dismissJob.cancel()
                                                                                     if (result == SnackbarResult.ActionPerformed) {
-                                                                                        viewModel.restoreItem(itemToRestore)
+                                                                                        viewModel.restoreItem(
+                                                                                            itemToRestore
+                                                                                        )
                                                                                         resetAnimation()
                                                                                     }
                                                                                 }
                                                                             },
-                                                                            onSwipeStart = { activeSwipingItemId = item.id },
-                                                                            onSwipeCancel = { activeSwipingItemId = null }
+                                                                            onSwipeStart = {
+                                                                                activeSwipingItemId =
+                                                                                    item.id
+                                                                            },
+                                                                            onSwipeCancel = {
+                                                                                activeSwipingItemId =
+                                                                                    null
+                                                                            }
                                                                         ) {
                                                                             MedDataCard(
                                                                                 item = item,
                                                                                 currentViewDate = pageDate,
                                                                                 shape = shape,
-                                                                                onToggle = { viewModel.toggleMedicine(item, pageDate) },
-                                                                                onClick = { if (!item.notes.isNullOrBlank()) noteToShow = item.notes },
-                                                                                onLongClick = { editingItem = item }
+                                                                                onToggle = {
+                                                                                    viewModel.toggleMedicine(
+                                                                                        item,
+                                                                                        pageDate
+                                                                                    )
+                                                                                },
+                                                                                onClick = {
+                                                                                    if (!item.notes.isNullOrBlank()) noteToShow =
+                                                                                        item.notes
+                                                                                },
+                                                                                onLongClick = {
+                                                                                    editingItem =
+                                                                                        item
+                                                                                }
                                                                             )
                                                                         }
                                                                     }
                                                                 }
                                                             }
-                                                            item { Spacer(modifier = Modifier.height(100.dp)) }
+                                                            item {
+                                                                Spacer(
+                                                                    modifier = Modifier.height(
+                                                                        100.dp
+                                                                    )
+                                                                )
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -825,6 +1164,7 @@ fun MedApp(
                                         }
                                     }
                                 }
+
                                 1 -> {
                                     StatsTab(
                                         viewModel = viewModel,
@@ -834,6 +1174,7 @@ fun MedApp(
                                         }
                                     )
                                 }
+
                                 2 -> {
                                     YouTab()
                                 }
@@ -869,13 +1210,15 @@ fun MedApp(
     }
 
     if (showDatePicker) {
-        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = viewModel.selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
+        val datePickerState =
+            rememberDatePickerState(initialSelectedDateMillis = viewModel.selectedDate.toEpochDay() * 24 * 60 * 60 * 1000)
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 ExpressiveTextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { millis ->
-                        viewModel.selectedDate = LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000))
+                        viewModel.selectedDate =
+                            LocalDate.ofEpochDay(millis / (24 * 60 * 60 * 1000))
                     }; showDatePicker = false
                 }, text = stringResource(R.string.ok_action))
             },
@@ -900,8 +1243,19 @@ fun MedApp(
                 MedicineBottomSheet(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap, notificationType,
-                            rangeStart, rangeEnd)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            times,
+                            days,
+                            notes,
+                            intervalGap,
+                            notificationType,
+                            rangeStart,
+                            rangeEnd
+                        )
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -912,7 +1266,16 @@ fun MedApp(
                     onConfirm = { title, iconName, colorCode, startDate ->
                         val prevSelected = viewModel.selectedDate
                         viewModel.selectedDate = startDate
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, listOf(itemToEdit.creationTime), null, null, null)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            listOf(itemToEdit.creationTime),
+                            null,
+                            null,
+                            null
+                        )
                         viewModel.selectedDate = prevSelected
                         editingItem = null
                     },
@@ -922,7 +1285,16 @@ fun MedApp(
                 EventBottomSheet(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                        viewModel.updateItem(itemToEdit, title, iconName, colorCode, times, days, notes, intervalGap)
+                        viewModel.updateItem(
+                            itemToEdit,
+                            title,
+                            iconName,
+                            colorCode,
+                            times,
+                            days,
+                            notes,
+                            intervalGap
+                        )
                         editingItem = null
                     },
                     initialItem = itemToEdit
@@ -936,7 +1308,17 @@ fun MedApp(
             MedicineBottomSheet(
                 onDismiss = { showMedicineDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd ->
-                    viewModel.addItem(ItemType.Medicine, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap, notificationType = notificationType)
+                    viewModel.addItem(
+                        ItemType.Medicine,
+                        title,
+                        iconName,
+                        colorCode,
+                        times,
+                        days,
+                        notes = notes,
+                        intervalGap = intervalGap,
+                        notificationType = notificationType
+                    )
                     showMedicineDialog = false
                 },
                 initialText = preFilledText
@@ -951,7 +1333,16 @@ fun MedApp(
                 onConfirm = { title, iconName, colorCode, startDate ->
                     val prevSelected = viewModel.selectedDate
                     viewModel.selectedDate = startDate
-                    viewModel.addItem(ItemType.Illness, title, iconName, colorCode, listOf(LocalTime.now()), null, notes = null, intervalGap = null)
+                    viewModel.addItem(
+                        ItemType.Illness,
+                        title,
+                        iconName,
+                        colorCode,
+                        listOf(LocalTime.now()),
+                        null,
+                        notes = null,
+                        intervalGap = null
+                    )
                     viewModel.selectedDate = prevSelected
                     showIllnessDialog = false
                 },
@@ -965,7 +1356,16 @@ fun MedApp(
             EventBottomSheet(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
-                    viewModel.addItem(ItemType.Event, title, iconName, colorCode, times, days, notes = notes, intervalGap = intervalGap)
+                    viewModel.addItem(
+                        ItemType.Event,
+                        title,
+                        iconName,
+                        colorCode,
+                        times,
+                        days,
+                        notes = notes,
+                        intervalGap = intervalGap
+                    )
                     showEventDialog = false
                 },
                 initialText = preFilledText
