@@ -8,17 +8,14 @@ package com.fedeveloper95.med
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -121,7 +118,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.PopupPositionProvider
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
@@ -332,32 +328,6 @@ class MainActivity : ComponentActivity() {
                         prefs.edit()
                             .putString("last_version", currentVersionName)
                             .apply()
-                        val notificationManager =
-                            context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-                        val canUseFullScreen =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                notificationManager.canUseFullScreenIntent()
-                            } else {
-                                true
-                            }
-                        val hasNotificationPermission =
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                ContextCompat.checkSelfPermission(
-                                    context,
-                                    Manifest.permission.POST_NOTIFICATIONS
-                                ) == PackageManager.PERMISSION_GRANTED
-                            } else {
-                                NotificationManagerCompat.from(context).areNotificationsEnabled()
-                            }
-                        if (hasNotificationPermission && !canUseFullScreen) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                val intent =
-                                    Intent(Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT).apply {
-                                        data = Uri.parse("package:${context.packageName}")
-                                    }
-                                context.startActivity(intent)
-                            }
-                        }
                     }
                 )
             }

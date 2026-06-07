@@ -49,6 +49,7 @@ import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonGroup
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -63,6 +64,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -541,37 +543,23 @@ fun MedicineBottomSheet(
                                 DayOfWeek.SATURDAY,
                                 DayOfWeek.SUNDAY
                             )
-                            ButtonGroup(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                overflowIndicator = { state ->
-                                    IconButton(onClick = { state.show() }) {
-                                        Icon(
-                                            Icons.Rounded.MoreHoriz,
-                                            contentDescription = stringResource(R.string.more_options)
-                                        )
+                            val dayLabels = days.map { it.getDisplayName(TextStyle.NARROW, Locale.getDefault()) }
+                            val selectedIndices = days.mapIndexedNotNull { index, day ->
+                                if (selectedDays.contains(day)) index else null
+                            }.toSet()
+
+                            MultiSelectConnectedButtonGroupWithFlowLayout(
+                                options = dayLabels,
+                                selectedIndices = selectedIndices,
+                                onOptionSelected = { index ->
+                                    val day = days[index]
+                                    selectedDays = if (selectedDays.contains(day)) {
+                                        if (selectedDays.size > 1) selectedDays - day else selectedDays
+                                    } else {
+                                        selectedDays + day
                                     }
                                 }
-                            ) {
-                                days.forEach { day ->
-                                    val isSelected = selectedDays.contains(day)
-
-                                    toggleableItem(
-                                        checked = isSelected,
-                                        label = day.getDisplayName(
-                                            TextStyle.NARROW,
-                                            Locale.getDefault()
-                                        ),
-                                        onCheckedChange = { _ ->
-                                            selectedDays = if (isSelected) {
-                                                if (selectedDays.size > 1) selectedDays - day else selectedDays
-                                            } else {
-                                                selectedDays + day
-                                            }
-                                        }
-                                    )
-                                }
-                            }
+                            )
                         }
 
                         item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -817,6 +805,39 @@ fun MedicineBottomSheet(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun MultiSelectConnectedButtonGroupWithFlowLayout(
+    options: List<String>,
+    selectedIndices: Set<Int>,
+    onOptionSelected: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween, Alignment.CenterHorizontally),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        options.forEachIndexed { index, option ->
+            ToggleButton(
+                checked = selectedIndices.contains(index),
+                onCheckedChange = { onOptionSelected(index) },
+                modifier = Modifier.weight(1f),
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                }
+            ) {
+                Text(
+                    text = option,
+                    fontFamily = GoogleSansFlex,
+                    maxLines = 1,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
