@@ -2,7 +2,7 @@
 
 **Never miss your medicine ever again.**
 
-<img width="4400" height="2475" alt="Med banner 2 0" src="https://github.com/user-attachments/assets/3ab94ca0-1415-428e-85e2-808188016c9d" />
+<img width="2200" height="1238" alt="Med banner" src="https://github.com/user-attachments/assets/2af73d4a-90a2-4c96-b547-ecddd859e236" />
 
 ![Kotlin](https://img.shields.io/badge/kotlin-%237F52FF.svg?style=for-the-badge&logo=kotlin&logoColor=white) ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white) ![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-4285F4?style=for-the-badge&logo=android&logoColor=white) ![Material 3](https://img.shields.io/badge/Material%203-Expressive-purple?style=for-the-badge)
 
@@ -32,15 +32,15 @@ No fork of this project will recieve support, if you use a fork, ask the forker 
 <details>
   <summary><b>Phone screenshots</b></summary>
   <br>
-<img width="5330" height="2540" alt="Phone" src="https://github.com/user-attachments/assets/7c5a9391-ade2-4efe-831c-0b9fbeed9dba" />
+<img width="2665" height="1270" alt="Phone" src="https://github.com/user-attachments/assets/1c170413-46e4-413b-9cfc-bbd73eafe146" />
 </details>
 <details>
   <summary><b>Watch screenshots</b></summary>
   <br>
-<img width="5332" height="2533" alt="Watch" src="https://github.com/user-attachments/assets/bec8b48e-72f9-4164-bcd9-ff08517fda5f" />
+<img width="2666" height="1267" alt="Watch" src="https://github.com/user-attachments/assets/a82274cb-d523-4ebd-88f3-68fc0ceed854" />
 </details>
 <details>
   <summary><b>Desktop screenshots</b></summary>
   <br>
-  <img width="6132" height="3579" alt="Desktop" src="https://github.com/user-attachments/assets/dd638494-c072-4b67-84d0-86aa25649b6d" />
+<img width="3066" height="1790" alt="Desktop" src="https://github.com/user-attachments/assets/bb2b674a-f605-47ae-be70-4c4b781b22bf" />
 </details>
