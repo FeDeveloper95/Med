@@ -1,7 +1,7 @@
 @file:OptIn(
     androidx.compose.ui.text.ExperimentalTextApi::class,
-    androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class
+    ExperimentalMaterial3Api::class,
+    ExperimentalMaterial3ExpressiveApi::class
 )
 
 package com.fedeveloper95.med

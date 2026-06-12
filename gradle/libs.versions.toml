@@ -32,9 +32,14 @@ uiVersion = "1.11.2"
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-compose-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-compose-material = { module = "androidx.wear.compose:compose-material", version.ref = "composeMaterial" }
+androidx-compose-material-icons-extended-v161 = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
+androidx-compose-material3-v140 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-compose-material3-window-size-class1 = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClass" }
+androidx-compose-material3-window-size-class1-v140 = { module = "androidx.compose.material3:material3-window-size-class", version.ref = "material3WindowSizeClassVersion" }
 androidx-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "composeMaterial" }
+androidx-compose-ui-tooling-preview-v1110 = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreviewVersion" }
+androidx-compose-ui-v1110 = { module = "androidx.compose.ui:ui", version.ref = "uiVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
