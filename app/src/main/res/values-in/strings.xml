@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Periksa Pembaruan</string>
     <string name="settings_check_updates_desc">Temukan versi terbaru</string>
     <string name="update_action">Perbarui</string>
-    <string name="update_available">Pembaruan tersedia: v%1$s</string>
+    <string name="update_available">Pembaruan tersedia!</string>
     <string name="update_latest_version_msg">Tidak ada pembaruan saat ini.</string>
     <string name="update_error_msg">Tidak dapat memeriksa pembaruan. Periksa koneksi Anda.</string>
     <string name="later">Nanti</string>

@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Controleren op updates</string>
     <string name="settings_check_updates_desc">Vind de nieuwste versie</string>
     <string name="update_action">Updaten</string>
-    <string name="update_available">Update beschikbaar: v%1$s</string>
+    <string name="update_available">Update beschikbaar!</string>
     <string name="update_latest_version_msg">Geen updates beschikbaar op dit moment.</string>
     <string name="update_error_msg">Kan niet controleren op updates. Controleer je verbinding.</string>
     <string name="later">Later</string>

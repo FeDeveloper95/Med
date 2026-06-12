@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">アップデートを確認</string>
     <string name="settings_check_updates_desc">最新バージョンを探す</string>
     <string name="update_action">更新</string>
-    <string name="update_available">利用可能なアップデート: v%1$s</string>
+    <string name="update_available">アップデートがあります！</string>
     <string name="update_latest_version_msg">現在利用可能なアップデートはありません。</string>
     <string name="update_error_msg">アップデートを確認できませんでした。接続を確認してください。</string>
     <string name="later">後で</string>

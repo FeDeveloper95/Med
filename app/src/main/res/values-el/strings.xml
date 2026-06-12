@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Έλεγχος για ενημερώσεις</string>
     <string name="settings_check_updates_desc">Εύρεση της πιο πρόσφατης έκδοσης</string>
     <string name="update_action">Ενημέρωση</string>
-    <string name="update_available">Διαθέσιμη ενημέρωση: v%1$s</string>
+    <string name="update_available">Διαθέσιμη ενημέρωση!</string>
     <string name="update_latest_version_msg">Δεν υπάρχουν διαθέσιμες ενημερώσεις αυτήν τη στιγμή.</string>
     <string name="update_error_msg">Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις. Ελέγξτε τη σύνδεσή σας.</string>
     <string name="later">Αργότερα</string>

@@ -19,18 +19,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,6 +38,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -60,12 +58,14 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -78,24 +78,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.role
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -136,6 +131,7 @@ class NotificationsSettingsActivity : ComponentActivity() {
 @Composable
 fun NotificationsSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val activity = context as ComponentActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
@@ -191,6 +187,7 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
     }
 
     val handleNotificationToggle: (Boolean) -> Unit = { checked ->
+        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         if (checked) {
             val hasPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 ContextCompat.checkSelfPermission(
@@ -413,72 +410,61 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
                 item { Spacer(modifier = Modifier.height(24.dp)) }
 
                 item {
-                    SettingsSwitchCard(
-                        icon = Icons.Rounded.Alarm,
-                        title = stringResource(R.string.settings_full_screen_alarm_title),
-                        subtitle = stringResource(R.string.settings_full_screen_alarm_desc),
-                        containerColor = Color(0xFFffb4ab),
-                        iconColor = Color(0xFF690005),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        checked = fullScreenAlarm,
-                        enabled = showNotifications,
-                        onCheckedChange = {
-                            fullScreenAlarm = it
-                            prefs.edit().putBoolean(PREF_FULL_SCREEN_ALARM, it).apply()
-                        }
-                    )
-                }
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        NotificationSegmentedSwitchItem(
+                            icon = Icons.Rounded.Alarm,
+                            title = stringResource(R.string.settings_full_screen_alarm_title),
+                            subtitle = stringResource(R.string.settings_full_screen_alarm_desc),
+                            containerColor = Color(0xFFffb4ab),
+                            iconColor = Color(0xFF690005),
+                            index = 0,
+                            count = 3,
+                            checked = fullScreenAlarm,
+                            enabled = showNotifications,
+                            onCheckedChange = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                fullScreenAlarm = it
+                                prefs.edit().putBoolean(PREF_FULL_SCREEN_ALARM, it).apply()
+                            }
+                        )
 
-                item { Spacer(modifier = Modifier.height(2.dp)) }
+                        NotificationSegmentedButtonGroupItem(
+                            icon = Icons.Rounded.Swipe,
+                            title = stringResource(R.string.settings_alarm_style_title),
+                            subtitle = stringResource(R.string.settings_alarm_style_desc),
+                            containerColor = Color(0xFFa1c9ff),
+                            iconColor = Color(0xFF0641a0),
+                            index = 1,
+                            count = 3,
+                            options = listOf(
+                                stringResource(R.string.settings_alarm_style_slider),
+                                stringResource(R.string.settings_alarm_style_buttons)
+                            ),
+                            selectedIndex = if (useSliderStyle) 0 else 1,
+                            enabled = showNotifications && fullScreenAlarm,
+                            onOptionSelected = { index ->
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                val isSlider = index == 0
+                                useSliderStyle = isSlider
+                                prefs.edit().putBoolean(PREF_ALARM_STYLE_SLIDER, isSlider).apply()
+                            }
+                        )
 
-                item {
-                    SettingsSegmentedButtonCard(
-                        icon = Icons.Rounded.Swipe,
-                        title = stringResource(R.string.settings_alarm_style_title),
-                        subtitle = stringResource(R.string.settings_alarm_style_desc),
-                        containerColor = Color(0xFFa1c9ff),
-                        iconColor = Color(0xFF0641a0),
-                        shape = RoundedCornerShape(4.dp),
-                        options = listOf(
-                            stringResource(R.string.settings_alarm_style_slider),
-                            stringResource(R.string.settings_alarm_style_buttons)
-                        ),
-                        selectedIndex = if (useSliderStyle) 0 else 1,
-                        enabled = showNotifications && fullScreenAlarm,
-                        onOptionSelected = { index ->
-                            val isSlider = index == 0
-                            useSliderStyle = isSlider
-                            prefs.edit().putBoolean(PREF_ALARM_STYLE_SLIDER, isSlider).apply()
-                        }
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height(2.dp)) }
-
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Snooze,
-                        title = stringResource(R.string.settings_snooze_duration_title),
-                        subtitle = stringResource(
-                            R.string.settings_snooze_duration_desc,
-                            snoozeDuration
-                        ),
-                        containerColor = Color(0xFFffb683),
-                        iconColor = Color(0xFF753403),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        enabled = showNotifications,
-                        onClick = { showSnoozeDialog = true }
-                    )
+                        NotificationSegmentedItem(
+                            icon = Icons.Rounded.Snooze,
+                            title = stringResource(R.string.settings_snooze_duration_title),
+                            subtitle = stringResource(
+                                R.string.settings_snooze_duration_desc,
+                                snoozeDuration
+                            ),
+                            containerColor = Color(0xFFffb683),
+                            iconColor = Color(0xFF753403),
+                            index = 2,
+                            count = 3,
+                            enabled = showNotifications,
+                            onClick = { showSnoozeDialog = true }
+                        )
+                    }
                 }
 
                 item { Spacer(modifier = Modifier.height(48.dp)) }
@@ -499,87 +485,33 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
 @Composable
-fun SettingsSegmentedButtonCard(
+fun NotificationSegmentedSwitchItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
     containerColor: Color,
     iconColor: Color,
-    shape: Shape,
-    options: List<String>,
-    selectedIndex: Int,
+    index: Int,
+    count: Int,
+    checked: Boolean,
     enabled: Boolean = true,
-    onOptionSelected: (Int) -> Unit
+    onCheckedChange: (Boolean) -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val pressProgress by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
-        label = "anim_shape"
-    )
-
-    val animatedShape = remember(shape, pressProgress) {
-        if (shape is RoundedCornerShape) {
-            object : Shape {
-                override fun createOutline(
-                    size: Size,
-                    layoutDirection: LayoutDirection,
-                    density: Density
-                ): Outline {
-                    val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                        (1 - fraction) * start + fraction * stop
-
-                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
-                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
-                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
-                    return Outline.Rounded(
-                        androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(
-                                0f,
-                                0f,
-                                size.width,
-                                size.height
-                            ),
-                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                        )
-                    )
-                }
-            }
-        } else shape
-    }
-
-    val alpha = if (enabled) 1f else 0.38f
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(animatedShape)
-            .alpha(alpha)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = LocalIndication.current,
-                enabled = enabled
-            ) {},
-        shape = animatedShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp, horizontal = 16.dp)
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+    SegmentedListItem(
+        selected = false,
+        onClick = { if (enabled) onCheckedChange(!checked) },
+        modifier = if (count == 1) Modifier.clip(RoundedCornerShape(20.dp)) else Modifier,
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(if (enabled) 1f else 0.5f)
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -595,7 +527,159 @@ fun SettingsSegmentedButtonCard(
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (subtitle.isNotEmpty()) {
+                        Text(
+                            text = subtitle,
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Switch(
+                    checked = checked,
+                    enabled = enabled,
+                    onCheckedChange = onCheckedChange,
+                    thumbContent = {
+                        Icon(
+                            imageVector = if (checked) Icons.Rounded.Check else Icons.Rounded.Close,
+                            contentDescription = null,
+                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                        )
+                    }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun NotificationSegmentedButtonGroupItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    containerColor: Color,
+    iconColor: Color,
+    index: Int,
+    count: Int,
+    options: List<String>,
+    selectedIndex: Int,
+    enabled: Boolean = true,
+    onOptionSelected: (Int) -> Unit
+) {
+    SegmentedListItem(
+        selected = false,
+        onClick = {},
+        modifier = if (count == 1) Modifier.clip(RoundedCornerShape(20.dp)) else Modifier,
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(if (enabled) 1f else 0.5f)
+                    .padding(vertical = 4.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(containerColor),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = iconColor,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = title,
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        if (subtitle.isNotEmpty()) {
+                            Text(
+                                text = subtitle,
+                                fontFamily = GoogleSansFlex,
+                                fontWeight = FontWeight.Normal,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedSingleSelectButtonGroup(
+                    options = options,
+                    selectedIndex = selectedIndex,
+                    enabled = enabled,
+                    onOptionSelected = onOptionSelected
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun NotificationSegmentedItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    containerColor: Color,
+    iconColor: Color,
+    index: Int,
+    count: Int,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
+    SegmentedListItem(
+        selected = false,
+        onClick = { if (enabled) onClick() },
+        modifier = if (count == 1) Modifier.clip(RoundedCornerShape(20.dp)) else Modifier,
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .alpha(if (enabled) 1f else 0.5f)
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(containerColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = title,
                         fontFamily = GoogleSansFlex,
@@ -613,34 +697,25 @@ fun SettingsSegmentedButtonCard(
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-            SingleSelectConnectedButtonGroupWithFlowLayout(
-                options = options,
-                selectedIndex = selectedIndex,
-                enabled = enabled,
-                onOptionSelected = onOptionSelected,
-                modifier = Modifier.padding(horizontal = 4.dp)
-            )
         }
-    }
+    )
 }
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun SingleSelectConnectedButtonGroupWithFlowLayout(
+fun OutlinedSingleSelectButtonGroup(
     options: List<String>,
     selectedIndex: Int,
     enabled: Boolean = true,
-    onOptionSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    onOptionSelected: (Int) -> Unit
 ) {
-    FlowRow(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
     ) {
-        options.forEachIndexed { index, label ->
-            ToggleButton(
+        options.forEachIndexed { index, option ->
+            OutlinedToggleButton(
                 checked = selectedIndex == index,
                 onCheckedChange = { if (enabled) onOptionSelected(index) },
                 enabled = enabled,
@@ -649,272 +724,18 @@ fun SingleSelectConnectedButtonGroupWithFlowLayout(
                     options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
-                modifier = Modifier.semantics { role = Role.RadioButton },
+                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Text(
-                    text = label,
+                    text = option,
                     fontFamily = GoogleSansFlex,
-                    fontWeight = if (index == selectedIndex) FontWeight.Bold else FontWeight.Normal
+                    maxLines = 1,
+                    textAlign = TextAlign.Center
                 )
             }
         }
-    }
-}
-
-@Composable
-fun SettingsItemCard(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    containerColor: Color,
-    iconColor: Color,
-    shape: Shape,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val pressProgress by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
-        label = "anim_shape"
-    )
-
-    val animatedShape = remember(shape, pressProgress) {
-        if (shape is RoundedCornerShape) {
-            object : Shape {
-                override fun createOutline(
-                    size: Size,
-                    layoutDirection: LayoutDirection,
-                    density: Density
-                ): Outline {
-                    val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                        (1 - fraction) * start + fraction * stop
-
-                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
-                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
-                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
-                    return Outline.Rounded(
-                        androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(
-                                0f,
-                                0f,
-                                size.width,
-                                size.height
-                            ),
-                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                        )
-                    )
-                }
-            }
-        } else shape
-    }
-
-    val alpha = if (enabled) 1f else 0.38f
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(animatedShape)
-            .alpha(alpha),
-        shape = animatedShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = title,
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Normal,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
-            supportingContent = {
-                if (subtitle.isNotEmpty()) {
-                    Text(
-                        text = subtitle,
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            leadingContent = {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(containerColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = iconColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            modifier = Modifier
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = LocalIndication.current,
-                    enabled = enabled,
-                    onClick = onClick
-                )
-                .padding(vertical = 4.dp),
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            )
-        )
-    }
-}
-
-@Composable
-fun SettingsSwitchCard(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    containerColor: Color,
-    iconColor: Color,
-    shape: Shape,
-    checked: Boolean,
-    enabled: Boolean = true,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isPressed by interactionSource.collectIsPressedAsState()
-
-    val pressProgress by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
-        label = "anim_shape"
-    )
-
-    val animatedShape = remember(shape, pressProgress) {
-        if (shape is RoundedCornerShape) {
-            object : Shape {
-                override fun createOutline(
-                    size: Size,
-                    layoutDirection: LayoutDirection,
-                    density: Density
-                ): Outline {
-                    val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                        (1 - fraction) * start + fraction * stop
-
-                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
-                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
-                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
-                    return Outline.Rounded(
-                        androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(
-                                0f,
-                                0f,
-                                size.width,
-                                size.height
-                            ),
-                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                        )
-                    )
-                }
-            }
-        } else shape
-    }
-
-    val alpha = if (enabled) 1f else 0.38f
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(animatedShape)
-            .alpha(alpha),
-        shape = animatedShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = title,
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Normal,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
-            supportingContent = {
-                if (subtitle.isNotEmpty()) {
-                    Text(
-                        text = subtitle,
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            leadingContent = {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(containerColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = iconColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            trailingContent = {
-                Switch(
-                    checked = checked,
-                    enabled = enabled,
-                    onCheckedChange = onCheckedChange,
-                    thumbContent = {
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Rounded.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
-                    }
-                )
-            },
-            modifier = Modifier
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = LocalIndication.current,
-                    enabled = enabled
-                ) { onCheckedChange(!checked) }
-                .padding(vertical = 4.dp),
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            )
-        )
     }
 }

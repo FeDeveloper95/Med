@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Güncellemeleri Kontrol Et</string>
     <string name="settings_check_updates_desc">En son sürümü bul</string>
     <string name="update_action">Güncelle</string>
-    <string name="update_available">Güncelleme mevcut: v%1$s</string>
+    <string name="update_available">Güncelleme mevcut!</string>
     <string name="update_latest_version_msg">Şu anda mevcut güncelleme yok.</string>
     <string name="update_error_msg">Güncellemeler kontrol edilemedi. Bağlantınızı kontrol edin.</string>
     <string name="later">Daha sonra</string>

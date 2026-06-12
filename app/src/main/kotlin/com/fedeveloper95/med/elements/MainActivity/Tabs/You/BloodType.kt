@@ -7,7 +7,6 @@
 package com.fedeveloper95.med.elements.MainActivity.Tabs.You
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,16 +18,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -106,22 +105,22 @@ fun BloodTypeBottomSheet(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(24.dp))
+
+            val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f, fill = false)
+                    .weight(1f, fill = false),
+                verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
             ) {
-                items(bloodTypes) { type ->
+                itemsIndexed(bloodTypes) { index, type ->
                     val isSelected = selectedType == type
-                    ListItem(
-                        headlineContent = {
-                            Text(
-                                text = type,
-                                fontFamily = GoogleSansFlex,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
-                            )
-                        },
+                    SegmentedListItem(
+                        selected = isSelected,
+                        onClick = { selectedType = type },
+                        colors = itemColors,
+                        shapes = ListItemDefaults.segmentedShapes(index = index, count = bloodTypes.size),
                         trailingContent = {
                             if (isSelected) {
                                 Icon(
@@ -131,8 +130,14 @@ fun BloodTypeBottomSheet(
                                 )
                             }
                         },
-                        modifier = Modifier.clickable { selectedType = type },
-                        colors = ListItemDefaults.colors(containerColor = Color.Transparent)
+                        content = {
+                            Text(
+                                text = type,
+                                fontFamily = GoogleSansFlex,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
                     )
                 }
             }

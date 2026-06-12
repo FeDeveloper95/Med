@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">अपडेट के लिए जांचें</string>
     <string name="settings_check_updates_desc">नवीनतम संस्करण खोजें</string>
     <string name="update_action">अपडेट करें</string>
-    <string name="update_available">अपडेट उपलब्ध है: v%1$s</string>
+    <string name="update_available">अपडेट उपलब्ध है!</string>
     <string name="update_latest_version_msg">इस समय कोई अपडेट उपलब्ध नहीं है।</string>
     <string name="update_error_msg">अपडेट की जांच नहीं की जा सकी। अपना कनेक्शन जांचें।</string>
     <string name="later">बाद में</string>

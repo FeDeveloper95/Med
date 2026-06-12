@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Frissítések keresése</string>
     <string name="settings_check_updates_desc">Legújabb verzió keresése</string>
     <string name="update_action">Frissítés</string>
-    <string name="update_available">Frissítés elérhető: v%1$s</string>
+    <string name="update_available">Frissítés elérhető!</string>
     <string name="update_latest_version_msg">Jelenleg nincs elérhető frissítés.</string>
     <string name="update_error_msg">Nem sikerült frissítéseket keresni. Ellenőrizze a kapcsolatot.</string>
     <string name="later">Később</string>

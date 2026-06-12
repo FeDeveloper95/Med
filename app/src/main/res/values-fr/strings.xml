@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Vérifier les mises à jour</string>
     <string name="settings_check_updates_desc">Trouver la dernière version</string>
     <string name="update_action">Mettre à jour</string>
-    <string name="update_available">Mise à jour disponible : v%1$s</string>
+    <string name="update_available">Mise à jour disponible !</string>
     <string name="update_latest_version_msg">Aucune mise à jour disponible pour le moment.</string>
     <string name="update_error_msg">Impossible de vérifier les mises à jour. Vérifiez votre connexion.</string>
     <string name="later">Plus tard</string>

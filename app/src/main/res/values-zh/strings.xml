@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">检查更新</string>
     <string name="settings_check_updates_desc">查找最新版本</string>
     <string name="update_action">更新</string>
-    <string name="update_available">可用更新: v%1$s</string>
+    <string name="update_available">有可用更新！</string>
     <string name="update_latest_version_msg">目前没有可用更新。</string>
     <string name="update_error_msg">无法检查更新。请检查您的连接。</string>
     <string name="later">稍后</string>

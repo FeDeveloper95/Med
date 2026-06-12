@@ -14,17 +14,27 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.CloudDownload
 import androidx.compose.material.icons.rounded.CloudUpload
 import androidx.compose.material.icons.rounded.DeleteForever
@@ -34,10 +44,15 @@ import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -48,7 +63,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -60,6 +77,7 @@ import com.fedeveloper95.med.elements.AdvancedSettingsActivity.ResetPopup
 import com.fedeveloper95.med.elements.AdvancedSettingsActivity.RestorePopup
 import com.fedeveloper95.med.elements.MainActivity.CommunityBottomSheet
 import com.fedeveloper95.med.services.DataRepository
+import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
@@ -199,51 +217,63 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                item { Spacer(modifier = Modifier.height(8.dp)) }
+                item { Spacer(modifier = Modifier.height(20.dp)) }
 
                 item {
-                    SettingsSwitchCard(
-                        icon = Icons.Rounded.Settings,
-                        title = stringResource(R.string.settings_auto_updates_title),
-                        subtitle = stringResource(R.string.settings_auto_updates_desc),
-                        containerColor = Color(0xFFfcbd00),
-                        iconColor = Color(0xFF6d3a01),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        checked = autoUpdates,
-                        onCheckedChange = {
-                            autoUpdates = it
-                            prefs.edit().putBoolean(PREF_AUTO_UPDATES, it).apply()
-                        }
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height(2.dp)) }
-
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Flag,
-                        title = stringResource(R.string.settings_setup_title),
-                        subtitle = stringResource(R.string.settings_setup_desc),
-                        containerColor = Color(0xFFffaee4),
-                        iconColor = Color(0xFF8d0053),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        onClick = {
-                            val intent = Intent(context, WelcomeActivity::class.java).apply {
-                                putExtra("FORCE_SHOW", true)
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.Settings,
+                            title = stringResource(R.string.settings_auto_updates_title),
+                            subtitle = stringResource(R.string.settings_auto_updates_desc),
+                            containerColor = Color(0xFFfcbd00),
+                            iconColor = Color(0xFF6d3a01),
+                            index = 0,
+                            count = 2,
+                            onClick = {
+                                autoUpdates = !autoUpdates
+                                prefs.edit().putBoolean(PREF_AUTO_UPDATES, autoUpdates).apply()
+                            },
+                            trailingContent = {
+                                Switch(
+                                    checked = autoUpdates,
+                                    onCheckedChange = {
+                                        autoUpdates = it
+                                        prefs.edit().putBoolean(PREF_AUTO_UPDATES, it).apply()
+                                    },
+                                    thumbContent = {
+                                        if (autoUpdates) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        } else {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Close,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    }
+                                )
                             }
-                            context.startActivity(intent)
-                        }
-                    )
+                        )
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.Flag,
+                            title = stringResource(R.string.settings_setup_title),
+                            subtitle = stringResource(R.string.settings_setup_desc),
+                            containerColor = Color(0xFFffaee4),
+                            iconColor = Color(0xFF8d0053),
+                            index = 1,
+                            count = 2,
+                            onClick = {
+                                val intent = Intent(context, WelcomeActivity::class.java).apply {
+                                    putExtra("FORCE_SHOW", true)
+                                }
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
@@ -258,47 +288,35 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.CloudUpload,
-                        title = stringResource(R.string.settings_export_title),
-                        subtitle = stringResource(R.string.settings_export_desc),
-                        containerColor = Color(0xFF80da88),
-                        iconColor = Color(0xFF00522c),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        onClick = {
-                            val timestamp = Calendar.getInstance().timeInMillis
-                            exportLauncher.launch("med_backup_$timestamp.json")
-                        }
-                    )
-                }
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.CloudUpload,
+                            title = stringResource(R.string.settings_export_title),
+                            subtitle = stringResource(R.string.settings_export_desc),
+                            containerColor = Color(0xFF80da88),
+                            iconColor = Color(0xFF00522c),
+                            index = 0,
+                            count = 2,
+                            onClick = {
+                                val timestamp = Calendar.getInstance().timeInMillis
+                                exportLauncher.launch("med_backup_$timestamp.json")
+                            }
+                        )
 
-                item { Spacer(modifier = Modifier.height(2.dp)) }
-
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.CloudDownload,
-                        title = stringResource(R.string.settings_import_title),
-                        subtitle = stringResource(R.string.settings_import_desc),
-                        containerColor = Color(0xFF67d4ff),
-                        iconColor = Color(0xFF004e5d),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        onClick = {
-                            importLauncher.launch(arrayOf("application/json"))
-                        }
-                    )
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.CloudDownload,
+                            title = stringResource(R.string.settings_import_title),
+                            subtitle = stringResource(R.string.settings_import_desc),
+                            containerColor = Color(0xFF67d4ff),
+                            iconColor = Color(0xFF004e5d),
+                            index = 1,
+                            count = 2,
+                            onClick = {
+                                importLauncher.launch(arrayOf("application/json"))
+                            }
+                        )
+                    }
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
@@ -313,81 +331,61 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Notifications,
-                        title = stringResource(R.string.settings_test_alarm_title),
-                        subtitle = stringResource(R.string.settings_test_alarm_desc),
-                        containerColor = Color(0xFFa0d57b),
-                        iconColor = Color(0xFF1c4a00),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        onClick = {
-                            val now = LocalTime.now()
-                            val items = DataRepository.loadData(context)
-                            val closest =
-                                items.filter { it.type == ItemType.Medicine }.minByOrNull {
-                                    val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
-                                    if (diff >= 0) diff else diff + 24 * 60
-                                }
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.Notifications,
+                            title = stringResource(R.string.settings_test_alarm_title),
+                            subtitle = stringResource(R.string.settings_test_alarm_desc),
+                            containerColor = Color(0xFFa0d57b),
+                            iconColor = Color(0xFF1c4a00),
+                            index = 0,
+                            count = 3,
+                            onClick = {
+                                val now = LocalTime.now()
+                                val items = DataRepository.loadData(context)
+                                val closest =
+                                    items.filter { it.type == ItemType.Medicine }.minByOrNull {
+                                        val diff = ChronoUnit.MINUTES.between(now, it.creationTime)
+                                        if (diff >= 0) diff else diff + 24 * 60
+                                    }
 
-                            if (closest != null) {
-                                val intent = Intent(context, AlarmActivity::class.java).apply {
-                                    putExtra("ITEM_TITLE", closest.title)
-                                    putExtra("ITEM_ID", closest.id)
+                                if (closest != null) {
+                                    val intent = Intent(context, AlarmActivity::class.java).apply {
+                                        putExtra("ITEM_TITLE", closest.title)
+                                        putExtra("ITEM_ID", closest.id)
+                                    }
+                                    context.startActivity(intent)
                                 }
-                                context.startActivity(intent)
                             }
-                        }
-                    )
-                }
+                        )
 
-                item { Spacer(modifier = Modifier.height(2.dp)) }
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.Group,
+                            title = stringResource(R.string.settings_test_telegram_title),
+                            subtitle = stringResource(R.string.settings_test_telegram_desc),
+                            containerColor = Color(0xFF97cbff),
+                            iconColor = Color(0xFF003355),
+                            index = 1,
+                            count = 3,
+                            onClick = {
+                                showCommunitySheet = true
+                            }
+                        )
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Group,
-                        title = stringResource(R.string.settings_test_telegram_title),
-                        subtitle = stringResource(R.string.settings_test_telegram_desc),
-                        containerColor = Color(0xFF97cbff),
-                        iconColor = Color(0xFF003355),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        onClick = {
-                            showCommunitySheet = true
-                        }
-                    )
-                }
-
-                item { Spacer(modifier = Modifier.height(2.dp)) }
-
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.BugReport,
-                        title = stringResource(R.string.settings_test_crash_title),
-                        subtitle = stringResource(R.string.settings_test_crash_desc),
-                        containerColor = Color(0xFFffb869),
-                        iconColor = Color(0xFF5c3000),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        onClick = {
-                            throw RuntimeException("Test Crash Triggered")
-                        }
-                    )
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.BugReport,
+                            title = stringResource(R.string.settings_test_crash_title),
+                            subtitle = stringResource(R.string.settings_test_crash_desc),
+                            containerColor = Color(0xFFffb869),
+                            iconColor = Color(0xFF5c3000),
+                            index = 2,
+                            count = 3,
+                            onClick = {
+                                throw RuntimeException("Test Crash Triggered")
+                            }
+                        )
+                    }
                 }
 
                 item { Spacer(modifier = Modifier.height(32.dp)) }
@@ -402,20 +400,21 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.DeleteForever,
-                        title = stringResource(R.string.settings_reset_title),
-                        subtitle = stringResource(R.string.settings_reset_desc),
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        iconColor = MaterialTheme.colorScheme.onErrorContainer,
-                        shape = RoundedCornerShape(20.dp),
-                        onClick = {
-                            showResetPopup = true
-                        }
-                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.DeleteForever,
+                            title = stringResource(R.string.settings_reset_title),
+                            subtitle = stringResource(R.string.settings_reset_desc),
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            iconColor = MaterialTheme.colorScheme.onErrorContainer,
+                            index = 0,
+                            count = 1,
+                            onClick = {
+                                showResetPopup = true
+                            }
+                        )
+                    }
                 }
 
                 item { Spacer(modifier = Modifier.height(48.dp)) }
@@ -454,6 +453,71 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
             }
         )
     }
+}
+
+@Composable
+private fun AdvancedSegmentedItem(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    containerColor: Color,
+    iconColor: Color,
+    index: Int,
+    count: Int,
+    onClick: () -> Unit,
+    trailingContent: @Composable (() -> Unit)? = null
+) {
+    SegmentedListItem(
+        onClick = onClick,
+        modifier = if (count == 1) Modifier.clip(RoundedCornerShape(20.dp)) else Modifier,
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(containerColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (subtitle.isNotEmpty()) {
+                        Text(
+                            text = subtitle,
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                if (trailingContent != null) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    trailingContent()
+                }
+            }
+        }
+    )
 }
 
 private suspend fun exportSettings(context: Context, uri: Uri) {

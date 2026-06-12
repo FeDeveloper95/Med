@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Semak Kemas Kini</string>
     <string name="settings_check_updates_desc">Cari versi terkini</string>
     <string name="update_action">Kemas kini</string>
-    <string name="update_available">Kemas kini tersedia: v%1$s</string>
+    <string name="update_available">Kemas kini tersedia!</string>
     <string name="update_latest_version_msg">Tiada kemas kini tersedia buat masa ini.</string>
     <string name="update_error_msg">Tidak dapat menyemak kemas kini. Semak sambungan anda.</string>
     <string name="later">Nanti</string>

@@ -2,7 +2,8 @@
     ExperimentalTextApi::class,
     ExperimentalMaterial3Api::class,
     ExperimentalLayoutApi::class,
-    ExperimentalAnimationApi::class
+    ExperimentalAnimationApi::class,
+    ExperimentalMaterial3ExpressiveApi::class
 )
 
 package com.fedeveloper95.med
@@ -39,7 +40,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,14 +54,15 @@ import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -76,8 +77,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -117,6 +120,7 @@ class QuickActionsSettingsActivity : ComponentActivity() {
 @Composable
 fun QuickActionsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
     LaunchedEffect(Unit) {
@@ -391,7 +395,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                                                         .clickable(
                                                             interactionSource = interactionSource,
                                                             indication = null
-                                                        ) { selectedIconName = name },
+                                                        ) {
+                                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                            selectedIconName = name
+                                                        },
                                                     contentAlignment = Alignment.Center
                                                 ) {
                                                     Icon(
@@ -493,7 +500,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                                             .clickable(
                                                 interactionSource = interactionSource,
                                                 indication = null
-                                            ) { selectedColor = colorCode },
+                                            ) {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                selectedColor = colorCode
+                                            },
                                         contentAlignment = Alignment.Center
                                     ) {
                                         if (isDynamic) {
@@ -527,7 +537,10 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             ExpressiveButton(
-                                onClick = { addPreset() },
+                                onClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    addPreset()
+                                },
                                 text = stringResource(R.string.add_action),
                                 modifier = Modifier.fillMaxWidth(),
                                 containerColor = if (newName.isNotBlank()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
@@ -552,104 +565,101 @@ fun QuickActionsScreen(onBack: () -> Unit) {
                         )
                     }
 
-                    itemsIndexed(presetsList) { index, itemString ->
-                        val parts = itemString.split("|")
-                        val name = parts.getOrNull(1) ?: stringResource(R.string.unknown)
-                        val iconName = parts.getOrNull(2) ?: "Event"
-                        val colorCode = parts.getOrNull(3) ?: "dynamic"
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                            presetsList.forEachIndexed { index, itemString ->
+                                val parts = itemString.split("|")
+                                val name = parts.getOrNull(1) ?: stringResource(R.string.unknown)
+                                val iconName = parts.getOrNull(2) ?: "Event"
+                                val colorCode = parts.getOrNull(3) ?: "dynamic"
 
-                        val icon = availableIcons[iconName] ?: Icons.Rounded.Event
+                                val icon = availableIcons[iconName] ?: Icons.Rounded.Event
 
-                        val itemBgColor = if (colorCode == "dynamic") {
-                            MaterialTheme.colorScheme.secondaryContainer
-                        } else {
-                            try {
-                                Color(parseColor(colorCode))
-                            } catch (e: Exception) {
-                                MaterialTheme.colorScheme.secondaryContainer
+                                val itemBgColor = if (colorCode == "dynamic") {
+                                    MaterialTheme.colorScheme.secondaryContainer
+                                } else {
+                                    try {
+                                        Color(parseColor(colorCode))
+                                    } catch (e: Exception) {
+                                        MaterialTheme.colorScheme.secondaryContainer
+                                    }
+                                }
+
+                                val itemIconTint = if (colorCode == "dynamic") {
+                                    MaterialTheme.colorScheme.onSecondaryContainer
+                                } else {
+                                    Color.Black.copy(alpha = 0.7f)
+                                }
+
+                                SegmentedListItem(
+                                    selected = false,
+                                    onClick = {},
+                                    modifier = if (presetsList.size == 1) Modifier.clip(RoundedCornerShape(20.dp)) else Modifier,
+                                    colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                                    shapes = ListItemDefaults.segmentedShapes(index = index, count = presetsList.size),
+                                    content = {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .clip(CircleShape)
+                                                    .background(itemBgColor),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = icon,
+                                                    contentDescription = null,
+                                                    tint = itemIconTint,
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(16.dp))
+                                            Text(
+                                                text = name,
+                                                modifier = Modifier.weight(1f),
+                                                fontFamily = GoogleSansFlex,
+                                                fontWeight = FontWeight.Normal,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                            Spacer(modifier = Modifier.width(16.dp))
+                                            Row {
+                                                if (index > 0) {
+                                                    IconButton(onClick = {
+                                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                        moveItem(index, index - 1)
+                                                    }) {
+                                                        Icon(Icons.Rounded.KeyboardArrowUp, null)
+                                                    }
+                                                }
+                                                if (index < presetsList.lastIndex) {
+                                                    IconButton(onClick = {
+                                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                        moveItem(index, index + 1)
+                                                    }) {
+                                                        Icon(Icons.Rounded.KeyboardArrowDown, null)
+                                                    }
+                                                }
+                                                IconButton(onClick = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    removePreset(index)
+                                                }) {
+                                                    Icon(
+                                                        Icons.Rounded.Close,
+                                                        null,
+                                                        tint = MaterialTheme.colorScheme.error
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                )
                             }
                         }
-
-                        val itemIconTint = if (colorCode == "dynamic") {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        } else {
-                            Color.Black.copy(alpha = 0.7f)
-                        }
-
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = when {
-                                presetsList.size == 1 -> RoundedCornerShape(20.dp)
-                                index == 0 -> RoundedCornerShape(
-                                    topStart = 20.dp,
-                                    topEnd = 20.dp,
-                                    bottomStart = 4.dp,
-                                    bottomEnd = 4.dp
-                                )
-
-                                index == presetsList.lastIndex -> RoundedCornerShape(
-                                    topStart = 4.dp,
-                                    topEnd = 4.dp,
-                                    bottomStart = 20.dp,
-                                    bottomEnd = 20.dp
-                                )
-
-                                else -> RoundedCornerShape(4.dp)
-                            },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-                            elevation = CardDefaults.cardElevation(0.dp)
-                        ) {
-                            ListItem(
-                                headlineContent = {
-                                    Text(
-                                        text = name,
-                                        fontFamily = GoogleSansFlex,
-                                        fontWeight = FontWeight.Normal,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                },
-                                leadingContent = {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .clip(CircleShape)
-                                            .background(itemBgColor),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = icon,
-                                            contentDescription = null,
-                                            tint = itemIconTint,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                },
-                                trailingContent = {
-                                    Row {
-                                        if (index > 0) {
-                                            IconButton(onClick = { moveItem(index, index - 1) }) {
-                                                Icon(Icons.Rounded.KeyboardArrowUp, null)
-                                            }
-                                        }
-                                        if (index < presetsList.lastIndex) {
-                                            IconButton(onClick = { moveItem(index, index + 1) }) {
-                                                Icon(Icons.Rounded.KeyboardArrowDown, null)
-                                            }
-                                        }
-                                        IconButton(onClick = { removePreset(index) }) {
-                                            Icon(
-                                                Icons.Rounded.Close,
-                                                null,
-                                                tint = MaterialTheme.colorScheme.error
-                                            )
-                                        }
-                                    }
-                                },
-                                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                                modifier = Modifier.padding(vertical = 4.dp)
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
 

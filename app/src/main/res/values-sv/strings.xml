@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Sök efter uppdateringar</string>
     <string name="settings_check_updates_desc">Hitta den senaste versionen</string>
     <string name="update_action">Uppdatera</string>
-    <string name="update_available">Uppdatering tillgänglig: v%1$s</string>
+    <string name="update_available">Uppdatering tillgänglig!</string>
     <string name="update_latest_version_msg">Inga uppdateringar tillgängliga för tillfället.</string>
     <string name="update_error_msg">Kunde inte söka efter uppdateringar. Kontrollera din anslutning.</string>
     <string name="later">Senare</string>

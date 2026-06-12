@@ -74,7 +74,5 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.material)
     implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material3.v140)
-    implementation(libs.androidx.compose.material3.window.size.class1.v140)
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
 }

@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Tarkista päivitykset</string>
     <string name="settings_check_updates_desc">Etsi uusin versio</string>
     <string name="update_action">Päivitä</string>
-    <string name="update_available">Päivitys saatavilla: v%1$s</string>
+    <string name="update_available">Päivitys saatavilla!</string>
     <string name="update_latest_version_msg">Päivityksiä ei ole tällä hetkellä saatavilla.</string>
     <string name="update_error_msg">Päivityksiä ei voitu tarkistaa. Tarkista yhteytesi.</string>
     <string name="later">Myöhemmin</string>

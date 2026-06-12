@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Buscar actualizaciones</string>
     <string name="settings_check_updates_desc">Encuentra la última versión</string>
     <string name="update_action">Actualizar</string>
-    <string name="update_available">Actualización disponible: v%1$s</string>
+    <string name="update_available">¡Actualización disponible!</string>
     <string name="update_latest_version_msg">No hay actualizaciones disponibles por el momento.</string>
     <string name="update_error_msg">No se pudo buscar actualizaciones. Comprueba tu conexión.</string>
     <string name="later">Más tarde</string>

@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">ตรวจสอบการอัปเดต</string>
     <string name="settings_check_updates_desc">ค้นหาเวอร์ชันล่าสุด</string>
     <string name="update_action">อัปเดต</string>
-    <string name="update_available">มีการอัปเดต: v%1$s</string>
+    <string name="update_available">มีอัปเดตใหม่!</string>
     <string name="update_latest_version_msg">ไม่มีการอัปเดตในขณะนี้</string>
     <string name="update_error_msg">ไม่สามารถตรวจสอบการอัปเดตได้ โปรดตรวจสอบการเชื่อมต่อของคุณ</string>
     <string name="later">ภายหลัง</string>

@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Se etter oppdateringer</string>
     <string name="settings_check_updates_desc">Finn den nyeste versjonen</string>
     <string name="update_action">Oppdater</string>
-    <string name="update_available">Oppdatering tilgjengelig: v%1$s</string>
+    <string name="update_available">Oppdatering tilgjengelig!</string>
     <string name="update_latest_version_msg">Ingen oppdateringer tilgjengelig for øyeblikket.</string>
     <string name="update_error_msg">Kunne ikke se etter oppdateringer. Sjekk tilkoblingen din.</string>
     <string name="later">Senere</string>

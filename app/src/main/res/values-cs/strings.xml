@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Zkontrolovat aktualizace</string>
     <string name="settings_check_updates_desc">Najít nejnovější verzi</string>
     <string name="update_action">Aktualizovat</string>
-    <string name="update_available">Dostupná aktualizace: v%1$s</string>
+    <string name="update_available">Aktualizace je k dispozici!</string>
     <string name="update_latest_version_msg">Momentálně nejsou k dispozici žádné aktualizace.</string>
     <string name="update_error_msg">Nepodařilo se zkontrolovat aktualizace. Zkontrolujte připojení.</string>
     <string name="later">Později</string>

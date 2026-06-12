@@ -1,4 +1,8 @@
-@file:OptIn(ExperimentalTextApi::class)
+@file:OptIn(
+    androidx.compose.ui.text.ExperimentalTextApi::class,
+    androidx.compose.material3.ExperimentalMaterial3Api::class,
+    androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class
+)
 
 package com.fedeveloper95.med
 
@@ -12,21 +16,21 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.LocalIndication
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -37,32 +41,34 @@ import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Code
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Watch
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeTopAppBar
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -71,10 +77,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -82,19 +85,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.elements.SettingsActivity.OrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
-import com.fedeveloper95.med.elements.SettingsActivity.ThemePopup
 import com.fedeveloper95.med.services.AppLockManager
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import com.fedeveloper95.med.ui.theme.MedTheme
-import kotlinx.coroutines.delay
 
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,16 +105,22 @@ class SettingsActivity : ComponentActivity() {
             val savedTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
             var currentThemeOverride by remember { mutableIntStateOf(savedTheme) }
 
-            MedTheme(themeOverride = currentThemeOverride) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    SettingsScreen(
-                        onBack = { finish() },
-                        currentTheme = currentThemeOverride,
-                        onThemeChanged = { newTheme -> currentThemeOverride = newTheme }
-                    )
+            Crossfade(
+                targetState = currentThemeOverride,
+                animationSpec = tween(durationMillis = 350),
+                label = "theme_fade"
+            ) { animatedTheme ->
+                MedTheme(themeOverride = animatedTheme) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        SettingsScreen(
+                            onBack = { finish() },
+                            currentTheme = animatedTheme,
+                            onThemeChanged = { newTheme -> currentThemeOverride = newTheme }
+                        )
+                    }
                 }
             }
         }
@@ -124,7 +128,6 @@ class SettingsActivity : ComponentActivity() {
 }
 
 @SuppressLint("LocalContextGetResourceValueCall", "ContextCastToActivity")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
@@ -136,19 +139,14 @@ fun SettingsScreen(
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
 
     var weekStart by remember {
-        mutableStateOf(
-            prefs.getString(PREF_WEEK_START, "monday") ?: "monday"
-        )
+        mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday")
     }
 
     var sortOrder by remember { mutableStateOf(prefs.getString(PREF_SORT_ORDER, "time") ?: "time") }
     var appLockEnabled by remember {
-        mutableStateOf(
-            prefs.getBoolean("pref_app_lock", false)
-        )
+        mutableStateOf(prefs.getBoolean("pref_app_lock", false))
     }
 
-    var showThemeDialog by remember { mutableStateOf(false) }
     var showWeekStartDialog by remember { mutableStateOf(false) }
     var showSortDialog by remember { mutableStateOf(false) }
 
@@ -238,62 +236,156 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Palette,
-                        title = stringResource(R.string.settings_theme_title),
-                        subtitle = when (currentTheme) {
-                            THEME_LIGHT -> stringResource(R.string.settings_theme_light)
-                            THEME_DARK -> stringResource(R.string.settings_theme_dark)
-                            else -> stringResource(R.string.settings_theme_system)
-                        },
-                        containerColor = Color(0xFFfcbd00),
-                        iconColor = Color(0xFF6d3a01),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        onClick = { showThemeDialog = true }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        SegmentedListItem(
+                            selected = false,
+                            onClick = {},
+                            colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                            shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
+                            content = {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(48.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFfcbd00)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Palette,
+                                            contentDescription = null,
+                                            tint = Color(0xFF6d3a01),
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.width(16.dp))
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .padding(vertical = 8.dp)
+                                    ) {
+                                        ToggleButton(
+                                            checked = currentTheme == THEME_SYSTEM,
+                                            onCheckedChange = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                onThemeChanged(THEME_SYSTEM)
+                                                prefs.edit().putInt(PREF_THEME, THEME_SYSTEM).apply()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(40.dp),
+                                            shapes = ToggleButtonDefaults.shapes(
+                                                shape = RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 15),
+                                                checkedShape = RoundedCornerShape(50)
+                                            ),
+                                            colors = ToggleButtonDefaults.toggleButtonColors(
+                                                containerColor = Color.Transparent,
+                                                checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                                            ),
+                                            border = if (currentTheme == THEME_SYSTEM) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+                                        ) {
+                                            Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                                                Icon(Icons.Rounded.Smartphone, contentDescription = null, modifier = Modifier.size(20.dp))
+                                                Spacer(Modifier.width(8.dp))
+                                                Text(stringResource(R.string.settings_theme_system), fontFamily = GoogleSansFlex)
+                                            }
+                                        }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Event,
-                        title = stringResource(R.string.settings_week_start_title),
-                        subtitle = if (weekStart == "monday") stringResource(R.string.monday) else stringResource(
-                            R.string.sunday
-                        ),
-                        containerColor = Color(0xFFffb683),
-                        iconColor = Color(0xFF753403),
-                        shape = RoundedCornerShape(4.dp),
-                        onClick = { showWeekStartDialog = true }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                                        Spacer(modifier = Modifier.height(2.dp))
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Sort,
-                        title = stringResource(R.string.settings_sort_order_title),
-                        subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(
-                            R.string.settings_sort_order_custom
-                        ),
-                        containerColor = Color(0xFF40C4FF),
-                        iconColor = Color(0xFF003B5C),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        onClick = { showSortDialog = true }
-                    )
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                        ) {
+                                            ToggleButton(
+                                                checked = currentTheme == THEME_DARK,
+                                                onCheckedChange = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    onThemeChanged(THEME_DARK)
+                                                    prefs.edit().putInt(PREF_THEME, THEME_DARK).apply()
+                                                },
+                                                shapes = ToggleButtonDefaults.shapes(
+                                                    shape = RoundedCornerShape(topStartPercent = 15, bottomStartPercent = 50, topEndPercent = 15, bottomEndPercent = 15),
+                                                    checkedShape = RoundedCornerShape(50)
+                                                ),
+                                                colors = ToggleButtonDefaults.toggleButtonColors(
+                                                    containerColor = Color.Transparent,
+                                                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                                                ),
+                                                border = if (currentTheme == THEME_DARK) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                                                modifier = Modifier.weight(1f).height(40.dp)
+                                            ) {
+                                                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                                                    Icon(Icons.Rounded.DarkMode, contentDescription = null, modifier = Modifier.size(20.dp))
+                                                    Spacer(Modifier.width(8.dp))
+                                                    Text(stringResource(R.string.settings_theme_dark), fontFamily = GoogleSansFlex)
+                                                }
+                                            }
+
+                                            ToggleButton(
+                                                checked = currentTheme == THEME_LIGHT,
+                                                onCheckedChange = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    onThemeChanged(THEME_LIGHT)
+                                                    prefs.edit().putInt(PREF_THEME, THEME_LIGHT).apply()
+                                                },
+                                                shapes = ToggleButtonDefaults.shapes(
+                                                    shape = RoundedCornerShape(topStartPercent = 15, bottomStartPercent = 15, topEndPercent = 15, bottomEndPercent = 50),
+                                                    checkedShape = RoundedCornerShape(50)
+                                                ),
+                                                colors = ToggleButtonDefaults.toggleButtonColors(
+                                                    containerColor = Color.Transparent,
+                                                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                                                ),
+                                                border = if (currentTheme == THEME_LIGHT) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                                                modifier = Modifier.weight(1f).height(40.dp)
+                                            ) {
+                                                Row(horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+                                                    Icon(Icons.Rounded.LightMode, contentDescription = null, modifier = Modifier.size(20.dp))
+                                                    Spacer(Modifier.width(8.dp))
+                                                    Text(stringResource(R.string.settings_theme_light), fontFamily = GoogleSansFlex)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        )
+
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Event,
+                            title = stringResource(R.string.settings_week_start_title),
+                            subtitle = if (weekStart == "monday") stringResource(R.string.monday) else stringResource(R.string.sunday),
+                            containerColor = Color(0xFFffb683),
+                            iconColor = Color(0xFF753403),
+                            index = 1,
+                            count = 3,
+                            onClick = { showWeekStartDialog = true }
+                        )
+
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Sort,
+                            title = stringResource(R.string.settings_sort_order_title),
+                            subtitle = if (sortOrder == "time") stringResource(R.string.settings_sort_order_time) else stringResource(R.string.settings_sort_order_custom),
+                            containerColor = Color(0xFF40C4FF),
+                            iconColor = Color(0xFF003B5C),
+                            index = 2,
+                            count = 3,
+                            onClick = { showSortDialog = true }
+                        )
+                    }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
 
@@ -307,56 +399,38 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.NotificationsActive,
-                        title = stringResource(R.string.settings_notifications_title),
-                        subtitle = stringResource(R.string.settings_notifications_desc),
-                        containerColor = Color(0xFFffb4ab),
-                        iconColor = Color(0xFF690005),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        onClick = {
-                            val intent = Intent(context, NotificationsSettingsActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.NotificationsActive,
+                            title = stringResource(R.string.settings_notifications_title),
+                            subtitle = stringResource(R.string.settings_notifications_desc),
+                            containerColor = Color(0xFFffb4ab),
+                            iconColor = Color(0xFF690005),
+                            index = 0,
+                            count = 4,
+                            onClick = {
+                                val intent = Intent(context, NotificationsSettingsActivity::class.java)
+                                context.startActivity(intent)
+                            }
+                        )
 
-                item {
-                    SettingsItemCard(
-                        icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
-                        title = stringResource(R.string.settings_presets_title),
-                        subtitle = stringResource(R.string.settings_presets_desc),
-                        containerColor = Color(0xFF80da88),
-                        iconColor = Color(0xFF00522c),
-                        shape = RoundedCornerShape(4.dp),
-                        onClick = {
-                            val intent = Intent(context, QuickActionsSettingsActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                        SettingsSegmentedItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
+                            title = stringResource(R.string.settings_presets_title),
+                            subtitle = stringResource(R.string.settings_presets_desc),
+                            containerColor = Color(0xFF80da88),
+                            iconColor = Color(0xFF00522c),
+                            index = 1,
+                            count = 4,
+                            onClick = {
+                                val intent = Intent(context, QuickActionsSettingsActivity::class.java)
+                                context.startActivity(intent)
+                            }
+                        )
 
-                item {
-                    val activity = LocalContext.current as ComponentActivity
-                    SettingsSwitchCard(
-                        icon = Icons.Rounded.Lock,
-                        title = stringResource(R.string.settings_app_lock_title),
-                        subtitle = stringResource(R.string.settings_app_lock_desc),
-                        containerColor = Color(0xFFFCBD00),
-                        iconColor = Color(0xFF6D3A01),
-                        shape = RoundedCornerShape(4.dp),
-                        checked = appLockEnabled,
-                        onCheckedChange = { isChecked ->
+                        val activity = LocalContext.current as ComponentActivity
+                        val handleAppLockToggle = { isChecked: Boolean ->
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             if (isChecked) {
                                 AppLockManager.authenticate(
@@ -371,28 +445,53 @@ fun SettingsScreen(
                                 prefs.edit().putBoolean("pref_app_lock", false).apply()
                             }
                         }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Tune,
-                        title = stringResource(R.string.settings_advanced_title),
-                        subtitle = stringResource(R.string.settings_advanced_desc),
-                        containerColor = Color(0xFFC7C7C7),
-                        iconColor = Color(0xFF2C2C2C),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        onClick = {
-                            val intent = Intent(context, AdvancedSettingsActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    )
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Lock,
+                            title = stringResource(R.string.settings_app_lock_title),
+                            subtitle = stringResource(R.string.settings_app_lock_desc),
+                            containerColor = Color(0xFFFCBD00),
+                            iconColor = Color(0xFF6D3A01),
+                            index = 2,
+                            count = 4,
+                            onClick = { handleAppLockToggle(!appLockEnabled) },
+                            trailingContent = {
+                                Switch(
+                                    checked = appLockEnabled,
+                                    onCheckedChange = handleAppLockToggle,
+                                    thumbContent = {
+                                        if (appLockEnabled) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        } else {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Close,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize),
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+                        )
+
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Tune,
+                            title = stringResource(R.string.settings_advanced_title),
+                            subtitle = stringResource(R.string.settings_advanced_desc),
+                            containerColor = Color(0xFFC7C7C7),
+                            iconColor = Color(0xFF2C2C2C),
+                            index = 3,
+                            count = 4,
+                            onClick = {
+                                val intent = Intent(context, AdvancedSettingsActivity::class.java)
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
                     Spacer(modifier = Modifier.height(32.dp))
                 }
 
@@ -406,60 +505,48 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    item {
-                        SettingsItemCard(
-                            icon = Icons.Rounded.Language,
-                            title = stringResource(R.string.settings_language_title),
-                            subtitle = stringResource(R.string.settings_language_desc),
-                            containerColor = Color(0xFFD9BAFD),
-                            iconColor = Color(0xFF5629A4),
-                            shape = RoundedCornerShape(
-                                topStart = 20.dp,
-                                topEnd = 20.dp,
-                                bottomStart = 4.dp,
-                                bottomEnd = 4.dp
-                            ),
-                            onClick = {
-                                try {
-                                    val intent = Intent(
-                                        Settings.ACTION_APP_LOCALE_SETTINGS,
-                                        Uri.fromParts("package", context.packageName, null)
-                                    )
-                                    context.startActivity(intent)
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        val moreCount = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) 2 else 1
+                        var moreIndex = 0
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            SettingsSegmentedItem(
+                                icon = Icons.Rounded.Language,
+                                title = stringResource(R.string.settings_language_title),
+                                subtitle = stringResource(R.string.settings_language_desc),
+                                containerColor = Color(0xFFD9BAFD),
+                                iconColor = Color(0xFF5629A4),
+                                index = moreIndex++,
+                                count = moreCount,
+                                onClick = {
+                                    try {
+                                        val intent = Intent(
+                                            Settings.ACTION_APP_LOCALE_SETTINGS,
+                                            Uri.fromParts("package", context.packageName, null)
+                                        )
+                                        context.startActivity(intent)
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
                                 }
+                            )
+                        }
+
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Watch,
+                            title = stringResource(R.string.settings_wearos_title),
+                            subtitle = stringResource(R.string.settings_wearos_desc),
+                            containerColor = Color(0xFF67D4FF),
+                            iconColor = Color(0xFF004E5D),
+                            index = moreIndex++,
+                            count = moreCount,
+                            onClick = {
+                                val intent = Intent(context, WearSettingsActivity::class.java)
+                                context.startActivity(intent)
                             }
                         )
-                        Spacer(modifier = Modifier.height(2.dp))
                     }
-                }
-
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Watch,
-                        title = stringResource(R.string.settings_wearos_title),
-                        subtitle = stringResource(R.string.settings_wearos_desc),
-                        containerColor = Color(0xFF67D4FF),
-                        iconColor = Color(0xFF004E5D),
-                        shape = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            RoundedCornerShape(
-                                topStart = 4.dp,
-                                topEnd = 4.dp,
-                                bottomStart = 20.dp,
-                                bottomEnd = 20.dp
-                            )
-                        } else {
-                            RoundedCornerShape(20.dp)
-                        },
-                        onClick = {
-                            val intent = Intent(context, WearSettingsActivity::class.java)
-                            context.startActivity(intent)
-                        }
-                    )
                     Spacer(modifier = Modifier.height(32.dp))
                 }
 
@@ -473,106 +560,78 @@ fun SettingsScreen(
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
-                }
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Info,
-                        title = stringResource(R.string.settings_version_title),
-                        subtitle = appInfo,
-                        containerColor = Color(0xFFa1c9ff),
-                        iconColor = Color(0xFF0641a0),
-                        shape = RoundedCornerShape(
-                            topStart = 20.dp,
-                            topEnd = 20.dp,
-                            bottomStart = 4.dp,
-                            bottomEnd = 4.dp
-                        ),
-                        onClick = {
-                            try {
-                                val intent = Intent(
-                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                ).apply {
-                                    data = Uri.fromParts("package", context.packageName, null)
+                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Info,
+                            title = stringResource(R.string.settings_version_title),
+                            subtitle = appInfo,
+                            containerColor = Color(0xFFa1c9ff),
+                            iconColor = Color(0xFF0641a0),
+                            index = 0,
+                            count = 4,
+                            onClick = {
+                                try {
+                                    val intent = Intent(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                    ).apply {
+                                        data = Uri.fromParts("package", context.packageName, null)
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
-                                context.startActivity(intent)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
                             }
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                        )
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.Code,
-                        title = stringResource(R.string.settings_developer_title),
-                        subtitle = stringResource(R.string.settings_developer_name),
-                        containerColor = Color(0xFFc7c7c7),
-                        iconColor = Color(0xFF474747),
-                        shape = RoundedCornerShape(4.dp),
-                        onClick = {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("https://github.com/FeDeveloper95")
-                            )
-                            context.startActivity(intent)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Code,
+                            title = stringResource(R.string.settings_developer_title),
+                            subtitle = stringResource(R.string.settings_developer_name),
+                            containerColor = Color(0xFFc7c7c7),
+                            iconColor = Color(0xFF474747),
+                            index = 1,
+                            count = 4,
+                            onClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://github.com/FeDeveloper95")
+                                )
+                                context.startActivity(intent)
+                            }
+                        )
 
-                item {
-                    SettingsItemCard(
-                        icon = Icons.Rounded.BugReport,
-                        title = stringResource(R.string.settings_report_title),
-                        subtitle = stringResource(R.string.settings_report_desc),
-                        containerColor = Color(0xFFffb3ae),
-                        iconColor = Color(0xFF8a1a16),
-                        shape = RoundedCornerShape(4.dp),
-                        onClick = {
-                            val intent =
-                                Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fedeveloper95"))
-                            context.startActivity(intent)
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.BugReport,
+                            title = stringResource(R.string.settings_report_title),
+                            subtitle = stringResource(R.string.settings_report_desc),
+                            containerColor = Color(0xFFffb3ae),
+                            iconColor = Color(0xFF8a1a16),
+                            index = 2,
+                            count = 4,
+                            onClick = {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/fedeveloper95"))
+                                context.startActivity(intent)
+                            }
+                        )
 
-                item {
-                    SettingsItemCard(
-                        icon = ImageVector.vectorResource(R.drawable.ic_phone_update),
-                        title = stringResource(R.string.settings_check_updates_title),
-                        subtitle = stringResource(R.string.settings_check_updates_desc),
-                        containerColor = Color(0xFF67d4ff),
-                        iconColor = Color(0xFF004e5d),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            topEnd = 4.dp,
-                            bottomStart = 20.dp,
-                            bottomEnd = 20.dp
-                        ),
-                        onClick = {
-                            context.startActivity(Intent(context, UpdaterActivity::class.java))
-                        }
-                    )
+                        SettingsSegmentedItem(
+                            icon = ImageVector.vectorResource(R.drawable.ic_phone_update),
+                            title = stringResource(R.string.settings_check_updates_title),
+                            subtitle = stringResource(R.string.settings_check_updates_desc),
+                            containerColor = Color(0xFF67d4ff),
+                            iconColor = Color(0xFF004e5d),
+                            index = 3,
+                            count = 4,
+                            onClick = {
+                                context.startActivity(Intent(context, UpdaterActivity::class.java))
+                            }
+                        )
+                    }
                     Spacer(modifier = Modifier.height(48.dp))
                 }
             }
         }
-    }
-
-    if (showThemeDialog) {
-        ThemePopup(
-            selectedIndex = currentTheme,
-            onOptionSelected = { index ->
-                onThemeChanged(index)
-                prefs.edit().putInt(PREF_THEME, index).apply()
-                showThemeDialog = false
-            },
-            onDismiss = { showThemeDialog = false }
-        )
     }
 
     if (showWeekStartDialog) {
@@ -601,102 +660,29 @@ fun SettingsScreen(
 }
 
 @Composable
-fun SettingsItemCard(
+fun SettingsSegmentedItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
     containerColor: Color,
     iconColor: Color,
-    shape: Shape,
-    onClick: () -> Unit
+    index: Int,
+    count: Int,
+    onClick: () -> Unit,
+    trailingContent: @Composable (() -> Unit)? = null
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isRealPressed by interactionSource.collectIsPressedAsState()
-    var isPressed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isRealPressed) {
-        if (isRealPressed) {
-            isPressed = true
-        } else {
-            delay(200)
-            isPressed = false
-        }
-    }
-
-    val pressProgress by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "anim_shape"
-    )
-
-    val animatedShape = remember(shape, pressProgress) {
-        if (shape is RoundedCornerShape) {
-            object : Shape {
-                override fun createOutline(
-                    size: Size,
-                    layoutDirection: LayoutDirection,
-                    density: Density
-                ): Outline {
-                    val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                        (1 - fraction) * start + fraction * stop
-
-                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
-                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
-                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
-                    return Outline.Rounded(
-                        androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(
-                                0f,
-                                0f,
-                                size.width,
-                                size.height
-                            ),
-                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                        )
-                    )
-                }
-            }
-        } else shape
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(animatedShape),
-        shape = animatedShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = title,
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Normal,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
-            supportingContent = {
-                if (subtitle.isNotEmpty()) {
-                    Text(
-                        text = subtitle,
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            },
-            leadingContent = {
+    SegmentedListItem(
+        selected = false,
+        onClick = onClick,
+        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
+        content = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     modifier = Modifier
                         .size(48.dp)
@@ -711,165 +697,29 @@ fun SettingsItemCard(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-            },
-            modifier = Modifier
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = LocalIndication.current,
-                    onClick = onClick
-                )
-                .padding(vertical = 4.dp),
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            )
-        )
-    }
-}
-
-@Composable
-fun SettingsSwitchCard(
-    icon: ImageVector,
-    title: String,
-    subtitle: String,
-    containerColor: Color,
-    iconColor: Color,
-    shape: Shape,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isRealPressed by interactionSource.collectIsPressedAsState()
-    var isPressed by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isRealPressed) {
-        if (isRealPressed) {
-            isPressed = true
-        } else {
-            delay(200)
-            isPressed = false
-        }
-    }
-
-    val pressProgress by animateFloatAsState(
-        targetValue = if (isPressed) 1f else 0f,
-        animationSpec = spring(
-            dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
-        ),
-        label = "anim_shape"
-    )
-
-    val animatedShape = remember(shape, pressProgress) {
-        if (shape is RoundedCornerShape) {
-            object : Shape {
-                override fun createOutline(
-                    size: Size,
-                    layoutDirection: LayoutDirection,
-                    density: Density
-                ): Outline {
-                    val targetPx = with(density) { 20.dp.toPx() }
-                    fun lerp(start: Float, stop: Float, fraction: Float) =
-                        (1 - fraction) * start + fraction * stop
-
-                    val ts = lerp(shape.topStart.toPx(size, density), targetPx, pressProgress)
-                    val te = lerp(shape.topEnd.toPx(size, density), targetPx, pressProgress)
-                    val bs = lerp(shape.bottomStart.toPx(size, density), targetPx, pressProgress)
-                    val be = lerp(shape.bottomEnd.toPx(size, density), targetPx, pressProgress)
-
-                    return Outline.Rounded(
-                        androidx.compose.ui.geometry.RoundRect(
-                            rect = androidx.compose.ui.geometry.Rect(
-                                0f,
-                                0f,
-                                size.width,
-                                size.height
-                            ),
-                            topLeft = androidx.compose.ui.geometry.CornerRadius(ts),
-                            topRight = androidx.compose.ui.geometry.CornerRadius(te),
-                            bottomRight = androidx.compose.ui.geometry.CornerRadius(be),
-                            bottomLeft = androidx.compose.ui.geometry.CornerRadius(bs)
-                        )
-                    )
-                }
-            }
-        } else shape
-    }
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(animatedShape),
-        shape = animatedShape,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        ListItem(
-            headlineContent = {
-                Text(
-                    text = title,
-                    fontFamily = GoogleSansFlex,
-                    fontWeight = FontWeight.Normal,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            },
-            supportingContent = {
-                if (subtitle.isNotEmpty()) {
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = subtitle,
+                        text = title,
                         fontFamily = GoogleSansFlex,
                         fontWeight = FontWeight.Normal,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        style = MaterialTheme.typography.titleMedium
                     )
-                }
-            },
-            leadingContent = {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(containerColor),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = iconColor,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            },
-            trailingContent = {
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange,
-                    thumbContent = {
-                        if (checked) {
-                            Icon(
-                                imageVector = Icons.Rounded.Check,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Rounded.Close,
-                                contentDescription = null,
-                                modifier = Modifier.size(SwitchDefaults.IconSize),
-                            )
-                        }
+                    if (subtitle.isNotEmpty()) {
+                        Text(
+                            text = subtitle,
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Normal,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                )
-            },
-            modifier = Modifier
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = LocalIndication.current,
-                    onClick = { onCheckedChange(!checked) }
-                )
-                .padding(vertical = 4.dp),
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            )
-        )
-    }
+                }
+                if (trailingContent != null) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    trailingContent()
+                }
+            }
+        }
+    )
 }

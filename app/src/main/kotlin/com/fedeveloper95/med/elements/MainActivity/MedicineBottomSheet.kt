@@ -15,6 +15,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -57,14 +59,17 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -94,8 +99,6 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.AVAILABLE_ICONS
 import com.fedeveloper95.med.R
-import com.fedeveloper95.med.SingleSelectConnectedButtonGroupWithFlowLayout
-import com.fedeveloper95.med.TimeSelectorItem
 import com.fedeveloper95.med.elements.TimePicker
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
@@ -349,13 +352,13 @@ fun MedicineBottomSheet(
                             else -> AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
                         }
                         val headerBg =
-                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.surfaceVariant else try {
+                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else try {
                                 Color(parseColor(selectedColor))
                             } catch (e: Exception) {
-                                MaterialTheme.colorScheme.surfaceVariant
+                                MaterialTheme.colorScheme.primary
                             }
                         val headerTint =
-                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else Color.Black.copy(
+                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.onPrimary else Color.Black.copy(
                                 0.7f
                             )
 
@@ -449,7 +452,7 @@ fun MedicineBottomSheet(
                             stringResource(R.string.notification_type_alarm)
                         )
 
-                        SingleSelectConnectedButtonGroupWithFlowLayout(
+                        OutlinedSingleSelectButtonGroup(
                             options = notifOptions,
                             selectedIndex = notificationType,
                             onOptionSelected = { notificationType = it }
@@ -474,7 +477,7 @@ fun MedicineBottomSheet(
                             stringResource(R.string.freq_mode_interval)
                         )
 
-                        SingleSelectConnectedButtonGroupWithFlowLayout(
+                        OutlinedSingleSelectButtonGroup(
                             options = freqOptions,
                             selectedIndex = frequencyType,
                             onOptionSelected = { frequencyType = it }
@@ -487,49 +490,69 @@ fun MedicineBottomSheet(
                 when (frequencyType) {
                     0 -> {
                         item {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                                        RoundedCornerShape(12.dp)
-                                    )
-                                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            val count = 1 + selectedTimes.size
+                            val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
                             ) {
-                                Text(
-                                    text = stringResource(R.string.times_per_day_label),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurface
+                                SegmentedListItem(
+                                    onClick = {},
+                                    colors = itemColors,
+                                    shapes = ListItemDefaults.segmentedShapes(index = 0, count = count),
+                                    trailingContent = {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            IconButton(onClick = { if (timesPerDay > 1) timesPerDay-- }) {
+                                                Icon(Icons.Rounded.Remove, contentDescription = null)
+                                            }
+                                            Text(
+                                                text = timesPerDay.toString(),
+                                                style = MaterialTheme.typography.titleMedium,
+                                                modifier = Modifier.padding(horizontal = 8.dp)
+                                            )
+                                            IconButton(onClick = { if (timesPerDay < 10) timesPerDay++ }) {
+                                                Icon(Icons.Rounded.Add, contentDescription = null)
+                                            }
+                                        }
+                                    },
+                                    content = {
+                                        Text(
+                                            text = stringResource(R.string.times_per_day_label),
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            fontFamily = GoogleSansFlex
+                                        )
+                                    }
                                 )
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(onClick = { if (timesPerDay > 1) timesPerDay-- }) {
-                                        Icon(Icons.Rounded.Remove, contentDescription = null)
-                                    }
-                                    Text(
-                                        text = timesPerDay.toString(),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        modifier = Modifier.padding(horizontal = 16.dp)
+
+                                selectedTimes.forEachIndexed { index, time ->
+                                    SegmentedListItem(
+                                        onClick = { showTimePickerForIndex = index },
+                                        colors = itemColors,
+                                        shapes = ListItemDefaults.segmentedShapes(index = index + 1, count = count),
+                                        trailingContent = {
+                                            val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+                                            Text(
+                                                text = time.format(formatter),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontFamily = GoogleSansFlex
+                                            )
+                                        },
+                                        content = {
+                                            Text(
+                                                text = stringResource(R.string.schedule_label_format, index + 1),
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                fontFamily = GoogleSansFlex
+                                            )
+                                        }
                                     )
-                                    IconButton(onClick = { if (timesPerDay < 10) timesPerDay++ }) {
-                                        Icon(Icons.Rounded.Add, contentDescription = null)
-                                    }
                                 }
                             }
                         }
-
                         item { Spacer(modifier = Modifier.height(16.dp)) }
-
-                        itemsIndexed(selectedTimes) { index, time ->
-                            TimeSelectorItem(
-                                label = stringResource(
-                                    R.string.schedule_label_format,
-                                    index + 1
-                                ), time = time
-                            ) { showTimePickerForIndex = index }
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
                     }
 
                     1 -> {
@@ -565,10 +588,30 @@ fun MedicineBottomSheet(
                         item { Spacer(modifier = Modifier.height(16.dp)) }
 
                         item {
-                            TimeSelectorItem(
-                                label = stringResource(R.string.time_label),
-                                time = selectedTimes.firstOrNull() ?: LocalTime.now()
-                            ) { showTimePickerForIndex = 0 }
+                            val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                            SegmentedListItem(
+                                onClick = { showTimePickerForIndex = 0 },
+                                modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+                                colors = itemColors,
+                                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
+                                trailingContent = {
+                                    val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+                                    Text(
+                                        text = (selectedTimes.firstOrNull() ?: LocalTime.now()).format(formatter),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                },
+                                content = {
+                                    Text(
+                                        text = stringResource(R.string.time_label),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
+                            )
                         }
                     }
 
@@ -647,10 +690,30 @@ fun MedicineBottomSheet(
                         item { Spacer(modifier = Modifier.height(16.dp)) }
 
                         item {
-                            TimeSelectorItem(
-                                label = stringResource(R.string.time_label),
-                                time = selectedTimes.firstOrNull() ?: LocalTime.now()
-                            ) { showTimePickerForIndex = 0 }
+                            val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                            SegmentedListItem(
+                                onClick = { showTimePickerForIndex = 0 },
+                                modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+                                colors = itemColors,
+                                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
+                                trailingContent = {
+                                    val formatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+                                    Text(
+                                        text = (selectedTimes.firstOrNull() ?: LocalTime.now()).format(formatter),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                },
+                                content = {
+                                    Text(
+                                        text = stringResource(R.string.time_label),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
+                            )
                         }
                     }
                 }
@@ -811,6 +874,41 @@ fun MedicineBottomSheet(
 }
 
 @Composable
+fun OutlinedSingleSelectButtonGroup(
+    options: List<String>,
+    selectedIndex: Int,
+    onOptionSelected: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+    ) {
+        options.forEachIndexed { index, option ->
+            OutlinedToggleButton(
+                checked = selectedIndex == index,
+                onCheckedChange = { onOptionSelected(index) },
+                shapes = when (index) {
+                    0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                    options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                },
+                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                )
+            ) {
+                Text(
+                    text = option,
+                    fontFamily = GoogleSansFlex,
+                    maxLines = 1,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun MultiSelectConnectedButtonGroupWithFlowLayout(
     options: List<String>,
     selectedIndices: Set<Int>,
@@ -822,7 +920,7 @@ fun MultiSelectConnectedButtonGroupWithFlowLayout(
         verticalAlignment = Alignment.CenterVertically
     ) {
         options.forEachIndexed { index, option ->
-            ToggleButton(
+            OutlinedToggleButton(
                 checked = selectedIndices.contains(index),
                 onCheckedChange = { onOptionSelected(index) },
                 modifier = Modifier.weight(1f),
@@ -830,7 +928,11 @@ fun MultiSelectConnectedButtonGroupWithFlowLayout(
                     0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                     options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                }
+                },
+                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                    checkedContainerColor = MaterialTheme.colorScheme.primary,
+                    checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                )
             ) {
                 Text(
                     text = option,

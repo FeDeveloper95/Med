@@ -43,6 +43,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -62,6 +64,7 @@ fun IconPickerDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, String) -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     val icSick = ImageVector.vectorResource(R.drawable.ic_sick)
     val icMind = ImageVector.vectorResource(R.drawable.ic_mind)
     val icMixture = ImageVector.vectorResource(R.drawable.ic_mixture)
@@ -128,7 +131,10 @@ fun IconPickerDialog(
                                     .clickable(
                                         interactionSource = interactionSource,
                                         indication = null
-                                    ) { selectedIcon = name },
+                                    ) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        selectedIcon = name
+                                    },
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
@@ -228,7 +234,10 @@ fun IconPickerDialog(
                                 .clickable(
                                     interactionSource = interactionSource,
                                     indication = null
-                                ) { selectedColor = colorCode },
+                                ) {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    selectedColor = colorCode
+                                },
                             contentAlignment = Alignment.Center
                         ) {
                             if (isDynamic) {
@@ -246,13 +255,19 @@ fun IconPickerDialog(
         },
         confirmButton = {
             ExpressiveTextButton(
-                onClick = { onConfirm(selectedIcon, selectedColor) },
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onConfirm(selectedIcon, selectedColor)
+                },
                 text = stringResource(R.string.save_action)
             )
         },
         dismissButton = {
             ExpressiveTextButton(
-                onClick = onDismiss,
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    onDismiss()
+                },
                 text = stringResource(R.string.cancel_action)
             )
         },

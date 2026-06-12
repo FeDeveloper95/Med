@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Kiểm tra bản cập nhật</string>
     <string name="settings_check_updates_desc">Tìm phiên bản mới nhất</string>
     <string name="update_action">Cập nhật</string>
-    <string name="update_available">Bản cập nhật có sẵn: v%1$s</string>
+    <string name="update_available">Có bản cập nhật mới!</string>
     <string name="update_latest_version_msg">Không có bản cập nhật nào vào lúc này.</string>
     <string name="update_error_msg">Không thể kiểm tra bản cập nhật. Hãy kiểm tra kết nối của bạn.</string>
     <string name="later">Để sau</string>

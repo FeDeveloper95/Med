@@ -227,13 +227,13 @@ fun IllnessesBottomSheet(
                             else -> AVAILABLE_ICONS[selectedIconName] ?: Icons.Rounded.Event
                         }
                         val headerBg =
-                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.surfaceVariant else try {
+                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else try {
                                 Color(parseColor(selectedColor))
                             } catch (e: Exception) {
-                                MaterialTheme.colorScheme.surfaceVariant
+                                MaterialTheme.colorScheme.primary
                             }
                         val headerTint =
-                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.primary else Color.Black.copy(
+                            if (selectedColor == "dynamic") MaterialTheme.colorScheme.onPrimary else Color.Black.copy(
                                 0.7f
                             )
 

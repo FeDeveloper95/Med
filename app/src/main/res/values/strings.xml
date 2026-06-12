@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Check for Updates</string>
     <string name="settings_check_updates_desc">Find the latest version</string>
     <string name="update_action">Update</string>
-    <string name="update_available">Update available: v%1$s</string>
+    <string name="update_available">Update available!</string>
     <string name="update_latest_version_msg">No updates available at the moment.</string>
     <string name="update_error_msg">Could not check for updates. Check your connection.</string>
     <string name="later">Later</string>

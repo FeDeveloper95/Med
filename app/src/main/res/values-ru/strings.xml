@@ -51,7 +51,7 @@
     <string name="settings_check_updates_title">Проверить обновления</string>
     <string name="settings_check_updates_desc">Найти последнюю версию</string>
     <string name="update_action">Обновить</string>
-    <string name="update_available">Доступно обновление: v%1$s</string>
+    <string name="update_available">Доступно обновление!</string>
     <string name="update_latest_version_msg">На данный момент обновлений нет.</string>
     <string name="update_error_msg">Не удалось проверить обновления. Проверьте подключение.</string>
     <string name="later">Позже</string>
