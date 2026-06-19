@@ -52,6 +52,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,8 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -405,6 +408,7 @@ fun WeeklyCalendarPager(
     val today = remember { LocalDate.now() }
     val currentWeekStart =
         remember(locale, today) { today.with(WeekFields.of(locale).dayOfWeek(), 1L) }
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(selectedDate, locale) {
         val weeksDiff = ChronoUnit.WEEKS.between(
@@ -417,7 +421,25 @@ fun WeeklyCalendarPager(
 
     HorizontalPager(
         state = pagerState,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        val event = awaitPointerEvent()
+                        if (event.type == PointerEventType.Scroll) {
+                            val deltaY = event.changes.firstOrNull()?.scrollDelta?.y ?: 0f
+                            if (deltaY != 0f) {
+                                coroutineScope.launch {
+                                    val targetPage = pagerState.currentPage + if (deltaY > 0) 1 else -1
+                                    pagerState.animateScrollToPage(targetPage.coerceIn(0, 1999))
+                                }
+                                event.changes.forEach { it.consume() }
+                            }
+                        }
+                    }
+                }
+            },
         contentPadding = PaddingValues(horizontal = 16.dp),
         pageSpacing = 16.dp
     ) { page ->
