@@ -1,0 +1,48 @@
+🚨 Major Update 🚨
+🚀 Wearable Companion, Stunning Two, Aesthetically Gorgeous ✨
+New Features & Changes
+Tweaked icon in Material 3 Expressive style
+Redesigned home screen: Enjoy a completely fresh and a redesigned home screen with new tabs and expressive animations (NEW!)
+Bottom tabs: Now Med features two new tabs: Stats and You. In the Stats tab you'll be able to monitor your health in a monthly calendar and in the You tab you'll be able to record all your personal data (NEW!)
+Redesigned scheduling: While creating a new medicine now you'll be able to choose the way you want to be notified (by default, notification, alarm, none) and easily schedule it thanks to the new frequency selector (NEW!)
+Illnesses: Now it is possible to keep track of illnesses alongside events and medicines in Med (NEW!)
+Multiple medicine notifications/alarms at the same time #16 (NEW!)
+New popup to choose which future events, medications, or illnesses to apply edits (NEW!)
+Stable Android 17 and large screen support #8
+Android 17 handoff API lets you use the Continue On feature to use Med across all your devices (NEW!)
+Better storage management: The data manager has been updated to be more secure, stable and faster. Don't worry, your data is safe and won't be lost (NEW!)
+WearOS app: You read it correctly! Med now has a dedicated WearOS app that lets you mark medicines as taken, add Quick Actions and view alarms directly on your watch #10 (NEW!)
+UI/UX Polish
+Visual fixes: Tweaked popups and settings elements for better visual consistency across the app
+Redesigned settings: All the app's settings design has been rebuilt using material components and better UI
+New updater UI. Thanks to @pdimu for the base idea in Figma
+Click animations: Enjoy the Expressive animations on cards and more elements of the UI!
+New welcome screen with curated elements, new icons and fixes
+Updated icons across the app
+Color selector has been moved to the icon chooser popup
+Time picker has been tweaked to be faster and more precise
+Tweaked notification settings with new headers
+Legacy medicine and event popups have been removed and completely replaced by the new bottomsheets
+Fullscreen notification request will appear if you have alarms on but you forgot to enable fullscreen notifications
+Tweaked alarm UI
+Improvements & Bug Fixes
+Material 3 Expressive: Updated to the latest Material 3 components
+Popup fixes: Resolved the bug where popups would close automatically
+Code cleanup
+Fixed Import/Export settings and adapted to new data manager
+Fixed scrolling lag on low end devices
+Fixed card crash after update #15
+Fixed updater on certain A10+ devices
+Reorganized code for faster updates and easier bug fixing
+Updated dependencies
+Catalog implementations
+Corrected splash screen colors while using dark mode on Android 12+
+Thanks to:
+My gf, Gaia, for testing the app and using it every day
+@AshwinSoni-01 for testing the phone app
+@ItsJustJoshDev for testing the phone and WearOS app
+@pdimu for testing the phone app and suggesting a lot of UI tweaks and redesigns
+Translations
+Updated translations for:
+Italian 🇮🇹, Chinese 🇨🇳, Czech 🇨🇿, Danish 🇩🇰, Dutch 🇳🇱, Finnish 🇫🇮, French 🇫🇷, German 🇩🇪, Greek 🇬🇷, Hindi 🇮🇳, Hungarian 🇭🇺, Indonesian 🇮🇩, Japanese 🇯🇵, Korean 🇰🇷, Malay 🇲🇾, Norwegian 🇳🇴, Polish 🇵🇱, Portuguese 🇵🇹, Russian 🇷🇺, Spanish 🇪🇸, Swedish 🇸🇪, Thai 🇹🇭, Turkish 🇹🇷, Ukrainian 🇺🇦, Vietnamese 🇻🇳
+Thank you all for the support ❤️
