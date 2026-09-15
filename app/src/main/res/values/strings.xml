@@ -99,15 +99,19 @@
     <string name="settings_setup_title">Initial Setup</string>
     <string name="settings_setup_desc">Run the welcome wizard again</string>
     <string name="settings_backup_header">Backup &amp; Restore</string>
-    <string name="settings_export_title">Export Settings</string>
-    <string name="settings_export_desc">Save configuration</string>
-    <string name="settings_import_title">Import Settings</string>
-    <string name="settings_import_desc">Restore from a backup file</string>
+    <string name="settings_export_title">Export Data</string>
+    <string name="settings_export_desc">Full backup: meds, history &amp; settings</string>
+    <string name="settings_export_csv_title">Export CSV</string>
+    <string name="settings_export_csv_desc">Spreadsheet-friendly format for any app</string>
+    <string name="settings_import_title">Import Data</string>
+    <string name="settings_import_desc">Restore from a JSON backup or CSV file</string>
+    <string name="import_csv_summary">Imported %1$d entries from CSV</string>
+    <string name="import_csv_zero">No entries found in CSV file</string>
     <string name="dialog_restart_title">Restart Required</string>
-    <string name="dialog_restart_desc">Settings have been imported. Restart the app to apply changes.</string>
-    <string name="export_success">Settings exported successfully</string>
-    <string name="export_error">Error exporting settings</string>
-    <string name="import_error">Error importing settings</string>
+    <string name="dialog_restart_desc">Data has been imported. Restart the app to apply changes.</string>
+    <string name="export_success">Data exported successfully</string>
+    <string name="export_error">Error exporting data</string>
+    <string name="import_error">Error importing data</string>
 
     <string name="select_color">Color</string>
     <string name="time_label">Time</string>
@@ -130,6 +134,7 @@
     <string name="frequency_specific_days">Specific Days</string>
     <string name="frequency_daily_multiple">%1$dx Daily</string>
     <string name="frequency_daily">Daily</string>
+    <string name="frequency_every_days">Every %1$d days</string>
     <string name="edit_time_desc">Edit time</string>
     <string name="status_taken_format">Taken %1$s%2$s</string>
     <string name="status_scheduled_format">Scheduled for %1$s</string>
@@ -310,5 +315,20 @@
     <string name="profile_picture">Profile picture</string>
     <string name="image_set">Image set</string>
     <string name="tap_to_set">Tap to set</string>
+
+    <!-- Supply (inventory) tracking -->
+    <string name="inventory_channel_name">Supply alerts</string>
+    <string name="inventory_channel_desc">Alerts when a medication supply is running low</string>
+    <string name="supply_track_label">Track supply</string>
+    <string name="supply_doses_left">Doses left</string>
+    <string name="supply_refill_size">Refill size (doses per refill)</string>
+    <string name="supply_alert_when_below">Alert when supply is at or below</string>
+    <string name="supply_badge_format">%1$d left</string>
+    <string name="widget_description">Lowest-supply medication</string>
+    <string name="widget_no_tracking">No meds tracked for supply</string>
+    <string name="inventory_low_title">Low supply: %1$s</string>
+    <string name="inventory_low_desc">Only %1$d doses left — time to refill.</string>
+    <string name="inventory_low_desc_refill">Only %1$d doses left — time to refill (%2$d doses per refill).</string>
+    <string name="tap_again_to_untake">Tap again to un-log this dose</string>
 
 </resources>

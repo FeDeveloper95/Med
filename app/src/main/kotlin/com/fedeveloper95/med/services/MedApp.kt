@@ -1242,7 +1242,7 @@ fun MedApp(
             if (isMed) {
                 MedicineBottomSheet(
                     onDismiss = { editingItem = null },
-                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd ->
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, supply, notificationType, rangeStart, rangeEnd ->
                         viewModel.updateItem(
                             itemToEdit,
                             title,
@@ -1254,7 +1254,8 @@ fun MedApp(
                             intervalGap,
                             notificationType,
                             rangeStart,
-                            rangeEnd
+                            rangeEnd,
+                            supply
                         )
                         editingItem = null
                     },
@@ -1273,7 +1274,7 @@ fun MedApp(
                             colorCode,
                             listOf(itemToEdit.creationTime),
                             null,
-                            null,
+                            itemToEdit.notes,
                             null
                         )
                         viewModel.selectedDate = prevSelected
@@ -1307,7 +1308,7 @@ fun MedApp(
         if (useBottomSheet) {
             MedicineBottomSheet(
                 onDismiss = { showMedicineDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd ->
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, supply, notificationType, rangeStart, rangeEnd ->
                     viewModel.addItem(
                         ItemType.Medicine,
                         title,
@@ -1319,6 +1320,7 @@ fun MedApp(
                         intervalGap = intervalGap,
                         notificationType = notificationType
                     )
+                    viewModel.setSupplyOnNewestGroup(title, supply)
                     showMedicineDialog = false
                 },
                 initialText = preFilledText

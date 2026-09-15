@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_background"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
+
+    <ImageView
+        android:id="@+id/widget_icon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:contentDescription="@string/widget_description"
+        android:src="@drawable/ic_notification"
+        android:tint="#FFFFFF" />
+
+    <LinearLayout
+        android:id="@+id/widget_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ProgressBar
+            android:id="@+id/widget_progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="4dp"
+            android:layout_marginTop="5dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textColor="#FFFFFF"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/widget_empty"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:alpha="0.8"
+        android:text="@string/widget_no_tracking"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:visibility="gone" />
+</LinearLayout>

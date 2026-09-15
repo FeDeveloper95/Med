@@ -53,6 +53,7 @@ android {
 }
 
 dependencies {
+    testImplementation("junit:junit:4.13.2")
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)

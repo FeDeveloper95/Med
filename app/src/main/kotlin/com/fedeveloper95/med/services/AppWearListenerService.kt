@@ -231,6 +231,8 @@ class AppWearListenerService : WearableListenerService() {
                                         history.remove(today)
                                     }
                                     items[i] = item.copy(takenHistory = history)
+                                    items[i] = applyInventoryChange(applicationContext, items[i], isTaken)
+                                    NotificationReceiver.scheduleNotification(applicationContext, items[i])
                                     updated = true
                                 }
                             }
