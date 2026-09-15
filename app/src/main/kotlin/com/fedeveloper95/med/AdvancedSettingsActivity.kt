@@ -42,6 +42,7 @@ import androidx.compose.material.icons.rounded.Flag
 import androidx.compose.material.icons.rounded.Group
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.TableChart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -76,7 +77,10 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.elements.AdvancedSettingsActivity.ResetPopup
 import com.fedeveloper95.med.elements.AdvancedSettingsActivity.RestorePopup
 import com.fedeveloper95.med.elements.MainActivity.CommunityBottomSheet
+import com.fedeveloper95.med.services.CsvPortability
 import com.fedeveloper95.med.services.DataRepository
+import com.fedeveloper95.med.services.InventoryService
+import com.fedeveloper95.med.services.NotificationReceiver
 import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
@@ -121,6 +125,7 @@ class AdvancedSettingsActivity : ComponentActivity() {
 
 const val PREF_AUTO_UPDATES = "pref_auto_updates"
 const val PREF_EXPERIMENTAL_NAV_BAR = "ExperimentalNavBar"
+private const val PRE_IMPORT_BACKUP_FILE = "med_data_pre_import.json"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,6 +144,15 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
             uri?.let {
                 scope.launch(Dispatchers.IO) {
                     exportSettings(context, it)
+                }
+            }
+        }
+
+    val exportCsvLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+            uri?.let {
+                scope.launch(Dispatchers.IO) {
+                    exportCsv(context, it)
                 }
             }
         }
@@ -297,7 +311,7 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                             containerColor = Color(0xFF80da88),
                             iconColor = Color(0xFF00522c),
                             index = 0,
-                            count = 2,
+                            count = 3,
                             onClick = {
                                 val timestamp = Calendar.getInstance().timeInMillis
                                 exportLauncher.launch("med_backup_$timestamp.json")
@@ -311,9 +325,23 @@ fun AdvancedSettingsScreen(onBack: () -> Unit) {
                             containerColor = Color(0xFF67d4ff),
                             iconColor = Color(0xFF004e5d),
                             index = 1,
-                            count = 2,
+                            count = 3,
                             onClick = {
-                                importLauncher.launch(arrayOf("application/json"))
+                                importLauncher.launch(arrayOf("application/json", "text/csv", "text/comma-separated-values", "text/plain"))
+                            }
+                        )
+
+                        AdvancedSegmentedItem(
+                            icon = Icons.Rounded.TableChart,
+                            title = stringResource(R.string.settings_export_csv_title),
+                            subtitle = stringResource(R.string.settings_export_csv_desc),
+                            containerColor = Color(0xFFb5ccff),
+                            iconColor = Color(0xFF1c2f5c),
+                            index = 2,
+                            count = 3,
+                            onClick = {
+                                val timestamp = Calendar.getInstance().timeInMillis
+                                exportCsvLauncher.launch("med_data_$timestamp.csv")
                             }
                         )
                     }
@@ -588,17 +616,11 @@ private suspend fun exportSettings(context: Context, uri: Uri) {
 private suspend fun importSettings(context: Context, uri: Uri): Boolean {
     return withContext(Dispatchers.IO) {
         try {
-            val sb = StringBuilder()
-            context.contentResolver.openInputStream(uri)?.use { inputStream ->
-                BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                    var line = reader.readLine()
-                    while (line != null) {
-                        sb.append(line)
-                        line = reader.readLine()
-                    }
-                }
-            }
-            val root = JSONObject(sb.toString())
+            val fileText = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { it.readText() }
+            } ?: ""
+            val isJson = fileText.trimStart().startsWith("{")
+            val root = if (isJson) JSONObject(fileText) else JSONObject()
 
             if (root.has("med_prefs")) {
                 try {
@@ -716,6 +738,29 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                 }
             }
 
+            // Universal CSV import: any spreadsheet following the documented CSV
+            // schema can be turned into medicines/events.
+            var csvCount = -1
+            if (!isJson) {
+                try {
+                    val csvItems = CsvPortability.parseCsv(fileText)
+                    csvCount = csvItems.size
+                    csvItems.forEach { item ->
+                        val dupe = importedItems.indexOfFirst { it.id == item.id }
+                        if (dupe == -1) importedItems.add(item)
+                    }
+                } catch (e: Exception) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            e.message ?: context.getString(R.string.import_error),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    return@withContext false
+                }
+            }
+
             val currentItems = try {
                 DataRepository.loadData(context)
             } catch (e: Exception) {
@@ -745,9 +790,53 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
             }
 
             try {
+                // Safety net: snapshot current data before applying the import, so a
+                // bad import file can never destroy the user's existing records.
+                if (currentItems.isNotEmpty()) {
+                    val backupArray = JSONArray()
+                    currentItems.forEach { backupArray.put(it.toJson()) }
+                    val backupRoot = JSONObject()
+                    backupRoot.put("med_data_v2", backupArray)
+                    java.io.File(context.filesDir, PRE_IMPORT_BACKUP_FILE)
+                        .writeText(backupRoot.toString())
+                }
+
                 DataRepository.saveData(context, mergedItems)
                 context.deleteFile("med_data.dat")
             } catch (e: Exception) {
+            }
+
+            // Schedule alarms for all medicines now, so reminders work immediately
+            // after the restart — imported meds would otherwise stay silent until
+            // the next device reboot (alarms are only auto-rescheduled on boot).
+            try {
+                mergedItems.forEach { item ->
+                    if (item.type == ItemType.Medicine) {
+                        NotificationReceiver.scheduleNotification(context, item)
+                    }
+                }
+            } catch (e: Exception) {
+            }
+
+            // An imported backup that is already below its low-supply threshold
+            // must alert immediately, not after the next dose event.
+            try {
+                InventoryService.createNotificationChannel(context)
+                if (InventoryService.evaluateAll(context, mergedItems)) {
+                    DataRepository.saveData(context, mergedItems)
+                }
+            } catch (e: Exception) {
+            }
+
+            if (csvCount >= 0) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        if (csvCount > 0) context.getString(R.string.import_csv_summary, csvCount)
+                        else context.getString(R.string.import_csv_zero),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
             true
@@ -760,6 +849,24 @@ private suspend fun importSettings(context: Context, uri: Uri): Boolean {
                 ).show()
             }
             false
+        }
+    }
+}
+
+private suspend fun exportCsv(context: Context, uri: Uri) {
+    withContext(Dispatchers.IO) {
+        try {
+            val items = DataRepository.loadData(context)
+            context.contentResolver.openOutputStream(uri)?.use {
+                it.write(CsvPortability.toCsv(items).toByteArray(Charsets.UTF_8))
+            }
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, context.getString(R.string.export_success), Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, context.getString(R.string.export_error), Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }

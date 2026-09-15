@@ -68,6 +68,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedToggleButton
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -100,6 +101,7 @@ import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.AVAILABLE_ICONS
 import com.fedeveloper95.med.R
 import com.fedeveloper95.med.elements.TimePicker
+import com.fedeveloper95.med.services.InventoryEntry
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.launch
@@ -113,7 +115,7 @@ import java.util.Locale
 @Composable
 fun MedicineBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int, Long?, Long?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, InventoryEntry?, Int, Long?, Long?) -> Unit,
     initialItem: MedData? = null,
     initialText: String = ""
 ) {
@@ -181,6 +183,26 @@ fun MedicineBottomSheet(
     var showSaveFrequencyPopup by remember { mutableStateOf(false) }
 
     var notificationType by remember { mutableIntStateOf(initialItem?.notificationType ?: 0) }
+
+    // --- Supply (inventory) tracking ---
+    var supplyEnabled by remember {
+        mutableStateOf(initialItem?.supplyDosesLeft != null)
+    }
+    var supplyLeft by remember {
+        mutableIntStateOf(initialItem?.supplyDosesLeft ?: 30)
+    }
+    var supplyRefill by remember {
+        mutableIntStateOf(initialItem?.supplyDosesPerRefill ?: 30)
+    }
+    var supplyThreshold by remember {
+        mutableIntStateOf(initialItem?.supplyLowThreshold ?: 5)
+    }
+
+    fun inventoryEntry(): InventoryEntry? = if (supplyEnabled) InventoryEntry(
+        dosesLeft = supplyLeft,
+        dosesPerRefill = supplyRefill,
+        lowThreshold = supplyThreshold
+    ) else null
 
     val focusRequester = remember { FocusRequester() }
 
@@ -256,6 +278,7 @@ fun MedicineBottomSheet(
                             days,
                             notes.takeIf { it.isNotBlank() },
                             gap,
+                            inventoryEntry(),
                             notificationType,
                             start,
                             end
@@ -435,6 +458,141 @@ fun MedicineBottomSheet(
                 }
 
                 item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                item {
+                    val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                    SegmentedListItem(
+                        onClick = { supplyEnabled = !supplyEnabled },
+                        colors = itemColors,
+                        shapes = ListItemDefaults.segmentedShapes(index = 0, count = 1),
+                        modifier = Modifier.clip(RoundedCornerShape(20.dp)),
+                        trailingContent = {
+                            Switch(
+                                checked = supplyEnabled,
+                                onCheckedChange = { supplyEnabled = it }
+                            )
+                        },
+                        content = {
+                            Text(
+                                text = stringResource(R.string.supply_track_label),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                fontFamily = GoogleSansFlex
+                            )
+                        }
+                    )
+                }
+
+                if (supplyEnabled) {
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                    item {
+                        val itemColors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                        ) {
+                            SegmentedListItem(
+                                onClick = {},
+                                colors = itemColors,
+                                shapes = ListItemDefaults.segmentedShapes(index = 0, count = 3),
+                                trailingContent = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(onClick = {
+                                            if (supplyLeft > 0) supplyLeft--
+                                        }) {
+                                            Icon(Icons.Rounded.Remove, contentDescription = null)
+                                        }
+                                        Text(
+                                            text = supplyLeft.toString(),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            modifier = Modifier.padding(horizontal = 8.dp)
+                                        )
+                                        IconButton(onClick = {
+                                            if (supplyLeft < 9999) supplyLeft++
+                                        }) {
+                                            Icon(Icons.Rounded.Add, contentDescription = null)
+                                        }
+                                    }
+                                },
+                                content = {
+                                    Text(
+                                        text = stringResource(R.string.supply_doses_left),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
+                            )
+
+                            SegmentedListItem(
+                                onClick = {},
+                                colors = itemColors,
+                                shapes = ListItemDefaults.segmentedShapes(index = 1, count = 3),
+                                trailingContent = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(onClick = {
+                                            if (supplyRefill > 1) supplyRefill--
+                                        }) {
+                                            Icon(Icons.Rounded.Remove, contentDescription = null)
+                                        }
+                                        Text(
+                                            text = supplyRefill.toString(),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            modifier = Modifier.padding(horizontal = 8.dp)
+                                        )
+                                        IconButton(onClick = {
+                                            if (supplyRefill < 9999) supplyRefill++
+                                        }) {
+                                            Icon(Icons.Rounded.Add, contentDescription = null)
+                                        }
+                                    }
+                                },
+                                content = {
+                                    Text(
+                                        text = stringResource(R.string.supply_refill_size),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
+                            )
+
+                            SegmentedListItem(
+                                onClick = {},
+                                colors = itemColors,
+                                shapes = ListItemDefaults.segmentedShapes(index = 2, count = 3),
+                                trailingContent = {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        IconButton(onClick = {
+                                            if (supplyThreshold > 0) supplyThreshold--
+                                        }) {
+                                            Icon(Icons.Rounded.Remove, contentDescription = null)
+                                        }
+                                        Text(
+                                            text = supplyThreshold.toString(),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            modifier = Modifier.padding(horizontal = 8.dp)
+                                        )
+                                        IconButton(onClick = {
+                                            if (supplyThreshold < 9999) supplyThreshold++
+                                        }) {
+                                            Icon(Icons.Rounded.Add, contentDescription = null)
+                                        }
+                                    }
+                                },
+                                content = {
+                                    Text(
+                                        text = stringResource(R.string.supply_alert_when_below),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        fontFamily = GoogleSansFlex
+                                    )
+                                }
+                            )
+                        }
+                    }
+                }
 
                 item {
                     Column(modifier = Modifier.fillMaxWidth()) {
@@ -783,7 +941,13 @@ fun MedicineBottomSheet(
                                                 frequencyType != initialFreqType ||
                                                 (frequencyType == 1 && selectedDays != initialDaysSet) ||
                                                 (frequencyType == 2 && currentGap != (initialItem.intervalGap
-                                                    ?: 2))
+                                                    ?: 2)) ||
+                                                supplyEnabled != (initialItem.supplyDosesLeft != null) ||
+                                                (supplyEnabled && (supplyLeft != initialItem.supplyDosesLeft ||
+                                                        supplyRefill != (initialItem.supplyDosesPerRefill
+                                                            ?: 0) ||
+                                                        supplyThreshold != (initialItem.supplyLowThreshold
+                                                            ?: 0)))
                                     }
 
                                     if (isModified) {
@@ -810,6 +974,7 @@ fun MedicineBottomSheet(
                                                     days,
                                                     notes.takeIf { it.isNotBlank() },
                                                     gap,
+                                                    inventoryEntry(),
                                                     notificationType,
                                                     null,
                                                     null
@@ -839,6 +1004,7 @@ fun MedicineBottomSheet(
                                                 days,
                                                 notes.takeIf { it.isNotBlank() },
                                                 gap,
+                                                inventoryEntry(),
                                                 notificationType,
                                                 null,
                                                 null

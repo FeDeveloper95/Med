@@ -25,6 +25,14 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
+/**
+ * Applies the stock change for a dose being logged or un-logged and updates the
+ * in-memory item. Central helper shared by the UI (MedViewModel) and the
+ * notification's Take action so inventory stays consistent everywhere.
+ */
+fun applyInventoryChange(context: Context, item: MedData, isTaken: Boolean): MedData =
+    InventoryService.applyInventoryChange(context, item, isTaken)
+
 class NotificationReceiver : BroadcastReceiver() {
 
     companion object {
@@ -96,7 +104,9 @@ class NotificationReceiver : BroadcastReceiver() {
             var date = LocalDate.now()
             val now = LocalTime.now()
 
-            if (isValidDate(item, date) && item.creationTime.isAfter(now)) {
+            if (isValidDate(item, date) && !item.takenHistory.containsKey(date) && item.creationTime.isAfter(now)) {
+                // Today's slot is still ahead and not taken yet -> alarm for today.
+                // (If it was already taken, e.g. early, fall through to the next day.)
                 return LocalDateTime.of(date, item.creationTime)
             }
 
@@ -133,6 +143,13 @@ class NotificationReceiver : BroadcastReceiver() {
                         scheduleNotification(context, item)
                     }
                 }
+                InventoryService.createNotificationChannel(context)
+                // A supply that is already below its threshold at boot/reinstall
+                // must alert without waiting for the next dose event.
+                val evalList = items.toMutableList()
+                if (InventoryService.evaluateAll(context, evalList)) {
+                    DataRepository.saveData(context, evalList)
+                }
             }
 
             ACTION_SHOW_NOTIFICATION -> {
@@ -149,7 +166,9 @@ class NotificationReceiver : BroadcastReceiver() {
                     items.filter {
                         it.type == ItemType.Medicine &&
                                 it.creationTime == triggerItem.creationTime &&
-                                isValidDate(it, LocalDate.now())
+                                isValidDate(it, LocalDate.now()) &&
+                                // Skip meds already logged today (e.g. taken early).
+                                !it.takenHistory.containsKey(LocalDate.now())
                     }
                 }
 
@@ -318,12 +337,15 @@ class NotificationReceiver : BroadcastReceiver() {
                             val newHistory = HashMap(item.takenHistory)
                             newHistory[LocalDate.now()] = LocalTime.now()
                             items[index] = item.copy(takenHistory = newHistory)
+                            items[index] = applyInventoryChange(context, items[index], isTaken = true)
                             isDataUpdated = true
                             scheduleNotification(context, items[index])
                         }
                     }
 
                     if (isDataUpdated) {
+                        DataRepository.saveData(context, items)
+                        InventoryService.evaluateAll(context, items)
                         DataRepository.saveData(context, items)
                         context.sendBroadcast(
                             Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
