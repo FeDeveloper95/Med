@@ -132,7 +132,6 @@ fun MedApp(
     isExpandedScreen: Boolean,
     showCommunitySheet: Boolean,
     userDob: String,
-    inventoryEnabled: Boolean = true,
     onCommunitySheetDismiss: () -> Unit
 ) {
     val context = LocalContext.current
@@ -280,12 +279,12 @@ fun MedApp(
                                         else showEventDialog = true
                                     } else {
                                         viewModel.addItem(
-                                            type,
-                                            name,
-                                            iconName,
-                                            colorCode,
-                                            listOf(LocalTime.now()),
-                                            null
+                                            type = type,
+                                            title = name,
+                                            iconName = iconName,
+                                            colorCode = colorCode,
+                                            times = listOf(LocalTime.now()),
+                                            days = null
                                         )
                                     }
                                 }
@@ -817,11 +816,6 @@ fun MedApp(
                                                                                         item,
                                                                                         pageDate
                                                                                     )
-                                                                                    context.sendBroadcast(
-                                                                                        Intent(context, NotificationReceiver::class.java).apply {
-                                                                                            action = NotificationReceiver.ACTION_CHECK_INVENTORY
-                                                                                        }
-                                                                                    )
                                                                                 },
                                                                                 onClick = {
                                                                                     if (!item.notes.isNullOrBlank()) noteToShow =
@@ -1090,11 +1084,6 @@ fun MedApp(
                                                                                         item,
                                                                                         pageDate
                                                                                     )
-                                                                                    context.sendBroadcast(
-                                                                                        Intent(context, NotificationReceiver::class.java).apply {
-                                                                                            action = NotificationReceiver.ACTION_CHECK_INVENTORY
-                                                                                        }
-                                                                                    )
                                                                                 },
                                                                                 onClick = {
                                                                                     if (!item.notes.isNullOrBlank()) noteToShow =
@@ -1215,9 +1204,9 @@ fun MedApp(
                             rangeStart = rangeStart,
                             rangeEnd = rangeEnd,
                             medicineType = medicineType,
-                            dose = dose,
-                            unit = unit,
-                            totalQuantity = totalQuantity
+                            dose = dose ?: 0.0,
+                            unit = unit ?: "",
+                            totalQuantity = totalQuantity ?: 0.0
                         )
                         editingItem = null
                     },
@@ -1230,14 +1219,14 @@ fun MedApp(
                         val prevSelected = viewModel.selectedDate
                         viewModel.selectedDate = startDate
                         viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            listOf(itemToEdit.creationTime),
-                            null,
-                            null,
-                            null
+                            originalItem = itemToEdit,
+                            title = title,
+                            iconName = iconName,
+                            colorCode = colorCode,
+                            times = listOf(itemToEdit.creationTime),
+                            days = null,
+                            notes = null,
+                            intervalGap = null
                         )
                         viewModel.selectedDate = prevSelected
                         editingItem = null
@@ -1249,14 +1238,14 @@ fun MedApp(
                     onDismiss = { editingItem = null },
                     onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
                         viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            times,
-                            days,
-                            notes,
-                            intervalGap
+                            originalItem = itemToEdit,
+                            title = title,
+                            iconName = iconName,
+                            colorCode = colorCode,
+                            times = times,
+                            days = days,
+                            notes = notes,
+                            intervalGap = intervalGap
                         )
                         editingItem = null
                     },
@@ -1282,9 +1271,9 @@ fun MedApp(
                         intervalGap = intervalGap,
                         notificationType = notificationType,
                         medicineType = medicineType,
-                        dose = dose,
-                        unit = unit,
-                        totalQuantity = totalQuantity
+                        dose = dose ?: 0.0,
+                        unit = unit ?: "",
+                        totalQuantity = totalQuantity ?: 0.0
                     )
                     showMedicineDialog = false
                 },
@@ -1301,12 +1290,12 @@ fun MedApp(
                     val prevSelected = viewModel.selectedDate
                     viewModel.selectedDate = startDate
                     viewModel.addItem(
-                        ItemType.Illness,
-                        title,
-                        iconName,
-                        colorCode,
-                        listOf(LocalTime.now()),
-                        null,
+                        type = ItemType.Illness,
+                        title = title,
+                        iconName = iconName,
+                        colorCode = colorCode,
+                        times = listOf(LocalTime.now()),
+                        days = null,
                         notes = null,
                         intervalGap = null
                     )
@@ -1324,12 +1313,12 @@ fun MedApp(
                 onDismiss = { showEventDialog = false },
                 onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap ->
                     viewModel.addItem(
-                        ItemType.Event,
-                        title,
-                        iconName,
-                        colorCode,
-                        times,
-                        days,
+                        type = ItemType.Event,
+                        title = title,
+                        iconName = iconName,
+                        colorCode = colorCode,
+                        times = times,
+                        days = days,
                         notes = notes,
                         intervalGap = intervalGap
                     )

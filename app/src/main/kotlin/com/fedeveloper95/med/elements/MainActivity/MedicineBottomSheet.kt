@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -57,7 +56,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
-import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -113,12 +111,14 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.compose.foundation.layout.ime
+import androidx.compose.material3.ExposedDropdownMenu
 
 @SuppressLint("NewApi")
 @Composable
 fun MedicineBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int, Long?, Long?, String, Double?, String?, Double?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int, Long?, Long?, Int, Double?, String?, Double?) -> Unit,
     initialItem: MedData? = null,
     initialText: String = ""
 ) {
@@ -161,27 +161,14 @@ fun MedicineBottomSheet(
     )
 
     var customTypes by remember { mutableStateOf(loadCustomTypes()) }
-    val allTypeOptions = baseTypeOptions + customTypes + typeCustomStr
+    val allTypeOptions: List<String> = baseTypeOptions + customTypes + typeCustomStr
 
-    val initialTypeStr = initialItem?.medicineType ?: typeMedicineStr
-    val initialTypeIndex = remember {
-        val foundBase = baseTypeOptions.indexOf(initialTypeStr)
-        if (foundBase >= 0) foundBase
-        else {
-            val foundCustom = customTypes.indexOf(initialTypeStr)
-            if (foundCustom >= 0) baseTypeOptions.size + foundCustom
-            else {
-                customTypes = customTypes + initialTypeStr
-                saveCustomTypes(customTypes)
-                baseTypeOptions.size + customTypes.size - 1
-            }
-        }
-    }
+    val initialTypeIndex = initialItem?.medicineType ?: 0
 
     var expandedTitleType by remember { mutableStateOf(false) }
     var selectedTypeIndex by remember { mutableIntStateOf(initialTypeIndex) }
-    var customTitleText by remember { mutableStateOf(if (initialTypeIndex >= baseTypeOptions.size && initialTypeIndex < baseTypeOptions.size + customTypes.size) initialTypeStr else "") }
-    var isCustomTypeActive by remember { mutableStateOf(initialTypeIndex >= baseTypeOptions.size && initialTypeIndex < baseTypeOptions.size + customTypes.size) }
+    var customTitleText by remember { mutableStateOf("") }
+    var isCustomTypeActive by remember { mutableStateOf(false) }
 
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
@@ -342,15 +329,6 @@ fun MedicineBottomSheet(
                     } else null
                 }
 
-                val currentAllOptions = baseTypeOptions + customTypes + typeCustomStr
-                val finalMedicineType = if (isCustomTypeActive) customTitleText else currentAllOptions.getOrElse(selectedTypeIndex) { typeMedicineStr }
-                if (isCustomTypeActive && customTitleText.isNotBlank()) {
-                    if (!customTypes.contains(customTitleText) && !baseTypeOptions.contains(customTitleText)) {
-                        customTypes = customTypes + customTitleText
-                        saveCustomTypes(customTypes)
-                    }
-                }
-
                 val doseVal = dose.replace(",", ".").toDoubleOrNull()
                 val totalQuantityVal = totalQuantity.replace(",", ".").toDoubleOrNull()
 
@@ -365,7 +343,7 @@ fun MedicineBottomSheet(
                     notificationType,
                     start,
                     end,
-                    finalMedicineType,
+                    selectedTypeIndex,
                     doseVal,
                     unit.takeIf { it.isNotBlank() },
                     totalQuantityVal
@@ -452,7 +430,6 @@ fun MedicineBottomSheet(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    val currentAllOptions = baseTypeOptions + customTypes + typeCustomStr
                     val editPrefixStr = stringResource(R.string.edit_prefix)
                     val newPrefixStr = stringResource(R.string.new_prefix)
                     val isEdit = initialItem != null
@@ -479,21 +456,14 @@ fun MedicineBottomSheet(
                             onExpandedChange = { expandedTitleType = it }
                         ) {
                             OutlinedTextField(
-                                value = if (isCustomTypeActive) customTitleText else currentAllOptions.getOrElse(selectedTypeIndex) { "" },
-                                onValueChange = {
-                                    if (isCustomTypeActive) {
-                                        customTitleText = it
-                                    }
-                                },
-                                readOnly = !isCustomTypeActive,
+                                value = allTypeOptions.getOrElse(selectedTypeIndex) { typeMedicineStr },
+                                onValueChange = {},
+                                readOnly = true,
                                 trailingIcon = {
                                     ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTitleType)
                                 },
                                 modifier = Modifier
-                                    .menuAnchor(
-                                        if (isCustomTypeActive) ExposedDropdownMenuAnchorType.PrimaryEditable
-                                        else ExposedDropdownMenuAnchorType.PrimaryNotEditable
-                                    )
+                                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                     .widthIn(min = 140.dp, max = 220.dp),
                                 textStyle = MaterialTheme.typography.titleMedium.copy(
                                     fontFamily = GoogleSansFlex,
@@ -507,55 +477,16 @@ fun MedicineBottomSheet(
                                 onDismissRequest = { expandedTitleType = false },
                                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                             ) {
-                                currentAllOptions.forEachIndexed { index, selectionOption ->
-                                    val isCustomItem = index >= baseTypeOptions.size && index < baseTypeOptions.size + customTypes.size
+                                allTypeOptions.forEachIndexed { index, selectionOption ->
                                     DropdownMenuItem(
                                         text = {
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                Text(
-                                                    selectionOption,
-                                                    fontFamily = GoogleSansFlex,
-                                                    modifier = Modifier.weight(1f)
-                                                )
-                                                if (isCustomItem) {
-                                                    IconButton(
-                                                        onClick = {
-                                                            val customItemValue = customTypes[index - baseTypeOptions.size]
-                                                            val updatedList = customTypes.toMutableList().apply { remove(customItemValue) }
-                                                            customTypes = updatedList
-                                                            saveCustomTypes(customTypes)
-                                                            if (selectedTypeIndex == index) {
-                                                                selectedTypeIndex = 0
-                                                                isCustomTypeActive = false
-                                                            } else if (selectedTypeIndex > index) {
-                                                                selectedTypeIndex--
-                                                            }
-                                                            expandedTitleType = false
-                                                        },
-                                                        modifier = Modifier.size(24.dp)
-                                                    ) {
-                                                        Icon(
-                                                            imageVector = Icons.Rounded.Delete,
-                                                            contentDescription = null,
-                                                            modifier = Modifier.size(16.dp),
-                                                            tint = MaterialTheme.colorScheme.error
-                                                        )
-                                                    }
-                                                }
-                                            }
+                                            Text(
+                                                selectionOption,
+                                                fontFamily = GoogleSansFlex
+                                            )
                                         },
                                         onClick = {
                                             selectedTypeIndex = index
-                                            if (selectionOption == typeCustomStr) {
-                                                isCustomTypeActive = true
-                                                customTitleText = ""
-                                            } else {
-                                                isCustomTypeActive = false
-                                            }
                                             expandedTitleType = false
                                         }
                                     )
@@ -1063,8 +994,6 @@ fun MedicineBottomSheet(
                         onClick = {
                             if (text.isNotBlank()) {
                                 if (initialItem != null) {
-                                    val currentAllOptions = baseTypeOptions + customTypes + typeCustomStr
-                                    val finalMedicineType = if (isCustomTypeActive) customTitleText else currentAllOptions.getOrElse(selectedTypeIndex) { typeMedicineStr }
                                     val initialFreqType = when {
                                         initialItem.intervalGap != null -> 2
                                         initialItem.recurrenceDays != null -> 1
@@ -1072,20 +1001,18 @@ fun MedicineBottomSheet(
                                     }
 
                                     val effectivelyDaily = (frequencyType == 2 && intervalUnit == 0)
-                                    val initialMedType = initialItem.medicineType ?: typeMedicineStr
+                                    val initialMedType = initialItem.medicineType
 
                                     val doseVal = dose.replace(",", ".").toDoubleOrNull()
                                     val totalQuantityVal = totalQuantity.replace(",", ".").toDoubleOrNull()
 
-                                    val isModified = finalMedicineType != initialMedType ||
+                                    val isModified = selectedTypeIndex != initialMedType ||
                                             text != initialItem.title ||
                                             notes != (initialItem.notes ?: "") ||
-                                            selectedIconName != (initialItem.iconName
-                                        ?: "MedicalServices") ||
-                                            selectedColor != (initialItem.colorCode
-                                        ?: "dynamic") ||
+                                            selectedIconName != (initialItem.iconName ?: "MedicalServices") ||
+                                            selectedColor != (initialItem.colorCode ?: "dynamic") ||
                                             notificationType != initialItem.notificationType ||
-                                            (effectivelyDaily) ||
+                                            effectivelyDaily ||
                                             frequencyType != initialFreqType ||
                                             doseVal != initialItem.dose ||
                                             unit.takeIf { it.isNotBlank() } != initialItem.unit ||

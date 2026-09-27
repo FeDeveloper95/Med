@@ -62,10 +62,10 @@ data class MedData(
     val intervalGap: Int? = null,
     val category: String? = null,
     val notificationType: Int = 0,
-    val medicineType: String? = null,
-    val dose: Double? = null,
-    val unit: String? = null,
-    val totalQuantity: Double? = null
+    val medicineType: Int = 0,
+    val dose: Double = 0.0,
+    val unit: String = "",
+    val totalQuantity: Double = 0.0
 ) : Serializable {
 
     fun toJson(): JSONObject {
@@ -96,10 +96,12 @@ data class MedData(
         json.put("intervalGap", intervalGap ?: JSONObject.NULL)
         json.put("category", category ?: JSONObject.NULL)
         json.put("notificationType", notificationType)
-        json.put("medicineType", medicineType ?: JSONObject.NULL)
-        json.put("dose", dose ?: JSONObject.NULL)
-        json.put("unit", unit ?: JSONObject.NULL)
-        json.put("totalQuantity", totalQuantity ?: JSONObject.NULL)
+
+        json.put("medicineType", medicineType)
+        json.put("dose", dose)
+        json.put("unit", unit)
+        json.put("totalQuantity", totalQuantity)
+
         return json
     }
 
@@ -140,10 +142,10 @@ data class MedData(
                 intervalGap = if (json.isNull("intervalGap")) null else json.getInt("intervalGap"),
                 category = if (json.isNull("category")) null else json.getString("category"),
                 notificationType = json.optInt("notificationType", 0),
-                medicineType = if (json.isNull("medicineType")) null else json.getString("medicineType"),
-                dose = if (json.isNull("dose")) null else json.getDouble("dose"),
-                unit = if (json.isNull("unit")) null else json.getString("unit"),
-                totalQuantity = if (json.isNull("totalQuantity")) null else json.getDouble("totalQuantity")
+                medicineType = json.optInt("medicineType", 0),
+                dose = json.optDouble("dose", 0.0),
+                unit = json.optString("unit", ""),
+                totalQuantity = json.optDouble("totalQuantity", 0.0)
             )
         }
     }
@@ -234,10 +236,10 @@ object DataRepository {
                         intervalGap = null,
                         category = null,
                         notificationType = 0,
-                        medicineType = null,
-                        dose = null,
-                        unit = null,
-                        totalQuantity = null
+                        medicineType = 0,
+                        dose = 0.0,
+                        unit = "",
+                        totalQuantity = 0.0
                     )
                 } else null
             }
@@ -270,6 +272,13 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
     init {
         loadData()
         syncToWear()
+
+        _items.filter { it.type == ItemType.Medicine }.forEach { item ->
+            try {
+                NotificationReceiver.scheduleNotification(getApplication(), item)
+            } catch (e: Exception) {
+            }
+        }
 
         val filter = IntentFilter("com.fedeveloper95.med.RELOAD_DATA")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -442,11 +451,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             notes = null,
             displayOrder = 0,
             intervalGap = null,
-            category = null,
-            medicineType = null,
-            dose = null,
-            unit = null,
-            totalQuantity = null
+            category = null
         )
         editItems = editItems + EditItem.Group(newDivider, emptyList())
         editHasChanges = true
@@ -477,11 +482,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                                 notes = null,
                                 displayOrder = 0,
                                 intervalGap = null,
-                                category = null,
-                                medicineType = null,
-                                dose = null,
-                                unit = null,
-                                totalQuantity = null
+                                category = null
                             )
                         )
                     }
@@ -537,10 +538,10 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         category: String? = null,
         intervalGap: Int? = null,
         notificationType: Int = 0,
-        medicineType: String? = null,
-        dose: Double? = null,
-        unit: String? = null,
-        totalQuantity: Double? = null
+        medicineType: Int = 0,
+        dose: Double = 0.0,
+        unit: String = "",
+        totalQuantity: Double = 0.0
     ) {
         val groupId = System.currentTimeMillis()
         val baseDate = selectedDate
@@ -597,11 +598,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 displayOrder = currentOrder++,
                 category = null,
                 intervalGap = null,
-                notificationType = 0,
-                medicineType = null,
-                dose = null,
-                unit = null,
-                totalQuantity = null
+                notificationType = 0
             )
             _items.add(emptyDivider)
         }
@@ -655,137 +652,56 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         notificationType: Int = 0,
         rangeStart: Long? = -2L,
         rangeEnd: Long? = -2L,
-        medicineType: String? = null,
-        dose: Double? = null,
-        unit: String? = null,
-        totalQuantity: Double? = null
+        medicineType: Int = 0,
+        dose: Double = 0.0,
+        unit: String = "",
+        totalQuantity: Double = 0.0
     ) {
         val context = getApplication<Application>()
+        val groupId = originalItem.groupId ?: System.currentTimeMillis()
+
+        val existingGroupItems = _items.filter { it.groupId == groupId }
+        val combinedHistory = HashMap<LocalDate, LocalTime>()
+        existingGroupItems.forEach { item ->
+            combinedHistory.putAll(item.takenHistory)
+        }
+
+        _items.removeAll { it.groupId == groupId }
+
         val freqLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
         else if (days != null) context.getString(R.string.frequency_specific_days)
-        else if (times.size > 1) context.getString(
-            R.string.frequency_daily_multiple,
-            times.size
-        )
+        else if (times.size > 1) context.getString(R.string.frequency_daily_multiple, times.size)
         else context.getString(R.string.frequency_daily)
 
-        val isMedicine = originalItem.type == ItemType.Medicine
-        val isRangeUpdate = rangeStart != -2L
+        var currentOrder = (_items.maxOfOrNull { it.displayOrder } ?: 0) + 1
 
-        val relatedItems = if (originalItem.groupId != null) {
-            _items.filter { it.groupId == originalItem.groupId }
-        } else {
-            listOf(originalItem)
-        }
-
-        val relatedIds = relatedItems.map { it.id }.toSet()
-
-        if (isMedicine && isRangeUpdate) {
-            var editStart = selectedDate
-            var editEnd: LocalDate? = null
-
-            if (rangeStart == null && rangeEnd == null) {
-                editStart = selectedDate
-                editEnd = selectedDate
-            } else if (rangeStart == -1L) {
-                editStart = selectedDate
-                editEnd = originalItem.endDate
-            } else if (rangeStart != null) {
-                editStart = LocalDate.ofEpochDay(rangeStart / 86400000)
-                editEnd =
-                    if (rangeEnd != null && rangeEnd != -2L) LocalDate.ofEpochDay(rangeEnd / 86400000) else editStart
-            }
-
-            _items.removeAll { it.id in relatedIds }
-
-            val baseNewItem = originalItem.copy(
+        times.forEach { time ->
+            val newItem = MedData(
+                id = System.nanoTime(),
+                groupId = groupId,
+                type = originalItem.type,
                 title = title,
                 iconName = iconName,
                 colorCode = colorCode,
-                recurrenceDays = days,
-                notes = notes,
-                intervalGap = intervalGap,
-                notificationType = notificationType,
                 frequencyLabel = freqLabel,
-                medicineType = medicineType,
-                dose = dose,
-                unit = unit,
-                totalQuantity = totalQuantity
-            )
-
-            relatedItems.forEachIndexed { i, oldItem ->
-                if (editStart.isAfter(oldItem.creationDate)) {
-                    val newEndDate = editStart.minusDays(1)
-                    val finalEndDate =
-                        if (oldItem.endDate != null && oldItem.endDate.isBefore(newEndDate)) oldItem.endDate else newEndDate
-                    _items.add(
-                        oldItem.copy(
-                            id = System.nanoTime() + i,
-                            endDate = finalEndDate
-                        )
-                    )
-                }
-            }
-
-            val editedGroupId = System.currentTimeMillis()
-            times.forEachIndexed { i, time ->
-                val editedPart = baseNewItem.copy(
-                    id = System.nanoTime() + 100 + i,
-                    groupId = editedGroupId,
-                    creationTime = time,
-                    creationDate = editStart,
-                    endDate = editEnd,
-                    takenHistory = HashMap()
-                )
-                _items.add(editedPart)
-                NotificationReceiver.scheduleNotification(getApplication(), editedPart)
-            }
-
-            if (editEnd != null) {
-                val newCreationDate = editEnd.plusDays(1)
-                relatedItems.forEachIndexed { i, oldItem ->
-                    if (oldItem.endDate == null || oldItem.endDate.isAfter(editEnd)) {
-                        val finalCreationDate =
-                            if (oldItem.creationDate.isAfter(newCreationDate)) oldItem.creationDate else newCreationDate
-                        _items.add(
-                            oldItem.copy(
-                                id = System.nanoTime() + 200 + i,
-                                creationDate = finalCreationDate
-                            )
-                        )
-                    }
-                }
-            }
-
-            saveData()
-            return
-        }
-
-        _items.removeAll { it.id in relatedIds }
-
-        val newGroupId = System.currentTimeMillis()
-        times.forEachIndexed { i, time ->
-            val newItem = originalItem.copy(
-                id = System.nanoTime() + i,
-                groupId = newGroupId,
-                title = title,
-                iconName = iconName,
-                colorCode = colorCode,
-                creationTime = time,
                 creationDate = originalItem.creationDate,
+                creationTime = time,
+                takenHistory = combinedHistory,
                 recurrenceDays = days,
+                endDate = originalItem.endDate,
                 notes = notes,
+                displayOrder = currentOrder++,
+                category = originalItem.category,
                 intervalGap = intervalGap,
                 notificationType = notificationType,
-                frequencyLabel = freqLabel,
                 medicineType = medicineType,
                 dose = dose,
                 unit = unit,
                 totalQuantity = totalQuantity
             )
             _items.add(newItem)
-            if (newItem.type == ItemType.Medicine) {
-                NotificationReceiver.scheduleNotification(getApplication(), newItem)
+            if (originalItem.type == ItemType.Medicine) {
+                NotificationReceiver.scheduleNotification(context, newItem)
             }
         }
         saveData()
@@ -864,13 +780,19 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         if (item.type != ItemType.Medicine) return
         if (date.isAfter(LocalDate.now())) return
 
-        val newHistory = HashMap(item.takenHistory)
-        if (newHistory.containsKey(date)) newHistory.remove(date) else newHistory[date] =
-            LocalTime.now()
-
         val index = _items.indexOfFirst { it.id == item.id }
-        if (index != -1) _items[index] = item.copy(takenHistory = newHistory)
+        if (index == -1) return
+        val current = _items[index]
+        val newHistory = HashMap(current.takenHistory)
+        if (newHistory.containsKey(date)) newHistory.remove(date) else newHistory[date] = LocalTime.now()
+
+        _items[index] = current.copy(takenHistory = newHistory)
         saveData()
+
+        try {
+            NotificationReceiver.scheduleNotification(getApplication(), _items[index])
+        } catch (e: Exception) {
+        }
     }
 
     fun confirmIllness(item: MedData, date: LocalDate) {

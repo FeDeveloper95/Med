@@ -349,5 +349,9 @@
     <string name="inventory_manage_stock_header">Manage stock</string>
     <string name="inventory_warning_notif_title">Low stock: %1$s</string>
     <string name="inventory_warning_notif_desc">You only have %1$s left.</string>
+    <string name="settings_export_csv_title">Export CSV</string>
+    <string name="settings_export_csv_desc">Spreadsheet-friendly format for any app</string>
+    <string name="import_csv_summary">Imported %1$d items from CSV file</string>
+    <string name="import_csv_zero">No items imported from CSV file</string>
 
 </resources>

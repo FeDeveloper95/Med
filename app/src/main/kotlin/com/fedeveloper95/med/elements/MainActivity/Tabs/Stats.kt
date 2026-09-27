@@ -91,7 +91,7 @@ enum class DayStatus {
 }
 
 fun getScheduledMedsForDate(date: LocalDate, items: List<MedData>): List<MedData> {
-    return items.filter { item ->
+    val scheduled = items.filter { item ->
         item.type == ItemType.Medicine &&
                 !date.isBefore(item.creationDate) &&
                 (item.endDate == null || !date.isAfter(item.endDate)) &&
@@ -101,6 +101,7 @@ fun getScheduledMedsForDate(date: LocalDate, items: List<MedData>): List<MedData
                     date
                 ) % item.intervalGap == 0L)
     }
+    return scheduled.distinctBy { it.title to it.creationTime }
 }
 
 fun getStatusForDate(date: LocalDate, items: List<MedData>): DayStatus {
