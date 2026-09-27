@@ -62,7 +62,7 @@ private fun AnimatedButton(
         targetValue = if (isPressed) 15 else 50,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "corner"
     )
@@ -152,7 +152,7 @@ fun SaveFrequencyPopup(
                     .animateContentSize(
                         spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            stiffness = Spring.StiffnessMediumLow
                         )
                     ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -171,7 +171,7 @@ fun SaveFrequencyPopup(
                         ),
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            stiffness = Spring.StiffnessMediumLow
                         ),
                         label = "containerColor"
                     )
@@ -179,7 +179,7 @@ fun SaveFrequencyPopup(
                         targetValue = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            stiffness = Spring.StiffnessMediumLow
                         ),
                         label = "contentColor"
                     )

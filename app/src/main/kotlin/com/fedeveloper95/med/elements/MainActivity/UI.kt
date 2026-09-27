@@ -2,8 +2,12 @@
 
 package com.fedeveloper95.med.elements.MainActivity
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color.parseColor
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.Spring
@@ -35,18 +39,26 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.MedicalServices
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -67,6 +79,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -78,8 +91,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.AVAILABLE_ICONS
+import com.fedeveloper95.med.EditModeActivity
+import com.fedeveloper95.med.ExpressiveIconButton
+import com.fedeveloper95.med.InventoryActivity
 import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.R
+import com.fedeveloper95.med.SettingsActivity
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.delay
@@ -90,6 +107,166 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.temporal.WeekFields
 import java.util.Locale
+
+@Composable
+fun MedTopAppBar(
+    selectedTab: Int,
+    selectedDate: LocalDate,
+    onShowDatePicker: () -> Unit
+) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+    var inventoryEnabled by remember { mutableStateOf(prefs.getBoolean("pref_inventory_enabled", true)) }
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    DisposableEffect(prefs) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+            if (key == "pref_inventory_enabled") {
+                inventoryEnabled = sharedPreferences.getBoolean(key, true)
+            }
+        }
+        prefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            stringResource(R.string.app_name),
+            style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        if (!inventoryEnabled) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (selectedTab == 0) {
+                    ExpressiveIconButton(
+                        onClick = {
+                            val intent = Intent(context, EditModeActivity::class.java).apply {
+                                putExtra("SELECTED_DATE", selectedDate.toEpochDay())
+                            }
+                            context.startActivity(intent)
+                        },
+                        icon = Icons.Rounded.Edit,
+                        contentDescription = stringResource(R.string.edit_mode_title),
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                    ExpressiveIconButton(
+                        onClick = onShowDatePicker,
+                        icon = Icons.Rounded.CalendarMonth,
+                        contentDescription = stringResource(R.string.calendar_title),
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                ExpressiveIconButton(
+                    onClick = {
+                        context.startActivity(Intent(context, SettingsActivity::class.java))
+                    },
+                    icon = Icons.Rounded.Settings,
+                    contentDescription = stringResource(R.string.settings_title),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        } else {
+            Box {
+                val interactionSource = remember { MutableInteractionSource() }
+                val isPressed by interactionSource.collectIsPressedAsState()
+                val cornerPercent by animateIntAsState(
+                    targetValue = if (isPressed) 25 else 50,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    ),
+                    label = "corner"
+                )
+
+                Surface(
+                    onClick = { menuExpanded = true },
+                    modifier = Modifier
+                        .width(32.dp)
+                        .height(44.dp),
+                    shape = RoundedCornerShape(cornerPercent),
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    interactionSource = interactionSource
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = Icons.Rounded.MoreVert,
+                            contentDescription = stringResource(R.string.settings_desc)
+                        )
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    modifier = Modifier.animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioMediumBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        )
+                    )
+                ) {
+                    if (selectedTab == 0) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.edit_mode_title), fontFamily = GoogleSansFlex) },
+                            onClick = {
+                                menuExpanded = false
+                                val intent = Intent(context, EditModeActivity::class.java).apply {
+                                    putExtra("SELECTED_DATE", selectedDate.toEpochDay())
+                                }
+                                context.startActivity(intent)
+                            },
+                            leadingIcon = { Icon(Icons.Rounded.Edit, contentDescription = null) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.calendar_title), fontFamily = GoogleSansFlex) },
+                            onClick = {
+                                menuExpanded = false
+                                onShowDatePicker()
+                            },
+                            leadingIcon = { Icon(Icons.Rounded.CalendarMonth, contentDescription = null) }
+                        )
+                    }
+
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.inventory_title), fontFamily = GoogleSansFlex) },
+                        onClick = {
+                            menuExpanded = false
+                            context.startActivity(Intent(context, InventoryActivity::class.java))
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_inventory),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text(stringResource(R.string.settings_title), fontFamily = GoogleSansFlex) },
+                        onClick = {
+                            menuExpanded = false
+                            context.startActivity(Intent(context, SettingsActivity::class.java))
+                        },
+                        leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

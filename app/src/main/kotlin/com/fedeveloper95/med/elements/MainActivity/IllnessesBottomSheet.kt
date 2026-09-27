@@ -154,7 +154,7 @@ fun IllnessesBottomSheet(
         targetValue = if (isCancelPressed) 15 else 50,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "cancelCorner"
     )
@@ -162,7 +162,7 @@ fun IllnessesBottomSheet(
         targetValue = if (isSavePressed) 15 else 50,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "saveCorner"
     )

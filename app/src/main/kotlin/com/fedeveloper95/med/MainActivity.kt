@@ -21,18 +21,24 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +53,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -97,8 +104,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
@@ -174,6 +184,7 @@ const val PREF_WEEK_START = "pref_week_start"
 const val PREF_SORT_ORDER = "pref_sort_order"
 const val PREF_PRESETS = "pref_presets"
 const val PREF_PRESETS_ORDERED = "pref_presets_ordered"
+
 val DeleteRed = Color(0xFFEF5350)
 
 class MainActivity : ComponentActivity() {
@@ -183,8 +194,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
         AppLockManager.init(application)
         HandoffHelper.init(application)
+
         enableEdgeToEdge()
 
         setContent {
@@ -192,8 +205,8 @@ class MainActivity : ComponentActivity() {
             val context = LocalContext.current
             val prefs = remember { context.getSharedPreferences("med_settings", MODE_PRIVATE) }
             val viewModel: MedViewModel = viewModel()
-            val lifecycleOwner = LocalLifecycleOwner.current
 
+            val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
                 val observer =
                     LifecycleEventObserver { _, event -> if (event == Lifecycle.Event.ON_RESUME) viewModel.reloadData() }
@@ -252,6 +265,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
             var currentDob by remember { mutableStateOf(prefs.getString("profile_dob", "") ?: "") }
+            var inventoryEnabled by remember { mutableStateOf(prefs.getBoolean("pref_inventory_enabled", true)) }
 
             val currentVersionName = remember {
                 try {
@@ -272,6 +286,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }
+
                 val update = Updater.checkForUpdates(currentVersionName)
                 if (update != null) Updater.showUpdateNotification(context, update)
             }
@@ -306,6 +321,9 @@ class MainActivity : ComponentActivity() {
 
                             "profile_dob" -> currentDob =
                                 sharedPreferences.getString("profile_dob", "") ?: ""
+
+                            "pref_inventory_enabled" -> inventoryEnabled =
+                                sharedPreferences.getBoolean("pref_inventory_enabled", true)
                         }
                     }
                 prefs.registerOnSharedPreferenceChangeListener(listener)
@@ -314,6 +332,7 @@ class MainActivity : ComponentActivity() {
 
             MedTheme(themeOverride = currentTheme) {
                 FullscreenNotifsHandler()
+
                 MedApp(
                     viewModel = viewModel,
                     weekStart = currentWeekStart,
@@ -379,22 +398,29 @@ fun ExpressiveIconButton(
     icon: ImageVector,
     contentDescription: String?,
     containerColor: Color,
-    contentColor: Color
+    contentColor: Color,
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
     val cornerPercent by animateIntAsState(
-        targetValue = if (isPressed) 15 else 50,
+        targetValue = when {
+            isPressed -> 15
+            isHovered -> 25
+            else -> 50
+        },
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "corner"
     )
 
     Surface(
         onClick = onClick,
-        modifier = Modifier.size(44.dp),
+        modifier = modifier.size(44.dp).pointerHoverIcon(PointerIcon.Hand),
         shape = RoundedCornerShape(cornerPercent),
         color = containerColor,
         contentColor = contentColor,
@@ -416,18 +442,24 @@ fun ExpressiveButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
     val cornerPercent by animateIntAsState(
-        targetValue = if (isPressed) 15 else 50,
+        targetValue = when {
+            isPressed -> 15
+            isHovered -> 25
+            else -> 50
+        },
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "corner"
     )
 
     Button(
         onClick = onClick,
-        modifier = modifier.height(50.dp),
+        modifier = modifier.height(50.dp).pointerHoverIcon(PointerIcon.Hand),
         shape = RoundedCornerShape(cornerPercent),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -443,21 +475,29 @@ fun ExpressiveButton(
 fun ExpressiveTextButton(
     onClick: () -> Unit,
     text: String,
-    contentColor: Color = MaterialTheme.colorScheme.primary
+    contentColor: Color = MaterialTheme.colorScheme.primary,
+    modifier: Modifier = Modifier
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
     val cornerPercent by animateIntAsState(
-        targetValue = if (isPressed) 15 else 50,
+        targetValue = when {
+            isPressed -> 15
+            isHovered -> 25
+            else -> 50
+        },
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "corner"
     )
 
     TextButton(
         onClick = onClick,
+        modifier = modifier.pointerHoverIcon(PointerIcon.Hand),
         shape = RoundedCornerShape(cornerPercent),
         colors = ButtonDefaults.textButtonColors(contentColor = contentColor),
         interactionSource = interactionSource
@@ -545,18 +585,29 @@ fun IllnessCard(
     val iconBoxTintColor =
         if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onPrimaryContainer
 
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val elevation by animateDpAsState(targetValue = if (isHovered) 4.dp else 0.dp, label = "elevation")
+    val scale by animateFloatAsState(targetValue = if (isHovered) 1.02f else 1f, label = "scale")
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(RoundedCornerShape(24.dp))
+            .hoverable(interactionSource)
+            .pointerHoverIcon(PointerIcon.Hand)
             .combinedClickable(
                 onClick = {},
                 onLongClick = onLongClick
             ),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(0.dp)
+        elevation = CardDefaults.cardElevation(elevation)
     ) {
         Column(
             modifier = Modifier
@@ -600,26 +651,25 @@ fun IllnessCard(
                         checked = false,
                         onCheckedChange = { onNo() },
                         shapes = ButtonGroupDefaults.connectedLeadingButtonShapes(),
-                        colors = ToggleButtonDefaults.toggleButtonColors(
+                        colors = ToggleButtonDefaults.colors(
                             containerColor = Color.Transparent,
                             contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).pointerHoverIcon(PointerIcon.Hand)
                     ) {
                         Text(stringResource(R.string.no_action), fontFamily = GoogleSansFlex)
                     }
-
                     ToggleButton(
                         checked = false,
                         onCheckedChange = { onYes() },
                         shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
-                        colors = ToggleButtonDefaults.toggleButtonColors(
+                        colors = ToggleButtonDefaults.colors(
                             containerColor = Color.Transparent,
                             contentColor = MaterialTheme.colorScheme.primary
                         ),
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f).pointerHoverIcon(PointerIcon.Hand)
                     ) {
                         Text(stringResource(R.string.yes_action), fontFamily = GoogleSansFlex)
                     }
@@ -631,12 +681,24 @@ fun IllnessCard(
 
 @Composable
 fun TimeSelectorItem(label: String, time: LocalTime, onClick: () -> Unit) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isHovered by interactionSource.collectIsHoveredAsState()
+    val bgColor by animateColorAsState(
+        targetValue = if (isHovered) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        label = "bgColor"
+    )
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-            .clickable(onClick = onClick)
+            .background(bgColor)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = LocalIndication.current,
+                onClick = onClick
+            )
+            .pointerHoverIcon(PointerIcon.Hand)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -679,6 +741,7 @@ fun SwipeableSquishItem(
     val offsetX = remember { androidx.compose.animation.core.Animatable(0f) }
     var itemWidth by remember { mutableStateOf(0f) }
     val scope = rememberCoroutineScope()
+
     val isDark = isSystemInDarkTheme()
     val deleteBackgroundColor = if (isDark) Color(0xFFF2B8B5) else Color(0xFFB3261E)
     val deleteIconColor = if (isDark) Color(0xFF601410) else Color(0xFFFFFFFF)
@@ -702,13 +765,13 @@ fun SwipeableSquishItem(
                     if (offsetX.value > threshold) {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         scope.launch {
-                            offsetX.animateTo(itemWidth, spring(stiffness = Spring.StiffnessMedium))
+                            offsetX.animateTo(itemWidth, spring(stiffness = Spring.StiffnessMediumLow))
                             val resetAnim = { scope.launch { offsetX.snapTo(0f) } }
                             onDeleteThresholdReached { resetAnim.invoke(); Unit }
                         }
                     } else {
                         scope.launch {
-                            offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
+                            offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
                             onSwipeCancel()
                         }
                     }
@@ -734,6 +797,7 @@ fun SwipeableSquishItem(
         val currentOffsetX = offsetX.value
         val contentPlaceable = measurables[1].measure(constraints)
         val height = contentPlaceable.height
+
         val redBoxWidth = currentOffsetX.toInt().coerceAtLeast(0)
         val redPlaceable = measurables[0].measure(
             Constraints(
@@ -743,6 +807,7 @@ fun SwipeableSquishItem(
                 maxHeight = height
             )
         )
+
         layout(totalWidth, height) {
             redPlaceable.place(0, 0)
             contentPlaceable.place(redBoxWidth, 0)
@@ -763,6 +828,7 @@ fun TimePickerDialog(
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 6.dp,
             modifier = Modifier
+                .widthIn(max = 400.dp)
                 .width(IntrinsicSize.Min)
                 .height(IntrinsicSize.Min)
                 .background(

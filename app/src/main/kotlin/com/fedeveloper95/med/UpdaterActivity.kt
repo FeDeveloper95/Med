@@ -128,7 +128,7 @@ fun AnimatedActionButton(
         targetValue = if (isPressed) 15 else 50,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "btnMorph"
     )
@@ -322,7 +322,7 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                             tint = MaterialTheme.colorScheme.primaryContainer
                                         )
                                         Icon(
-                                            imageVector = ImageVector.vectorResource(R.drawable.ic_update_avaiable),
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
                                             contentDescription = null,
                                             modifier = Modifier.size(30.dp),
                                             tint = MaterialTheme.colorScheme.onPrimaryContainer

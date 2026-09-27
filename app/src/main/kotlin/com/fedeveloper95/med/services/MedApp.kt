@@ -107,6 +107,7 @@ import com.fedeveloper95.med.elements.MainActivity.IllnessesBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.MainFAB
 import com.fedeveloper95.med.elements.MainActivity.MedDataCard
 import com.fedeveloper95.med.elements.MainActivity.MedSnackbarHost
+import com.fedeveloper95.med.elements.MainActivity.MedTopAppBar
 import com.fedeveloper95.med.elements.MainActivity.MedicineBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.NotesBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.Tabs.StatsTab
@@ -131,6 +132,7 @@ fun MedApp(
     isExpandedScreen: Boolean,
     showCommunitySheet: Boolean,
     userDob: String,
+    inventoryEnabled: Boolean = true,
     onCommunitySheetDismiss: () -> Unit
 ) {
     val context = LocalContext.current
@@ -340,64 +342,11 @@ fun MedApp(
                         )
                 ) {
                     Column(modifier = Modifier.fillMaxSize()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 24.dp, vertical = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                stringResource(R.string.app_name),
-                                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (selectedTab == 0) {
-                                    ExpressiveIconButton(
-                                        onClick = {
-                                            val intent = Intent(
-                                                context,
-                                                EditModeActivity::class.java
-                                            ).apply {
-                                                putExtra(
-                                                    "SELECTED_DATE",
-                                                    viewModel.selectedDate.toEpochDay()
-                                                )
-                                            }
-                                            context.startActivity(intent)
-                                        },
-                                        icon = Icons.Rounded.Edit,
-                                        contentDescription = stringResource(R.string.edit_mode_desc),
-                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    ExpressiveIconButton(
-                                        onClick = { showDatePicker = true },
-                                        icon = Icons.Rounded.CalendarMonth,
-                                        contentDescription = stringResource(R.string.choose_date_desc),
-                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
-                                ExpressiveIconButton(
-                                    onClick = {
-                                        context.startActivity(
-                                            Intent(
-                                                context,
-                                                SettingsActivity::class.java
-                                            )
-                                        )
-                                    },
-                                    icon = Icons.Rounded.Settings,
-                                    contentDescription = stringResource(R.string.settings_desc),
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    contentColor = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-                        }
+                        MedTopAppBar(
+                            selectedTab = selectedTab,
+                            selectedDate = viewModel.selectedDate,
+                            onShowDatePicker = { showDatePicker = true }
+                        )
 
                         AnimatedContent(
                             targetState = selectedTab,
@@ -868,6 +817,11 @@ fun MedApp(
                                                                                         item,
                                                                                         pageDate
                                                                                     )
+                                                                                    context.sendBroadcast(
+                                                                                        Intent(context, NotificationReceiver::class.java).apply {
+                                                                                            action = NotificationReceiver.ACTION_CHECK_INVENTORY
+                                                                                        }
+                                                                                    )
                                                                                 },
                                                                                 onClick = {
                                                                                     if (!item.notes.isNullOrBlank()) noteToShow =
@@ -1136,6 +1090,11 @@ fun MedApp(
                                                                                         item,
                                                                                         pageDate
                                                                                     )
+                                                                                    context.sendBroadcast(
+                                                                                        Intent(context, NotificationReceiver::class.java).apply {
+                                                                                            action = NotificationReceiver.ACTION_CHECK_INVENTORY
+                                                                                        }
+                                                                                    )
                                                                                 },
                                                                                 onClick = {
                                                                                     if (!item.notes.isNullOrBlank()) noteToShow =
@@ -1242,19 +1201,23 @@ fun MedApp(
             if (isMed) {
                 MedicineBottomSheet(
                     onDismiss = { editingItem = null },
-                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd ->
+                    onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd, medicineType, dose, unit, totalQuantity ->
                         viewModel.updateItem(
-                            itemToEdit,
-                            title,
-                            iconName,
-                            colorCode,
-                            times,
-                            days,
-                            notes,
-                            intervalGap,
-                            notificationType,
-                            rangeStart,
-                            rangeEnd
+                            originalItem = itemToEdit,
+                            title = title,
+                            iconName = iconName,
+                            colorCode = colorCode,
+                            times = times,
+                            days = days,
+                            notes = notes,
+                            intervalGap = intervalGap,
+                            notificationType = notificationType,
+                            rangeStart = rangeStart,
+                            rangeEnd = rangeEnd,
+                            medicineType = medicineType,
+                            dose = dose,
+                            unit = unit,
+                            totalQuantity = totalQuantity
                         )
                         editingItem = null
                     },
@@ -1307,17 +1270,21 @@ fun MedApp(
         if (useBottomSheet) {
             MedicineBottomSheet(
                 onDismiss = { showMedicineDialog = false },
-                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd ->
+                onConfirm = { title, iconName, colorCode, times, days, notes, intervalGap, notificationType, rangeStart, rangeEnd, medicineType, dose, unit, totalQuantity ->
                     viewModel.addItem(
-                        ItemType.Medicine,
-                        title,
-                        iconName,
-                        colorCode,
-                        times,
-                        days,
+                        type = ItemType.Medicine,
+                        title = title,
+                        iconName = iconName,
+                        colorCode = colorCode,
+                        times = times,
+                        days = days,
                         notes = notes,
                         intervalGap = intervalGap,
-                        notificationType = notificationType
+                        notificationType = notificationType,
+                        medicineType = medicineType,
+                        dose = dose,
+                        unit = unit,
+                        totalQuantity = totalQuantity
                     )
                     showMedicineDialog = false
                 },

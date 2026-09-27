@@ -34,6 +34,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -98,6 +99,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -132,9 +135,11 @@ data class OnboardingPageInfo(
 )
 
 class WelcomeActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
+
         val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
         val isFirstRun = prefs.getBoolean("is_first_run", true)
         val forceShow = intent.getBooleanExtra("FORCE_SHOW", false)
@@ -153,6 +158,7 @@ class WelcomeActivity : ComponentActivity() {
         }
 
         enableEdgeToEdge()
+
         setContent {
             MedTheme {
                 Surface(
@@ -186,6 +192,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
     val commonAnimSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
     val customWelcomeFontFamily = FontFamily(
@@ -414,6 +421,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                             }
                                         }
                                     },
+                                    modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
                                     thumbContent = {
                                         Icon(
                                             imageVector = if (hasNotificationPermission) Icons.Rounded.Check else Icons.Rounded.Close,
@@ -448,6 +456,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 )
                             }
                         )
+
                         Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
@@ -482,6 +491,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.height(32.dp))
+
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -553,7 +563,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             onClick = { showAllergiesSheet = true },
                             trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
                         )
-
                         Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
@@ -589,6 +598,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
+
                     Box(modifier = Modifier.weight(1f)) {
                         Column(
                             modifier = Modifier
@@ -604,7 +614,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 description = stringResource(R.string.feat_presets_desc),
                                 index = 0, count = 6
                             )
-
                             WelcomeSegmentedItem(
                                 icon = Icons.Rounded.Alarm,
                                 iconColor = Color(0xFF80da88),
@@ -613,7 +622,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 description = stringResource(R.string.feat_reminders_desc),
                                 index = 1, count = 6
                             )
-
                             WelcomeSegmentedItem(
                                 icon = Icons.Rounded.CheckCircle,
                                 iconColor = Color(0xFFffb683),
@@ -622,7 +630,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 description = stringResource(R.string.feat_tracking_desc),
                                 index = 2, count = 6
                             )
-
                             WelcomeSegmentedItem(
                                 icon = Icons.Rounded.Watch,
                                 iconColor = Color(0xFF67D4FF),
@@ -631,7 +638,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 description = stringResource(R.string.feat_wearos_desc),
                                 index = 3, count = 6
                             )
-
                             WelcomeSegmentedItem(
                                 icon = Icons.Rounded.BarChart,
                                 iconColor = Color(0xFFfcbd00),
@@ -640,7 +646,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 description = stringResource(R.string.feat_tabs_desc),
                                 index = 4, count = 6
                             )
-
                             WelcomeSegmentedItem(
                                 icon = Icons.Rounded.SystemUpdate,
                                 iconColor = Color(0xFFC7C7C7),
@@ -649,7 +654,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 description = stringResource(R.string.feat_update_desc),
                                 index = 5, count = 6
                             )
-
                             Spacer(modifier = Modifier.height(100.dp))
                         }
                     }
@@ -683,7 +687,6 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         isNextPressed -> 0.875f
         else -> 1f
     }
-
     val targetNextWeight = when {
         isNextPressed -> 1.125f
         isBackPressed -> 0.875f
@@ -695,13 +698,11 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         animationSpec = commonAnimSpec,
         label = "backWeight"
     )
-
     val nextButtonWeight by animateFloatAsState(
         targetValue = targetNextWeight,
         animationSpec = commonAnimSpec,
         label = "nextWeight"
     )
-
     val spacerWeight by animateFloatAsState(
         targetValue = if (isFirstPage) 0.0001f else 0.05f,
         animationSpec = commonAnimSpec,
@@ -893,6 +894,7 @@ fun WelcomeSegmentedItem(
                 onClick()
             }
         },
+        modifier = Modifier.pointerHoverIcon(if (onClick != null) PointerIcon.Hand else PointerIcon.Default),
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         shapes = ListItemDefaults.segmentedShapes(index = index, count = count),
         content = {
@@ -996,11 +998,17 @@ private fun WelcomeExpressiveButton(
     interactionSource: MutableInteractionSource
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
+    val isHovered by interactionSource.collectIsHoveredAsState()
+
     val cornerPercent by animateIntAsState(
-        targetValue = if (isPressed) 15 else 50,
+        targetValue = when {
+            isPressed -> 15
+            isHovered -> 25
+            else -> 50
+        },
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "btnMorph"
     )
@@ -1008,7 +1016,7 @@ private fun WelcomeExpressiveButton(
     if (isOutlined) {
         OutlinedButton(
             onClick = onClick,
-            modifier = modifier,
+            modifier = modifier.pointerHoverIcon(PointerIcon.Hand),
             shape = RoundedCornerShape(cornerPercent),
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = contentColor
@@ -1033,7 +1041,7 @@ private fun WelcomeExpressiveButton(
     } else {
         Button(
             onClick = onClick,
-            modifier = modifier,
+            modifier = modifier.pointerHoverIcon(PointerIcon.Hand),
             shape = RoundedCornerShape(cornerPercent),
             colors = ButtonDefaults.buttonColors(
                 containerColor = containerColor,

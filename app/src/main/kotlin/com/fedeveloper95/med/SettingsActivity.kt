@@ -44,6 +44,7 @@ import androidx.compose.material.icons.rounded.Code
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Inventory
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
@@ -67,6 +68,7 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.ToggleButtonShapes
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -280,11 +282,12 @@ fun SettingsScreen(
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .height(40.dp),
-                                            shapes = ToggleButtonDefaults.shapes(
+                                            shapes = ToggleButtonShapes(
                                                 shape = RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 15),
+                                                pressedShape = RoundedCornerShape(topStartPercent = 50, topEndPercent = 50, bottomStartPercent = 15, bottomEndPercent = 15),
                                                 checkedShape = RoundedCornerShape(50)
                                             ),
-                                            colors = ToggleButtonDefaults.toggleButtonColors(
+                                            colors = ToggleButtonDefaults.colors(
                                                 containerColor = Color.Transparent,
                                                 checkedContainerColor = MaterialTheme.colorScheme.primary,
                                                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -312,11 +315,12 @@ fun SettingsScreen(
                                                     onThemeChanged(THEME_DARK)
                                                     prefs.edit().putInt(PREF_THEME, THEME_DARK).apply()
                                                 },
-                                                shapes = ToggleButtonDefaults.shapes(
+                                                shapes = ToggleButtonShapes(
                                                     shape = RoundedCornerShape(topStartPercent = 15, bottomStartPercent = 50, topEndPercent = 15, bottomEndPercent = 15),
+                                                    pressedShape = RoundedCornerShape(topStartPercent = 15, bottomStartPercent = 50, topEndPercent = 15, bottomEndPercent = 15),
                                                     checkedShape = RoundedCornerShape(50)
                                                 ),
-                                                colors = ToggleButtonDefaults.toggleButtonColors(
+                                                colors = ToggleButtonDefaults.colors(
                                                     containerColor = Color.Transparent,
                                                     checkedContainerColor = MaterialTheme.colorScheme.primary,
                                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -339,11 +343,12 @@ fun SettingsScreen(
                                                     onThemeChanged(THEME_LIGHT)
                                                     prefs.edit().putInt(PREF_THEME, THEME_LIGHT).apply()
                                                 },
-                                                shapes = ToggleButtonDefaults.shapes(
+                                                shapes = ToggleButtonShapes(
                                                     shape = RoundedCornerShape(topStartPercent = 15, bottomStartPercent = 15, topEndPercent = 15, bottomEndPercent = 50),
+                                                    pressedShape = RoundedCornerShape(topStartPercent = 15, bottomStartPercent = 15, topEndPercent = 15, bottomEndPercent = 50),
                                                     checkedShape = RoundedCornerShape(50)
                                                 ),
-                                                colors = ToggleButtonDefaults.toggleButtonColors(
+                                                colors = ToggleButtonDefaults.colors(
                                                     containerColor = Color.Transparent,
                                                     checkedContainerColor = MaterialTheme.colorScheme.primary,
                                                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -408,7 +413,7 @@ fun SettingsScreen(
                             containerColor = Color(0xFFffb4ab),
                             iconColor = Color(0xFF690005),
                             index = 0,
-                            count = 4,
+                            count = 5,
                             onClick = {
                                 val intent = Intent(context, NotificationsSettingsActivity::class.java)
                                 context.startActivity(intent)
@@ -422,9 +427,23 @@ fun SettingsScreen(
                             containerColor = Color(0xFF80da88),
                             iconColor = Color(0xFF00522c),
                             index = 1,
-                            count = 4,
+                            count = 5,
                             onClick = {
                                 val intent = Intent(context, QuickActionsSettingsActivity::class.java)
+                                context.startActivity(intent)
+                            }
+                        )
+
+                        SettingsSegmentedItem(
+                            icon = Icons.Rounded.Inventory,
+                            title = stringResource(R.string.settings_inventory_title),
+                            subtitle = stringResource(R.string.inventory_manage_stock_header),
+                            containerColor = Color(0xFF40C4FF),
+                            iconColor = Color(0xFF003B5C),
+                            index = 2,
+                            count = 5,
+                            onClick = {
+                                val intent = Intent(context, InventorySettingsActivity::class.java)
                                 context.startActivity(intent)
                             }
                         )
@@ -452,8 +471,8 @@ fun SettingsScreen(
                             subtitle = stringResource(R.string.settings_app_lock_desc),
                             containerColor = Color(0xFFFCBD00),
                             iconColor = Color(0xFF6D3A01),
-                            index = 2,
-                            count = 4,
+                            index = 3,
+                            count = 5,
                             onClick = { handleAppLockToggle(!appLockEnabled) },
                             trailingContent = {
                                 Switch(
@@ -484,8 +503,8 @@ fun SettingsScreen(
                             subtitle = stringResource(R.string.settings_advanced_desc),
                             containerColor = Color(0xFFC7C7C7),
                             iconColor = Color(0xFF2C2C2C),
-                            index = 3,
-                            count = 4,
+                            index = 4,
+                            count = 5,
                             onClick = {
                                 val intent = Intent(context, AdvancedSettingsActivity::class.java)
                                 context.startActivity(intent)

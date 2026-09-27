@@ -107,7 +107,7 @@ fun GroupNameBottomSheet(
                 targetValue = if (isPressed) 15 else 50,
                 animationSpec = spring(
                     dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
+                    stiffness = Spring.StiffnessMediumLow
                 ),
                 label = ""
             )

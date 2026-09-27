@@ -7,6 +7,7 @@
 package com.fedeveloper95.med.elements.MainActivity
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color.parseColor
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateIntAsState
@@ -34,9 +35,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -45,16 +47,17 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Event
-import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -66,10 +69,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedToggleButton
+import androidx.compose.material3.OutlinedToggleButtonDefaults
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,6 +92,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -103,6 +107,7 @@ import com.fedeveloper95.med.elements.TimePicker
 import com.fedeveloper95.med.services.MedData
 import com.fedeveloper95.med.ui.theme.GoogleSansFlex
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalTime
@@ -113,21 +118,90 @@ import java.util.Locale
 @Composable
 fun MedicineBottomSheet(
     onDismiss: () -> Unit,
-    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int, Long?, Long?) -> Unit,
+    onConfirm: (String, String?, String?, List<LocalTime>, List<DayOfWeek>?, String?, Int?, Int, Long?, Long?, String, Double?, String?, Double?) -> Unit,
     initialItem: MedData? = null,
     initialText: String = ""
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("med_custom_types_prefs", Context.MODE_PRIVATE) }
+
+    fun loadCustomTypes(): List<String> {
+        val jsonStr = prefs.getString("custom_types_list", null) ?: return emptyList()
+        val list = mutableListOf<String>()
+        try {
+            val arr = JSONArray(jsonStr)
+            for (i in 0 until arr.length()) {
+                list.add(arr.getString(i))
+            }
+        } catch (_: Exception) {}
+        return list
+    }
+
+    fun saveCustomTypes(list: List<String>) {
+        val arr = JSONArray()
+        list.forEach { arr.put(it) }
+        prefs.edit().putString("custom_types_list", arr.toString()).apply()
+    }
+
+    val typeMedicineStr = stringResource(R.string.type_medicine)
+    val typeSupplementStr = stringResource(R.string.type_supplement)
+    val typeLotionStr = stringResource(R.string.type_lotion)
+    val typeSyrupStr = stringResource(R.string.type_syrup)
+    val typeInjectionStr = stringResource(R.string.type_injection)
+    val typeCustomStr = stringResource(R.string.type_custom)
+
+    val baseTypeOptions = listOf(
+        typeMedicineStr,
+        typeSupplementStr,
+        typeLotionStr,
+        typeSyrupStr,
+        typeInjectionStr
+    )
+
+    var customTypes by remember { mutableStateOf(loadCustomTypes()) }
+    val allTypeOptions = baseTypeOptions + customTypes + typeCustomStr
+
+    val initialTypeStr = initialItem?.medicineType ?: typeMedicineStr
+    val initialTypeIndex = remember {
+        val foundBase = baseTypeOptions.indexOf(initialTypeStr)
+        if (foundBase >= 0) foundBase
+        else {
+            val foundCustom = customTypes.indexOf(initialTypeStr)
+            if (foundCustom >= 0) baseTypeOptions.size + foundCustom
+            else {
+                customTypes = customTypes + initialTypeStr
+                saveCustomTypes(customTypes)
+                baseTypeOptions.size + customTypes.size - 1
+            }
+        }
+    }
+
+    var expandedTitleType by remember { mutableStateOf(false) }
+    var selectedTypeIndex by remember { mutableIntStateOf(initialTypeIndex) }
+    var customTitleText by remember { mutableStateOf(if (initialTypeIndex >= baseTypeOptions.size && initialTypeIndex < baseTypeOptions.size + customTypes.size) initialTypeStr else "") }
+    var isCustomTypeActive by remember { mutableStateOf(initialTypeIndex >= baseTypeOptions.size && initialTypeIndex < baseTypeOptions.size + customTypes.size) }
 
     var text by remember { mutableStateOf(initialItem?.title ?: initialText) }
     var notes by remember { mutableStateOf(initialItem?.notes ?: "") }
     var nameError by remember { mutableStateOf(false) }
 
+    val formatDouble: (Double?) -> String = { d ->
+        if (d == null) ""
+        else if (d == d.toLong().toDouble()) d.toLong().toString()
+        else d.toString()
+    }
+
+    var dose by remember { mutableStateOf(formatDouble(initialItem?.dose)) }
+    var unit by remember { mutableStateOf(initialItem?.unit ?: "") }
+    var totalQuantity by remember { mutableStateOf(formatDouble(initialItem?.totalQuantity)) }
+    var expandedUnit by remember { mutableStateOf(false) }
+
     var frequencyType by remember {
         mutableIntStateOf(
             when {
-                initialItem?.intervalGap != null && initialItem.intervalGap > 1 -> 2
+                initialItem?.intervalGap != null -> 2
                 initialItem?.recurrenceDays != null -> 1
                 else -> 0
             }
@@ -148,8 +222,9 @@ fun MedicineBottomSheet(
     var intervalUnit by remember {
         mutableIntStateOf(
             when {
-                initGap != null && initGap % 30 == 0 -> 2
-                initGap != null && initGap % 7 == 0 -> 1
+                initGap != null && initGap > 0 && initGap % 30 == 0 -> 3
+                initGap != null && initGap > 0 && initGap % 7 == 0 -> 2
+                initGap != null && initGap > 0 -> 1
                 else -> 0
             }
         )
@@ -158,9 +233,9 @@ fun MedicineBottomSheet(
     var intervalDays by remember {
         mutableStateOf(
             when {
-                initGap != null && initGap % 30 == 0 -> (initGap / 30).toString()
-                initGap != null && initGap % 7 == 0 -> (initGap / 7).toString()
-                initGap != null -> initGap.toString()
+                initGap != null && initGap > 0 && initGap % 30 == 0 -> (initGap / 30).toString()
+                initGap != null && initGap > 0 && initGap % 7 == 0 -> (initGap / 7).toString()
+                initGap != null && initGap > 0 -> initGap.toString()
                 else -> "2"
             }
         )
@@ -231,37 +306,80 @@ fun MedicineBottomSheet(
         )
     }
 
+    val performSave = { start: Long?, end: Long? ->
+        scope.launch { sheetState.hide() }.invokeOnCompletion {
+            if (!sheetState.isVisible) {
+                val finalTimes: List<LocalTime>
+                val finalDays: List<DayOfWeek>?
+                val finalGap: Int?
+
+                if (frequencyType == 2 && intervalUnit == 0) {
+                    finalGap = null
+                    finalDays = null
+
+                    val base = intervalDays.toIntOrNull() ?: 2
+                    val safeGap = if (base <= 0) 1 else base
+                    val maxTimes = (24 / safeGap).coerceAtMost(12)
+                    val calcTimes = mutableListOf<LocalTime>()
+                    var currTime = selectedTimes.firstOrNull() ?: LocalTime.now()
+
+                    for (i in 0 until maxTimes) {
+                        calcTimes.add(currTime)
+                        currTime = currTime.plusHours(safeGap.toLong())
+                    }
+                    finalTimes = calcTimes.sorted()
+                } else {
+                    finalTimes = selectedTimes
+                    finalDays = if (frequencyType == 1) selectedDays.toList() else null
+                    finalGap = if (frequencyType == 2) {
+                        val base = intervalDays.toIntOrNull() ?: 2
+                        when (intervalUnit) {
+                            1 -> base
+                            2 -> base * 7
+                            3 -> base * 30
+                            else -> base
+                        }
+                    } else null
+                }
+
+                val currentAllOptions = baseTypeOptions + customTypes + typeCustomStr
+                val finalMedicineType = if (isCustomTypeActive) customTitleText else currentAllOptions.getOrElse(selectedTypeIndex) { typeMedicineStr }
+                if (isCustomTypeActive && customTitleText.isNotBlank()) {
+                    if (!customTypes.contains(customTitleText) && !baseTypeOptions.contains(customTitleText)) {
+                        customTypes = customTypes + customTitleText
+                        saveCustomTypes(customTypes)
+                    }
+                }
+
+                val doseVal = dose.replace(",", ".").toDoubleOrNull()
+                val totalQuantityVal = totalQuantity.replace(",", ".").toDoubleOrNull()
+
+                onConfirm(
+                    text,
+                    selectedIconName,
+                    selectedColor,
+                    finalTimes,
+                    finalDays,
+                    notes.takeIf { it.isNotBlank() },
+                    finalGap,
+                    notificationType,
+                    start,
+                    end,
+                    finalMedicineType,
+                    doseVal,
+                    unit.takeIf { it.isNotBlank() },
+                    totalQuantityVal
+                )
+            }
+        }
+    }
+
     if (showSaveFrequencyPopup) {
         SaveFrequencyPopup(
             onDismiss = { showSaveFrequencyPopup = false },
             onApply = { start, end ->
                 showSaveFrequencyPopup = false
-                scope.launch { sheetState.hide() }.invokeOnCompletion {
-                    if (!sheetState.isVisible) {
-                        val days = if (frequencyType == 1) selectedDays.toList() else null
-                        val gap = if (frequencyType == 2) {
-                            val base = intervalDays.toIntOrNull() ?: 2
-                            when (intervalUnit) {
-                                1 -> base * 7
-                                2 -> base * 30
-                                else -> base
-                            }
-                        } else null
-
-                        onConfirm(
-                            text,
-                            selectedIconName,
-                            selectedColor,
-                            selectedTimes,
-                            days,
-                            notes.takeIf { it.isNotBlank() },
-                            gap,
-                            notificationType,
-                            start,
-                            end
-                        )
-                    }
-                }
+                performSave(start, end)
             }
         )
     }
@@ -279,7 +397,7 @@ fun MedicineBottomSheet(
         targetValue = if (isCancelPressed) 15 else 50,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "cancelCorner"
     )
@@ -287,7 +405,7 @@ fun MedicineBottomSheet(
         targetValue = if (isSavePressed) 15 else 50,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
-            stiffness = Spring.StiffnessMedium
+            stiffness = Spring.StiffnessMediumLow
         ),
         label = "saveCorner"
     )
@@ -334,13 +452,117 @@ fun MedicineBottomSheet(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
-                    Text(
-                        text = stringResource(if (initialItem != null) R.string.edit_medicine_title else R.string.new_medicine_title),
-                        fontFamily = GoogleSansFlex,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 24.dp)
-                    )
+                    val currentAllOptions = baseTypeOptions + customTypes + typeCustomStr
+                    val editPrefixStr = stringResource(R.string.edit_prefix)
+                    val newPrefixStr = stringResource(R.string.new_prefix)
+                    val isEdit = initialItem != null
+                    val prefix = if (isEdit) editPrefixStr else newPrefixStr
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 24.dp)
+                    ) {
+                        Text(
+                            text = prefix,
+                            fontFamily = GoogleSansFlex,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+
+                        Spacer(modifier = Modifier.width(12.dp))
+
+                        ExposedDropdownMenuBox(
+                            expanded = expandedTitleType,
+                            onExpandedChange = { expandedTitleType = it }
+                        ) {
+                            OutlinedTextField(
+                                value = if (isCustomTypeActive) customTitleText else currentAllOptions.getOrElse(selectedTypeIndex) { "" },
+                                onValueChange = {
+                                    if (isCustomTypeActive) {
+                                        customTitleText = it
+                                    }
+                                },
+                                readOnly = !isCustomTypeActive,
+                                trailingIcon = {
+                                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedTitleType)
+                                },
+                                modifier = Modifier
+                                    .menuAnchor(
+                                        if (isCustomTypeActive) ExposedDropdownMenuAnchorType.PrimaryEditable
+                                        else ExposedDropdownMenuAnchorType.PrimaryNotEditable
+                                    )
+                                    .widthIn(min = 140.dp, max = 220.dp),
+                                textStyle = MaterialTheme.typography.titleMedium.copy(
+                                    fontFamily = GoogleSansFlex,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                singleLine = true
+                            )
+
+                            ExposedDropdownMenu(
+                                expanded = expandedTitleType,
+                                onDismissRequest = { expandedTitleType = false },
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            ) {
+                                currentAllOptions.forEachIndexed { index, selectionOption ->
+                                    val isCustomItem = index >= baseTypeOptions.size && index < baseTypeOptions.size + customTypes.size
+                                    DropdownMenuItem(
+                                        text = {
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.SpaceBetween
+                                            ) {
+                                                Text(
+                                                    selectionOption,
+                                                    fontFamily = GoogleSansFlex,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                if (isCustomItem) {
+                                                    IconButton(
+                                                        onClick = {
+                                                            val customItemValue = customTypes[index - baseTypeOptions.size]
+                                                            val updatedList = customTypes.toMutableList().apply { remove(customItemValue) }
+                                                            customTypes = updatedList
+                                                            saveCustomTypes(customTypes)
+                                                            if (selectedTypeIndex == index) {
+                                                                selectedTypeIndex = 0
+                                                                isCustomTypeActive = false
+                                                            } else if (selectedTypeIndex > index) {
+                                                                selectedTypeIndex--
+                                                            }
+                                                            expandedTitleType = false
+                                                        },
+                                                        modifier = Modifier.size(24.dp)
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Rounded.Delete,
+                                                            contentDescription = null,
+                                                            modifier = Modifier.size(16.dp),
+                                                            tint = MaterialTheme.colorScheme.error
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        onClick = {
+                                            selectedTypeIndex = index
+                                            if (selectionOption == typeCustomStr) {
+                                                isCustomTypeActive = true
+                                                customTitleText = ""
+                                            } else {
+                                                isCustomTypeActive = false
+                                            }
+                                            expandedTitleType = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 item {
@@ -431,6 +653,90 @@ fun MedicineBottomSheet(
                         },
                         minLines = 2,
                         maxLines = 4
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = dose,
+                            onValueChange = {
+                                if (it.isEmpty() || it.all { char -> char.isDigit() || char == '.' || char == ',' }) {
+                                    dose = it
+                                }
+                            },
+                            modifier = Modifier.weight(1f),
+                            placeholder = { Text(stringResource(R.string.dose_label), fontFamily = GoogleSansFlex) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            singleLine = true
+                        )
+
+                        val defaultUnits = listOf(
+                            stringResource(R.string.unit_mg),
+                            stringResource(R.string.unit_g),
+                            stringResource(R.string.unit_ml),
+                            stringResource(R.string.unit_drops),
+                            stringResource(R.string.unit_pills),
+                            stringResource(R.string.unit_pieces)
+                        )
+
+                        ExposedDropdownMenuBox(
+                            expanded = expandedUnit,
+                            onExpandedChange = { expandedUnit = it },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            OutlinedTextField(
+                                value = unit,
+                                onValueChange = { unit = it },
+                                readOnly = true,
+                                modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable),
+                                placeholder = { Text(stringResource(R.string.unit_label), fontFamily = GoogleSansFlex) },
+                                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedUnit) },
+                                singleLine = true
+                            )
+                            ExposedDropdownMenu(
+                                expanded = expandedUnit,
+                                onDismissRequest = { expandedUnit = false },
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            ) {
+                                defaultUnits.forEach { u ->
+                                    DropdownMenuItem(
+                                        text = { Text(u, fontFamily = GoogleSansFlex) },
+                                        onClick = {
+                                            unit = u
+                                            expandedUnit = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item { Spacer(modifier = Modifier.height(12.dp)) }
+
+                item {
+                    OutlinedTextField(
+                        value = totalQuantity,
+                        onValueChange = {
+                            if (it.isEmpty() || it.all { char -> char.isDigit() || char == '.' || char == ',' }) {
+                                totalQuantity = it
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text(stringResource(R.string.total_quantity_label), fontFamily = GoogleSansFlex) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        singleLine = true,
+                        suffix = {
+                            if (unit.isNotBlank()) {
+                                Text(text = unit, fontFamily = GoogleSansFlex)
+                            }
+                        }
                     )
                 }
 
@@ -641,10 +947,11 @@ fun MedicineBottomSheet(
 
                                 ExposedDropdownMenuBox(
                                     expanded = expandedInterval,
-                                    onExpandedChange = { expandedInterval = !expandedInterval },
+                                    onExpandedChange = { expandedInterval = it },
                                     modifier = Modifier.weight(1.5f)
                                 ) {
                                     val options = listOf(
+                                        stringResource(R.string.interval_hours),
                                         stringResource(R.string.interval_days),
                                         stringResource(R.string.interval_weeks),
                                         stringResource(R.string.interval_months)
@@ -658,7 +965,7 @@ fun MedicineBottomSheet(
                                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedInterval)
                                         },
                                         modifier = Modifier
-                                            .menuAnchor()
+                                            .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                                             .fillMaxWidth(),
                                         textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
                                     )
@@ -756,95 +1063,41 @@ fun MedicineBottomSheet(
                         onClick = {
                             if (text.isNotBlank()) {
                                 if (initialItem != null) {
-                                    val isModified = run {
-                                        val initialFreqType = when {
-                                            initialItem.intervalGap != null && initialItem.intervalGap > 1 -> 2
-                                            initialItem.recurrenceDays != null -> 1
-                                            else -> 0
-                                        }
-                                        val initialDaysSet = initialItem.recurrenceDays?.toSet()
-                                            ?: setOf(LocalDate.now().dayOfWeek)
-
-                                        val currentBase = intervalDays.toIntOrNull() ?: 2
-                                        val currentGap = when (intervalUnit) {
-                                            1 -> currentBase * 7
-                                            2 -> currentBase * 30
-                                            else -> currentBase
-                                        }
-
-                                        text != initialItem.title ||
-                                                notes != (initialItem.notes ?: "") ||
-                                                selectedIconName != (initialItem.iconName
-                                            ?: "MedicalServices") ||
-                                                selectedColor != (initialItem.colorCode
-                                            ?: "dynamic") ||
-                                                notificationType != initialItem.notificationType ||
-                                                selectedTimes != listOf(initialItem.creationTime) ||
-                                                frequencyType != initialFreqType ||
-                                                (frequencyType == 1 && selectedDays != initialDaysSet) ||
-                                                (frequencyType == 2 && currentGap != (initialItem.intervalGap
-                                                    ?: 2))
+                                    val currentAllOptions = baseTypeOptions + customTypes + typeCustomStr
+                                    val finalMedicineType = if (isCustomTypeActive) customTitleText else currentAllOptions.getOrElse(selectedTypeIndex) { typeMedicineStr }
+                                    val initialFreqType = when {
+                                        initialItem.intervalGap != null -> 2
+                                        initialItem.recurrenceDays != null -> 1
+                                        else -> 0
                                     }
+
+                                    val effectivelyDaily = (frequencyType == 2 && intervalUnit == 0)
+                                    val initialMedType = initialItem.medicineType ?: typeMedicineStr
+
+                                    val doseVal = dose.replace(",", ".").toDoubleOrNull()
+                                    val totalQuantityVal = totalQuantity.replace(",", ".").toDoubleOrNull()
+
+                                    val isModified = finalMedicineType != initialMedType ||
+                                            text != initialItem.title ||
+                                            notes != (initialItem.notes ?: "") ||
+                                            selectedIconName != (initialItem.iconName
+                                        ?: "MedicalServices") ||
+                                            selectedColor != (initialItem.colorCode
+                                        ?: "dynamic") ||
+                                            notificationType != initialItem.notificationType ||
+                                            (effectivelyDaily) ||
+                                            frequencyType != initialFreqType ||
+                                            doseVal != initialItem.dose ||
+                                            unit.takeIf { it.isNotBlank() } != initialItem.unit ||
+                                            totalQuantityVal != initialItem.totalQuantity
 
                                     if (isModified) {
                                         showSaveFrequencyPopup = true
                                     } else {
-                                        scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                            if (!sheetState.isVisible) {
-                                                val days =
-                                                    if (frequencyType == 1) selectedDays.toList() else null
-                                                val gap = if (frequencyType == 2) {
-                                                    val base = intervalDays.toIntOrNull() ?: 2
-                                                    when (intervalUnit) {
-                                                        1 -> base * 7
-                                                        2 -> base * 30
-                                                        else -> base
-                                                    }
-                                                } else null
-
-                                                onConfirm(
-                                                    text,
-                                                    selectedIconName,
-                                                    selectedColor,
-                                                    selectedTimes,
-                                                    days,
-                                                    notes.takeIf { it.isNotBlank() },
-                                                    gap,
-                                                    notificationType,
-                                                    null,
-                                                    null
-                                                )
-                                            }
-                                        }
+                                        performSave(null, null)
                                     }
                                 } else {
-                                    scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                        if (!sheetState.isVisible) {
-                                            val days =
-                                                if (frequencyType == 1) selectedDays.toList() else null
-                                            val gap = if (frequencyType == 2) {
-                                                val base = intervalDays.toIntOrNull() ?: 2
-                                                when (intervalUnit) {
-                                                    1 -> base * 7
-                                                    2 -> base * 30
-                                                    else -> base
-                                                }
-                                            } else null
-
-                                            onConfirm(
-                                                text,
-                                                selectedIconName,
-                                                selectedColor,
-                                                selectedTimes,
-                                                days,
-                                                notes.takeIf { it.isNotBlank() },
-                                                gap,
-                                                notificationType,
-                                                null,
-                                                null
-                                            )
-                                        }
-                                    }
+                                    performSave(null, null)
                                 }
                             } else {
                                 nameError = true
@@ -880,7 +1133,9 @@ fun OutlinedSingleSelectButtonGroup(
     onOptionSelected: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()),
+        modifier = Modifier
+            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
     ) {
         options.forEachIndexed { index, option ->
@@ -892,7 +1147,7 @@ fun OutlinedSingleSelectButtonGroup(
                     options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
-                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                colors = OutlinedToggleButtonDefaults.colors(
                     checkedContainerColor = MaterialTheme.colorScheme.primary,
                     checkedContentColor = MaterialTheme.colorScheme.onPrimary
                 )
@@ -929,7 +1184,7 @@ fun MultiSelectConnectedButtonGroupWithFlowLayout(
                     options.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
-                colors = ToggleButtonDefaults.outlinedToggleButtonColors(
+                colors = OutlinedToggleButtonDefaults.colors(
                     checkedContainerColor = MaterialTheme.colorScheme.primary,
                     checkedContentColor = MaterialTheme.colorScheme.onPrimary
                 )

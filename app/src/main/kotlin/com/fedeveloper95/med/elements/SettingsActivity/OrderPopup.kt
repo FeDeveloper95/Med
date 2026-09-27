@@ -70,7 +70,7 @@ fun OrderPopup(
                     .animateContentSize(
                         spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            stiffness = Spring.StiffnessMediumLow
                         )
                     ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -86,7 +86,7 @@ fun OrderPopup(
                         targetValue = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            stiffness = Spring.StiffnessMediumLow
                         ),
                         label = "containerColor"
                     )
@@ -94,7 +94,7 @@ fun OrderPopup(
                         targetValue = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioMediumBouncy,
-                            stiffness = Spring.StiffnessLow
+                            stiffness = Spring.StiffnessMediumLow
                         ),
                         label = "contentColor"
                     )

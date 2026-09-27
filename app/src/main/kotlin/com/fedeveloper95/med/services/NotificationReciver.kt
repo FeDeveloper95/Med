@@ -14,7 +14,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.fedeveloper95.med.AlarmActivity
 import com.fedeveloper95.med.ItemType
-import com.fedeveloper95.med.MainActivity
+import com.fedeveloper95.med.elements.NotificationBottomSheetActivity
 import com.fedeveloper95.med.PREF_FULL_SCREEN_ALARM
 import com.fedeveloper95.med.PREF_SHOW_NOTIFICATIONS
 import com.fedeveloper95.med.PREF_SNOOZE_DURATION
@@ -30,10 +30,12 @@ class NotificationReceiver : BroadcastReceiver() {
     companion object {
         const val ALARM_CHANNEL_ID = "med_alarms_fullscreen_v1"
         const val SIMPLE_NOTIF_CHANNEL_ID = "med_alarms_simple_v1"
+        const val INVENTORY_WARNING_CHANNEL_ID = "med_inventory_warning_v1"
         const val ACTION_SHOW_NOTIFICATION = "ACTION_SHOW_NOTIFICATION"
         const val ACTION_TAKEN = "ACTION_TAKEN"
         const val ACTION_SNOOZE = "ACTION_SNOOZE"
         const val ACTION_RESCHEDULE_ALL = "ACTION_RESCHEDULE_ALL"
+        const val ACTION_CHECK_INVENTORY = "ACTION_CHECK_INVENTORY"
 
         fun scheduleNotification(context: Context, item: MedData) {
             if (item.type != ItemType.Medicine) return
@@ -94,10 +96,11 @@ class NotificationReceiver : BroadcastReceiver() {
 
         private fun getNextOccurrence(item: MedData): LocalDateTime? {
             var date = LocalDate.now()
-            val now = LocalTime.now()
+            val nowDateTime = LocalDateTime.now()
+            val todayOccurrence = LocalDateTime.of(date, item.creationTime)
 
-            if (isValidDate(item, date) && item.creationTime.isAfter(now)) {
-                return LocalDateTime.of(date, item.creationTime)
+            if (isValidDate(item, date) && todayOccurrence.isAfter(nowDateTime.plusMinutes(1))) {
+                return todayOccurrence
             }
 
             for (i in 1..30) {
@@ -119,6 +122,139 @@ class NotificationReceiver : BroadcastReceiver() {
             }
             return true
         }
+
+        fun checkInventoryWarning(context: Context, items: List<MedData>) {
+            val prefs = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+            val inventoryEnabled = prefs.getBoolean("pref_inventory_enabled", true)
+            val notificationsEnabled = prefs.getBoolean("pref_inventory_notifs_enabled", true)
+
+            if (!inventoryEnabled || !notificationsEnabled) return
+
+            val warningDays = prefs.getInt("pref_inventory_warning_days", 5)
+            val hiddenMeds = prefs.getStringSet("pref_inventory_hidden_meds", emptySet()) ?: emptySet()
+
+            val today = LocalDate.now()
+            val allMedicines = items.filter { it.type == ItemType.Medicine }
+
+            val groupedMedicines = allMedicines.groupBy { it.title.trim().lowercase() }
+            val activeMedicines = groupedMedicines.map { (_, list) -> list.first() }
+                .filter { !hiddenMeds.contains(it.title.trim().lowercase()) }
+
+            for (med in activeMedicines) {
+                val initialTotal = med.totalQuantity ?: continue
+                if (med.dose == null) continue
+
+                var currentTotal: Double = initialTotal
+                var dailyDose = 0.0
+
+                val specificGroup = allMedicines.filter { it.title.trim().lowercase() == med.title.trim().lowercase() }
+
+                for (item in specificGroup) {
+                    val isAfterStart = !today.isBefore(item.creationDate)
+                    val isBeforeEnd = item.endDate == null || !today.isAfter(item.endDate)
+
+                    if (isAfterStart && isBeforeEnd) {
+                        val timesPerDay = 1
+                        dailyDose += (item.dose ?: 0.0) * timesPerDay
+                    }
+
+                    item.takenHistory.forEach { (date, _) ->
+                        if (!date.isBefore(item.creationDate) && (item.endDate == null || !date.isAfter(item.endDate))) {
+                            currentTotal -= (item.dose ?: 0.0)
+                        }
+                    }
+                }
+
+                if (dailyDose <= 0.0) continue
+
+                val warningThresholdAmount = (warningDays * dailyDose) + 0.01
+
+                val lastWarningPrefKey = "inventory_warning_last_sent_${med.title.trim().lowercase()}"
+                val lastAmountPrefKey = "inventory_warning_last_amount_${med.title.trim().lowercase()}"
+
+                val lastWarningTime = prefs.getLong(lastWarningPrefKey, 0)
+                val lastWarningAmount = prefs.getFloat(lastAmountPrefKey, -1f)
+                val currentTime = System.currentTimeMillis()
+
+                if (currentTotal <= warningThresholdAmount) {
+                    if ((currentTime - lastWarningTime > 24 * 60 * 60 * 1000) || (currentTotal.toFloat() != lastWarningAmount)) {
+                        sendInventoryWarningNotification(context, med.title, currentTotal, med.unit)
+                        prefs.edit()
+                            .putLong(lastWarningPrefKey, currentTime)
+                            .putFloat(lastAmountPrefKey, currentTotal.toFloat())
+                            .apply()
+                    }
+                }
+            }
+        }
+
+        private fun sendInventoryWarningNotification(context: Context, title: String, remaining: Double, unit: String?) {
+            createNotificationChannels(context)
+
+            val formatDouble: (Double) -> String = { d ->
+                if (d == d.toLong().toDouble()) d.toLong().toString()
+                else String.format("%.1f", d)
+            }
+
+            val unitStr = if (unit != null) " $unit" else ""
+            val remainingStr = "${formatDouble(remaining)}$unitStr"
+
+            val builder = NotificationCompat.Builder(context, INVENTORY_WARNING_CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_warning)
+                .setContentTitle(context.getString(R.string.inventory_warning_notif_title, title))
+                .setContentText(context.getString(R.string.inventory_warning_notif_desc, remainingStr))
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+
+            val notifManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notifManager.notify(title.hashCode(), builder.build())
+        }
+
+        private fun createNotificationChannels(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                val name = context.getString(R.string.notif_channel_alarms_name)
+                val descriptionText = context.getString(R.string.notif_channel_alarms_desc)
+
+                val alarmChannel = NotificationChannel(
+                    ALARM_CHANNEL_ID,
+                    name,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = descriptionText
+                    val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                        ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    val audioAttributes = AudioAttributes.Builder()
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setUsage(AudioAttributes.USAGE_ALARM)
+                        .build()
+                    setSound(alarmUri, audioAttributes)
+                    enableVibration(true)
+                    vibrationPattern = longArrayOf(0, 1000, 1000)
+                }
+
+                val simpleNotifChannel = NotificationChannel(
+                    SIMPLE_NOTIF_CHANNEL_ID,
+                    name,
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = descriptionText
+                }
+
+                val inventoryChannel = NotificationChannel(
+                    INVENTORY_WARNING_CHANNEL_ID,
+                    context.getString(R.string.inventory_title),
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = context.getString(R.string.inventory_notifs_desc)
+                }
+
+                notificationManager.createNotificationChannel(alarmChannel)
+                notificationManager.createNotificationChannel(simpleNotifChannel)
+                notificationManager.createNotificationChannel(inventoryChannel)
+            }
+        }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -133,6 +269,11 @@ class NotificationReceiver : BroadcastReceiver() {
                         scheduleNotification(context, item)
                     }
                 }
+            }
+
+            ACTION_CHECK_INVENTORY, "com.fedeveloper95.med.REFRESH_DATA" -> {
+                val items = DataRepository.loadData(context)
+                checkInventoryWarning(context, items)
             }
 
             ACTION_SHOW_NOTIFICATION -> {
@@ -278,8 +419,11 @@ class NotificationReceiver : BroadcastReceiver() {
                     builder.setContentIntent(fullScreenPendingIntent)
                     builder.setOngoing(true)
                 } else {
-                    val contentIntent = Intent(context, MainActivity::class.java).apply {
+                    val contentIntent = Intent(context, NotificationBottomSheetActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        putExtra("ITEM_IDS", itemIds)
+                        putExtra("ITEM_TITLE", titles)
+                        putExtra("NOTIF_ID", notifId)
                     }
                     val contentPendingIntent = PendingIntent.getActivity(
                         context,
@@ -299,6 +443,12 @@ class NotificationReceiver : BroadcastReceiver() {
                 val notifManager =
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notifManager.notify(notifId, notification)
+
+                if (!isSnooze) {
+                    validGroupItems.forEach { item ->
+                        scheduleNotification(context, item)
+                    }
+                }
             }
 
             ACTION_TAKEN -> {
@@ -330,6 +480,7 @@ class NotificationReceiver : BroadcastReceiver() {
                                 context.packageName
                             )
                         )
+                        checkInventoryWarning(context, items)
                     }
 
                     val notifId = intent.getIntExtra("NOTIF_ID", -1)
@@ -401,43 +552,6 @@ class NotificationReceiver : BroadcastReceiver() {
                     context.sendBroadcast(Intent("ACTION_CLOSE_ALARM_ACTIVITY"))
                 }
             }
-        }
-    }
-
-    private fun createNotificationChannels(context: Context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val name = context.getString(R.string.notif_channel_alarms_name)
-            val descriptionText = context.getString(R.string.notif_channel_alarms_desc)
-
-            val alarmChannel = NotificationChannel(
-                ALARM_CHANNEL_ID,
-                name,
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = descriptionText
-                val alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
-                    ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                val audioAttributes = AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .build()
-                setSound(alarmUri, audioAttributes)
-                enableVibration(true)
-                vibrationPattern = longArrayOf(0, 1000, 1000)
-            }
-
-            val simpleNotifChannel = NotificationChannel(
-                SIMPLE_NOTIF_CHANNEL_ID,
-                name,
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = descriptionText
-            }
-
-            notificationManager.createNotificationChannel(alarmChannel)
-            notificationManager.createNotificationChannel(simpleNotifChannel)
         }
     }
 }

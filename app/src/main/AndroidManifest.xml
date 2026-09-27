@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
@@ -12,7 +11,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -24,7 +22,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Med"
         tools:targetApi="37">
-
         <activity
             android:name=".WelcomeActivity"
             android:exported="true"
@@ -34,53 +31,53 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Med" />
-
+        <activity
+            android:name=".InventoryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Med" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
+        <activity
+            android:name=".InventorySettingsActivity"
+            android:exported="false"
+            android:icon="@drawable/ic_launcher_settings_foreground"
+            android:theme="@style/Theme.Med" />
         <activity
             android:name=".WearSettingsActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
         <activity
             android:name=".QuickActionsSettingsActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
         <activity
             android:name=".AdvancedSettingsActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
         <activity
             android:name=".UpdaterActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
         <activity
             android:name=".NotificationsSettingsActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
         <activity
             android:name=".EditModeActivity"
             android:exported="false"
             android:theme="@style/Theme.Med" />
-
         <activity
             android:name=".AlarmActivity"
             android:exported="false"
@@ -89,13 +86,17 @@
             android:showWhenLocked="true"
             android:theme="@style/Theme.Med"
             android:turnScreenOn="true" />
-
         <activity
             android:name=".services.LockActivity"
             android:exported="false"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
-
+        <activity
+            android:name=".elements.NotificationBottomSheetActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Med.Transparent"
+            android:taskAffinity=""
+            android:excludeFromRecents="true" />
         <service
             android:name=".services.AppWearListenerService"
             android:exported="true">
@@ -107,7 +108,6 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
-
         <receiver
             android:name=".services.NotificationReceiver"
             android:exported="true">
@@ -120,7 +120,6 @@
                 <action android:name="ACTION_SNOOZE" />
             </intent-filter>
         </receiver>
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -131,5 +130,4 @@
                 android:resource="@xml/provider_paths" />
         </provider>
     </application>
-
 </manifest>

@@ -61,7 +61,11 @@ data class MedData(
     val displayOrder: Int = 0,
     val intervalGap: Int? = null,
     val category: String? = null,
-    val notificationType: Int = 0
+    val notificationType: Int = 0,
+    val medicineType: String? = null,
+    val dose: Double? = null,
+    val unit: String? = null,
+    val totalQuantity: Double? = null
 ) : Serializable {
 
     fun toJson(): JSONObject {
@@ -92,6 +96,10 @@ data class MedData(
         json.put("intervalGap", intervalGap ?: JSONObject.NULL)
         json.put("category", category ?: JSONObject.NULL)
         json.put("notificationType", notificationType)
+        json.put("medicineType", medicineType ?: JSONObject.NULL)
+        json.put("dose", dose ?: JSONObject.NULL)
+        json.put("unit", unit ?: JSONObject.NULL)
+        json.put("totalQuantity", totalQuantity ?: JSONObject.NULL)
         return json
     }
 
@@ -131,7 +139,11 @@ data class MedData(
                 displayOrder = json.optInt("displayOrder", 0),
                 intervalGap = if (json.isNull("intervalGap")) null else json.getInt("intervalGap"),
                 category = if (json.isNull("category")) null else json.getString("category"),
-                notificationType = json.optInt("notificationType", 0)
+                notificationType = json.optInt("notificationType", 0),
+                medicineType = if (json.isNull("medicineType")) null else json.getString("medicineType"),
+                dose = if (json.isNull("dose")) null else json.getDouble("dose"),
+                unit = if (json.isNull("unit")) null else json.getString("unit"),
+                totalQuantity = if (json.isNull("totalQuantity")) null else json.getDouble("totalQuantity")
             )
         }
     }
@@ -221,7 +233,11 @@ object DataRepository {
                         displayOrder = 0,
                         intervalGap = null,
                         category = null,
-                        notificationType = 0
+                        notificationType = 0,
+                        medicineType = null,
+                        dose = null,
+                        unit = null,
+                        totalQuantity = null
                     )
                 } else null
             }
@@ -426,7 +442,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             notes = null,
             displayOrder = 0,
             intervalGap = null,
-            category = null
+            category = null,
+            medicineType = null,
+            dose = null,
+            unit = null,
+            totalQuantity = null
         )
         editItems = editItems + EditItem.Group(newDivider, emptyList())
         editHasChanges = true
@@ -457,7 +477,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                                 notes = null,
                                 displayOrder = 0,
                                 intervalGap = null,
-                                category = null
+                                category = null,
+                                medicineType = null,
+                                dose = null,
+                                unit = null,
+                                totalQuantity = null
                             )
                         )
                     }
@@ -512,7 +536,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         notes: String? = null,
         category: String? = null,
         intervalGap: Int? = null,
-        notificationType: Int = 0
+        notificationType: Int = 0,
+        medicineType: String? = null,
+        dose: Double? = null,
+        unit: String? = null,
+        totalQuantity: Double? = null
     ) {
         val groupId = System.currentTimeMillis()
         val baseDate = selectedDate
@@ -569,7 +597,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 displayOrder = currentOrder++,
                 category = null,
                 intervalGap = null,
-                notificationType = 0
+                notificationType = 0,
+                medicineType = null,
+                dose = null,
+                unit = null,
+                totalQuantity = null
             )
             _items.add(emptyDivider)
         }
@@ -597,7 +629,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 displayOrder = currentOrder++,
                 category = category,
                 intervalGap = intervalGap,
-                notificationType = notificationType
+                notificationType = notificationType,
+                medicineType = medicineType,
+                dose = dose,
+                unit = unit,
+                totalQuantity = totalQuantity
             )
             _items.add(newItem)
             if (type == ItemType.Medicine) {
@@ -618,7 +654,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         intervalGap: Int?,
         notificationType: Int = 0,
         rangeStart: Long? = -2L,
-        rangeEnd: Long? = -2L
+        rangeEnd: Long? = -2L,
+        medicineType: String? = null,
+        dose: Double? = null,
+        unit: String? = null,
+        totalQuantity: Double? = null
     ) {
         val context = getApplication<Application>()
         val freqLabel = if (intervalGap == 14) context.getString(R.string.frequency_unit_biweek)
@@ -666,7 +706,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 notes = notes,
                 intervalGap = intervalGap,
                 notificationType = notificationType,
-                frequencyLabel = freqLabel
+                frequencyLabel = freqLabel,
+                medicineType = medicineType,
+                dose = dose,
+                unit = unit,
+                totalQuantity = totalQuantity
             )
 
             relatedItems.forEachIndexed { i, oldItem ->
@@ -733,7 +777,11 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                 notes = notes,
                 intervalGap = intervalGap,
                 notificationType = notificationType,
-                frequencyLabel = freqLabel
+                frequencyLabel = freqLabel,
+                medicineType = medicineType,
+                dose = dose,
+                unit = unit,
+                totalQuantity = totalQuantity
             )
             _items.add(newItem)
             if (newItem.type == ItemType.Medicine) {
