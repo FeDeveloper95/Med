@@ -6,8 +6,6 @@
 
 ![Badges](/images/badges.svg)
 
-![Badges](/images/support.svg)
-
 ### :sparkles: Features
 
 Med helps you keep track of your medicines and medical history with ease. You can log quick actions for immediate entry or create detailed custom events when needed. Notifications aren't enough? Med can also set alarms to remind you when it's time to take your medication. Scheduling is highly flexible, allowing you to set recurrences daily, on specific days of the week, or with a fully custom interval. The setup process is intuitive and fast.
@@ -33,16 +31,21 @@ No fork of this project will receive support. If you use a fork, please ask the 
 
 <details>
   <summary><b>Phone screenshots</b></summary>
-  <br>
-![Phone](/images/screenshots/phone.svg)
+
+![Phone](./images/screenshots/phone.svg)
+
 </details>
+
 <details>
   <summary><b>Watch screenshots</b></summary>
-  <br>
-![Watch](/images/screenshots/watch.svg)
+
+![Watch](./images/screenshots/watch.svg)
+
 </details>
+
 <details>
   <summary><b>Desktop screenshots</b></summary>
-  <br>
-![Desktop](/images/screenshots/desktop.svg)
+
+![Desktop](./images/screenshots/laptop.svg)
+
 </details>
