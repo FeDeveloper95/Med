@@ -1,9 +1,10 @@
 @file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3Api::class)
 package com.fedeveloper95.med
 
-import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -36,10 +38,12 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,9 +78,20 @@ class InventoryActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val context = LocalContext.current
+            val activity = context as? android.app.Activity
             val prefs = getSharedPreferences("med_settings", MODE_PRIVATE)
             val currentTheme = prefs.getInt(PREF_THEME, THEME_SYSTEM)
             val lifecycleOwner = LocalLifecycleOwner.current
+
+            LaunchedEffect(activity) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    activity?.window?.insetsController?.setSystemBarsAppearance(
+                        WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                        WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+                    )
+                }
+            }
 
             var showWelcomeSheet by remember {
                 mutableStateOf(prefs.getBoolean("inventory_first_time", true))
@@ -152,105 +167,118 @@ class InventoryActivity : ComponentActivity() {
             )
 
             MedTheme(themeOverride = currentTheme) {
-                if (showWelcomeSheet) {
-                    WelcomeBottomSheet(onDismiss = {
-                        prefs.edit().putBoolean("inventory_first_time", false).apply()
-                        showWelcomeSheet = false
-                    })
-                }
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    if (showWelcomeSheet) {
+                        WelcomeBottomSheet(onDismiss = {
+                            prefs.edit().putBoolean("inventory_first_time", false).apply()
+                            showWelcomeSheet = false
+                        })
+                    }
 
-                Scaffold(
-                    modifier = Modifier.fillMaxSize().nestedScroll(scrollBehavior.nestedScrollConnection),
-                    topBar = {
-                        MaterialTheme(typography = appBarTypography) {
-                            LargeTopAppBar(
-                                title = {
-                                    Text(
-                                        text = stringResource(R.string.inventory_title),
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.TopCenter
+                    ) {
+                        Scaffold(
+                            modifier = Modifier
+                                .widthIn(max = 700.dp)
+                                .fillMaxSize()
+                                .nestedScroll(scrollBehavior.nestedScrollConnection),
+                            topBar = {
+                                MaterialTheme(typography = appBarTypography) {
+                                    LargeTopAppBar(
+                                        title = {
+                                            Text(
+                                                text = stringResource(R.string.inventory_title),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        },
+                                        navigationIcon = {
+                                            Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                                                ExpressiveIconButton(
+                                                    onClick = { finish() },
+                                                    icon = Icons.AutoMirrored.Rounded.ArrowBack,
+                                                    contentDescription = stringResource(R.string.back),
+                                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
+                                        },
+                                        actions = {
+                                            ExpressiveIconButton(
+                                                onClick = { startActivity(Intent(this@InventoryActivity, InventorySettingsActivity::class.java)) },
+                                                icon = Icons.Rounded.Settings,
+                                                contentDescription = stringResource(R.string.settings_desc),
+                                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            )
+                                            Spacer(modifier = Modifier.width(16.dp))
+                                        },
+                                        colors = TopAppBarDefaults.largeTopAppBarColors(
+                                            containerColor = MaterialTheme.colorScheme.background,
+                                            scrolledContainerColor = MaterialTheme.colorScheme.background,
+                                            titleContentColor = MaterialTheme.colorScheme.onBackground
+                                        ),
+                                        scrollBehavior = scrollBehavior
                                     )
-                                },
-                                navigationIcon = {
-                                    Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                                        ExpressiveIconButton(
-                                            onClick = { finish() },
-                                            icon = Icons.AutoMirrored.Rounded.ArrowBack,
-                                            contentDescription = stringResource(R.string.back),
-                                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                }
+                            },
+                            containerColor = Color.Transparent
+                        ) { paddingValues ->
+                            if (displayMedicines.isEmpty()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(paddingValues),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Icon(
+                                            imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(128.dp),
+                                            tint = MaterialTheme.colorScheme.surfaceVariant
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = stringResource(R.string.empty_inventory),
+                                            fontFamily = GoogleSansFlex,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
-                                },
-                                actions = {
-                                    ExpressiveIconButton(
-                                        onClick = { startActivity(Intent(this@InventoryActivity, InventorySettingsActivity::class.java)) },
-                                        icon = Icons.Rounded.Settings,
-                                        contentDescription = stringResource(R.string.settings_desc),
-                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Spacer(modifier = Modifier.width(16.dp))
-                                },
-                                colors = TopAppBarDefaults.largeTopAppBarColors(
-                                    containerColor = MaterialTheme.colorScheme.background,
-                                    scrolledContainerColor = MaterialTheme.colorScheme.background,
-                                    titleContentColor = MaterialTheme.colorScheme.onBackground
-                                ),
-                                scrollBehavior = scrollBehavior
-                            )
-                        }
-                    },
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { paddingValues ->
-                    if (displayMedicines.isEmpty()) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(R.drawable.ic_warning),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(128.dp),
-                                    tint = MaterialTheme.colorScheme.surfaceVariant
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = stringResource(R.string.empty_inventory),
-                                    fontFamily = GoogleSansFlex,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                        }
-                    } else {
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(paddingValues)
-                                .padding(horizontal = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(2.dp)
-                        ) {
-                            item {
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
+                                }
+                            } else {
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(paddingValues)
+                                        .padding(horizontal = 16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    item {
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                    }
 
-                            itemsIndexed(displayMedicines, key = { _, item -> item.id }) { index, item ->
-                                val isFirstInGroup = index == 0
-                                val isLastInGroup = index == displayMedicines.lastIndex
-                                val topRadius = if (isFirstInGroup) 20.dp else 4.dp
-                                val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
-                                val shape = RoundedCornerShape(
-                                    topStart = topRadius,
-                                    topEnd = topRadius,
-                                    bottomStart = bottomRadius,
-                                    bottomEnd = bottomRadius
-                                )
-                                val remaining = calculateRemainingTotal(item)
-                                InventoryCard(item = item, shape = shape, remaining = remaining)
+                                    itemsIndexed(displayMedicines, key = { _, item -> item.id }) { index, item ->
+                                        val isFirstInGroup = index == 0
+                                        val isLastInGroup = index == displayMedicines.lastIndex
+                                        val topRadius = if (isFirstInGroup) 20.dp else 4.dp
+                                        val bottomRadius = if (isLastInGroup) 20.dp else 4.dp
+                                        val shape = RoundedCornerShape(
+                                            topStart = topRadius,
+                                            topEnd = topRadius,
+                                            bottomStart = bottomRadius,
+                                            bottomEnd = bottomRadius
+                                        )
+                                        val remaining = calculateRemainingTotal(item)
+                                        InventoryCard(item = item, shape = shape, remaining = remaining)
+                                    }
+                                }
                             }
                         }
                     }

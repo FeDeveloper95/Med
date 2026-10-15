@@ -10,6 +10,7 @@ import android.graphics.Color.parseColor
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -62,6 +63,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -120,11 +122,20 @@ class InventorySettingsActivity : ComponentActivity() {
 @Composable
 fun InventorySettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as? android.app.Activity
     val haptic = LocalHapticFeedback.current
-    val activity = context as ComponentActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     val viewModel: MedViewModel = viewModel()
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     var hasNotificationPermission by remember {
         mutableStateOf(
@@ -198,7 +209,7 @@ fun InventorySettingsScreen(onBack: () -> Unit) {
             } else {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val hasRequested = prefs.getBoolean("has_requested_notification_permission", false)
-                    val rationale = activity.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                    val rationale = (context as? ComponentActivity)?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ?: false
 
                     if (!hasRequested || rationale) {
                         prefs.edit().putBoolean("has_requested_notification_permission", true).apply()
@@ -406,8 +417,8 @@ fun InventorySettingsScreen(onBack: () -> Unit) {
                             icon = Icons.Rounded.Notifications,
                             title = stringResource(R.string.inventory_notifs_title),
                             subtitle = stringResource(R.string.inventory_notifs_desc),
-                            containerColor = Color(0xFF80DEEA),
-                            iconColor = Color(0xFF006064),
+                            containerColor = Color(0xFF40C4FF),
+                            iconColor = Color(0xFF003B5C),
                             index = 0,
                             count = 2,
                             checked = notificationsEnabled,
@@ -419,8 +430,8 @@ fun InventorySettingsScreen(onBack: () -> Unit) {
                             icon = Icons.Rounded.Warning,
                             title = stringResource(R.string.inventory_warning_days_title),
                             subtitle = stringResource(R.string.inventory_warning_days_desc, warningDays),
-                            containerColor = Color(0xFFffb683),
-                            iconColor = Color(0xFF753403),
+                            containerColor = Color(0xFFFFB4AB),
+                            iconColor = Color(0xFF690005),
                             index = 1,
                             count = 2,
                             value = warningDays,

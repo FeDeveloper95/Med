@@ -9,15 +9,13 @@ package com.fedeveloper95.med
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color.parseColor
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -109,6 +107,7 @@ class WearSettingsActivity : ComponentActivity() {
 @Composable
 fun WearSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as ComponentActivity
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     var useWearOS by remember { mutableStateOf(prefs.getBoolean("pref_use_wearos", false)) }
@@ -130,6 +129,15 @@ fun WearSettingsScreen(onBack: () -> Unit) {
             prefs.edit().putStringSet("pref_wear_enabled_events", initial).apply()
         }
         mutableStateOf(initial)
+    }
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
     }
 
     LaunchedEffect(Unit) {

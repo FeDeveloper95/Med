@@ -16,6 +16,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.PREF_SORT_ORDER
 import com.fedeveloper95.med.R
+import com.google.android.gms.wearable.DataMap
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
@@ -30,6 +31,7 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Collections
+import java.util.UUID
 
 sealed class EditItem {
     abstract val uniqueId: String
@@ -167,6 +169,7 @@ object DataRepository {
     private const val OLD_FILE = "med_data.dat"
     private const val NEW_FILE = "med_data_v2.json"
 
+    @Synchronized
     fun loadData(context: Context): List<MedData> {
         val newFile = File(context.filesDir, NEW_FILE)
         if (newFile.exists()) {
@@ -190,6 +193,7 @@ object DataRepository {
         return migrated
     }
 
+    @Synchronized
     fun saveData(context: Context, items: List<MedData>) {
         try {
             val jsonArray = JSONArray()
@@ -436,7 +440,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addEditGroup(groupName: String, selectedDate: LocalDate) {
         val newDivider = MedData(
-            id = System.nanoTime(),
+            id = UUID.randomUUID().mostSignificantBits,
             groupId = System.currentTimeMillis(),
             type = ItemType.Event,
             title = groupName,
@@ -467,7 +471,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
                     if (lastWasGroup) {
                         flatList.add(
                             MedData(
-                                id = System.nanoTime(),
+                                id = UUID.randomUUID().mostSignificantBits,
                                 groupId = System.currentTimeMillis(),
                                 type = ItemType.Event,
                                 title = "",
@@ -521,7 +525,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
             getApplication<Application>().getSharedPreferences("med_settings", Context.MODE_PRIVATE)
         prefs.edit().putString(PREF_SORT_ORDER, "custom").apply()
         getApplication<Application>().sendBroadcast(
-            Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(
+            Intent("com.fedeveloper95.med.RELOAD_DATA").setPackage(
                 getApplication<Application>().packageName
             )
         )
@@ -582,7 +586,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
         }
         if (inGroup) {
             val emptyDivider = MedData(
-                id = System.nanoTime(),
+                id = UUID.randomUUID().mostSignificantBits,
                 groupId = System.currentTimeMillis(),
                 type = ItemType.Event,
                 title = "",
@@ -605,7 +609,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
         times.forEach { time ->
             val newItem = MedData(
-                id = System.nanoTime(),
+                id = UUID.randomUUID().mostSignificantBits,
                 groupId = groupId,
                 type = type,
                 title = title,
@@ -677,7 +681,7 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
         times.forEach { time ->
             val newItem = MedData(
-                id = System.nanoTime(),
+                id = UUID.randomUUID().mostSignificantBits,
                 groupId = groupId,
                 type = originalItem.type,
                 title = title,
@@ -805,6 +809,9 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun reloadData() {
+        val context = getApplication<Application>()
+        WearSyncManager.processPendingWearActions(context)
+
         loadData()
         syncToWear()
     }
@@ -838,16 +845,29 @@ class MedViewModel(application: Application) : AndroidViewModel(application) {
 
         val formatter = DateTimeFormatter.ofPattern("HH:mm")
 
-        val meds = itemsToday.filter { it.type == ItemType.Medicine }.map {
-            val taken = if (it.takenHistory.containsKey(today)) "✅ " else ""
-            "$taken${it.creationTime.format(formatter)} - ${it.title}"
-        }
+        val meds = ArrayList<DataMap>()
+        val evs = ArrayList<DataMap>()
 
-        val evs =
-            itemsToday.filter { (it.type == ItemType.Event || it.type == ItemType.Illness) && it.title.isNotBlank() && it.iconName != "DIVIDER" }
-                .map {
-                    "${it.creationTime.format(formatter)} - ${it.title}"
-                }
+        itemsToday.forEach { item ->
+            if (item.iconName == "DIVIDER" || item.title.isBlank()) return@forEach
+
+            val isTaken = item.takenHistory.containsKey(today)
+            val timeStr = item.creationTime.format(formatter)
+
+            val itemData = DataMap().apply {
+                putString("title", item.title)
+                putString("time", timeStr)
+                putBoolean("isTaken", isTaken)
+                putString("iconName", item.iconName ?: "")
+                putString("colorCode", item.colorCode ?: "")
+            }
+
+            if (item.type == ItemType.Medicine) {
+                meds.add(itemData)
+            } else if (item.type == ItemType.Event || item.type == ItemType.Illness) {
+                evs.add(itemData)
+            }
+        }
 
         WearSyncManager.syncData(meds, evs)
     }

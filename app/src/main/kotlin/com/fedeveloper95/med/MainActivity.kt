@@ -23,8 +23,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
@@ -36,11 +34,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -104,7 +100,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerIcon
@@ -585,21 +580,11 @@ fun IllnessCard(
     val iconBoxTintColor =
         if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onPrimaryContainer
 
-    val interactionSource = remember { MutableInteractionSource() }
-    val isHovered by interactionSource.collectIsHoveredAsState()
-    val elevation by animateDpAsState(targetValue = if (isHovered) 4.dp else 0.dp, label = "elevation")
-    val scale by animateFloatAsState(targetValue = if (isHovered) 1.02f else 1f, label = "scale")
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 8.dp)
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-            }
             .clip(RoundedCornerShape(24.dp))
-            .hoverable(interactionSource)
             .pointerHoverIcon(PointerIcon.Hand)
             .combinedClickable(
                 onClick = {},
@@ -607,7 +592,7 @@ fun IllnessCard(
             ),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(elevation)
+        elevation = CardDefaults.cardElevation(0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -735,16 +720,27 @@ fun SwipeableSquishItem(
     onDeleteThresholdReached: (() -> Unit) -> Unit,
     onSwipeStart: () -> Unit,
     onSwipeCancel: () -> Unit,
-    content: @Composable () -> Unit
+    onEdit: () -> Unit = {},
+    content: @Composable (onRightClick: () -> Unit) -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
     val offsetX = remember { androidx.compose.animation.core.Animatable(0f) }
     var itemWidth by remember { mutableStateOf(0f) }
     val scope = rememberCoroutineScope()
+    val density = LocalDensity.current
 
-    val isDark = isSystemInDarkTheme()
-    val deleteBackgroundColor = if (isDark) Color(0xFFF2B8B5) else Color(0xFFB3261E)
-    val deleteIconColor = if (isDark) Color(0xFF601410) else Color(0xFFFFFFFF)
+    val deleteBackgroundColor = MaterialTheme.colorScheme.error
+    val deleteIconColor = MaterialTheme.colorScheme.onError
+
+    val editBackgroundColor = MaterialTheme.colorScheme.onPrimary
+    val editIconColor = MaterialTheme.colorScheme.primary
+
+    val triggerRightClick: () -> Unit = {
+        val lockPos = itemWidth * 0.25f
+        scope.launch {
+            offsetX.animateTo(lockPos, spring(stiffness = Spring.StiffnessMediumLow))
+        }
+    }
 
     Layout(
         modifier = Modifier
@@ -762,12 +758,17 @@ fun SwipeableSquishItem(
                 onDragStarted = { onSwipeStart() },
                 onDragStopped = {
                     val threshold = itemWidth * 0.5f
+                    val lockPos = itemWidth * 0.25f
                     if (offsetX.value > threshold) {
                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         scope.launch {
                             offsetX.animateTo(itemWidth, spring(stiffness = Spring.StiffnessMediumLow))
                             val resetAnim = { scope.launch { offsetX.snapTo(0f) } }
                             onDeleteThresholdReached { resetAnim.invoke(); Unit }
+                        }
+                    } else if (offsetX.value > itemWidth * 0.10f) {
+                        scope.launch {
+                            offsetX.animateTo(lockPos, spring(stiffness = Spring.StiffnessMediumLow))
                         }
                     } else {
                         scope.launch {
@@ -781,7 +782,14 @@ fun SwipeableSquishItem(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(100.dp))
-                    .background(deleteBackgroundColor),
+                    .background(deleteBackgroundColor)
+                    .clickable(enabled = offsetX.value > 0f) {
+                        scope.launch {
+                            offsetX.animateTo(itemWidth, spring(stiffness = Spring.StiffnessMediumLow))
+                            val resetAnim = { scope.launch { offsetX.snapTo(0f) } }
+                            onDeleteThresholdReached { resetAnim.invoke(); Unit }
+                        }
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -790,15 +798,80 @@ fun SwipeableSquishItem(
                     tint = deleteIconColor
                 )
             }
-            Box { content() }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(editBackgroundColor)
+                    .clickable(enabled = offsetX.value > 0f) {
+                        onEdit()
+                        scope.launch {
+                            offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                            onSwipeCancel()
+                        }
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Rounded.Edit,
+                    contentDescription = null,
+                    tint = editIconColor
+                )
+            }
+            Box(
+                modifier = Modifier.then(
+                    if (offsetX.value > 0f) {
+                        Modifier.clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            scope.launch {
+                                offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                                onSwipeCancel()
+                            }
+                        }
+                    } else Modifier
+                )
+            ) { content(triggerRightClick) }
         }
     ) { measurables, constraints ->
         val totalWidth = constraints.maxWidth
         val currentOffsetX = offsetX.value
-        val contentPlaceable = measurables[1].measure(constraints)
+        val contentPlaceable = measurables[2].measure(constraints)
         val height = contentPlaceable.height
 
-        val redBoxWidth = currentOffsetX.toInt().coerceAtLeast(0)
+        val threshold = totalWidth * 0.5f
+        val lockPos = totalWidth * 0.25f
+        val gapPx = with(density) { 4.dp.roundToPx() }
+
+        val measurements = when {
+            currentOffsetX <= 0f -> listOf(0, 0, 0, 0)
+            currentOffsetX <= lockPos -> {
+                val progress25 = (currentOffsetX / lockPos).coerceIn(0f, 1f)
+                val cGap1 = (gapPx * progress25).toInt()
+                val cGap2 = (gapPx * progress25).toInt()
+                val avail = (currentOffsetX - cGap1 - cGap2).coerceAtLeast(0f)
+                val rW = (avail / 2f).toInt()
+                val eW = (avail - rW).toInt()
+                listOf(rW, eW, cGap1, cGap2)
+            }
+            currentOffsetX <= threshold -> {
+                val progress = ((currentOffsetX - lockPos) / (threshold - lockPos)).coerceIn(0f, 1f)
+                val initialEditW = ((lockPos - 2 * gapPx) / 2f).coerceAtLeast(0f)
+                val eW = (initialEditW * (1f - progress)).toInt().coerceAtLeast(0)
+                val cGap2 = gapPx
+                val cGap1 = (gapPx * (1f - progress)).toInt().coerceAtLeast(0)
+                val rW = (currentOffsetX - eW - cGap1 - cGap2).toInt().coerceAtLeast(0)
+                listOf(rW, eW, cGap1, cGap2)
+            }
+            else -> {
+                val cGap2 = gapPx
+                val rW = (currentOffsetX - cGap2).toInt().coerceAtLeast(0)
+                listOf(rW, 0, 0, cGap2)
+            }
+        }
+
+        val (redBoxWidth, editBoxWidth, gap1, _) = measurements
+
         val redPlaceable = measurables[0].measure(
             Constraints(
                 minWidth = redBoxWidth,
@@ -808,9 +881,21 @@ fun SwipeableSquishItem(
             )
         )
 
+        val editPlaceable = measurables[1].measure(
+            Constraints(
+                minWidth = editBoxWidth,
+                maxWidth = editBoxWidth,
+                minHeight = height,
+                maxHeight = height
+            )
+        )
+
         layout(totalWidth, height) {
             redPlaceable.place(0, 0)
-            contentPlaceable.place(redBoxWidth, 0)
+            if (editBoxWidth > 0) {
+                editPlaceable.place(redBoxWidth + gap1, 0)
+            }
+            contentPlaceable.place(currentOffsetX.toInt(), 0)
         }
     }
 }

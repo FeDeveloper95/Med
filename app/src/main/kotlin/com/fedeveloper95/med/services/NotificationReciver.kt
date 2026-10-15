@@ -14,11 +14,11 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.fedeveloper95.med.AlarmActivity
 import com.fedeveloper95.med.ItemType
-import com.fedeveloper95.med.elements.NotificationBottomSheetActivity
 import com.fedeveloper95.med.PREF_FULL_SCREEN_ALARM
 import com.fedeveloper95.med.PREF_SHOW_NOTIFICATIONS
 import com.fedeveloper95.med.PREF_SNOOZE_DURATION
 import com.fedeveloper95.med.R
+import com.fedeveloper95.med.elements.NotificationBottomSheetActivity
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -99,7 +99,7 @@ class NotificationReceiver : BroadcastReceiver() {
             val nowDateTime = LocalDateTime.now()
             val todayOccurrence = LocalDateTime.of(date, item.creationTime)
 
-            if (isValidDate(item, date) && todayOccurrence.isAfter(nowDateTime.plusMinutes(1))) {
+            if (isValidDate(item, date) && todayOccurrence.isAfter(nowDateTime)) {
                 return todayOccurrence
             }
 
@@ -172,8 +172,8 @@ class NotificationReceiver : BroadcastReceiver() {
                 val lastWarningPrefKey = "inventory_warning_last_sent_${med.title.trim().lowercase()}"
                 val lastAmountPrefKey = "inventory_warning_last_amount_${med.title.trim().lowercase()}"
 
-                val lastWarningTime = prefs.getLong(lastWarningPrefKey, 0)
-                val lastWarningAmount = prefs.getFloat(lastAmountPrefKey, -1f)
+                val lastWarningTime = (prefs.all[lastWarningPrefKey] as? Number)?.toLong() ?: 0L
+                val lastWarningAmount = (prefs.all[lastAmountPrefKey] as? Number)?.toFloat() ?: -1f
                 val currentTime = System.currentTimeMillis()
 
                 if (currentTotal <= warningThresholdAmount) {

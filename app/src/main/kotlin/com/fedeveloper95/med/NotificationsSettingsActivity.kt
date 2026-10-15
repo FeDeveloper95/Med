@@ -13,6 +13,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -69,6 +70,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -131,10 +133,19 @@ class NotificationsSettingsActivity : ComponentActivity() {
 @Composable
 fun NotificationsSettingsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as? android.app.Activity
     val haptic = LocalHapticFeedback.current
-    val activity = context as ComponentActivity
     val lifecycleOwner = LocalLifecycleOwner.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     var hasNotificationPermission by remember {
         mutableStateOf(
@@ -206,7 +217,7 @@ fun NotificationsSettingsScreen(onBack: () -> Unit) {
                     val hasRequested =
                         prefs.getBoolean("has_requested_notification_permission", false)
                     val rationale =
-                        activity.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)
+                        (context as? ComponentActivity)?.shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) ?: false
 
                     if (!hasRequested || rationale) {
                         prefs.edit().putBoolean("has_requested_notification_permission", true)

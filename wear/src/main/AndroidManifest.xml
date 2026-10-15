@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
     <uses-feature android:name="android.hardware.type.watch" />
-
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.App.Splash">
-
+        android:theme="@android:style/Theme.DeviceDefault">
         <uses-library
             android:name="com.google.android.wearable"
             android:required="true" />
-
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
-
         <service
             android:name=".services.WatchWearListenerService"
             android:exported="true">
@@ -32,32 +26,32 @@
                     android:scheme="wear" />
             </intent-filter>
         </service>
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:taskAffinity=""
-            android:theme="@style/Theme.App.Splash">
+            android:theme="@android:style/Theme.DeviceDefault">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".AddEventActivity"
+            android:exported="true"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.DeviceDefault" />
         <activity
             android:name=".AlarmActivity"
             android:exported="true"
             android:taskAffinity=""
             android:theme="@android:style/Theme.DeviceDefault" />
-
         <activity
             android:name=".SettingsActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
+            android:exported="true"
             android:label="@string/settings"
             android:noHistory="true"
+            android:taskAffinity=""
             android:theme="@android:style/Theme.DeviceDefault" />
-
     </application>
-
 </manifest>

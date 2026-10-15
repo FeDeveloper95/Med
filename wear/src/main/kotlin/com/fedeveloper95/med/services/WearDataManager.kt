@@ -14,15 +14,22 @@ import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
 
+data class WearItem(
+    val title: String,
+    val time: String,
+    val isTaken: Boolean,
+    val iconName: String,
+    val colorCode: String
+)
+
 @SuppressLint("StaticFieldLeak")
 object WearDataManager : DataClient.OnDataChangedListener {
-
     val enabledEvents = mutableStateListOf<String>()
     val availableEvents = mutableStateListOf<String>()
-    val medicines = mutableStateListOf<String>()
-    val eventsList = mutableStateListOf<String>()
+    val presetDetails = mutableStateListOf<String>()
+    val medicines = mutableStateListOf<WearItem>()
+    val eventsList = mutableStateListOf<WearItem>()
     val itemStates = mutableStateMapOf<String, Boolean>()
-
     var alarmsEnabled by mutableStateOf(true)
 
     private var dataClient: DataClient? = null
@@ -53,34 +60,41 @@ object WearDataManager : DataClient.OnDataChangedListener {
                         val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
                         enabledEvents.clear()
                         enabledEvents.addAll(events.filter {
-                            it.isNotBlank() && validAvailable.contains(
-                                it
-                            )
+                            it.isNotBlank() && validAvailable.contains(it)
                         })
-                    }
 
+                        val details = dataMap.getStringArray("preset_details") ?: emptyArray()
+                        presetDetails.clear()
+                        presetDetails.addAll(details)
+                    }
                     "/med_data" -> {
-                        val meds = dataMap.getStringArray("medicines") ?: emptyArray()
+                        val medsMaps = dataMap.getDataMapArrayList("medicines") ?: arrayListOf()
                         medicines.clear()
-                        meds.forEach { med ->
-                            val isTaken =
-                                med.contains("✔") || med.contains("✓") || med.contains("✅")
-                            val clean =
-                                med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
-                            if (clean.isNotBlank()) {
-                                itemStates[clean] = isTaken
-                                medicines.add(clean)
+                        medsMaps.forEach { map ->
+                            val title = map.getString("title", "")
+                            val time = map.getString("time", "")
+                            val isTaken = map.getBoolean("isTaken", false)
+                            val iconName = map.getString("iconName", "")
+                            val colorCode = map.getString("colorCode", "")
+
+                            if (title.isNotBlank()) {
+                                itemStates[title] = isTaken
+                                medicines.add(WearItem(title, time, isTaken, iconName, colorCode))
                             }
                         }
 
-                        val evs = dataMap.getStringArray("events") ?: emptyArray()
+                        val evsMaps = dataMap.getDataMapArrayList("events") ?: arrayListOf()
                         eventsList.clear()
-                        evs.forEach { ev ->
-                            val isTaken = ev.contains("✔") || ev.contains("✓") || ev.contains("✅")
-                            val clean = ev.replace("✔", "").replace("✓", "").replace("✅", "").trim()
-                            if (clean.isNotBlank()) {
-                                itemStates[clean] = isTaken
-                                eventsList.add(clean)
+                        evsMaps.forEach { map ->
+                            val title = map.getString("title", "")
+                            val time = map.getString("time", "")
+                            val isTaken = map.getBoolean("isTaken", false)
+                            val iconName = map.getString("iconName", "")
+                            val colorCode = map.getString("colorCode", "")
+
+                            if (title.isNotBlank()) {
+                                itemStates[title] = isTaken
+                                eventsList.add(WearItem(title, time, isTaken, iconName, colorCode))
                             }
                         }
                     }
@@ -110,6 +124,7 @@ object WearDataManager : DataClient.OnDataChangedListener {
             dataMap.putBoolean("alarms_enabled", alarmsEnabled)
             dataMap.putStringArray("enabled_events", enabledEvents.toTypedArray())
             dataMap.putStringArray("available_events", availableEvents.toTypedArray())
+            dataMap.putStringArray("preset_details", presetDetails.toTypedArray())
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
         dataClient?.putDataItem(request)
@@ -134,30 +149,37 @@ object WearDataManager : DataClient.OnDataChangedListener {
     fun setItemTaken(itemName: String, isTaken: Boolean, type: String) {
         itemStates[itemName] = isTaken
 
+        if (type == "medicine") {
+            val idx = medicines.indexOfFirst { it.title == itemName }
+            if (idx != -1) medicines[idx] = medicines[idx].copy(isTaken = isTaken)
+        } else {
+            val idx = eventsList.indexOfFirst { it.title == itemName }
+            if (idx != -1) eventsList[idx] = eventsList[idx].copy(isTaken = isTaken)
+        }
+
         val request = PutDataMapRequest.create("/item_taken").apply {
             dataMap.putString("item_name", itemName)
             dataMap.putBoolean("is_taken", isTaken)
             dataMap.putString("item_type", type)
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
-
         dataClient?.putDataItem(request)
     }
 
     fun deleteItem(itemName: String, type: String) {
-        if (type == "medicine") {
-            medicines.remove(itemName)
-        } else {
-            eventsList.remove(itemName)
-        }
         itemStates.remove(itemName)
+
+        if (type == "medicine") {
+            medicines.removeAll { it.title == itemName }
+        } else {
+            eventsList.removeAll { it.title == itemName }
+        }
 
         val request = PutDataMapRequest.create("/delete_item").apply {
             dataMap.putString("item_name", itemName)
             dataMap.putString("item_type", type)
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
-
         dataClient?.putDataItem(request)
     }
 
@@ -167,6 +189,7 @@ object WearDataManager : DataClient.OnDataChangedListener {
             if (event.type == DataEvent.TYPE_CHANGED) {
                 val path = event.dataItem.uri.path
                 val dataMap = DataMapItem.fromDataItem(event.dataItem).dataMap
+
                 when (path) {
                     "/settings" -> {
                         alarmsEnabled = dataMap.getBoolean("alarms_enabled", true)
@@ -179,34 +202,41 @@ object WearDataManager : DataClient.OnDataChangedListener {
                         val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
                         enabledEvents.clear()
                         enabledEvents.addAll(events.filter {
-                            it.isNotBlank() && validAvailable.contains(
-                                it
-                            )
+                            it.isNotBlank() && validAvailable.contains(it)
                         })
-                    }
 
+                        val details = dataMap.getStringArray("preset_details") ?: emptyArray()
+                        presetDetails.clear()
+                        presetDetails.addAll(details)
+                    }
                     "/med_data" -> {
-                        val meds = dataMap.getStringArray("medicines") ?: emptyArray()
+                        val medsMaps = dataMap.getDataMapArrayList("medicines") ?: arrayListOf()
                         medicines.clear()
-                        meds.forEach { med ->
-                            val isTaken =
-                                med.contains("✔") || med.contains("✓") || med.contains("✅")
-                            val clean =
-                                med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
-                            if (clean.isNotBlank()) {
-                                itemStates[clean] = isTaken
-                                medicines.add(clean)
+                        medsMaps.forEach { map ->
+                            val title = map.getString("title", "")
+                            val time = map.getString("time", "")
+                            val isTaken = map.getBoolean("isTaken", false)
+                            val iconName = map.getString("iconName", "")
+                            val colorCode = map.getString("colorCode", "")
+
+                            if (title.isNotBlank()) {
+                                itemStates[title] = isTaken
+                                medicines.add(WearItem(title, time, isTaken, iconName, colorCode))
                             }
                         }
 
-                        val evs = dataMap.getStringArray("events") ?: emptyArray()
+                        val evsMaps = dataMap.getDataMapArrayList("events") ?: arrayListOf()
                         eventsList.clear()
-                        evs.forEach { ev ->
-                            val isTaken = ev.contains("✔") || ev.contains("✓") || ev.contains("✅")
-                            val clean = ev.replace("✔", "").replace("✓", "").replace("✅", "").trim()
-                            if (clean.isNotBlank()) {
-                                itemStates[clean] = isTaken
-                                eventsList.add(clean)
+                        evsMaps.forEach { map ->
+                            val title = map.getString("title", "")
+                            val time = map.getString("time", "")
+                            val isTaken = map.getBoolean("isTaken", false)
+                            val iconName = map.getString("iconName", "")
+                            val colorCode = map.getString("colorCode", "")
+
+                            if (title.isNotBlank()) {
+                                itemStates[title] = isTaken
+                                eventsList.add(WearItem(title, time, isTaken, iconName, colorCode))
                             }
                         }
                     }

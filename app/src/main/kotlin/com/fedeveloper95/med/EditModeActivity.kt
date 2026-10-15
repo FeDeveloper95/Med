@@ -8,7 +8,9 @@
 package com.fedeveloper95.med
 
 import android.graphics.Color.parseColor
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -33,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -184,9 +187,20 @@ fun Modifier.draggableItem(
 )
 @Composable
 fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish: () -> Unit) {
+    val context = LocalContext.current
+    val activity = context as? android.app.Activity
     val viewModel: MedViewModel = viewModel()
     val editItems = viewModel.editItems
     val hasChanges = viewModel.editHasChanges
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     LaunchedEffect(selectedDate) {
         viewModel.loadEditItems(selectedDate)
@@ -211,12 +225,15 @@ fun EditModeScreen(selectedDate: LocalDate, isExpandedScreen: Boolean, onFinish:
         onFinish()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
         Column(
             modifier = Modifier
+                .widthIn(max = 700.dp)
                 .fillMaxSize()
                 .padding(top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding())
-                .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
         ) {
             Row(
                 modifier = Modifier

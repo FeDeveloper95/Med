@@ -1,11 +1,14 @@
-@file:OptIn(ExperimentalTextApi::class)
+@file:OptIn(ExperimentalTextApi::class, ExperimentalMaterial3ExpressiveApi::class)
 
 package com.fedeveloper95.med.elements.MainActivity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color.parseColor
+import android.os.Build
+import android.view.WindowInsetsController
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
@@ -29,11 +32,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.captionBar
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -46,10 +52,12 @@ import androidx.compose.material.icons.rounded.MedicalServices
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -57,6 +65,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ToggleButton
+import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -77,8 +87,11 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.isSecondaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -115,9 +128,19 @@ fun MedTopAppBar(
     onShowDatePicker: () -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as? Activity
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
     var inventoryEnabled by remember { mutableStateOf(prefs.getBoolean("pref_inventory_enabled", true)) }
     var menuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     DisposableEffect(prefs) {
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
@@ -131,6 +154,7 @@ fun MedTopAppBar(
 
     Row(
         modifier = Modifier
+            .windowInsetsPadding(WindowInsets.captionBar)
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -276,9 +300,11 @@ fun MedDataCard(
     shape: Shape,
     onToggle: () -> Unit,
     onClick: () -> Unit,
-    onLongClick: () -> Unit
+    onLongClick: () -> Unit,
+    onRightClick: () -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
+    val isExpandedScreen = LocalConfiguration.current.screenWidthDp >= 600
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val pressProgress by animateFloatAsState(
@@ -417,6 +443,21 @@ fun MedDataCard(
                 indication = LocalIndication.current,
                 onClick = onClick,
                 onLongClick = onLongClick
+            )
+            .then(
+                if (isExpandedScreen) {
+                    Modifier.pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent(PointerEventPass.Initial)
+                                if (event.type == PointerEventType.Press && event.buttons.isSecondaryPressed) {
+                                    event.changes.forEach { it.consume() }
+                                    onRightClick()
+                                }
+                            }
+                        }
+                    }
+                } else Modifier
             ),
         shape = animatedShape,
         colors = CardDefaults.cardColors(
@@ -586,6 +627,7 @@ fun WeeklyCalendarPager(
     val currentWeekStart =
         remember(locale, today) { today.with(WeekFields.of(locale).dayOfWeek(), 1L) }
     val coroutineScope = rememberCoroutineScope()
+    val isExpandedScreen = LocalConfiguration.current.screenWidthDp >= 600
 
     LaunchedEffect(selectedDate, locale) {
         val weeksDiff = ChronoUnit.WEEKS.between(
@@ -663,43 +705,99 @@ fun WeeklyCalendarPager(
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = stringResource(monthName),
-                style = MaterialTheme.typography.labelSmall,
+                style = if (isExpandedScreen) MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold) else MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
             )
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                for (dayOffset in 0..6) {
-                    val date = weekStart.plusDays(dayOffset.toLong())
 
-                    val targetWeight = when {
-                        activeIndex == -1 -> 1f
-                        activeIndex == dayOffset -> 1.25f
-                        activeIndex == 0 && dayOffset == 1 -> 0.75f
-                        activeIndex == 6 && dayOffset == 5 -> 0.75f
-                        activeIndex == dayOffset - 1 || activeIndex == dayOffset + 1 -> 0.875f
-                        else -> 1f
+            if (isExpandedScreen) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
+                ) {
+                    for (dayOffset in 0..6) {
+                        val date = weekStart.plusDays(dayOffset.toLong())
+                        val isSelected = date == selectedDate
+                        val shape = when (dayOffset) {
+                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
+                            6 -> ButtonGroupDefaults.connectedTrailingButtonShapes()
+                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
+                        }
+
+                        val dayNameRes = when (date.dayOfWeek) {
+                            DayOfWeek.MONDAY -> R.string.monday
+                            DayOfWeek.TUESDAY -> R.string.tuesday
+                            DayOfWeek.WEDNESDAY -> R.string.wednesday
+                            DayOfWeek.THURSDAY -> R.string.thursday
+                            DayOfWeek.FRIDAY -> R.string.friday
+                            DayOfWeek.SATURDAY -> R.string.saturday
+                            DayOfWeek.SUNDAY -> R.string.sunday
+                        }
+
+                        ToggleButton(
+                            checked = isSelected,
+                            onCheckedChange = { onDateSelected(date) },
+                            shapes = shape,
+                            colors = ToggleButtonDefaults.colors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onSurface,
+                                checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
+                            border = null,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(45.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = stringResource(dayNameRes),
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = date.dayOfMonth.toString(),
+                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                )
+                            }
+                        }
                     }
+                }
+            } else {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    for (dayOffset in 0..6) {
+                        val date = weekStart.plusDays(dayOffset.toLong())
 
-                    val animatedWeight by animateFloatAsState(
-                        targetValue = targetWeight,
-                        animationSpec = tween(durationMillis = 200),
-                        label = "weightAnim"
-                    )
+                        val targetWeight = when {
+                            activeIndex == -1 -> 1f
+                            activeIndex == dayOffset -> 1.25f
+                            activeIndex == 0 && dayOffset == 1 -> 0.75f
+                            activeIndex == 6 && dayOffset == 5 -> 0.75f
+                            activeIndex == dayOffset - 1 || activeIndex == dayOffset + 1 -> 0.875f
+                            else -> 1f
+                        }
 
-                    Box(
-                        modifier = Modifier.weight(animatedWeight),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CalendarDayItem(
-                            date = date,
-                            isSelected = date == selectedDate,
-                            isSimulatedPress = simulatedPressIndex == dayOffset,
-                            interactionSource = interactionSources[dayOffset],
-                            onClick = { onDateSelected(date) }
+                        val animatedWeight by animateFloatAsState(
+                            targetValue = targetWeight,
+                            animationSpec = tween(durationMillis = 200),
+                            label = "weightAnim"
                         )
+
+                        Box(
+                            modifier = Modifier.weight(animatedWeight),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CalendarDayItem(
+                                date = date,
+                                isSelected = date == selectedDate,
+                                isSimulatedPress = simulatedPressIndex == dayOffset,
+                                interactionSource = interactionSources[dayOffset],
+                                onClick = { onDateSelected(date) }
+                            )
+                        }
                     }
                 }
             }

@@ -12,8 +12,8 @@ android {
         applicationId = "com.fedeveloper95.med"
         minSdk = 30
         targetSdk = 37
-        versionCode = 20
-        versionName = "2.0"
+        versionCode = 21
+        versionName = "2.1"
     }
 
     buildTypes {
@@ -45,4 +45,10 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended.v161)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.wear.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.wear.compose.navigation)
+    implementation(libs.androidx.wear.remote.interactions)
+    implementation(libs.androidx.core.splashscreen)
 }

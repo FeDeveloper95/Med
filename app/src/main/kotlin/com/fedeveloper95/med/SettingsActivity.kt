@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -71,6 +72,7 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.ToggleButtonShapes
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -137,8 +139,18 @@ fun SettingsScreen(
     onThemeChanged: (Int) -> Unit
 ) {
     val context = LocalContext.current
+    val activity = context as ComponentActivity
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     var weekStart by remember {
         mutableStateOf(prefs.getString(PREF_WEEK_START, "monday") ?: "monday")
@@ -435,7 +447,7 @@ fun SettingsScreen(
                         )
 
                         SettingsSegmentedItem(
-                            icon = Icons.Rounded.Inventory,
+                            icon = ImageVector.vectorResource(R.drawable.ic_inventory),
                             title = stringResource(R.string.settings_inventory_title),
                             subtitle = stringResource(R.string.inventory_manage_stock_header),
                             containerColor = Color(0xFF40C4FF),
@@ -448,7 +460,6 @@ fun SettingsScreen(
                             }
                         )
 
-                        val activity = LocalContext.current as ComponentActivity
                         val handleAppLockToggle = { isChecked: Boolean ->
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             if (isChecked) {

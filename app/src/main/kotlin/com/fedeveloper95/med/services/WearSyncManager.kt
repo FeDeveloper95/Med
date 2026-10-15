@@ -3,15 +3,20 @@ package com.fedeveloper95.med.services
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import com.fedeveloper95.med.ItemType
 import com.google.android.gms.wearable.DataClient
-import com.google.android.gms.wearable.DataEvent
-import com.google.android.gms.wearable.DataEventBuffer
+import com.google.android.gms.wearable.DataMap
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.PutDataMapRequest
 import com.google.android.gms.wearable.Wearable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 
 @SuppressLint("StaticFieldLeak")
-object WearSyncManager : DataClient.OnDataChangedListener {
+object WearSyncManager {
     private var dataClient: DataClient? = null
     private var appContext: Context? = null
 
@@ -19,66 +24,190 @@ object WearSyncManager : DataClient.OnDataChangedListener {
         if (dataClient == null) {
             appContext = context.applicationContext
             dataClient = Wearable.getDataClient(appContext!!)
-            dataClient?.addListener(this)
-        }
-    }
-
-    override fun onDataChanged(dataEvents: DataEventBuffer) {
-        if (appContext == null) return
-        val prefs = appContext!!.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
-
-        for (event in dataEvents) {
-            if (event.type == DataEvent.TYPE_CHANGED) {
-                val path = event.dataItem.uri.path
-                val dataMap = DataMapItem.fromDataItem(event.dataItem).dataMap
-
-                if (path == "/settings") {
-                    val alarms = dataMap.getBoolean("alarms_enabled", true)
-                    val events = dataMap.getStringArray("enabled_events") ?: emptyArray()
-
-                    prefs.edit()
-                        .putBoolean("pref_wear_ring_alarms", alarms)
-                        .putStringSet("pref_wear_enabled_events", events.toSet())
-                        .apply()
-                } else if (path == "/action_take" || path == "/action_snooze") {
-                    val itemIds = dataMap.getLongArray("item_ids") ?: return
-                    val notifId = dataMap.getInt("notif_id", -1)
-
-                    val actionIntent = Intent(appContext, NotificationReceiver::class.java).apply {
-                        action =
-                            if (path == "/action_take") NotificationReceiver.ACTION_TAKEN else NotificationReceiver.ACTION_SNOOZE
-                        putExtra("ITEM_IDS", itemIds)
-                        putExtra("NOTIF_ID", notifId)
-                    }
-                    appContext?.sendBroadcast(actionIntent)
-                }
-            }
         }
     }
 
     @SuppressLint("VisibleForTests")
-    fun syncData(medicines: List<String>, events: List<String>) {
+    fun processPendingWearActions(context: Context) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val client = Wearable.getDataClient(context.applicationContext)
+                val dataItems = com.google.android.gms.tasks.Tasks.await(client.dataItems)
+                var hasUpdates = false
+
+                for (item in dataItems) {
+                    val path = item.uri.path
+                    if (path == "/item_taken" || path == "/delete_item" || path == "/new_event") {
+                        val dataMap = DataMapItem.fromDataItem(item).dataMap
+                        val updated = applyWearActionToStorage(context, path, dataMap)
+                        if (updated) hasUpdates = true
+                        client.deleteDataItems(item.uri)
+                    }
+                }
+
+                if (hasUpdates) {
+                    context.sendBroadcast(Intent("com.fedeveloper95.med.RELOAD_DATA").setPackage(context.packageName))
+                    context.sendBroadcast(Intent("com.fedeveloper95.med.REFRESH_DATA").setPackage(context.packageName))
+                    val updateIntent = Intent(context, AppWearListenerService::class.java).apply {
+                        action = "FORCE_SYNC"
+                    }
+                    context.startService(updateIntent)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun applyWearActionToStorage(context: Context, path: String, dataMap: DataMap): Boolean {
+        val items = DataRepository.loadData(context).toMutableList()
+        val today = LocalDate.now()
+        var updated = false
+
+        when (path) {
+            "/item_taken" -> {
+                val itemName = dataMap.getString("item_name") ?: return false
+                val isTaken = dataMap.getBoolean("is_taken")
+                val cleanItemName = if (itemName.contains("-")) itemName.substringAfter("-").trim() else itemName.trim()
+
+                for (i in items.indices) {
+                    val item = items[i]
+                    val itemTitle = item.title.trim()
+                    if (itemTitle.equals(cleanItemName, ignoreCase = true) || itemName.contains(itemTitle, ignoreCase = true) || cleanItemName.contains(itemTitle, ignoreCase = true)) {
+                        val history = HashMap(item.takenHistory)
+                        if (isTaken) {
+                            history[today] = LocalTime.now()
+                        } else {
+                            history.remove(today)
+                        }
+                        items[i] = item.copy(takenHistory = history)
+                        updated = true
+                    }
+                }
+            }
+            "/delete_item" -> {
+                val itemName = dataMap.getString("item_name") ?: return false
+                val cleanItemName = if (itemName.contains("-")) itemName.substringAfter("-").trim() else itemName.trim()
+
+                val iterator = items.iterator()
+                while (iterator.hasNext()) {
+                    val item = iterator.next()
+                    val itemTitle = item.title.trim()
+                    if (itemTitle.equals(cleanItemName, ignoreCase = true) || itemName.contains(itemTitle, ignoreCase = true) || cleanItemName.contains(itemTitle, ignoreCase = true)) {
+                        iterator.remove()
+                        updated = true
+                    }
+                }
+            }
+            "/new_event" -> {
+                val eventName = dataMap.getString("event_name") ?: return false
+                val prefs = context.getSharedPreferences("med_settings", Context.MODE_PRIVATE)
+                val jsonString = prefs.getString("pref_presets_ordered", null)
+                var foundIcon = "Event"
+                var foundColor = "dynamic"
+
+                if (jsonString != null) {
+                    try {
+                        val jsonArray = org.json.JSONArray(jsonString)
+                        for (i in 0 until jsonArray.length()) {
+                            val preset = jsonArray.getString(i)
+                            val parts = preset.split("|")
+                            val name = parts.getOrNull(1) ?: ""
+                            if (name.equals(eventName, ignoreCase = true)) {
+                                foundIcon = parts.getOrNull(2) ?: "Event"
+                                foundColor = parts.getOrNull(3) ?: "dynamic"
+                                break
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    val oldSet = prefs.getStringSet("pref_presets", null)
+                    oldSet?.forEach { preset ->
+                        val parts = preset.split("|")
+                        val name = parts.getOrNull(1) ?: ""
+                        if (name.equals(eventName, ignoreCase = true)) {
+                            foundIcon = parts.getOrNull(2) ?: "Event"
+                            foundColor = parts.getOrNull(3) ?: "dynamic"
+                            return@forEach
+                        }
+                    }
+                }
+
+                val newItem = MedData(
+                    id = System.nanoTime(),
+                    groupId = System.currentTimeMillis(),
+                    type = ItemType.Event,
+                    title = eventName,
+                    iconName = foundIcon,
+                    colorCode = foundColor,
+                    frequencyLabel = "",
+                    creationDate = LocalDate.now(),
+                    creationTime = LocalTime.now(),
+                    takenHistory = hashMapOf(),
+                    recurrenceDays = null,
+                    endDate = null,
+                    notes = null,
+                    displayOrder = 0,
+                    intervalGap = null,
+                    category = null,
+                    notificationType = 0,
+                    medicineType = 0,
+                    dose = 0.0,
+                    unit = "",
+                    totalQuantity = 0.0
+                )
+                items.add(newItem)
+                updated = true
+            }
+        }
+
+        if (updated) {
+            DataRepository.saveData(context, items)
+        }
+        return updated
+    }
+
+    @SuppressLint("VisibleForTests")
+    fun syncData(medicines: ArrayList<DataMap>, events: ArrayList<DataMap>) {
         val request = PutDataMapRequest.create("/med_data").apply {
-            dataMap.putStringArray("medicines", medicines.toTypedArray())
-            dataMap.putStringArray("events", events.toTypedArray())
+            dataMap.putDataMapArrayList("medicines", medicines)
+            dataMap.putDataMapArrayList("events", events)
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
-        dataClient?.putDataItem(request)
+        val task = dataClient?.putDataItem(request)
+        if (task != null) {
+            try {
+                com.google.android.gms.tasks.Tasks.await(task)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     @SuppressLint("VisibleForTests")
     fun syncSettings(
         alarmsEnabled: Boolean,
         enabledEvents: Set<String>,
-        availableEvents: Set<String>
+        availableEvents: Set<String>,
+        presetDetails: List<String> = emptyList()
     ) {
         val request = PutDataMapRequest.create("/settings").apply {
             dataMap.putBoolean("alarms_enabled", alarmsEnabled)
             dataMap.putStringArray("enabled_events", enabledEvents.toTypedArray())
             dataMap.putStringArray("available_events", availableEvents.toTypedArray())
+            dataMap.putStringArray("preset_details", presetDetails.toTypedArray())
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
-        dataClient?.putDataItem(request)
+        val task = dataClient?.putDataItem(request)
+        if (task != null) {
+            try {
+                com.google.android.gms.tasks.Tasks.await(task)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun triggerWatchAlarm(itemIds: LongArray, title: String, notifId: Int) {
@@ -88,6 +217,13 @@ object WearSyncManager : DataClient.OnDataChangedListener {
             dataMap.putInt("notif_id", notifId)
             dataMap.putLong("timestamp", System.currentTimeMillis())
         }.asPutDataRequest().setUrgent()
-        dataClient?.putDataItem(request)
+        val task = dataClient?.putDataItem(request)
+        if (task != null) {
+            try {
+                com.google.android.gms.tasks.Tasks.await(task)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 }

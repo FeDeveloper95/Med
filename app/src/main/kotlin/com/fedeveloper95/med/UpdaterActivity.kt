@@ -17,6 +17,7 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -162,12 +163,22 @@ fun AnimatedActionButton(
 @Composable
 fun UpdaterScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as ComponentActivity
     val scope = rememberCoroutineScope()
     var status by remember { mutableStateOf<UpdateStatus>(UpdateStatus.Idle) }
     var isDownloading by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val errorMessage = stringResource(R.string.update_error_check)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     val currentVersionName = remember {
         try {

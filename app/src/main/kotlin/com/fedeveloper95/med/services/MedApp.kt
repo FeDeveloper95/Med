@@ -6,7 +6,6 @@
 
 package com.fedeveloper95.med.services
 
-import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
@@ -42,13 +41,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BarChart
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Event
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.MedicalServices
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
@@ -93,13 +89,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.fedeveloper95.med.AVAILABLE_ICONS
 import com.fedeveloper95.med.BirthdayCard
-import com.fedeveloper95.med.EditModeActivity
-import com.fedeveloper95.med.ExpressiveIconButton
 import com.fedeveloper95.med.ExpressiveTextButton
 import com.fedeveloper95.med.IllnessCard
 import com.fedeveloper95.med.ItemType
 import com.fedeveloper95.med.R
-import com.fedeveloper95.med.SettingsActivity
 import com.fedeveloper95.med.SwipeableSquishItem
 import com.fedeveloper95.med.elements.MainActivity.CommunityBottomSheet
 import com.fedeveloper95.med.elements.MainActivity.EventBottomSheet
@@ -364,7 +357,7 @@ fun MedApp(
                                     Column(
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .then(if (isExpandedScreen) Modifier.padding(horizontal = 64.dp) else Modifier)
+                                            .then(if (isExpandedScreen) Modifier.padding(horizontal = 0.dp) else Modifier)
                                     ) {
                                         Spacer(modifier = Modifier.height(8.dp))
 
@@ -571,7 +564,7 @@ fun MedApp(
                                                             columns = GridCells.Adaptive(minSize = 340.dp),
                                                             modifier = Modifier
                                                                 .fillMaxSize()
-                                                                .padding(horizontal = 16.dp),
+                                                                .padding(horizontal = 12.dp),
                                                             horizontalArrangement = Arrangement.spacedBy(
                                                                 12.dp
                                                             ),
@@ -641,6 +634,9 @@ fun MedApp(
                                                                         onSwipeCancel = {
                                                                             activeSwipingItemId =
                                                                                 null
+                                                                        },
+                                                                        onEdit = {
+                                                                            editingItem = item
                                                                         }
                                                                     ) {
                                                                         IllnessCard(
@@ -805,8 +801,11 @@ fun MedApp(
                                                                             onSwipeCancel = {
                                                                                 activeSwipingItemId =
                                                                                     null
+                                                                            },
+                                                                            onEdit = {
+                                                                                editingItem = item
                                                                             }
-                                                                        ) {
+                                                                        ) { openSwipeAction ->
                                                                             MedDataCard(
                                                                                 item = item,
                                                                                 currentViewDate = pageDate,
@@ -824,7 +823,8 @@ fun MedApp(
                                                                                 onLongClick = {
                                                                                     editingItem =
                                                                                         item
-                                                                                }
+                                                                                },
+                                                                                onRightClick = openSwipeAction
                                                                             )
                                                                         }
                                                                     }
@@ -901,6 +901,9 @@ fun MedApp(
                                                                         onSwipeCancel = {
                                                                             activeSwipingItemId =
                                                                                 null
+                                                                        },
+                                                                        onEdit = {
+                                                                            editingItem = item
                                                                         }
                                                                     ) {
                                                                         IllnessCard(
@@ -1073,8 +1076,11 @@ fun MedApp(
                                                                             onSwipeCancel = {
                                                                                 activeSwipingItemId =
                                                                                     null
+                                                                            },
+                                                                            onEdit = {
+                                                                                editingItem = item
                                                                             }
-                                                                        ) {
+                                                                        ) { openSwipeAction ->
                                                                             MedDataCard(
                                                                                 item = item,
                                                                                 currentViewDate = pageDate,
@@ -1092,7 +1098,8 @@ fun MedApp(
                                                                                 onLongClick = {
                                                                                     editingItem =
                                                                                         item
-                                                                                }
+                                                                                },
+                                                                                onRightClick = openSwipeAction
                                                                             )
                                                                         }
                                                                     }

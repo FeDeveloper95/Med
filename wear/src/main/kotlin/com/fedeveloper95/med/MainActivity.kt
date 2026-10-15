@@ -4,12 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,99 +14,143 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.DeviceThermostat
+import androidx.compose.material.icons.rounded.DirectionsRun
+import androidx.compose.material.icons.rounded.Event
+import androidx.compose.material.icons.rounded.Favorite
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.Healing
+import androidx.compose.material.icons.rounded.LocalHospital
+import androidx.compose.material.icons.rounded.MedicalServices
 import androidx.compose.material.icons.rounded.RadioButtonChecked
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.compose.material.icons.rounded.Restaurant
+import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.wear.compose.foundation.lazy.AutoCenteringParams
 import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
 import androidx.wear.compose.foundation.lazy.items
 import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material3.AppScaffold
+import androidx.wear.compose.material3.Button
+import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.Card
 import androidx.wear.compose.material3.CardDefaults
 import androidx.wear.compose.material3.EdgeButton
+import androidx.wear.compose.material3.EdgeButtonSize
 import androidx.wear.compose.material3.Icon
-import androidx.wear.compose.material3.IconButton
-import androidx.wear.compose.material3.IconButtonDefaults
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.TimeText
-import androidx.wear.compose.navigation.SwipeDismissableNavHost
-import androidx.wear.compose.navigation.composable
-import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
-import com.fedeveloper95.med.elements.MainActivity.AddEvents
 import com.fedeveloper95.med.elements.MainActivity.DeleteElement
 import com.fedeveloper95.med.services.WearDataManager
+import com.fedeveloper95.med.services.WearItem
 import com.fedeveloper95.med.ui.theme.MedTheme
-import kotlinx.coroutines.launch
+
+val AVAILABLE_ICONS: Map<String, ImageVector> = mapOf(
+    "MedicalServices" to Icons.Rounded.MedicalServices,
+    "Event" to Icons.Rounded.Event,
+    "FitnessCenter" to Icons.Rounded.FitnessCenter,
+    "Restaurant" to Icons.Rounded.Restaurant,
+    "Thermometer" to Icons.Rounded.DeviceThermostat,
+    "Mindfulness" to Icons.Rounded.SelfImprovement,
+    "LocalHospital" to Icons.Rounded.LocalHospital,
+    "Favorite" to Icons.Rounded.Favorite,
+    "Star" to Icons.Rounded.Star,
+    "Bolt" to Icons.Rounded.Bolt,
+    "WaterDrop" to Icons.Rounded.WaterDrop,
+    "DirectionsRun" to Icons.Rounded.DirectionsRun,
+    "Healing" to Icons.Rounded.Healing
+)
+
+val AVAILABLE_COLORS = listOf(
+    "dynamic",
+    "#ffb3b6",
+    "#ffb869",
+    "#e8c349",
+    "#a0d57b",
+    "#97cbff",
+    "#b6c6ed",
+    "#cabeff",
+    "#f7adfd"
+)
 
 data class ItemToDelete(
     val rawName: String,
     val displayName: String,
-    val type: String,
-    val resetAnim: () -> Unit
+    val type: String
 )
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WearDataManager.initialize(this)
+
+        WearDataManager.requestSyncFromPhone()
+
         setContent {
             MedTheme {
-                val navController = rememberSwipeDismissableNavController()
                 AppScaffold(
                     timeText = { TimeText() }
                 ) {
-                    SwipeDismissableNavHost(
-                        navController = navController,
-                        startDestination = "main"
-                    ) {
-                        composable("main") {
-                            MainScreen(
-                                medicines = WearDataManager.medicines,
-                                events = WearDataManager.eventsList,
-                                onOpenAddEvents = { navController.navigate("add_events") }
-                            )
+                    MainScreen(
+                        medicines = WearDataManager.medicines,
+                        events = WearDataManager.eventsList,
+                        onOpenAddEvents = {
+                            startActivity(Intent(this@MainActivity, AddEventActivity::class.java))
                         }
-                        composable("add_events") {
-                            AddEvents(
-                                enabledEvents = WearDataManager.enabledEvents,
-                                onBack = { navController.popBackStack() }
-                            )
-                        }
-                    }
+                    )
                 }
             }
         }
     }
 }
 
+fun parseCustomColor(colorStr: String?): Color? {
+    if (colorStr.isNullOrBlank() || colorStr.equals("dynamic", ignoreCase = true)) return null
+    return try {
+        Color(android.graphics.Color.parseColor(colorStr))
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun getIconForName(iconName: String?): ImageVector? {
+    if (iconName.isNullOrBlank()) return null
+    return AVAILABLE_ICONS[iconName]
+}
+
 @Composable
-fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: () -> Unit) {
+fun MainScreen(
+    medicines: List<WearItem>,
+    events: List<WearItem>,
+    onOpenAddEvents: () -> Unit
+) {
     val context = LocalContext.current
     val listState = rememberScalingLazyListState()
-
     var itemToDelete by remember { mutableStateOf<ItemToDelete?>(null) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -119,17 +158,20 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
             scrollState = listState,
             edgeButton = {
                 EdgeButton(
-                    onClick = onOpenAddEvents
+                    onClick = onOpenAddEvents,
+                    buttonSize = EdgeButtonSize.Large
                 ) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
-                        contentDescription = stringResource(R.string.add_event)
+                        contentDescription = stringResource(R.string.add_event),
+                        modifier = Modifier.padding(vertical = 4.dp)
                     )
                 }
             }
         ) {
             ScalingLazyColumn(
                 state = listState,
+                autoCentering = AutoCenteringParams(itemIndex = 1),
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
@@ -138,6 +180,7 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                     ListHeader {
                         Text(
                             text = stringResource(R.string.header_medicines),
+                            style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -145,65 +188,83 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
 
                 if (medicines.isEmpty()) {
                     item {
-                        Card(
-                            onClick = { },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_medicines),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        EmptyStateCard(text = stringResource(R.string.no_medicines))
                     }
                 } else {
-                    items(medicines, key = { "med_$it" }) { med ->
-                        val cleanText =
-                            med.replace("✔", "").replace("✓", "").replace("✅", "").trim()
-                        val timeRegex = Regex("^(\\d{1,2}:\\d{2})\\s*(?:-\\s*)?(.*)")
-                        val match = timeRegex.find(cleanText)
-                        val time = match?.groupValues?.get(1) ?: ""
-                        val name = match?.groupValues?.get(2) ?: cleanText
+                    items(medicines, key = { "med_${it.title}_${it.time}" }) { med ->
+                        val name = med.title
+                        val time = med.time
+                        val isTaken = WearDataManager.itemStates[name] == true
+                        val itemIcon = getIconForName(med.iconName)
 
-                        val isTaken = WearDataManager.itemStates[cleanText] == true
+                        val customColor = remember(med.colorCode) { parseCustomColor(med.colorCode) }
+                        val circleColor = customColor ?: MaterialTheme.colorScheme.primaryContainer
+                        val iconTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onPrimaryContainer
 
-                        SwipeableSquishItemWear(
-                            onDeleteThresholdReached = { resetAnim ->
-                                itemToDelete = ItemToDelete(cleanText, name, "medicine", resetAnim)
-                            }
+                        Card(
+                            onClick = { WearDataManager.setItemTaken(name, !isTaken, "medicine") },
+                            onLongClick = { itemToDelete = ItemToDelete(name, name, "medicine") },
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Card(
-                                onClick = {
-                                    WearDataManager.setItemTaken(cleanText, !isTaken, "medicine")
-                                },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                                modifier = Modifier.fillMaxWidth()
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(circleColor, CircleShape),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = name,
-                                            color = MaterialTheme.colorScheme.onSurface
+                                    if (itemIcon != null) {
+                                        Icon(
+                                            imageVector = itemIcon,
+                                            contentDescription = null,
+                                            tint = iconTintColor,
+                                            modifier = Modifier.size(18.dp)
                                         )
-                                        if (time.isNotEmpty()) {
-                                            Text(
-                                                text = time,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                style = MaterialTheme.typography.bodySmall
-                                            )
-                                        }
+                                    } else if (name.isNotEmpty()) {
+                                        Text(
+                                            text = name.take(1).uppercase(),
+                                            color = iconTintColor,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
                                     }
-                                    Icon(
-                                        imageVector = if (isTaken) Icons.Rounded.RadioButtonChecked else Icons.Rounded.RadioButtonUnchecked,
-                                        contentDescription = null,
-                                        tint = if (isTaken) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(24.dp)
-                                    )
                                 }
+
+                                Spacer(modifier = Modifier.size(8.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = name,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    if (time.isNotEmpty()) {
+                                        Text(
+                                            text = time,
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                Icon(
+                                    imageVector = if (isTaken) Icons.Rounded.RadioButtonChecked else Icons.Rounded.RadioButtonUnchecked,
+                                    contentDescription = null,
+                                    tint = if (isTaken) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .size(24.dp)
+                                )
                             }
                         }
                     }
@@ -213,50 +274,77 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                     ListHeader {
                         Text(
                             text = stringResource(R.string.header_events),
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(top = 4.dp)
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
 
                 if (events.isEmpty()) {
                     item {
-                        Card(
-                            onClick = { },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = stringResource(R.string.no_events),
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
+                        EmptyStateCard(text = stringResource(R.string.no_events))
                     }
                 } else {
-                    items(events, key = { "evt_$it" }) { ev ->
-                        val cleanText = ev.replace("✔", "").replace("✓", "").replace("✅", "").trim()
-                        val timeRegex = Regex("^(\\d{1,2}:\\d{2})\\s*(?:-\\s*)?(.*)")
-                        val match = timeRegex.find(cleanText)
-                        val time = match?.groupValues?.get(1) ?: ""
-                        val name = match?.groupValues?.get(2) ?: cleanText
+                    items(events, key = { "evt_${it.title}_${it.time}_${System.identityHashCode(it)}" }) { ev ->                        val name = ev.title
+                        val time = ev.time
+                        val itemIcon = getIconForName(ev.iconName)
 
-                        SwipeableSquishItemWear(
-                            onDeleteThresholdReached = { resetAnim ->
-                                itemToDelete = ItemToDelete(cleanText, name, "event", resetAnim)
-                            }
+                        val customColor = remember(ev.colorCode) { parseCustomColor(ev.colorCode) }
+                        val circleColor = customColor ?: MaterialTheme.colorScheme.primaryContainer
+                        val iconTintColor = if (customColor != null) Color.Black.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onPrimaryContainer
+
+                        Card(
+                            onClick = { },
+                            onLongClick = { itemToDelete = ItemToDelete(name, name, "event") },
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainer
+                            ),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            Card(
-                                onClick = { },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
-                                modifier = Modifier.fillMaxWidth()
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(modifier = Modifier.fillMaxWidth()) {
-                                    Text(text = name, color = MaterialTheme.colorScheme.onSurface)
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(circleColor, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (itemIcon != null) {
+                                        Icon(
+                                            imageVector = itemIcon,
+                                            contentDescription = null,
+                                            tint = iconTintColor,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                    } else if (name.isNotEmpty()) {
+                                        Text(
+                                            text = name.take(1).uppercase(),
+                                            color = iconTintColor,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.size(8.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(
+                                        text = name,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
                                     if (time.isNotEmpty()) {
                                         Text(
                                             text = time,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            style = MaterialTheme.typography.bodySmall
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
                                 }
@@ -265,20 +353,20 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                     }
                 }
 
-                item { Spacer(modifier = Modifier.height(8.dp)) }
-
                 item {
-                    Row(
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+                item {
+                    Box(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                        contentAlignment = Alignment.Center
                     ) {
-                        IconButton(
+                        Button(
                             onClick = {
                                 context.startActivity(Intent(context, SettingsActivity::class.java))
                             },
-                            colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                                contentColor = MaterialTheme.colorScheme.onSurface
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                             ),
                             modifier = Modifier.size(52.dp)
                         ) {
@@ -301,7 +389,6 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
                     itemToDelete = null
                 },
                 onDismiss = {
-                    itemToDelete!!.resetAnim.invoke()
                     itemToDelete = null
                 }
             )
@@ -310,84 +397,23 @@ fun MainScreen(medicines: List<String>, events: List<String>, onOpenAddEvents: (
 }
 
 @Composable
-fun SwipeableSquishItemWear(
-    onDeleteThresholdReached: (resetAnimation: () -> Unit) -> Unit,
-    content: @Composable () -> Unit
-) {
-    val offsetX = remember { Animatable(0f) }
-    var itemWidth by remember { mutableStateOf(0f) }
-    val scope = rememberCoroutineScope()
-
-    Layout(
-        modifier = Modifier
-            .fillMaxWidth()
-            .onSizeChanged { itemWidth = it.width.toFloat() }
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures(
-                    onDragEnd = {
-                        val threshold = -itemWidth * 0.5f
-                        if (offsetX.value < threshold) {
-                            scope.launch {
-                                offsetX.animateTo(
-                                    -itemWidth,
-                                    spring(stiffness = Spring.StiffnessMedium)
-                                )
-                                val resetAnim = { scope.launch { offsetX.animateTo(0f) } }
-                                onDeleteThresholdReached { resetAnim.invoke() }
-                            }
-                        } else {
-                            scope.launch {
-                                offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
-                            }
-                        }
-                    },
-                    onDragCancel = {
-                        scope.launch {
-                            offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMedium))
-                        }
-                    },
-                    onHorizontalDrag = { change, dragAmount ->
-                        change.consume()
-                        scope.launch {
-                            val newVal = (offsetX.value + dragAmount).coerceIn(-itemWidth, 0f)
-                            offsetX.snapTo(newVal)
-                        }
-                    }
-                )
-            },
-        content = {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(100.dp))
-                    .background(MaterialTheme.colorScheme.errorContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    Icons.Rounded.Delete,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
-            Box { content() }
-        }
-    ) { measurables, constraints ->
-        val totalWidth = constraints.maxWidth
-        val contentPlaceable = measurables[1].measure(constraints)
-        val height = contentPlaceable.height
-
-        val redBoxWidth = (-offsetX.value).toInt().coerceAtLeast(0)
-        val redPlaceable = measurables[0].measure(
-            Constraints(
-                minWidth = redBoxWidth,
-                maxWidth = redBoxWidth,
-                minHeight = height,
-                maxHeight = height
-            )
+fun EmptyStateCard(text: String) {
+    Card(
+        onClick = { },
+        enabled = false,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp)
         )
-
-        layout(totalWidth, height) {
-            contentPlaceable.place(offsetX.value.toInt(), 0)
-            redPlaceable.place(totalWidth - redBoxWidth, 0)
-        }
     }
 }

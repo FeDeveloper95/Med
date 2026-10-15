@@ -25,6 +25,7 @@
         <activity
             android:name=".WelcomeActivity"
             android:exported="true"
+            android:resizeableActivity="true"
             android:theme="@style/Theme.App.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,53 +35,67 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".InventoryActivity"
             android:exported="false"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".InventorySettingsActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".WearSettingsActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".QuickActionsSettingsActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".AdvancedSettingsActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".UpdaterActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".NotificationsSettingsActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".EditModeActivity"
             android:exported="false"
+            android:resizeableActivity="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".AlarmActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:launchMode="singleTask"
             android:showOnLockScreen="true"
             android:showWhenLocked="true"
@@ -89,19 +104,23 @@
         <activity
             android:name=".services.LockActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:icon="@drawable/ic_launcher_settings_foreground"
             android:theme="@style/Theme.Med" />
         <activity
             android:name=".elements.NotificationBottomSheetActivity"
             android:exported="false"
+            android:resizeableActivity="true"
             android:theme="@style/Theme.Med.Transparent"
             android:taskAffinity=""
             android:excludeFromRecents="true" />
         <service
             android:name=".services.AppWearListenerService"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_LISTENER">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.DATA_CHANGED" />
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
                 <data
                     android:host="*"
                     android:pathPrefix="/"

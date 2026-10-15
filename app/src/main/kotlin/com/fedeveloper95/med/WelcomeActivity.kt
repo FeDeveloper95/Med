@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,6 +21,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -86,6 +88,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -101,6 +104,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -131,7 +135,11 @@ import com.fedeveloper95.med.ui.theme.MedTheme
 import kotlinx.coroutines.launch
 
 data class OnboardingPageInfo(
-    val content: @Composable () -> Unit
+    val thinHeader: String,
+    val boldHeader: String,
+    val subtitle: String,
+    val phoneContent: @Composable () -> Unit,
+    val rightContent: @Composable () -> Unit
 )
 
 class WelcomeActivity : ComponentActivity() {
@@ -189,9 +197,20 @@ class WelcomeActivity : ComponentActivity() {
 @Composable
 fun WelcomePagerScreen(onFinished: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as? ComponentActivity
     val scope = rememberCoroutineScope()
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+    val isTablet = LocalConfiguration.current.screenWidthDp >= 600
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     val commonAnimSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
@@ -311,7 +330,10 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
 
     val pages = listOf(
         OnboardingPageInfo(
-            content = {
+            thinHeader = stringResource(R.string.welcome_to),
+            boldHeader = stringResource(R.string.app_name),
+            subtitle = stringResource(R.string.welcome_preparing_subtitle),
+            phoneContent = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -349,10 +371,23 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                     }
                     Spacer(modifier = Modifier.weight(1.2f))
                 }
+            },
+            rightContent = {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    RotatingShapeContainer(
+                        modifier = Modifier.size(280.dp)
+                    )
+                }
             }
         ),
         OnboardingPageInfo(
-            content = {
+            thinHeader = stringResource(R.string.perm_required),
+            boldHeader = stringResource(R.string.perm_permissions),
+            subtitle = stringResource(R.string.perm_intro_text),
+            phoneContent = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -460,10 +495,92 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
+            },
+            rightContent = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                ) {
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.Notifications,
+                        iconColor = Color(0xFFffaee4),
+                        iconTint = Color(0xFF8d0053),
+                        title = stringResource(R.string.perm_notif_title),
+                        description = stringResource(R.string.perm_notif_desc),
+                        index = 0, count = 2,
+                        onClick = {
+                            if (hasNotificationPermission) {
+                                val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                    putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                }
+                                context.startActivity(intent)
+                            } else {
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                    notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                            }
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = hasNotificationPermission,
+                                onCheckedChange = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                    if (hasNotificationPermission) {
+                                        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                        }
+                                        context.startActivity(intent)
+                                    } else {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.pointerHoverIcon(PointerIcon.Hand),
+                                thumbContent = {
+                                    Icon(
+                                        imageVector = if (hasNotificationPermission) Icons.Rounded.Check else Icons.Rounded.Close,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            )
+                        }
+                    )
+
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.SystemUpdate,
+                        iconColor = Color(0xFFffb683),
+                        iconTint = Color(0xFF753403),
+                        title = stringResource(R.string.perm_install_title),
+                        description = stringResource(R.string.perm_install_desc),
+                        index = 1, count = 2,
+                        onClick = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                val intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES).apply {
+                                    data = Uri.parse("package:${context.packageName}")
+                                }
+                                installParamsLauncher.launch(intent)
+                            }
+                        },
+                        trailingContent = {
+                            Icon(
+                                imageVector = if (canInstallPackages) Icons.Rounded.Check else Icons.Rounded.ChevronRight,
+                                contentDescription = null,
+                                tint = if (canInstallPackages) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    )
+                }
             }
         ),
         OnboardingPageInfo(
-            content = {
+            thinHeader = stringResource(R.string.personal_data_title),
+            boldHeader = stringResource(R.string.personal_data_header),
+            subtitle = stringResource(R.string.personal_data_intro),
+            phoneContent = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -566,10 +683,87 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
+            },
+            rightContent = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                ) {
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.Person,
+                        iconColor = MaterialTheme.colorScheme.primaryContainer,
+                        iconTint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        title = stringResource(R.string.profile_picture),
+                        description = if (imageUriStr.isNotEmpty()) stringResource(R.string.image_set) else stringResource(R.string.tap_to_set),
+                        index = 0, count = 6,
+                        onClick = { showProfileSheet = true },
+                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.CalendarMonth,
+                        iconColor = Color(0xFFffb683),
+                        iconTint = Color(0xFF753403),
+                        title = stringResource(R.string.dob_title),
+                        description = dob.ifEmpty { stringResource(R.string.tap_to_set) },
+                        index = 1, count = 6,
+                        onClick = { showDobSheet = true },
+                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.Height,
+                        iconColor = Color(0xFF83C5FF),
+                        iconTint = Color(0xFF034B75),
+                        title = stringResource(R.string.height_title),
+                        description = height.ifEmpty { stringResource(R.string.tap_to_set) },
+                        index = 2, count = 6,
+                        onClick = { showHeightSheet = true },
+                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.FitnessCenter,
+                        iconColor = Color(0xFFA5FF83),
+                        iconTint = Color(0xFF1E7503),
+                        title = stringResource(R.string.weight_title),
+                        description = weight.ifEmpty { stringResource(R.string.tap_to_set) },
+                        index = 3, count = 6,
+                        onClick = { showWeightSheet = true },
+                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.WaterDrop,
+                        iconColor = Color(0xFFffb4ab),
+                        iconTint = Color(0xFF690005),
+                        title = stringResource(R.string.blood_type_title),
+                        description = bloodType.ifEmpty { stringResource(R.string.tap_to_set) },
+                        index = 4, count = 6,
+                        onClick = { showBloodTypeSheet = true },
+                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.Warning,
+                        iconColor = Color(0xFFfcbd00),
+                        iconTint = Color(0xFF6d3a01),
+                        title = stringResource(R.string.allergies_title),
+                        description = allergies.ifEmpty { stringResource(R.string.tap_to_set) },
+                        index = 5, count = 6,
+                        onClick = { showAllergiesSheet = true },
+                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null, tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                    )
+                }
             }
         ),
         OnboardingPageInfo(
-            content = {
+            thinHeader = stringResource(R.string.feat_discover),
+            boldHeader = stringResource(R.string.feat_features),
+            subtitle = stringResource(R.string.feat_intro),
+            phoneContent = {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.Start
@@ -658,6 +852,63 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                         }
                     }
                 }
+            },
+            rightContent = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)
+                ) {
+                    WelcomeSegmentedItem(
+                        icon = ImageVector.vectorResource(R.drawable.ic_quick_actions),
+                        iconColor = Color(0xFFffaee4),
+                        iconTint = Color(0xFF8d0053),
+                        title = stringResource(R.string.feat_presets_title),
+                        description = stringResource(R.string.feat_presets_desc),
+                        index = 0, count = 6
+                    )
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.Alarm,
+                        iconColor = Color(0xFF80da88),
+                        iconTint = Color(0xFF00522c),
+                        title = stringResource(R.string.feat_reminders_title),
+                        description = stringResource(R.string.feat_reminders_desc),
+                        index = 1, count = 6
+                    )
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.CheckCircle,
+                        iconColor = Color(0xFFffb683),
+                        iconTint = Color(0xFF753403),
+                        title = stringResource(R.string.feat_tracking_title),
+                        description = stringResource(R.string.feat_tracking_desc),
+                        index = 2, count = 6
+                    )
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.Watch,
+                        iconColor = Color(0xFF67D4FF),
+                        iconTint = Color(0xFF004E5D),
+                        title = stringResource(R.string.feat_wearos_title),
+                        description = stringResource(R.string.feat_wearos_desc),
+                        index = 3, count = 6
+                    )
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.BarChart,
+                        iconColor = Color(0xFFfcbd00),
+                        iconTint = Color(0xFF6d3a01),
+                        title = stringResource(R.string.feat_tabs_title),
+                        description = stringResource(R.string.feat_tabs_desc),
+                        index = 4, count = 6
+                    )
+                    WelcomeSegmentedItem(
+                        icon = Icons.Rounded.SystemUpdate,
+                        iconColor = Color(0xFFC7C7C7),
+                        iconTint = Color(0xFF2C2C2C),
+                        title = stringResource(R.string.feat_update_title),
+                        description = stringResource(R.string.feat_update_desc),
+                        index = 5, count = 6
+                    )
+                }
             }
         )
     )
@@ -678,28 +929,13 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
     val backInteractionSource = remember { MutableInteractionSource() }
     val nextInteractionSource = remember { MutableInteractionSource() }
 
-    val isBackPressed by backInteractionSource.collectIsPressedAsState()
-    val isNextPressed by nextInteractionSource.collectIsPressedAsState()
-
-    val targetBackWeight = when {
-        isFirstPage -> 0.0001f
-        isBackPressed -> 1.125f
-        isNextPressed -> 0.875f
-        else -> 1f
-    }
-    val targetNextWeight = when {
-        isNextPressed -> 1.125f
-        isBackPressed -> 0.875f
-        else -> 1f
-    }
-
     val backButtonWeight by animateFloatAsState(
-        targetValue = targetBackWeight,
+        targetValue = if (isFirstPage) 0.0001f else 1f,
         animationSpec = commonAnimSpec,
         label = "backWeight"
     )
     val nextButtonWeight by animateFloatAsState(
-        targetValue = targetNextWeight,
+        targetValue = 1f,
         animationSpec = commonAnimSpec,
         label = "nextWeight"
     )
@@ -715,44 +951,95 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
         label = "backAlpha"
     )
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-        Column(
-            modifier = Modifier
-                .widthIn(max = 700.dp)
-                .fillMaxSize()
-                .padding(24.dp)
+    if (isTablet) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-            ) { index ->
-                OnboardingPageItem(page = pages[index])
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 24.dp)
-                    .height(64.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .widthIn(max = 1100.dp)
+                    .fillMaxSize()
+                    .padding(32.dp),
+                horizontalArrangement = Arrangement.spacedBy(48.dp)
             ) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .weight(backButtonWeight)
-                        .fillMaxHeight()
-                        .alpha(alphaBack)
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.Top
                 ) {
-                    WelcomeExpressiveButton(
-                        text = stringResource(R.string.back),
-                        onClick = {
+                    Spacer(modifier = Modifier.height(48.dp))
+                    Crossfade(
+                        targetState = pagerState.currentPage,
+                        animationSpec = tween(durationMillis = 300),
+                        label = "tabletHeaderFade",
+                        modifier = Modifier.fillMaxWidth()
+                    ) { pageIdx ->
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = pages[pageIdx].thinHeader,
+                                style = thinHeaderStyle,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Text(
+                                text = pages[pageIdx].boldHeader,
+                                fontFamily = GoogleSansFlex,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 48.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                lineHeight = 56.sp,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            if (pages[pageIdx].subtitle.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = pages[pageIdx].subtitle,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontFamily = GoogleSansFlex
+                                    ),
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    HorizontalPager(
+                        state = pagerState,
+                        userScrollEnabled = false,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                    ) { index ->
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            pages[index].rightContent()
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    WelcomeNavigationButtons(
+                        isFirstPage = isFirstPage,
+                        isLastPage = isLastPage,
+                        backButtonWeight = backButtonWeight,
+                        nextButtonWeight = nextButtonWeight,
+                        spacerWeight = spacerWeight,
+                        alphaBack = alphaBack,
+                        backInteractionSource = backInteractionSource,
+                        nextInteractionSource = nextInteractionSource,
+                        onBackClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             if (!isFirstPage) {
                                 scope.launch {
@@ -763,24 +1050,7 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                 }
                             }
                         },
-                        containerColor = Color.Transparent,
-                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.fillMaxSize(),
-                        isOutlined = true,
-                        interactionSource = backInteractionSource
-                    )
-                }
-
-                Spacer(modifier = Modifier.weight(spacerWeight))
-
-                Box(
-                    modifier = Modifier
-                        .weight(nextButtonWeight)
-                        .fillMaxHeight()
-                ) {
-                    WelcomeExpressiveButton(
-                        text = if (isLastPage) stringResource(R.string.get_started) else stringResource(R.string.next),
-                        onClick = {
+                        onNextClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             if (isLastPage) {
                                 onFinished()
@@ -792,13 +1062,69 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
                                     )
                                 }
                             }
-                        },
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.fillMaxSize(),
-                        interactionSource = nextInteractionSource
+                        }
                     )
                 }
+            }
+        }
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = 700.dp)
+                    .fillMaxSize()
+                    .padding(24.dp)
+            ) {
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) { index ->
+                    pages[index].phoneContent()
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                WelcomeNavigationButtons(
+                    isFirstPage = isFirstPage,
+                    isLastPage = isLastPage,
+                    backButtonWeight = backButtonWeight,
+                    nextButtonWeight = nextButtonWeight,
+                    spacerWeight = spacerWeight,
+                    alphaBack = alphaBack,
+                    backInteractionSource = backInteractionSource,
+                    nextInteractionSource = nextInteractionSource,
+                    onBackClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        if (!isFirstPage) {
+                            scope.launch {
+                                pagerState.animateScrollToPage(
+                                    pagerState.currentPage - 1,
+                                    animationSpec = commonAnimSpec
+                                )
+                            }
+                        }
+                    },
+                    onNextClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        if (isLastPage) {
+                            onFinished()
+                        } else {
+                            scope.launch {
+                                pagerState.animateScrollToPage(
+                                    pagerState.currentPage + 1,
+                                    animationSpec = commonAnimSpec
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier.padding(bottom = 24.dp)
+                )
             }
         }
     }
@@ -870,6 +1196,62 @@ fun WelcomePagerScreen(onFinished: () -> Unit) {
             },
             currentValue = allergies
         )
+    }
+}
+
+@Composable
+fun WelcomeNavigationButtons(
+    isFirstPage: Boolean,
+    isLastPage: Boolean,
+    backButtonWeight: Float,
+    nextButtonWeight: Float,
+    spacerWeight: Float,
+    alphaBack: Float,
+    backInteractionSource: MutableInteractionSource,
+    nextInteractionSource: MutableInteractionSource,
+    onBackClick: () -> Unit,
+    onNextClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(64.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .weight(backButtonWeight)
+                .fillMaxHeight()
+                .alpha(alphaBack)
+        ) {
+            WelcomeExpressiveButton(
+                text = stringResource(R.string.back),
+                onClick = onBackClick,
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.fillMaxSize(),
+                isOutlined = true,
+                interactionSource = backInteractionSource
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(spacerWeight))
+
+        Box(
+            modifier = Modifier
+                .weight(nextButtonWeight)
+                .fillMaxHeight()
+        ) {
+            WelcomeExpressiveButton(
+                text = if (isLastPage) stringResource(R.string.get_started) else stringResource(R.string.next),
+                onClick = onNextClick,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.fillMaxSize(),
+                interactionSource = nextInteractionSource
+            )
+        }
     }
 }
 
@@ -980,11 +1362,6 @@ fun RotatingShapeContainer(modifier: Modifier = Modifier) {
             tint = backgroundColor
         )
     }
-}
-
-@Composable
-fun OnboardingPageItem(page: OnboardingPageInfo) {
-    page.content()
 }
 
 @Composable

@@ -2,7 +2,12 @@
 
 package com.fedeveloper95.med.elements.InventoryActivity
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +28,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -92,6 +99,17 @@ fun WelcomeBottomSheet(onDismiss: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
+            val interactionSource = remember { MutableInteractionSource() }
+            val isPressed by interactionSource.collectIsPressedAsState()
+            val cornerPercent by animateIntAsState(
+                targetValue = if (isPressed) 15 else 50,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                ),
+                label = ""
+            )
+
             Button(
                 onClick = {
                     scope.launch { sheetState.hide() }.invokeOnCompletion {
@@ -101,17 +119,19 @@ fun WelcomeBottomSheet(onDismiss: () -> Unit) {
                     }
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.6f)
                     .height(50.dp),
-                shape = RoundedCornerShape(50),
+                shape = RoundedCornerShape(cornerPercent),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                ),
+                interactionSource = interactionSource
             ) {
                 Text(
                     text = stringResource(R.string.ok_action),
                     fontFamily = GoogleSansFlex,
+                    fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleMedium
                 )
             }

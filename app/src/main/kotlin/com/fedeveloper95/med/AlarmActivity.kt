@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -100,6 +101,13 @@ class AlarmActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            window.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
@@ -408,6 +416,7 @@ fun AlarmSlider(
     val density = LocalDensity.current
     val thumbWidth = 96.dp
     val thumbWidthPx = with(density) { thumbWidth.toPx() }
+    val sidePaddingPx = with(density) { 6.dp.toPx() }
 
     Box(
         modifier = modifier
@@ -449,34 +458,28 @@ fun AlarmSlider(
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures(
                         onDragEnd = {
-                            val maxDrag = (containerWidth - thumbWidthPx) / 2f
+                            val maxDrag = (containerWidth - thumbWidthPx) / 2f - sidePaddingPx
                             val threshold = maxDrag * 0.6f
                             scope.launch {
                                 if (offsetX.value > threshold) {
-                                    offsetX.animateTo(maxDrag, spring())
+                                    offsetX.animateTo(maxDrag, tween(200))
                                     onTake()
                                 } else if (offsetX.value < -threshold) {
-                                    offsetX.animateTo(-maxDrag, spring())
+                                    offsetX.animateTo(-maxDrag, tween(200))
                                     onSnooze()
                                 } else {
-                                    offsetX.animateTo(
-                                        0f,
-                                        spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                                    )
+                                    offsetX.animateTo(0f, tween(200))
                                 }
                             }
                         },
                         onDragCancel = {
                             scope.launch {
-                                offsetX.animateTo(
-                                    0f,
-                                    spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                                )
+                                offsetX.animateTo(0f, tween(200))
                             }
                         },
                         onHorizontalDrag = { change, dragAmount ->
                             change.consume()
-                            val maxDrag = (containerWidth - thumbWidthPx) / 2f
+                            val maxDrag = (containerWidth - thumbWidthPx) / 2f - sidePaddingPx
                             scope.launch {
                                 offsetX.snapTo(
                                     (offsetX.value + dragAmount).coerceIn(

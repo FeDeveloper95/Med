@@ -1,22 +1,22 @@
 [versions]
-agp = "9.3.3"
+agp = "9.4.1"
 biometric = "1.2.0-alpha05"
 coilCompose = "2.7.0"
 composeMarkdown = "0.5.4"
-composeMaterial = "1.7.0"
-composeMaterial3 = "1.7.0"
+composeMaterial = "1.7.1"
+composeMaterial3 = "1.7.1"
 foundation = "1.12.1"
-kotlin = "2.4.20"
+kotlin = "2.4.21"
 coreKtx = "1.19.1"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 composeBom = "2026.09.00"
-material3 = "1.5.0-alpha29"
+material3 = "1.5.0-beta01"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
-material3AdaptiveNavigationSuite = "1.5.0-alpha29"
-material3Version = "1.5.0-alpha29"
-material3WindowSizeClass = "1.5.0-alpha29"
+material3AdaptiveNavigationSuite = "1.5.0-beta01"
+material3Version = "1.5.0-beta01"
+material3WindowSizeClass = "1.5.0-beta01"
 material3WindowSizeClassVersion = "1.4.0"
 materialIconsExtended = "1.7.8"
 materialVersion = "1.14.0"
@@ -27,6 +27,9 @@ ui = "1.12.1"
 uiToolingPreview = "1.12.1"
 uiToolingPreviewVersion = "1.12.1"
 uiVersion = "1.12.1"
+wear-compose-material3 = "1.7.1"
+wear-remote-interactions = "1.2.0"
+wear-compose-navigation = "1.7.1"
 
 [libraries]
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
@@ -56,6 +59,9 @@ androidx-graphics-shapes = { group = "androidx.graphics", name = "graphics-shape
 androidx-palette-ktx = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
 androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
+androidx-wear-compose-material3 = { module = "androidx.wear.compose:compose-material3", version.ref = "wear-compose-material3" }
+androidx-wear-compose-navigation = { module = "androidx.wear.compose:compose-navigation", version.ref = "wear-compose-navigation" }
+androidx-wear-remote-interactions = { module = "androidx.wear:wear-remote-interactions", version.ref = "wear-remote-interactions" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 compose-foundation = { module = "androidx.wear.compose:compose-foundation", version.ref = "composeMaterial" }
 compose-markdown = { module = "com.github.jeziellago:compose-markdown", version.ref = "composeMarkdown" }

@@ -10,7 +10,9 @@ package com.fedeveloper95.med
 
 import android.content.Context
 import android.graphics.Color.parseColor
+import android.os.Build
 import android.os.Bundle
+import android.view.WindowInsetsController
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -120,8 +122,18 @@ class QuickActionsSettingsActivity : ComponentActivity() {
 @Composable
 fun QuickActionsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val activity = context as? android.app.Activity
     val haptic = LocalHapticFeedback.current
     val prefs = remember { context.getSharedPreferences("med_settings", Context.MODE_PRIVATE) }
+
+    LaunchedEffect(activity) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.insetsController?.setSystemBarsAppearance(
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND,
+                WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND
+            )
+        }
+    }
 
     LaunchedEffect(Unit) {
         WearSyncManager.initialize(context)
