@@ -14,11 +14,11 @@
         <gradient
             android:centerX="255.5"
             android:centerY="77.25"
-            android:gradientRadius="421.57"
+            android:gradientRadius="387"
             android:type="radial">
-          <item android:offset="0.1" android:color="#FFA5A8FC"/>
-          <item android:offset="0.25" android:color="#FF64A8FF"/>
-          <item android:offset="0.64" android:color="#FF0A69E2"/>
+          <item android:offset="0.12" android:color="#FFACAAFF"/>
+          <item android:offset="0.34" android:color="#FF3186FF"/>
+          <item android:offset="1" android:color="#FF0055CC"/>
         </gradient>
       </aapt:attr>
     </path>

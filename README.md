@@ -13,7 +13,7 @@ Additionally, Med includes an integrated in-app update system to ensure you are 
 
 ### :art: Design
 
-The UI is built strictly following the latest **Material 3 Expressive** guidelines using Jetpack Compose to keep the app clean, fluid, and modern. Designed with **Pixel** aesthetics as a priority, it functions seamlessly on any Android 8+ device, adapting perfectly across standard phones, foldables, tablets, and desktops.
+The UI is built strictly following the latest **Material 3 Expressive** guidelines using Jetpack Compose. Designed with **Pixel** aesthetics as a priority, it functions seamlessly on any Android 8+ device, adapting perfectly across standard phones, foldables, tablets, and desktops.
 
 ### :light_blue_heart: Acknowledgments
 
