@@ -83,6 +83,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.BuildConfig
 import com.fedeveloper95.med.elements.UpdaterActivity.ErrorSnackbar
 import com.fedeveloper95.med.services.UpdateStatus
 import com.fedeveloper95.med.services.Updater
@@ -452,12 +453,20 @@ fun UpdaterScreen(onBack: () -> Unit) {
                                             R.string.update_action
                                         ),
                                         onClick = {
-                                            isDownloading = true
-                                            Updater.startDownload(
-                                                context,
-                                                currentStatus.info.downloadUrl,
-                                                currentStatus.info.version
-                                            )
+                                            if (BuildConfig.FLAVOR == "foss") {
+                                                val intent = Intent(
+                                                    Intent.ACTION_VIEW,
+                                                    Uri.parse("https://f-droid.org/packages/${context.packageName}/")
+                                                )
+                                                context.startActivity(intent)
+                                            } else {
+                                                isDownloading = true
+                                                Updater.startDownload(
+                                                    context,
+                                                    currentStatus.info.downloadUrl,
+                                                    currentStatus.info.version
+                                                )
+                                            }
                                         },
                                         modifier = Modifier.weight(1f),
                                         enabled = !isDownloading

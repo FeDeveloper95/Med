@@ -12,8 +12,8 @@ android {
         applicationId = "com.fedeveloper95.med"
         minSdk = 30
         targetSdk = 37
-        versionCode = 21
-        versionName = "2.1"
+        versionCode = 211
+        versionName = "2.1.1"
     }
 
     buildTypes {

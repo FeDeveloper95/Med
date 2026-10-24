@@ -11,16 +11,16 @@ coreKtx = "1.19.1"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 composeBom = "2026.09.00"
-material3 = "1.5.0-beta01"
+material3 = "1.5.0-beta02"
 coreSplashscreen = "1.2.0"
 graphicsShapes = "1.1.0"
-material3AdaptiveNavigationSuite = "1.5.0-beta01"
-material3Version = "1.5.0-beta01"
-material3WindowSizeClass = "1.5.0-beta01"
+material3AdaptiveNavigationSuite = "1.5.0-beta02"
+material3Version = "1.5.0-beta02"
+material3WindowSizeClass = "1.5.0-beta02"
 material3WindowSizeClassVersion = "1.4.0"
 materialIconsExtended = "1.7.8"
 materialVersion = "1.14.0"
-palette = "1.0.0"
+palette = "1.1.0"
 androidBuiltInKotlin = "9.4.1"
 playServicesWearable = "20.0.1"
 ui = "1.12.1"
@@ -71,6 +71,6 @@ play-services-wearable = { group = "com.google.android.gms", name = "play-servic
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.3.20" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-built-in1-kotlin = { id = "com.android.built-in-kotlin", version.ref = "androidBuiltInKotlin" }

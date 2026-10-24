@@ -1,0 +1,14 @@
+🚨 Minor Update 🚨
+🚀 F-droid Availability, Continuous Polish, Inventory Tweaks ✨
+New Features & Changes
+Refill button in the inventory page
+
+UI/UX Polish
+Tweaked alarm UI
+
+Improvements & Bug Fixes
+F-droid support using a "FOSS" flavor that at the moment lacks WearOS companion
+Fixed profile picture disappearing after a while
+Updated dependencies
+
+Thank you all for the support ❤️

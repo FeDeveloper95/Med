@@ -92,6 +92,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.fedeveloper95.med.BuildConfig
 import com.fedeveloper95.med.elements.SettingsActivity.OrderPopup
 import com.fedeveloper95.med.elements.SettingsActivity.StartWeekPopup
 import com.fedeveloper95.med.services.AppLockManager
@@ -526,58 +527,64 @@ fun SettingsScreen(
                 }
 
                 item {
-                    Text(
-                        text = stringResource(R.string.settings_header_more),
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontFamily = GoogleSansFlex,
-                            fontWeight = FontWeight.Normal
-                        ),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
-                    )
+                    val showLanguage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+                    val showWearOS = BuildConfig.FLAVOR != "foss"
+                    val moreCount = (if (showLanguage) 1 else 0) + (if (showWearOS) 1 else 0)
+                    var moreIndex = 0
 
-                    Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
-                        val moreCount = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) 2 else 1
-                        var moreIndex = 0
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            SettingsSegmentedItem(
-                                icon = Icons.Rounded.Language,
-                                title = stringResource(R.string.settings_language_title),
-                                subtitle = stringResource(R.string.settings_language_desc),
-                                containerColor = Color(0xFFD9BAFD),
-                                iconColor = Color(0xFF5629A4),
-                                index = moreIndex++,
-                                count = moreCount,
-                                onClick = {
-                                    try {
-                                        val intent = Intent(
-                                            Settings.ACTION_APP_LOCALE_SETTINGS,
-                                            Uri.fromParts("package", context.packageName, null)
-                                        )
-                                        context.startActivity(intent)
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
-                                }
-                            )
-                        }
-
-                        SettingsSegmentedItem(
-                            icon = Icons.Rounded.Watch,
-                            title = stringResource(R.string.settings_wearos_title),
-                            subtitle = stringResource(R.string.settings_wearos_desc),
-                            containerColor = Color(0xFF67D4FF),
-                            iconColor = Color(0xFF004E5D),
-                            index = moreIndex++,
-                            count = moreCount,
-                            onClick = {
-                                val intent = Intent(context, WearSettingsActivity::class.java)
-                                context.startActivity(intent)
-                            }
+                    if (moreCount > 0) {
+                        Text(
+                            text = stringResource(R.string.settings_header_more),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontFamily = GoogleSansFlex,
+                                fontWeight = FontWeight.Normal
+                            ),
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                         )
+
+                        Column(verticalArrangement = Arrangement.spacedBy(ListItemDefaults.SegmentedGap)) {
+                            if (showLanguage) {
+                                SettingsSegmentedItem(
+                                    icon = Icons.Rounded.Language,
+                                    title = stringResource(R.string.settings_language_title),
+                                    subtitle = stringResource(R.string.settings_language_desc),
+                                    containerColor = Color(0xFFD9BAFD),
+                                    iconColor = Color(0xFF5629A4),
+                                    index = moreIndex++,
+                                    count = moreCount,
+                                    onClick = {
+                                        try {
+                                            val intent = Intent(
+                                                Settings.ACTION_APP_LOCALE_SETTINGS,
+                                                Uri.fromParts("package", context.packageName, null)
+                                            )
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                )
+                            }
+
+                            if (showWearOS) {
+                                SettingsSegmentedItem(
+                                    icon = Icons.Rounded.Watch,
+                                    title = stringResource(R.string.settings_wearos_title),
+                                    subtitle = stringResource(R.string.settings_wearos_desc),
+                                    containerColor = Color(0xFF67D4FF),
+                                    iconColor = Color(0xFF004E5D),
+                                    index = moreIndex++,
+                                    count = moreCount,
+                                    onClick = {
+                                        val intent = Intent(context, WearSettingsActivity::class.java)
+                                        context.startActivity(intent)
+                                    }
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(32.dp))
                     }
-                    Spacer(modifier = Modifier.height(32.dp))
                 }
 
                 item {

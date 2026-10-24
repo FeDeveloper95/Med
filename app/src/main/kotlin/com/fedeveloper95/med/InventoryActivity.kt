@@ -104,6 +104,8 @@ class InventoryActivity : ComponentActivity() {
                 mutableStateOf(prefs.getStringSet("pref_inventory_hidden_meds", emptySet())?.toSet() ?: emptySet())
             }
 
+            var refillTrigger by remember { mutableStateOf(0) }
+
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_RESUME) {
@@ -137,16 +139,31 @@ class InventoryActivity : ComponentActivity() {
                 }
             }
 
-            fun calculateRemainingTotal(med: MedData): Double? {
+            fun calculateRemainingTotal(med: MedData, trigger: Int): Double? {
                 val initialTotal = med.totalQuantity ?: return null
                 if (med.dose == null) return null
+
+                val refillStr = prefs.getString("refill_time_${med.title.trim().lowercase()}", null)
+                val refillDateTime = if (refillStr != null) {
+                    try {
+                        java.time.LocalDateTime.parse(refillStr)
+                    } catch (e: Exception) {
+                        java.time.LocalDateTime.MIN
+                    }
+                } else {
+                    java.time.LocalDateTime.of(med.creationDate, java.time.LocalTime.MIN)
+                }
 
                 var currentTotal: Double = initialTotal
                 val specificGroup = allMedicines.filter { it.title.trim().lowercase() == med.title.trim().lowercase() }
 
                 for (item in specificGroup) {
-                    item.takenHistory.forEach { (date, _) ->
-                        if (!date.isBefore(item.creationDate) && (item.endDate == null || !date.isAfter(item.endDate))) {
+                    item.takenHistory.forEach { (date, time) ->
+                        val takenDateTime = java.time.LocalDateTime.of(date, time)
+                        val isAfterStart = !date.isBefore(item.creationDate)
+                        val isBeforeEnd = item.endDate == null || !date.isAfter(item.endDate)
+
+                        if (!takenDateTime.isBefore(refillDateTime) && isAfterStart && isBeforeEnd) {
                             currentTotal -= (item.dose ?: 0.0)
                         }
                     }
@@ -275,8 +292,20 @@ class InventoryActivity : ComponentActivity() {
                                             bottomStart = bottomRadius,
                                             bottomEnd = bottomRadius
                                         )
-                                        val remaining = calculateRemainingTotal(item)
-                                        InventoryCard(item = item, shape = shape, remaining = remaining)
+                                        val remaining = calculateRemainingTotal(item, refillTrigger)
+
+                                        InventoryCard(
+                                            item = item,
+                                            shape = shape,
+                                            remaining = remaining,
+                                            onRefillClick = {
+                                                prefs.edit().putString(
+                                                    "refill_time_${item.title.trim().lowercase()}",
+                                                    java.time.LocalDateTime.now().toString()
+                                                ).apply()
+                                                refillTrigger++
+                                            }
+                                        )
                                     }
                                 }
                             }
@@ -289,7 +318,12 @@ class InventoryActivity : ComponentActivity() {
 }
 
 @Composable
-fun InventoryCard(item: MedData, shape: androidx.compose.ui.graphics.Shape, remaining: Double?) {
+fun InventoryCard(
+    item: MedData,
+    shape: androidx.compose.ui.graphics.Shape,
+    remaining: Double?,
+    onRefillClick: () -> Unit = {}
+) {
     val context = LocalContext.current
 
     val formatDouble: (Double?) -> String = { d ->
@@ -335,75 +369,84 @@ fun InventoryCard(item: MedData, shape: androidx.compose.ui.graphics.Shape, rema
         ),
         elevation = CardDefaults.cardElevation(0.dp)
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(CircleShape)
-                            .background(iconBoxColor),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = iconBoxTintColor,
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Column {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(iconBoxColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = iconBoxTintColor,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = item.title,
+                        fontFamily = GoogleSansFlex,
+                        fontWeight = FontWeight.Normal,
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    if (remaining != null) {
+                        val unitStr = if (item.unit != null) " ${item.unit}" else ""
                         Text(
-                            text = item.title,
+                            text = stringResource(R.string.inventory_remaining_format, formatDouble(remaining), unitStr),
                             fontFamily = GoogleSansFlex,
-                            fontWeight = FontWeight.Normal,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = contentColor.copy(alpha = 0.7f)
                         )
-                        if (remaining != null) {
-                            val unitStr = if (item.unit != null) " ${item.unit}" else ""
-                            Text(
-                                text = stringResource(R.string.inventory_remaining_format, formatDouble(remaining), unitStr),
-                                fontFamily = GoogleSansFlex,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = contentColor.copy(alpha = 0.7f)
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.inventory_not_set),
-                                fontFamily = GoogleSansFlex,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = contentColor.copy(alpha = 0.7f)
-                            )
-                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            color = if (isLowStock) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                            trackColor = contentColor.copy(alpha = 0.1f)
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.inventory_not_set),
+                            fontFamily = GoogleSansFlex,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = contentColor.copy(alpha = 0.7f)
+                        )
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 if (isLowStock) {
                     Icon(
                         imageVector = Icons.Rounded.Warning,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error
                     )
+                    Spacer(modifier = Modifier.width(12.dp))
                 }
-            }
-            if (remaining != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(4.dp)),
-                    color = if (isLowStock) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                    trackColor = contentColor.copy(alpha = 0.1f)
+
+                ExpressiveIconButton(
+                    onClick = onRefillClick,
+                    icon = ImageVector.vectorResource(R.drawable.ic_refill),
+                    contentDescription = "Refill stock",
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         }

@@ -12,10 +12,21 @@ android {
         applicationId = "com.fedeveloper95.med"
         minSdk = 26
         targetSdk = 37
-        versionCode = 21
-        versionName = "2.1"
+        versionCode = 211
+        versionName = "2.1.1"
         ndk {
             abiFilters.addAll(setOf("arm64-v8a", "x86_64"))
+        }
+    }
+
+    flavorDimensions += "version"
+
+    productFlavors {
+        create("github") {
+            dimension = "version"
+        }
+        create("foss") {
+            dimension = "version"
         }
     }
 
@@ -47,6 +58,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     packaging {
         resources {
@@ -68,7 +80,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3.window.size.class1)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.play.services.wearable)
+    "githubImplementation"(libs.play.services.wearable)
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.graphics.shapes)
